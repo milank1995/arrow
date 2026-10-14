@@ -61,11 +61,13 @@ fun GamePlayScreen(
         ) {
             // 1. TOP GAMEPLAY HEADER (Matches Screenshot 2 & 3)
             if (level != null) {
+                val totalArrowsCount = uiState.levelData?.arrows?.size ?: uiState.arrows.size
                 GameHeader(
                     levelNumber = uiState.currentLevelNumber,
                     heartsRemaining = uiState.heartsRemaining,
                     maxHearts = uiState.maxHearts,
                     remainingArrowsCount = remainingArrowsCount,
+                    totalArrowsCount = totalArrowsCount,
                     theme = theme,
                     onBackClick = onBackToHomeClick,
                     onThemeClick = onThemeClick

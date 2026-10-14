@@ -461,7 +461,8 @@ fun PuzzleBoardCanvas(
                         ySize = ySize,
                         cellSize = cellSize,
                         theme = theme,
-                        hintPulseScale = hintPulseScale
+                        hintPulseScale = hintPulseScale,
+                        previewRayArrowId = previewRayArrowId
                     )
                 }
 
@@ -611,23 +612,35 @@ private fun DrawScope.drawArrowEntity(
     ySize: Int,
     cellSize: Float,
     theme: ThemePreset,
-    hintPulseScale: Float
+    hintPulseScale: Float,
+    previewRayArrowId: String?
 ) {
-    val baseColor = when (arrow.state) {
-        ArrowState.HINTED -> theme.arrowHint
-        ArrowState.WRONG_FLASH -> theme.arrowWrong
+    val isPreviewHold = (arrow.id == previewRayArrowId)
+    val isLaunching = (arrow.state == ArrowState.FLYING_OUT && arrow.flightProgress < 0.35f)
+
+    val baseColor = when {
+        arrow.state == ArrowState.WRONG_FLASH -> theme.arrowWrong
+        isPreviewHold -> Color(0xFF2563EB) // Vibrant Electric Blue for Long-Press Hold!
+        isLaunching -> Color(0xFF0284C7)   // Luminous Sky-Blue for Click Pop!
+        arrow.state == ArrowState.HINTED -> theme.arrowHint
         else -> theme.arrowDefault
     }
 
-    // Clamped stroke width ensures consistent, bold arrow lines on any grid density (5x5 up to 37x37)
+    // Clamped stroke width with expansion pulse when held or clicked
     val minStroke = 4.dp.toPx()
     val maxStroke = 9.dp.toPx()
-    val strokeWidth = (cellSize * 0.18f).coerceIn(minStroke, maxStroke) * (if (arrow.state == ArrowState.HINTED) hintPulseScale else 1.0f)
+    val scaleMultiplier = when {
+        isPreviewHold -> 1.25f * hintPulseScale
+        isLaunching -> 1.20f
+        arrow.state == ArrowState.HINTED -> hintPulseScale
+        else -> 1.0f
+    }
+    val strokeWidth = (cellSize * 0.18f).coerceIn(minStroke, maxStroke) * scaleMultiplier
 
     // Clamped arrowhead size to maintain sharp, distinct triangular heads
     val minHead = 12.dp.toPx()
     val maxHead = 26.dp.toPx()
-    val headSize = (cellSize * 0.48f).coerceIn(minHead, maxHead)
+    val headSize = (cellSize * 0.48f).coerceIn(minHead, maxHead) * (if (isPreviewHold || isLaunching) 1.15f else 1.0f)
 
     // Build the full motion track: body points + escape extension along arrow.direction
     val track = mutableListOf<Offset>()
@@ -889,17 +902,51 @@ private fun DrawScope.drawPreviewRay(
 
     var endOffset = headCenter
     when (arrow.direction) {
-        Direction.UP -> endOffset = Offset(headCenter.x, origin.y - cellSize)
-        Direction.DOWN -> endOffset = Offset(headCenter.x, origin.y + (ySize + 1) * cellSize)
-        Direction.LEFT -> endOffset = Offset(origin.x - cellSize, headCenter.y)
-        Direction.RIGHT -> endOffset = Offset(origin.x + (xSize + 1) * cellSize, headCenter.y)
+        Direction.UP -> endOffset = Offset(headCenter.x, origin.y - cellSize * 1.5f)
+        Direction.DOWN -> endOffset = Offset(headCenter.x, origin.y + (ySize + 1.5f) * cellSize)
+        Direction.LEFT -> endOffset = Offset(origin.x - cellSize * 1.5f, headCenter.y)
+        Direction.RIGHT -> endOffset = Offset(origin.x + (xSize + 1.5f) * cellSize, headCenter.y)
     }
 
+    val beamColor = Color(0xFF2563EB)
+
+    // 1. Soft glowing outer beam aura
     drawLine(
-        color = color.copy(alpha = 0.5f),
+        color = beamColor.copy(alpha = 0.22f),
         start = headCenter,
         end = endOffset,
-        strokeWidth = 3f,
+        strokeWidth = 9.dp.toPx(),
         cap = StrokeCap.Round
+    )
+
+    // 2. High-contrast guidance ray
+    drawLine(
+        color = beamColor.copy(alpha = 0.85f),
+        start = headCenter,
+        end = endOffset,
+        strokeWidth = 2.8.dp.toPx(),
+        cap = StrokeCap.Round
+    )
+
+    // 3. Directional exit beacon chevron / arrowhead at destination edge
+    rotate(
+        degrees = arrow.direction.angleDegrees,
+        pivot = endOffset
+    ) {
+        val exitHeadSize = 14.dp.toPx()
+        val exitHeadPath = Path().apply {
+            moveTo(endOffset.x, endOffset.y - exitHeadSize * 0.55f)
+            lineTo(endOffset.x + exitHeadSize * 0.45f, endOffset.y + exitHeadSize * 0.35f)
+            lineTo(endOffset.x - exitHeadSize * 0.45f, endOffset.y + exitHeadSize * 0.35f)
+            close()
+        }
+        drawPath(path = exitHeadPath, color = beamColor)
+    }
+
+    // 4. Subtle beacon pulse ring at head origin
+    drawCircle(
+        color = beamColor.copy(alpha = 0.45f),
+        radius = 7.dp.toPx(),
+        center = headCenter
     )
 }
