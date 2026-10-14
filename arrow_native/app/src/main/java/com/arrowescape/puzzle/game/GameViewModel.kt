@@ -14,6 +14,7 @@ import com.arrowescape.puzzle.core.model.LevelData
 import com.arrowescape.puzzle.data.UserPreferencesRepository
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 import com.arrowescape.puzzle.ui.theme.ThemePresets
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -51,6 +52,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
     private var occupancyMap = GridOccupancyMap(4, 4)
+    private var cheerDismissJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -155,6 +157,15 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     comboCount = newCombo,
                     cheerMessage = cheer
                 )
+            }
+
+            // Auto-dismiss in-app cheer notification after 1.4 seconds
+            cheerDismissJob?.cancel()
+            if (cheer != null) {
+                cheerDismissJob = viewModelScope.launch {
+                    delay(1400)
+                    _uiState.update { it.copy(cheerMessage = null) }
+                }
             }
 
             // Animate flight smoothly at 60fps and transition to CLEARED

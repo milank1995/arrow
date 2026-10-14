@@ -8,17 +8,35 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculateCentroidSize
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -27,13 +45,20 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.core.model.Arrow
 import com.arrowescape.puzzle.core.model.ArrowState
 import com.arrowescape.puzzle.core.model.Direction
 import com.arrowescape.puzzle.core.model.GridCoordinate
 import com.arrowescape.puzzle.ui.theme.ThemePreset
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -56,6 +81,20 @@ fun PuzzleBoardCanvas(
     onArrowLongPress: (Arrow, isPressed: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
+    // Zoom & pan states
+    var scale by remember { mutableFloatStateOf(1f) }
+    var panOffset by remember { mutableStateOf(Offset.Zero) }
+    var lastTapTime by remember { mutableLongStateOf(0L) }
+    var lastTapPos by remember { mutableStateOf(Offset.Zero) }
+
+    // Reset zoom and pan whenever a new level is loaded or grid dimensions change
+    LaunchedEffect(xSize, ySize, arrows.size) {
+        scale = 1f
+        panOffset = Offset.Zero
+    }
+
     // Hint pulse animation
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
     val hintPulseScale by infiniteTransition.animateFloat(
@@ -83,78 +122,217 @@ fun PuzzleBoardCanvas(
 
         Canvas(
             modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(xSize.toFloat() / ySize.toFloat())
-                .pointerInput(arrows, cellSize) {
-                    detectTapGestures(
-                        onPress = { offset ->
-                            val clickedCoord = GridCoordinate(
-                                x = (offset.x / cellSize).toInt().coerceIn(0, xSize - 1),
-                                y = (offset.y / cellSize).toInt().coerceIn(0, ySize - 1)
-                            )
-                            val tappedArrow = arrows.firstOrNull { 
-                                it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT && it.isPointInside(clickedCoord) 
-                            }
-                            if (tappedArrow != null) {
-                                onArrowLongPress(tappedArrow, true)
-                                tryAwaitRelease()
-                                onArrowLongPress(tappedArrow, false)
-                            }
-                        },
-                        onTap = { offset ->
-                            // Spawn tap ripple particle effect
-                            val particle = TapParticle(origin = offset, color = Color(0xFF64748B))
-                            tapParticles.add(particle)
+                .fillMaxSize()
+                .clipToBounds()
+                .pointerInput(arrows, cellSize, xSize, ySize, scale, panOffset) {
+                    awaitEachGesture {
+                        val down = awaitFirstDown(requireUnconsumed = false)
+                        val startTime = System.currentTimeMillis()
+                        val startPos = down.position
+                        var isMultiTouch = false
+                        var pastSlop = false
+                        val touchSlop = viewConfiguration.touchSlop
 
-                            val clickedCoord = GridCoordinate(
-                                x = (offset.x / cellSize).toInt().coerceIn(0, xSize - 1),
-                                y = (offset.y / cellSize).toInt().coerceIn(0, ySize - 1)
-                            )
-                            val tappedArrow = arrows.firstOrNull { 
-                                it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT && it.isPointInside(clickedCoord) 
+                        // Calculate board local coordinate from touch position using inverse transform
+                        val center = Offset(width / 2f, height / 2f)
+                        val localStart = center + (startPos - panOffset - center) / scale
+                        val gridX = (localStart.x / cellSize).toInt()
+                        val gridY = (localStart.y / cellSize).toInt()
+                        val candidateArrow = if (gridX in 0 until xSize && gridY in 0 until ySize) {
+                            val coord = GridCoordinate(gridX, gridY)
+                            arrows.firstOrNull {
+                                it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT && it.isPointInside(coord)
                             }
-                            if (tappedArrow != null) {
-                                onArrowClick(tappedArrow)
+                        } else null
+
+                        var isLongPressTriggered = false
+                        var longPressJob: Job? = null
+                        if (candidateArrow != null) {
+                            longPressJob = coroutineScope.launch {
+                                delay(380L)
+                                if (!pastSlop && !isMultiTouch) {
+                                    isLongPressTriggered = true
+                                    onArrowLongPress(candidateArrow, true)
+                                }
                             }
                         }
-                    )
+
+                        try {
+                            var zoomAccum = 1f
+                            var panAccum = Offset.Zero
+
+                            do {
+                                val event = awaitPointerEvent()
+                                val pressedList = event.changes.filter { it.pressed }
+                                if (pressedList.size >= 2) {
+                                    isMultiTouch = true
+                                    longPressJob?.cancel()
+                                    if (isLongPressTriggered && candidateArrow != null) {
+                                        onArrowLongPress(candidateArrow, false)
+                                        isLongPressTriggered = false
+                                    }
+
+                                    val zoomChange = event.calculateZoom()
+                                    val panChange = event.calculatePan()
+
+                                    if (!pastSlop) {
+                                        zoomAccum *= zoomChange
+                                        panAccum += panChange
+                                        val centroidSize = event.calculateCentroidSize(useCurrent = false)
+                                        val zoomMotion = kotlin.math.abs(1f - zoomAccum) * centroidSize
+                                        if (zoomMotion > touchSlop || panAccum.getDistance() > touchSlop) {
+                                            pastSlop = true
+                                        }
+                                    }
+
+                                    if (pastSlop) {
+                                        val newScale = (scale * zoomChange).coerceIn(1f, 3.5f)
+                                        val maxPanX = (width * (newScale - 1f)) / 2f
+                                        val maxPanY = (height * (newScale - 1f)) / 2f
+
+                                        scale = newScale
+                                        panOffset = if (newScale > 1.02f) {
+                                            Offset(
+                                                (panOffset.x + panChange.x).coerceIn(-maxPanX, maxPanX),
+                                                (panOffset.y + panChange.y).coerceIn(-maxPanY, maxPanY)
+                                            )
+                                        } else {
+                                            Offset.Zero
+                                        }
+                                        event.changes.forEach { it.consume() }
+                                    }
+                                } else if (pressedList.size == 1) {
+                                    val change = pressedList.first()
+                                    val dragDist = (change.position - startPos).getDistance()
+                                    if (dragDist > touchSlop) {
+                                        pastSlop = true
+                                        longPressJob?.cancel()
+                                        if (isLongPressTriggered && candidateArrow != null) {
+                                            onArrowLongPress(candidateArrow, false)
+                                            isLongPressTriggered = false
+                                        }
+                                    }
+
+                                    if (pastSlop && scale > 1.05f) {
+                                        val panDelta = change.positionChange()
+                                        val maxPanX = (width * (scale - 1f)) / 2f
+                                        val maxPanY = (height * (scale - 1f)) / 2f
+                                        panOffset = Offset(
+                                            (panOffset.x + panDelta.x).coerceIn(-maxPanX, maxPanX),
+                                            (panOffset.y + panDelta.y).coerceIn(-maxPanY, maxPanY)
+                                        )
+                                        change.consume()
+                                    }
+                                }
+                            } while (event.changes.any { it.pressed })
+                        } finally {
+                            longPressJob?.cancel()
+                            if (isLongPressTriggered && candidateArrow != null) {
+                                onArrowLongPress(candidateArrow, false)
+                            }
+                        }
+
+                        val elapsed = System.currentTimeMillis() - startTime
+                        if (!pastSlop && !isMultiTouch && !isLongPressTriggered && elapsed < 450) {
+                            val now = System.currentTimeMillis()
+                            if (now - lastTapTime < 320 && (startPos - lastTapPos).getDistance() < touchSlop * 2.5f) {
+                                // Double-tap detected -> Reset zoom smoothly
+                                if (scale > 1.05f) {
+                                    scale = 1f
+                                    panOffset = Offset.Zero
+                                }
+                                lastTapTime = 0L
+                            } else {
+                                lastTapTime = now
+                                lastTapPos = startPos
+
+                                // Spawn tap particle at local board coordinate
+                                tapParticles.add(TapParticle(origin = localStart, color = Color(0xFF64748B)))
+
+                                if (candidateArrow != null) {
+                                    onArrowClick(candidateArrow)
+                                }
+                            }
+                        }
+                    }
                 }
         ) {
-            // Draw pure white background
-            drawRect(color = Color.White)
+            val center = Offset(size.width / 2f, size.height / 2f)
+            withTransform({
+                translate(panOffset.x, panOffset.y)
+                scale(scale, scale, pivot = center)
+            }) {
+                // Pure white canvas background
+                drawRect(color = Color.White)
 
-            // 1. Grid Lines / Dots only if user activated via '#' Booster button
-            if (isGridLinesActive) {
-                drawGridLines(xSize, ySize, cellSize, theme.gridLine)
-                drawGridDots(xSize, ySize, cellSize, theme.gridDot)
+                // 1. Grid Lines / Dots only if user activated via '#' Booster button
+                if (isGridLinesActive) {
+                    drawGridLines(xSize, ySize, cellSize, theme.gridLine)
+                    drawGridDots(xSize, ySize, cellSize, theme.gridDot)
+                }
+
+                // 2. Draw Preview Ray if an arrow is long-pressed
+                val previewArrow = arrows.firstOrNull { it.id == previewRayArrowId }
+                if (previewArrow != null) {
+                    drawPreviewRay(previewArrow, xSize, ySize, cellSize, theme.arrowHint)
+                }
+
+                // 3. Draw All Arrows (Static, flying out, or wrong-move bouncing)
+                for (arrow in arrows) {
+                    if (arrow.state == ArrowState.CLEARED) continue
+
+                    drawArrowEntity(
+                        arrow = arrow,
+                        xSize = xSize,
+                        ySize = ySize,
+                        cellSize = cellSize,
+                        theme = theme,
+                        hintPulseScale = hintPulseScale
+                    )
+                }
+
+                // 4. Draw Tap Particles
+                drawTapParticles(tapParticles)
             }
+        }
 
-            // 2. Draw Preview Ray if an arrow is long-pressed
-            val previewArrow = arrows.firstOrNull { it.id == previewRayArrowId }
-            if (previewArrow != null) {
-                drawPreviewRay(previewArrow, xSize, ySize, cellSize, theme.arrowHint)
+        // Floating Reset Zoom pill button shown when zoomed in
+        if (scale > 1.05f) {
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+                    .clickable {
+                        scale = 1f
+                        panOffset = Offset.Zero
+                    },
+                shape = RoundedCornerShape(14.dp),
+                color = Color(0xDD1E293B),
+                shadowElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "↺",
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Reset %.1fx".format(scale),
+                        color = Color.White,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
-
-            // 3. Draw All Arrows (Static, flying out, or wrong-move bouncing)
-            for (arrow in arrows) {
-                if (arrow.state == ArrowState.CLEARED) continue
-
-                drawArrowEntity(
-                    arrow = arrow,
-                    xSize = xSize,
-                    ySize = ySize,
-                    cellSize = cellSize,
-                    theme = theme,
-                    hintPulseScale = hintPulseScale
-                )
-            }
-
-            // 4. Draw Tap Particles
-            drawTapParticles(tapParticles)
         }
     }
 
-    // Launch animations for particles
+    // Launch animations for tap particles
     tapParticles.forEach { particle ->
         LaunchedEffect(particle) {
             particle.progress.animateTo(
@@ -180,8 +358,15 @@ private fun DrawScope.drawArrowEntity(
         else -> theme.arrowDefault
     }
 
-    val strokeWidth = cellSize * 0.16f * (if (arrow.state == ArrowState.HINTED) hintPulseScale else 1.0f)
-    val headSize = cellSize * 0.44f
+    // Clamped stroke width ensures consistent, bold arrow lines on any grid density (5x5 up to 37x37)
+    val minStroke = 4.dp.toPx()
+    val maxStroke = 9.dp.toPx()
+    val strokeWidth = (cellSize * 0.18f).coerceIn(minStroke, maxStroke) * (if (arrow.state == ArrowState.HINTED) hintPulseScale else 1.0f)
+
+    // Clamped arrowhead size to maintain sharp, distinct triangular heads
+    val minHead = 12.dp.toPx()
+    val maxHead = 26.dp.toPx()
+    val headSize = (cellSize * 0.48f).coerceIn(minHead, maxHead)
 
     // Build the full motion track: body points + escape extension along arrow.direction
     val track = mutableListOf<Offset>()
