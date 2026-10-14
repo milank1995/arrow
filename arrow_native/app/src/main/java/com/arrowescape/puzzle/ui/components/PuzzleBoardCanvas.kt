@@ -98,6 +98,11 @@ fun PuzzleBoardCanvas(
     var lastTapTime by remember { mutableLongStateOf(0L) }
     var lastTapPos by remember { mutableStateOf(Offset.Zero) }
 
+    // Remember the initial level silhouette cells to render subtle cell dots for cleared areas
+    val initialLevelCells = remember(xSize, ySize, arrows.size) {
+        arrows.flatMap { it.body }.toSet()
+    }
+
     // Reset zoom and pan whenever a new level is loaded or grid dimensions change
     LaunchedEffect(xSize, ySize, arrows.size) {
         settleJob?.cancel()
@@ -421,19 +426,31 @@ fun PuzzleBoardCanvas(
             }) {
                 // Background is completely transparent; surroundings adapt naturally to theme
 
-                // 1. Grid Lines / Dots only if user activated via '#' Booster button
+                // 1. Subtle level silhouette cell dots (revealed when arrows clear, matching Unity Screenshot 1)
+                for (coord in initialLevelCells) {
+                    drawCircle(
+                        color = Color(0xFF94A3B8).copy(alpha = 0.35f),
+                        radius = (cellSize * 0.055f).coerceIn(1.8f, 3.2f),
+                        center = Offset(
+                            boardOrigin.x + (coord.x + 0.5f) * cellSize,
+                            boardOrigin.y + (coord.y + 0.5f) * cellSize
+                        )
+                    )
+                }
+
+                // 2. Full Grid Lines / Dots only if user activated via '#' Booster button
                 if (isGridLinesActive) {
                     drawGridLines(boardOrigin, xSize, ySize, cellSize, theme.gridLine)
                     drawGridDots(boardOrigin, xSize, ySize, cellSize, theme.gridDot)
                 }
 
-                // 2. Draw Preview Ray if an arrow is long-pressed
+                // 3. Draw Preview Ray if an arrow is long-pressed
                 val previewArrow = arrows.firstOrNull { it.id == previewRayArrowId }
                 if (previewArrow != null) {
                     drawPreviewRay(boardOrigin, previewArrow, xSize, ySize, cellSize, theme.arrowHint)
                 }
 
-                // 3. Draw All Arrows (Static, flying out, or wrong-move bouncing)
+                // 4. Draw All Arrows (Static, flying out, or wrong-move bouncing)
                 for (arrow in arrows) {
                     if (arrow.state == ArrowState.CLEARED) continue
 
@@ -659,14 +676,9 @@ private fun DrawScope.drawArrowEntity(
 
     val renderColor = baseColor.copy(alpha = alpha)
 
-    // 1. Draw body stroke along the moving polyline
+    // 1. Draw body stroke along the moving polyline with smooth rounded corner fillets
     if (sampledPoints.size > 1) {
-        val path = Path().apply {
-            moveTo(sampledPoints[0].x, sampledPoints[0].y)
-            for (i in 1 until sampledPoints.size) {
-                lineTo(sampledPoints[i].x, sampledPoints[i].y)
-            }
-        }
+        val path = buildRoundedCornerPath(sampledPoints, radius = cellSize * 0.30f)
         drawPath(
             path = path,
             color = renderColor,
@@ -678,16 +690,16 @@ private fun DrawScope.drawArrowEntity(
         )
     }
 
-    // 2. Draw sharp triangular arrowhead at the moving head point
+    // 2. Draw refined broader triangular arrowhead at the moving head point
     val currentHead = sampledPoints.last()
     rotate(
         degrees = arrow.direction.angleDegrees,
         pivot = currentHead
     ) {
         val arrowHeadPath = Path().apply {
-            moveTo(currentHead.x, currentHead.y - headSize * 0.55f) // Forward tip
-            lineTo(currentHead.x + headSize * 0.40f, currentHead.y + headSize * 0.32f) // Right base
-            lineTo(currentHead.x - headSize * 0.40f, currentHead.y + headSize * 0.32f) // Left base
+            moveTo(currentHead.x, currentHead.y - headSize * 0.58f) // Forward tip
+            lineTo(currentHead.x + headSize * 0.45f, currentHead.y + headSize * 0.34f) // Right base
+            lineTo(currentHead.x - headSize * 0.45f, currentHead.y + headSize * 0.34f) // Left base
             close()
         }
 
@@ -696,6 +708,62 @@ private fun DrawScope.drawArrowEntity(
             color = renderColor
         )
     }
+}
+
+/**
+ * Builds a smooth path with circular fillet arcs on every 90° turn using quadratic beziers.
+ * Replicates Unity's GenerateRoundedPath for smooth, polished arcade visuals.
+ */
+private fun buildRoundedCornerPath(points: List<Offset>, radius: Float): Path {
+    val path = Path()
+    if (points.isEmpty()) return path
+    if (points.size == 1) {
+        path.moveTo(points[0].x, points[0].y)
+        return path
+    }
+    if (points.size == 2) {
+        path.moveTo(points[0].x, points[0].y)
+        path.lineTo(points[1].x, points[1].y)
+        return path
+    }
+
+    path.moveTo(points[0].x, points[0].y)
+    for (i in 1 until points.size - 1) {
+        val prev = points[i - 1]
+        val cur = points[i]
+        val next = points[i + 1]
+
+        val vIn = cur - prev
+        val lenIn = hypot(vIn.x, vIn.y)
+        val vOut = next - cur
+        val lenOut = hypot(vOut.x, vOut.y)
+
+        if (lenIn < 0.001f || lenOut < 0.001f) {
+            path.lineTo(cur.x, cur.y)
+            continue
+        }
+
+        val uIn = Offset(vIn.x / lenIn, vIn.y / lenIn)
+        val uOut = Offset(vOut.x / lenOut, vOut.y / lenOut)
+
+        // Check if turn is straight
+        val dot = uIn.x * uOut.x + uIn.y * uOut.y
+        if (dot > 0.999f) {
+            path.lineTo(cur.x, cur.y)
+            continue
+        }
+
+        // Corner radius constrained by incoming and outgoing segment lengths
+        val r = minOf(radius, lenIn * 0.44f, lenOut * 0.44f)
+        val p1 = Offset(cur.x - uIn.x * r, cur.y - uIn.y * r)
+        val p2 = Offset(cur.x + uOut.x * r, cur.y + uOut.y * r)
+
+        path.lineTo(p1.x, p1.y)
+        path.quadraticTo(cur.x, cur.y, p2.x, p2.y)
+    }
+
+    path.lineTo(points.last().x, points.last().y)
+    return path
 }
 
 /**

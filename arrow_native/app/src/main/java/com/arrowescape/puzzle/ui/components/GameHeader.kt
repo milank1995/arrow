@@ -98,9 +98,9 @@ fun GameHeader(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // 3 Hearts Row
+                // 3 Hearts Row with rich coral-red tint and depth
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     for (i in 0 until maxHearts) {
@@ -108,8 +108,8 @@ fun GameHeader(
                         Icon(
                             imageVector = Icons.Default.Favorite,
                             contentDescription = "Heart",
-                            tint = if (isAlive) Color(0xFFFF5252) else Color(0xFFE2E8F0),
-                            modifier = Modifier.size(20.dp)
+                            tint = if (isAlive) Color(0xFFFF4B4B) else Color(0xFFCBD5E1),
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                 }
@@ -120,11 +120,11 @@ fun GameHeader(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF1E293B),
-                    modifier = Modifier.padding(top = 2.dp)
+                    modifier = Modifier.padding(top = 3.dp)
                 )
             }
 
-            // RIGHT: Remaining Arrows Badge (↗ N)
+            // RIGHT: Remaining Arrows Badge (solid bold ↗ icon + count, matching Screenshot 1)
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(percent = 50))
@@ -134,14 +134,23 @@ fun GameHeader(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.NorthEast,
-                        contentDescription = "Remaining arrows",
-                        tint = Color(0xFF1E293B),
-                        modifier = Modifier.size(17.dp)
-                    )
+                    // Bold solid directional arrow icon matching Screenshot 1
+                    androidx.compose.foundation.Canvas(modifier = Modifier.size(15.dp)) {
+                        val path = androidx.compose.ui.graphics.Path().apply {
+                            moveTo(size.width * 0.95f, size.height * 0.05f)
+                            lineTo(size.width * 0.95f, size.height * 0.65f)
+                            lineTo(size.width * 0.72f, size.height * 0.42f)
+                            lineTo(size.width * 0.22f, size.height * 0.92f)
+                            lineTo(size.width * 0.08f, size.height * 0.78f)
+                            lineTo(size.width * 0.58f, size.height * 0.28f)
+                            lineTo(size.width * 0.35f, size.height * 0.05f)
+                            close()
+                        }
+                        drawPath(path = path, color = Color(0xFF1E293B))
+                    }
+
                     Text(
                         text = "$remainingArrowsCount",
                         fontSize = 16.sp,

@@ -5,11 +5,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -50,17 +48,17 @@ fun BoosterBar(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 1. Hint Pod with count badge underneath
+            // 1. Hint Pod with count or [AD] Free badge underneath (Matches Screenshot 1)
             Box(
                 contentAlignment = Alignment.BottomCenter,
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
-                // Pod Circle
+                // Pod Circle with soft ambient tint
                 Box(
                     modifier = Modifier
-                        .size(58.dp)
+                        .size(62.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFEEF2F6))
+                        .background(Color(0xFFE8EEF5))
                         .clickable(onClick = onHintClick),
                     contentAlignment = Alignment.Center
                 ) {
@@ -68,26 +66,53 @@ fun BoosterBar(
                         imageVector = Icons.Default.Lightbulb,
                         contentDescription = "Hint",
                         tint = Color(0xFF1E293B),
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier.size(30.dp)
                     )
                 }
 
-                // Count Badge Pill overlapping bottom
-                Box(
-                    modifier = Modifier
-                        .offset(y = 8.dp)
-                        .clip(RoundedCornerShape(percent = 50))
-                        .background(Color.White)
-                        .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(percent = 50))
-                        .padding(horizontal = 8.dp, vertical = 2.dp),
-                    contentAlignment = Alignment.Center
+                // Count or [AD] Free Badge overlapping bottom
+                Surface(
+                    modifier = Modifier.offset(y = 8.dp),
+                    shape = RoundedCornerShape(percent = 50),
+                    color = Color.White,
+                    shadowElevation = 2.dp,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0))
                 ) {
-                    Text(
-                        text = "$hintsCount",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E293B)
-                    )
+                    Row(
+                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(3.dp)
+                    ) {
+                        if (hintsCount > 0) {
+                            Text(
+                                text = "$hintsCount",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF1E293B)
+                            )
+                        } else {
+                            // [AD] film badge + "Free" text
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(3.dp))
+                                    .background(Color(0xFF1E293B))
+                                    .padding(horizontal = 3.dp, vertical = 1.dp)
+                            ) {
+                                Text(
+                                    text = "AD",
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = Color.White
+                                )
+                            }
+                            Text(
+                                text = "Free",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF1E293B)
+                            )
+                        }
+                    }
                 }
             }
 
@@ -100,15 +125,15 @@ fun BoosterBar(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(58.dp)
+                        .size(62.dp)
                         .clip(CircleShape)
-                        .background(if (isGridLinesActive) Color(0xFFCBD5E1) else Color(0xFFEEF2F6))
+                        .background(if (isGridLinesActive) Color(0xFFCBD5E1) else Color(0xFFE8EEF5))
                         .clickable(onClick = onGridClick),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "#",
-                        fontSize = 28.sp,
+                        fontSize = 30.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF1E293B)
                     )
