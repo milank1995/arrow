@@ -3,14 +3,17 @@ package com.arrowescape.puzzle.ui.components
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculateCentroid
 import androidx.compose.foundation.gestures.calculateCentroidSize
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateZoom
@@ -61,12 +64,18 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.cos
+import kotlin.math.hypot
 import kotlin.math.sin
 
 private data class TapParticle(
     val origin: Offset,
     val progress: Animatable<Float, *> = Animatable(0f),
     val color: Color
+)
+
+private data class VelSample(
+    val delta: Offset,
+    val timeMs: Long
 )
 
 @Composable
@@ -83,16 +92,21 @@ fun PuzzleBoardCanvas(
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-    // Zoom & pan states
+    // Smooth scale and pan states
     var scale by remember { mutableFloatStateOf(1f) }
-    var panOffset by remember { mutableStateOf(Offset.Zero) }
+    var panX by remember { mutableFloatStateOf(0f) }
+    var panY by remember { mutableFloatStateOf(0f) }
+    var settleJob by remember { mutableStateOf<Job?>(null) }
+
     var lastTapTime by remember { mutableLongStateOf(0L) }
     var lastTapPos by remember { mutableStateOf(Offset.Zero) }
 
     // Reset zoom and pan whenever a new level is loaded or grid dimensions change
     LaunchedEffect(xSize, ySize, arrows.size) {
+        settleJob?.cancel()
         scale = 1f
-        panOffset = Offset.Zero
+        panX = 0f
+        panY = 0f
     }
 
     // Hint pulse animation
@@ -120,22 +134,30 @@ fun PuzzleBoardCanvas(
         val height = constraints.maxHeight.toFloat()
         val cellSize = minOf(width / xSize, height / ySize)
 
+        // Dynamic zoom limits matching Unity's ComputeZoomLimitsForLevel (minCellScreenPx / maxCellScreenPx)
+        val minScale = 0.75f
+        val targetMaxCellPx = maxOf(width * 0.48f, 450f)
+        val maxScale = (targetMaxCellPx / cellSize).coerceIn(5.0f, 18.0f)
+
         Canvas(
             modifier = Modifier
                 .fillMaxSize()
                 .clipToBounds()
-                .pointerInput(arrows, cellSize, xSize, ySize, scale, panOffset) {
+                .pointerInput(arrows, cellSize, xSize, ySize, maxScale) {
                     awaitEachGesture {
                         val down = awaitFirstDown(requireUnconsumed = false)
+                        settleJob?.cancel() // Stop ongoing inertia or animation immediately on new touch
+
                         val startTime = System.currentTimeMillis()
                         val startPos = down.position
                         var isMultiTouch = false
                         var pastSlop = false
                         val touchSlop = viewConfiguration.touchSlop
 
-                        // Calculate board local coordinate from touch position using inverse transform
                         val center = Offset(width / 2f, height / 2f)
-                        val localStart = center + (startPos - panOffset - center) / scale
+
+                        // Inverse coordinate mapping to locate arrow under touch
+                        val localStart = center + (startPos - Offset(panX, panY) - center) / scale
                         val gridX = (localStart.x / cellSize).toInt()
                         val gridY = (localStart.y / cellSize).toInt()
                         val candidateArrow = if (gridX in 0 until xSize && gridY in 0 until ySize) {
@@ -157,13 +179,19 @@ fun PuzzleBoardCanvas(
                             }
                         }
 
+                        // Velocity tracking buffer for inertia coasting
+                        val velBuf = ArrayDeque<VelSample>(6)
+                        var lastMoveTime = System.currentTimeMillis()
+
                         try {
                             var zoomAccum = 1f
                             var panAccum = Offset.Zero
 
                             do {
                                 val event = awaitPointerEvent()
+                                val now = System.currentTimeMillis()
                                 val pressedList = event.changes.filter { it.pressed }
+
                                 if (pressedList.size >= 2) {
                                     isMultiTouch = true
                                     longPressJob?.cancel()
@@ -172,6 +200,7 @@ fun PuzzleBoardCanvas(
                                         isLongPressTriggered = false
                                     }
 
+                                    val centroid = event.calculateCentroid()
                                     val zoomChange = event.calculateZoom()
                                     val panChange = event.calculatePan()
 
@@ -186,24 +215,34 @@ fun PuzzleBoardCanvas(
                                     }
 
                                     if (pastSlop) {
-                                        val newScale = (scale * zoomChange).coerceIn(1f, 3.5f)
-                                        val maxPanX = (width * (newScale - 1f)) / 2f
-                                        val maxPanY = (height * (newScale - 1f)) / 2f
+                                        // Pinch sensitivity multiplier for responsive zoom feel
+                                        val effectiveZoom = 1f + (zoomChange - 1f) * 1.15f
+                                        val newScale = (scale * effectiveZoom).coerceIn(minScale, maxScale)
+
+                                        // Keep the world point under the pinch centroid stationary
+                                        val oldScale = scale
+                                        val currentPan = Offset(panX, panY)
+                                        val newPan = if (oldScale > 0.001f) {
+                                            Offset(
+                                                centroid.x - center.x - (centroid.x - currentPan.x - center.x) * (newScale / oldScale) + panChange.x,
+                                                centroid.y - center.y - (centroid.y - currentPan.y - center.y) * (newScale / oldScale) + panChange.y
+                                            )
+                                        } else currentPan
+
+                                        val maxPanX = (width * (newScale - 1f).coerceAtLeast(0f) / 2f) + (width * 0.35f)
+                                        val maxPanY = (height * (newScale - 1f).coerceAtLeast(0f) / 2f) + (height * 0.35f)
 
                                         scale = newScale
-                                        panOffset = if (newScale > 1.02f) {
-                                            Offset(
-                                                (panOffset.x + panChange.x).coerceIn(-maxPanX, maxPanX),
-                                                (panOffset.y + panChange.y).coerceIn(-maxPanY, maxPanY)
-                                            )
-                                        } else {
-                                            Offset.Zero
-                                        }
+                                        panX = newPan.x.coerceIn(-maxPanX, maxPanX)
+                                        panY = newPan.y.coerceIn(-maxPanY, maxPanY)
+
                                         event.changes.forEach { it.consume() }
                                     }
                                 } else if (pressedList.size == 1) {
                                     val change = pressedList.first()
-                                    val dragDist = (change.position - startPos).getDistance()
+                                    val currentPos = change.position
+                                    val dragDist = (currentPos - startPos).getDistance()
+
                                     if (dragDist > touchSlop) {
                                         pastSlop = true
                                         longPressJob?.cancel()
@@ -213,14 +252,19 @@ fun PuzzleBoardCanvas(
                                         }
                                     }
 
-                                    if (pastSlop && scale > 1.05f) {
-                                        val panDelta = change.positionChange()
-                                        val maxPanX = (width * (scale - 1f)) / 2f
-                                        val maxPanY = (height * (scale - 1f)) / 2f
-                                        panOffset = Offset(
-                                            (panOffset.x + panDelta.x).coerceIn(-maxPanX, maxPanX),
-                                            (panOffset.y + panDelta.y).coerceIn(-maxPanY, maxPanY)
-                                        )
+                                    if (pastSlop && scale > 1.02f) {
+                                        val delta = change.positionChange()
+                                        val maxPanX = (width * (scale - 1f) / 2f) + (width * 0.35f)
+                                        val maxPanY = (height * (scale - 1f) / 2f) + (height * 0.35f)
+
+                                        panX = (panX + delta.x).coerceIn(-maxPanX, maxPanX)
+                                        panY = (panY + delta.y).coerceIn(-maxPanY, maxPanY)
+
+                                        // Push into velocity buffer
+                                        if (velBuf.size >= 5) velBuf.removeFirst()
+                                        velBuf.addLast(VelSample(delta, now - lastMoveTime))
+                                        lastMoveTime = now
+
                                         change.consume()
                                     }
                                 }
@@ -232,14 +276,76 @@ fun PuzzleBoardCanvas(
                             }
                         }
 
+                        // Calculate release velocity for inertia coasting
+                        var inertiaVel = Offset.Zero
+                        if (velBuf.isNotEmpty()) {
+                            var totalWeight = 0f
+                            var weightedVx = 0f
+                            var weightedVy = 0f
+                            velBuf.forEachIndexed { idx, sample ->
+                                val w = (idx + 1).toFloat()
+                                val dt = sample.timeMs.coerceIn(5L, 50L) / 1000f
+                                weightedVx += (sample.delta.x / dt) * w
+                                weightedVy += (sample.delta.y / dt) * w
+                                totalWeight += w
+                            }
+                            if (totalWeight > 0f) {
+                                inertiaVel = Offset(weightedVx / totalWeight, weightedVy / totalWeight)
+                            }
+                        }
+
+                        // Post-gesture handling: Settle / Coasting / Taps
                         val elapsed = System.currentTimeMillis() - startTime
                         if (!pastSlop && !isMultiTouch && !isLongPressTriggered && elapsed < 450) {
                             val now = System.currentTimeMillis()
                             if (now - lastTapTime < 320 && (startPos - lastTapPos).getDistance() < touchSlop * 2.5f) {
-                                // Double-tap detected -> Reset zoom smoothly
-                                if (scale > 1.05f) {
-                                    scale = 1f
-                                    panOffset = Offset.Zero
+                                // Double tap: Toggle between 1.0x overview and comfortable zoomed inspection
+                                settleJob = coroutineScope.launch {
+                                    if (scale > 1.15f) {
+                                        launch {
+                                            val sAnim = Animatable(scale)
+                                            sAnim.animateTo(1.0f, tween(250, easing = FastOutSlowInEasing)) {
+                                                scale = value
+                                            }
+                                        }
+                                        launch {
+                                            val pxAnim = Animatable(panX)
+                                            pxAnim.animateTo(0f, tween(250, easing = FastOutSlowInEasing)) {
+                                                panX = value
+                                            }
+                                        }
+                                        launch {
+                                            val pyAnim = Animatable(panY)
+                                            pyAnim.animateTo(0f, tween(250, easing = FastOutSlowInEasing)) {
+                                                panY = value
+                                            }
+                                        }
+                                    } else {
+                                        val targetZoom = minOf(2.8f, maxScale)
+                                        val targetPanX = -(startPos.x - center.x) * (targetZoom - 1f)
+                                        val targetPanY = -(startPos.y - center.y) * (targetZoom - 1f)
+                                        val maxPX = (width * (targetZoom - 1f) / 2f) + (width * 0.35f)
+                                        val maxPY = (height * (targetZoom - 1f) / 2f) + (height * 0.35f)
+
+                                        launch {
+                                            val sAnim = Animatable(scale)
+                                            sAnim.animateTo(targetZoom, tween(250, easing = FastOutSlowInEasing)) {
+                                                scale = value
+                                            }
+                                        }
+                                        launch {
+                                            val pxAnim = Animatable(panX)
+                                            pxAnim.animateTo(targetPanX.coerceIn(-maxPX, maxPX), tween(250, easing = FastOutSlowInEasing)) {
+                                                panX = value
+                                            }
+                                        }
+                                        launch {
+                                            val pyAnim = Animatable(panY)
+                                            pyAnim.animateTo(targetPanY.coerceIn(-maxPY, maxPY), tween(250, easing = FastOutSlowInEasing)) {
+                                                panY = value
+                                            }
+                                        }
+                                    }
                                 }
                                 lastTapTime = 0L
                             } else {
@@ -253,13 +359,57 @@ fun PuzzleBoardCanvas(
                                     onArrowClick(candidateArrow)
                                 }
                             }
+                        } else if (scale < 1.0f) {
+                            // Rubber-band settle back to 1.0x when released below normal scale
+                            settleJob = coroutineScope.launch {
+                                launch {
+                                    val sAnim = Animatable(scale)
+                                    sAnim.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy)) {
+                                        scale = value
+                                    }
+                                }
+                                launch {
+                                    val pxAnim = Animatable(panX)
+                                    pxAnim.animateTo(0f, tween(200, easing = FastOutSlowInEasing)) {
+                                        panX = value
+                                    }
+                                }
+                                launch {
+                                    val pyAnim = Animatable(panY)
+                                    pyAnim.animateTo(0f, tween(200, easing = FastOutSlowInEasing)) {
+                                        panY = value
+                                    }
+                                }
+                            }
+                        } else if (inertiaVel != Offset.Zero && scale > 1.02f) {
+                            // Inertia momentum coasting with friction decay
+                            settleJob = coroutineScope.launch {
+                                var vx = inertiaVel.x * 0.75f
+                                var vy = inertiaVel.y * 0.75f
+                                while (hypot(vx, vy) > 30f) {
+                                    val curPX = panX + vx * 0.016f
+                                    val curPY = panY + vy * 0.016f
+                                    val maxPX = (width * (scale - 1f) / 2f) + (width * 0.35f)
+                                    val maxPY = (height * (scale - 1f) / 2f) + (height * 0.35f)
+
+                                    if (curPX !in -maxPX..maxPX) vx = -vx * 0.25f
+                                    if (curPY !in -maxPY..maxPY) vy = -vy * 0.25f
+
+                                    panX = curPX.coerceIn(-maxPX, maxPX)
+                                    panY = curPY.coerceIn(-maxPY, maxPY)
+
+                                    vx *= 0.91f
+                                    vy *= 0.91f
+                                    delay(16L)
+                                }
+                            }
                         }
                     }
                 }
         ) {
             val center = Offset(size.width / 2f, size.height / 2f)
             withTransform({
-                translate(panOffset.x, panOffset.y)
+                translate(panX, panY)
                 scale(scale, scale, pivot = center)
             }) {
                 // Pure white canvas background
@@ -296,15 +446,34 @@ fun PuzzleBoardCanvas(
             }
         }
 
-        // Floating Reset Zoom pill button shown when zoomed in
+        // Floating Reset Zoom pill button shown whenever zoomed in
         if (scale > 1.05f) {
             Surface(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(8.dp)
                     .clickable {
-                        scale = 1f
-                        panOffset = Offset.Zero
+                        settleJob?.cancel()
+                        settleJob = coroutineScope.launch {
+                            launch {
+                                val sAnim = Animatable(scale)
+                                sAnim.animateTo(1.0f, tween(240, easing = FastOutSlowInEasing)) {
+                                    scale = value
+                                }
+                            }
+                            launch {
+                                val pxAnim = Animatable(panX)
+                                pxAnim.animateTo(0f, tween(240, easing = FastOutSlowInEasing)) {
+                                    panX = value
+                                }
+                            }
+                            launch {
+                                val pyAnim = Animatable(panY)
+                                pyAnim.animateTo(0f, tween(240, easing = FastOutSlowInEasing)) {
+                                    panY = value
+                                }
+                            }
+                        }
                     },
                 shape = RoundedCornerShape(14.dp),
                 color = Color(0xDD1E293B),
