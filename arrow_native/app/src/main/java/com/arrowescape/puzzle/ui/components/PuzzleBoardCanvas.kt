@@ -5,6 +5,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
@@ -126,6 +127,19 @@ fun PuzzleBoardCanvas(
     // Tap ripple particles list
     val tapParticles = remember { mutableStateListOf<TapParticle>() }
 
+    // Smooth animated preview beam alpha matching Unity's CanvasGroup fade (lineCg.DOFade)
+    val previewAlpha by animateFloatAsState(
+        targetValue = if (previewRayArrowId != null) 1.0f else 0.0f,
+        animationSpec = tween(durationMillis = 160, easing = FastOutSlowInEasing),
+        label = "previewAlpha"
+    )
+    var lastPreviewArrow by remember { mutableStateOf<Arrow?>(null) }
+    val activePreviewArrow = arrows.firstOrNull { it.id == previewRayArrowId }
+    if (activePreviewArrow != null) {
+        lastPreviewArrow = activePreviewArrow
+    }
+    val previewArrowToRender = if (previewAlpha > 0.01f) (activePreviewArrow ?: lastPreviewArrow) else null
+
     // Viewport-wide canvas: adapts flexibly to full available gameplay height and width
     BoxWithConstraints(
         modifier = modifier.fillMaxSize()
@@ -169,7 +183,7 @@ fun PuzzleBoardCanvas(
 
                         // Locate candidate arrow under touch using high-precision geometric distance test
                         val localDown = center + (startPos - Offset(panX, panY) - center) / scale
-                        val candidateArrow = findClosestArrow(localDown, boardOrigin, arrows, cellSize)
+                        val candidateArrow = findClosestArrow(localDown, boardOrigin, arrows, cellSize, xSize, ySize)
 
                         var isLongPressTriggered = false
                         var longPressJob: Job? = null
@@ -361,11 +375,11 @@ fun PuzzleBoardCanvas(
 
                                 // Try hit test at lastPos (where finger lifted), fallback to startPos
                                 val localUp = center + (lastPos - Offset(panX, panY) - center) / scale
-                                val tappedArrow = findClosestArrow(localUp, boardOrigin, arrows, cellSize)
+                                val tappedArrow = findClosestArrow(localUp, boardOrigin, arrows, cellSize, xSize, ySize)
                                     ?: candidateArrow
 
-                                // Spawn tap particle at local board coordinate
-                                tapParticles.add(TapParticle(origin = localUp, color = Color(0xFF64748B)))
+                                // Spawn tap particle at local board coordinate (Unity TapParticleEffect color #0088F5)
+                                tapParticles.add(TapParticle(origin = localUp, color = Color(0xFF0088F5)))
 
                                 if (tappedArrow != null) {
                                     onArrowClick(tappedArrow)
@@ -444,10 +458,9 @@ fun PuzzleBoardCanvas(
                     drawGridDots(boardOrigin, xSize, ySize, cellSize, theme.gridDot)
                 }
 
-                // 3. Draw Preview Ray if an arrow is long-pressed
-                val previewArrow = arrows.firstOrNull { it.id == previewRayArrowId }
-                if (previewArrow != null) {
-                    drawPreviewRay(boardOrigin, previewArrow, xSize, ySize, cellSize, theme.arrowHint)
+                // 3. Draw Preview Ray if an arrow is long-pressed (smooth animated fade matching Unity lineCg.DOFade)
+                if (previewArrowToRender != null && previewAlpha > 0.01f) {
+                    drawPreviewRay(boardOrigin, previewArrowToRender, xSize, ySize, cellSize, previewAlpha)
                 }
 
                 // 4. Draw All Arrows (Static, flying out, or wrong-move bouncing)
@@ -539,16 +552,31 @@ fun PuzzleBoardCanvas(
 }
 
 /**
- * Finds the arrow physically closest to the given touch point using continuous Euclidean distance to line segments.
- * Eliminates integer grid truncation errors and misclicks between close arrows.
+ * Finds the arrow physically selected by the touch point.
+ * Phase 1: Direct Grid Cell Lookup (100% accurate hit matching Unity's Box Collider on arrow cells)
+ * Phase 2: Proximity fallback for taps on borders, arrowheads, or near cells.
  */
 private fun findClosestArrow(
     touchPoint: Offset,
     origin: Offset,
     arrows: List<Arrow>,
-    cellSize: Float
+    cellSize: Float,
+    xSize: Int,
+    ySize: Int
 ): Arrow? {
-    val hitThreshold = cellSize * 0.65f // Generous hit tolerance ensuring zero missed clicks
+    // 1. Precise Grid Cell Lookup (100% accurate hit matching Unity's Box Collider on arrow cells)
+    val col = kotlin.math.floor((touchPoint.x - origin.x) / cellSize).toInt()
+    val row = kotlin.math.floor((touchPoint.y - origin.y) / cellSize).toInt()
+    if (col in 0 until xSize && row in 0 until ySize) {
+        val directHit = arrows.firstOrNull { arrow ->
+            arrow.state != ArrowState.CLEARED && arrow.state != ArrowState.FLYING_OUT &&
+            arrow.body.any { it.x == col && it.y == row }
+        }
+        if (directHit != null) return directHit
+    }
+
+    // 2. Proximity fallback for taps on borders, arrowheads, or near cells
+    val hitThreshold = cellSize * 0.70f
     var bestArrow: Arrow? = null
     var bestDist = Float.MAX_VALUE
 
@@ -562,7 +590,7 @@ private fun findClosestArrow(
 
         var minArrowDist = Float.MAX_VALUE
 
-        // 1. Distance to body segments
+        // Distance to body segments
         for (i in 0 until bodyPts.size - 1) {
             val d = distanceToSegment(touchPoint, bodyPts[i], bodyPts[i + 1])
             if (d < minArrowDist) minArrowDist = d
@@ -574,11 +602,11 @@ private fun findClosestArrow(
             if (d < minArrowDist) minArrowDist = d
         }
 
-        // 2. Distance to arrowhead tip
+        // Distance to arrowhead tip
         val headCenter = bodyPts.last()
         val headTip = Offset(
-            headCenter.x + arrow.direction.dx * (cellSize * 0.45f),
-            headCenter.y + arrow.direction.dy * (cellSize * 0.45f)
+            headCenter.x + arrow.direction.dx * (cellSize * 0.48f),
+            headCenter.y + arrow.direction.dy * (cellSize * 0.48f)
         )
         val headDist = distanceToSegment(touchPoint, headCenter, headTip)
         if (headDist < minArrowDist) minArrowDist = headDist
@@ -620,8 +648,8 @@ private fun DrawScope.drawArrowEntity(
 
     val baseColor = when {
         arrow.state == ArrowState.WRONG_FLASH -> theme.arrowWrong
-        isPreviewHold -> Color(0xFF2563EB) // Vibrant Electric Blue for Long-Press Hold!
-        isLaunching -> Color(0xFF0284C7)   // Luminous Sky-Blue for Click Pop!
+        isPreviewHold -> Color(0xFF0647DB) // Deep Vivid Sapphire Blue for Long-Press Hold (Unity LongPressBlueArrow)
+        isLaunching -> Color(0xFF0088F5)   // Electric Dodger Blue for Click Pop Takeoff (Unity correctArrowAnimColor)
         arrow.state == ArrowState.HINTED -> theme.arrowHint
         else -> theme.arrowDefault
     }
@@ -630,8 +658,9 @@ private fun DrawScope.drawArrowEntity(
     val minStroke = 4.dp.toPx()
     val maxStroke = 9.dp.toPx()
     val scaleMultiplier = when {
-        isPreviewHold -> 1.25f * hintPulseScale
-        isLaunching -> 1.20f
+        isPreviewHold -> 1.30f * hintPulseScale
+        isLaunching -> 1.22f
+        arrow.state == ArrowState.WRONG_FLASH -> 1.15f
         arrow.state == ArrowState.HINTED -> hintPulseScale
         else -> 1.0f
     }
@@ -640,7 +669,7 @@ private fun DrawScope.drawArrowEntity(
     // Clamped arrowhead size to maintain sharp, distinct triangular heads
     val minHead = 12.dp.toPx()
     val maxHead = 26.dp.toPx()
-    val headSize = (cellSize * 0.48f).coerceIn(minHead, maxHead) * (if (isPreviewHold || isLaunching) 1.15f else 1.0f)
+    val headSize = (cellSize * 0.48f).coerceIn(minHead, maxHead) * (if (isPreviewHold) 1.22f else if (isLaunching) 1.15f else 1.0f)
 
     // Build the full motion track: body points + escape extension along arrow.direction
     val track = mutableListOf<Offset>()
@@ -665,8 +694,9 @@ private fun DrawScope.drawArrowEntity(
     val displacement = when (arrow.state) {
         ArrowState.FLYING_OUT -> arrow.flightProgress * maxDisplacement
         ArrowState.WRONG_FLASH -> {
-            // Spring bounce forward and back into obstacle
-            sin(arrow.flightProgress * PI.toFloat()) * 0.22f
+            // Physical impact punch forward into obstacle and elastic recoil spring back (Unity DOTween punch)
+            val t = arrow.flightProgress
+            (sin(t * PI.toFloat()) * 0.32f - sin(t * 2f * PI.toFloat()) * 0.10f).coerceAtLeast(-0.15f)
         }
         else -> 0f
     }
@@ -829,17 +859,27 @@ private fun DrawScope.drawTapParticles(particles: List<TapParticle>) {
         val alpha = (1f - prog).coerceIn(0f, 1f)
         if (alpha <= 0f) continue
 
-        // Expanding soft ring
-        val radius = 10f + prog * 45f
+        // 1. Expanding soft shockwave ring (Unity TapParticleEffect)
+        val ringRadius = (6.dp.toPx() + prog * 30.dp.toPx())
         drawCircle(
-            color = p.color.copy(alpha = alpha * 0.6f),
-            radius = radius,
+            color = p.color.copy(alpha = alpha * 0.70f),
+            radius = ringRadius,
             center = p.origin,
-            style = Stroke(width = 2.5f)
+            style = Stroke(width = 2.2.dp.toPx())
         )
 
-        // 4 sparkling dots traveling outward
-        val sparkDist = 12f + prog * 38f
+        // 2. Center flash dot
+        val centerDotRadius = (4.5.dp.toPx() * (1f - prog)).coerceAtLeast(0f)
+        if (centerDotRadius > 0.5f) {
+            drawCircle(
+                color = p.color.copy(alpha = alpha * 0.85f),
+                radius = centerDotRadius,
+                center = p.origin
+            )
+        }
+
+        // 3. 4 orbital sparkle dots traveling outward
+        val sparkDist = (8.dp.toPx() + prog * 32.dp.toPx())
         val angles = listOf(45.0, 135.0, 225.0, 315.0)
         for (deg in angles) {
             val rad = deg * PI / 180.0
@@ -848,8 +888,8 @@ private fun DrawScope.drawTapParticles(particles: List<TapParticle>) {
                 y = (p.origin.y + sparkDist * sin(rad)).toFloat()
             )
             drawCircle(
-                color = p.color.copy(alpha = alpha * 0.8f),
-                radius = 3f * (1f - prog * 0.5f),
+                color = p.color.copy(alpha = alpha * 0.85f),
+                radius = (2.5.dp.toPx() * (1f - prog * 0.6f)).coerceAtLeast(0.5f),
                 center = sparkCenter
             )
         }
@@ -893,7 +933,7 @@ private fun DrawScope.drawPreviewRay(
     xSize: Int,
     ySize: Int,
     cellSize: Float,
-    color: Color
+    previewAlpha: Float
 ) {
     val headCenter = Offset(
         x = origin.x + (arrow.head.x + 0.5f) * cellSize,
@@ -908,45 +948,61 @@ private fun DrawScope.drawPreviewRay(
         Direction.RIGHT -> endOffset = Offset(origin.x + (xSize + 1.5f) * cellSize, headCenter.y)
     }
 
-    val beamColor = Color(0xFF2563EB)
+    // Unity reference: LongPressBlue #0088F5
+    val beamColor = Color(0xFF0088F5)
 
-    // 1. Soft glowing outer beam aura
+    // 1. Soft diffused outer glow aura
     drawLine(
-        color = beamColor.copy(alpha = 0.22f),
+        color = beamColor.copy(alpha = 0.22f * previewAlpha),
         start = headCenter,
         end = endOffset,
-        strokeWidth = 9.dp.toPx(),
+        strokeWidth = 11.dp.toPx(),
         cap = StrokeCap.Round
     )
 
-    // 2. High-contrast guidance ray
+    // 2. Concentrated inner glow
     drawLine(
-        color = beamColor.copy(alpha = 0.85f),
+        color = beamColor.copy(alpha = 0.45f * previewAlpha),
+        start = headCenter,
+        end = endOffset,
+        strokeWidth = 5.5.dp.toPx(),
+        cap = StrokeCap.Round
+    )
+
+    // 3. High-contrast crisp core guidance ray
+    drawLine(
+        color = beamColor.copy(alpha = 0.95f * previewAlpha),
         start = headCenter,
         end = endOffset,
         strokeWidth = 2.8.dp.toPx(),
         cap = StrokeCap.Round
     )
 
-    // 3. Directional exit beacon chevron / arrowhead at destination edge
+    // 4. Directional exit beacon chevron / arrowhead at destination edge
     rotate(
         degrees = arrow.direction.angleDegrees,
         pivot = endOffset
     ) {
-        val exitHeadSize = 14.dp.toPx()
+        val exitHeadSize = 15.dp.toPx()
         val exitHeadPath = Path().apply {
-            moveTo(endOffset.x, endOffset.y - exitHeadSize * 0.55f)
-            lineTo(endOffset.x + exitHeadSize * 0.45f, endOffset.y + exitHeadSize * 0.35f)
-            lineTo(endOffset.x - exitHeadSize * 0.45f, endOffset.y + exitHeadSize * 0.35f)
+            moveTo(endOffset.x, endOffset.y - exitHeadSize * 0.58f)
+            lineTo(endOffset.x + exitHeadSize * 0.46f, endOffset.y + exitHeadSize * 0.36f)
+            lineTo(endOffset.x - exitHeadSize * 0.46f, endOffset.y + exitHeadSize * 0.36f)
             close()
         }
-        drawPath(path = exitHeadPath, color = beamColor)
+        drawPath(path = exitHeadPath, color = beamColor.copy(alpha = 0.95f * previewAlpha))
     }
 
-    // 4. Subtle beacon pulse ring at head origin
+    // 5. Pulsing beacon ring and dot at origin head
     drawCircle(
-        color = beamColor.copy(alpha = 0.45f),
-        radius = 7.dp.toPx(),
+        color = beamColor.copy(alpha = 0.65f * previewAlpha),
+        radius = 8.dp.toPx(),
+        center = headCenter,
+        style = Stroke(width = 2.dp.toPx())
+    )
+    drawCircle(
+        color = beamColor.copy(alpha = 0.95f * previewAlpha),
+        radius = 3.5.dp.toPx(),
         center = headCenter
     )
 }

@@ -223,7 +223,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
             // Animate collision spring-bounce and reset
             viewModelScope.launch {
-                val durationMs = 240L
+                val durationMs = 280L
                 val startTime = System.currentTimeMillis()
                 while (true) {
                     val elapsed = System.currentTimeMillis() - startTime
