@@ -1,0 +1,126 @@
+package com.arrowescape.puzzle.core.engine
+
+import android.content.Context
+import com.arrowescape.puzzle.core.model.Arrow
+import com.arrowescape.puzzle.core.model.Direction
+import com.arrowescape.puzzle.core.model.GridCoordinate
+import com.arrowescape.puzzle.core.model.LevelData
+import com.arrowescape.puzzle.core.model.LevelDifficulty
+import org.json.JSONObject
+
+object LevelLoader {
+
+    /**
+     * Loads the authentic Unity level from assets/levels/Level_{N}.json.
+     * Falls back to procedural generator if asset is not present.
+     */
+    fun loadLevel(context: Context, levelNumber: Int): LevelData {
+        val assetName = "levels/Level_$levelNumber.json"
+        try {
+            val jsonStr = context.assets.open(assetName).bufferedReader().use { it.readText() }
+            val level = parseLevelJson(levelNumber, jsonStr)
+            if (level != null && level.arrows.isNotEmpty()) {
+                return level
+            }
+        } catch (e: Exception) {
+            // Fall back to procedural generation
+        }
+
+        return LevelGenerator.generateProceduralLevel(levelNumber, levelNumber.toLong())
+    }
+
+    /**
+     * Loads a daily level from assets/levels/DailyLevels_{N}.json.
+     */
+    fun loadDailyLevel(context: Context, dailyIndex: Int): LevelData {
+        val assetName = "levels/DailyLevels_$dailyIndex.json"
+        try {
+            val jsonStr = context.assets.open(assetName).bufferedReader().use { it.readText() }
+            val level = parseLevelJson(dailyIndex, jsonStr)
+            if (level != null && level.arrows.isNotEmpty()) {
+                return level
+            }
+        } catch (e: Exception) {
+            // Fall back to standard level
+        }
+
+        return loadLevel(context, dailyIndex)
+    }
+
+    fun parseLevelJson(levelNumber: Int, jsonStr: String): LevelData? {
+        try {
+            val root = JSONObject(jsonStr)
+            val xSize = root.getInt("XSize")
+            val ySize = root.getInt("YSize")
+            val maxHearts = root.optInt("MaxHearts", 3).coerceAtLeast(3)
+            val arrowsArray = root.getJSONArray("Arrows")
+
+            val arrowList = mutableListOf<Arrow>()
+            for (i in 0 until arrowsArray.length()) {
+                val arrowObj = arrowsArray.getJSONObject(i)
+                val dx = arrowObj.getInt("Dx")
+                val dy = arrowObj.getInt("Dy")
+                val bendCount = arrowObj.optInt("BendCount", 0)
+                val indicesArray = arrowObj.getJSONArray("Indices")
+
+                // Map unity indices to canvas coordinates
+                // In Unity: index = Y * XSize + X
+                // Canvas X = UnityX, Canvas Y = (YSize - 1) - UnityY
+                // Canvas Dx = Dx, Canvas Dy = -Dy
+                val bodyPointsReversed = mutableListOf<GridCoordinate>()
+                for (j in 0 until indicesArray.length()) {
+                    val idx = indicesArray.getInt(j)
+                    val unityX = idx % xSize
+                    val unityY = idx / xSize
+                    val canvasX = unityX
+                    val canvasY = (ySize - 1) - unityY
+                    bodyPointsReversed.add(GridCoordinate(canvasX, canvasY))
+                }
+
+                // In JSON, Indices starts with HEAD at index 0 and ends with TAIL.
+                // In our model, body is ordered TAIL -> HEAD.
+                val body = bodyPointsReversed.reversed()
+                val head = body.last()
+
+                val canvasDx = dx
+                val canvasDy = -dy
+                val direction = when {
+                    canvasDx > 0 -> Direction.RIGHT
+                    canvasDx < 0 -> Direction.LEFT
+                    canvasDy > 0 -> Direction.DOWN
+                    else -> Direction.UP
+                }
+
+                arrowList.add(
+                    Arrow(
+                        id = "arrow_${i + 1}",
+                        head = head,
+                        direction = direction,
+                        body = body,
+                        bendCount = bendCount,
+                        colorIndex = 0
+                    )
+                )
+            }
+
+            val difficulty = when {
+                arrowList.size <= 5 -> LevelDifficulty.EASY
+                arrowList.size <= 12 -> LevelDifficulty.MEDIUM
+                else -> LevelDifficulty.HARD
+            }
+
+            return LevelData(
+                levelNumber = levelNumber,
+                xSize = xSize,
+                ySize = ySize,
+                arrows = arrowList,
+                maxHearts = maxHearts,
+                difficulty = difficulty,
+                diffScore = arrowList.size * 10,
+                diffDna = "UNITY_LVL_${levelNumber}_${xSize}x${ySize}_${arrowList.size}"
+            )
+        } catch (e: Exception) {
+            return null
+        }
+    }
+}

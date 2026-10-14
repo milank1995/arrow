@@ -53,8 +53,8 @@ class MainActivity : ComponentActivity() {
                                         currentScreen = AppScreen.GAMEPLAY
                                     },
                                     onDailyChallengeClick = {
-                                        // Load today's special seeded daily level
-                                        gameViewModel.loadLevel(uiState.currentLevelNumber + 1000)
+                                        // Load today's authentic daily challenge level
+                                        gameViewModel.loadDailyLevel(1)
                                         currentScreen = AppScreen.GAMEPLAY
                                     },
                                     onThemeClick = {

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.arrowescape.puzzle.audio.AudioHapticManager
 import com.arrowescape.puzzle.core.engine.GridOccupancyMap
 import com.arrowescape.puzzle.core.engine.LevelGenerator
+import com.arrowescape.puzzle.core.engine.LevelLoader
 import com.arrowescape.puzzle.core.engine.PuzzleSolver
 import com.arrowescape.puzzle.core.model.Arrow
 import com.arrowescape.puzzle.core.model.ArrowState
@@ -41,10 +42,10 @@ data class GameUiState(
     val wandsAvailable: Int = 2
 )
 
-class GameViewModel(application: Application) : AndroidViewModel(application) {
+class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
-    private val repository = UserPreferencesRepository(application)
-    val audioHapticManager = AudioHapticManager(application)
+    private val repository = UserPreferencesRepository(app)
+    val audioHapticManager = AudioHapticManager(app)
 
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
@@ -79,7 +80,29 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadLevel(levelNumber: Int) {
-        val level = LevelGenerator.generateLevel(levelNumber)
+        val level = LevelLoader.loadLevel(app, levelNumber)
+        occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
+            rebuild(level.arrows)
+        }
+
+        _uiState.update {
+            it.copy(
+                levelData = level,
+                arrows = level.arrows,
+                heartsRemaining = level.maxHearts,
+                maxHearts = level.maxHearts,
+                isLevelComplete = false,
+                isGameOver = false,
+                comboCount = 0,
+                cheerMessage = null,
+                isHammerModeActive = false,
+                previewRayArrowId = null
+            )
+        }
+    }
+
+    fun loadDailyLevel(dailyIndex: Int = 1) {
+        val level = LevelLoader.loadDailyLevel(app, dailyIndex)
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)
         }
@@ -134,9 +157,27 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 )
             }
 
-            // Animate flight and transition to CLEARED
+            // Animate flight smoothly at 60fps and transition to CLEARED
             viewModelScope.launch {
-                delay(320)
+                val durationMs = 320L
+                val startTime = System.currentTimeMillis()
+                while (true) {
+                    val elapsed = System.currentTimeMillis() - startTime
+                    val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
+                    // FastOutLinearIn easing: rawProgress * rawProgress
+                    val easedProgress = rawProgress * rawProgress
+                    _uiState.update { state ->
+                        val updated = state.arrows.map {
+                            if (it.id == clickedArrow.id && it.state == ArrowState.FLYING_OUT) {
+                                it.copy(flightProgress = easedProgress)
+                            } else it
+                        }
+                        state.copy(arrows = updated)
+                    }
+                    if (rawProgress >= 1f) break
+                    delay(16)
+                }
+
                 _uiState.update { state ->
                     val finalArrows = state.arrows.map {
                         if (it.id == clickedArrow.id) it.copyWithState(ArrowState.CLEARED) else it
@@ -169,13 +210,29 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 )
             }
 
-            // Reset red flash after short delay
+            // Animate collision spring-bounce and reset
             viewModelScope.launch {
-                delay(400)
+                val durationMs = 240L
+                val startTime = System.currentTimeMillis()
+                while (true) {
+                    val elapsed = System.currentTimeMillis() - startTime
+                    val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
+                    _uiState.update { state ->
+                        val updated = state.arrows.map {
+                            if (it.id == clickedArrow.id && it.state == ArrowState.WRONG_FLASH) {
+                                it.copy(flightProgress = rawProgress)
+                            } else it
+                        }
+                        state.copy(arrows = updated)
+                    }
+                    if (rawProgress >= 1f) break
+                    delay(16)
+                }
+
                 _uiState.update { state ->
                     val resetArrows = state.arrows.map {
                         if (it.id == clickedArrow.id && it.state == ArrowState.WRONG_FLASH) {
-                            it.copyWithState(ArrowState.IDLE)
+                            it.copyWithState(ArrowState.IDLE, 0f)
                         } else it
                     }
                     state.copy(arrows = resetArrows)

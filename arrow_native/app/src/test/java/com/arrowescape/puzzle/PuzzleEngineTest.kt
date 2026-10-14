@@ -105,4 +105,27 @@ class PuzzleEngineTest {
             assertTrue("Level $lvl should be 100% solvable without deadlocks", currentArrows.all { it.state == ArrowState.CLEARED })
         }
     }
+
+    @Test
+    fun testAuthenticLevelLoaderParsing() {
+        val sampleJson = """
+            {"XSize":9,"YSize":9,"Arrows":[{"Dx":1,"Dy":0,"X":6,"Y":6,"Indices":[60,59,58,57,56,47,38,29,20],"BendCount":1},{"Dx":0,"Dy":-1,"X":3,"Y":2,"Indices":[21,30,39,40,41,32],"BendCount":2},{"Dx":-1,"Dy":0,"X":3,"Y":5,"Indices":[48,49,50,51,42,33,24,23,22,31],"BendCount":3}],"MaxHearts":3,"Difficulty":"","DiffScore":0,"DiffDNA":""}
+        """.trimIndent()
+
+        val level = com.arrowescape.puzzle.core.engine.LevelLoader.parseLevelJson(2, sampleJson)
+        assertNotNull("Level 2 should parse successfully", level)
+        assertEquals(9, level!!.xSize)
+        assertEquals(9, level.ySize)
+        assertEquals(3, level.arrows.size)
+
+        // Arrow 1 should point RIGHT (Dx=1, Dy=0)
+        assertEquals(Direction.RIGHT, level.arrows[0].direction)
+
+        // Solvability test on parsed level
+        val occupancy = GridOccupancyMap(level.xSize, level.ySize).apply {
+            rebuild(level.arrows)
+        }
+        val movable = PuzzleSolver.findAllMovableArrows(level.arrows, occupancy)
+        assertTrue("Parsed level must have at least one movable arrow", movable.isNotEmpty())
+    }
 }

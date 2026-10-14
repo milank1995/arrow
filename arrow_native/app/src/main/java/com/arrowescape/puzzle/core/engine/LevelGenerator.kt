@@ -225,7 +225,7 @@ object LevelGenerator {
         )
     }
 
-    private fun generateProceduralLevel(levelNumber: Int, seed: Long): LevelData {
+    fun generateProceduralLevel(levelNumber: Int, seed: Long): LevelData {
         val random = Random(seed)
 
         val (width, height, arrowCount, maxBends, difficulty) = when {
