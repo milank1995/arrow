@@ -78,7 +78,6 @@ fun GamePlayScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
             ) {
                 if (level != null) {
                     PuzzleBoardCanvas(

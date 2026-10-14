@@ -20,9 +20,7 @@ import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
@@ -57,7 +55,6 @@ import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.core.model.Arrow
 import com.arrowescape.puzzle.core.model.ArrowState
 import com.arrowescape.puzzle.core.model.Direction
-import com.arrowescape.puzzle.core.model.GridCoordinate
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -124,55 +121,57 @@ fun PuzzleBoardCanvas(
     // Tap ripple particles list
     val tapParticles = remember { mutableStateListOf<TapParticle>() }
 
+    // Viewport-wide canvas: adapts flexibly to full available gameplay height and width
     BoxWithConstraints(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .aspectRatio(xSize.toFloat() / ySize.toFloat())
+        modifier = modifier.fillMaxSize()
     ) {
-        val width = constraints.maxWidth.toFloat()
-        val height = constraints.maxHeight.toFloat()
-        val cellSize = minOf(width / xSize, height / ySize)
+        val viewportWidth = constraints.maxWidth.toFloat()
+        val viewportHeight = constraints.maxHeight.toFloat()
+
+        // Fit board into viewport with comfortable margin (92% width, 90% height)
+        val availableWidth = viewportWidth * 0.92f
+        val availableHeight = viewportHeight * 0.90f
+        val cellSize = minOf(availableWidth / xSize, availableHeight / ySize)
+        val boardWidth = cellSize * xSize
+        val boardHeight = cellSize * ySize
+        val boardOrigin = Offset(
+            (viewportWidth - boardWidth) / 2f,
+            (viewportHeight - boardHeight) / 2f
+        )
 
         // Dynamic zoom limits matching Unity's ComputeZoomLimitsForLevel (minCellScreenPx / maxCellScreenPx)
         val minScale = 0.75f
-        val targetMaxCellPx = maxOf(width * 0.48f, 450f)
+        val targetMaxCellPx = maxOf(viewportWidth * 0.50f, 450f)
         val maxScale = (targetMaxCellPx / cellSize).coerceIn(5.0f, 18.0f)
 
         Canvas(
             modifier = Modifier
                 .fillMaxSize()
-                .clipToBounds()
-                .pointerInput(arrows, cellSize, xSize, ySize, maxScale) {
+                .clipToBounds() // Prevents drawing over top bar or bottom booster bar
+                .pointerInput(arrows, cellSize, xSize, ySize, maxScale, boardOrigin) {
                     awaitEachGesture {
                         val down = awaitFirstDown(requireUnconsumed = false)
                         settleJob?.cancel() // Stop ongoing inertia or animation immediately on new touch
 
                         val startTime = System.currentTimeMillis()
                         val startPos = down.position
+                        var lastPos = down.position
                         var isMultiTouch = false
-                        var pastSlop = false
-                        val touchSlop = viewConfiguration.touchSlop
+                        var isDragging = false
+                        val dragThreshold = 18.dp.toPx() // Intentional drag threshold (avoids dropping taps on micro-jitter)
 
-                        val center = Offset(width / 2f, height / 2f)
+                        val center = Offset(viewportWidth / 2f, viewportHeight / 2f)
 
-                        // Inverse coordinate mapping to locate arrow under touch
-                        val localStart = center + (startPos - Offset(panX, panY) - center) / scale
-                        val gridX = (localStart.x / cellSize).toInt()
-                        val gridY = (localStart.y / cellSize).toInt()
-                        val candidateArrow = if (gridX in 0 until xSize && gridY in 0 until ySize) {
-                            val coord = GridCoordinate(gridX, gridY)
-                            arrows.firstOrNull {
-                                it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT && it.isPointInside(coord)
-                            }
-                        } else null
+                        // Locate candidate arrow under touch using high-precision geometric distance test
+                        val localDown = center + (startPos - Offset(panX, panY) - center) / scale
+                        val candidateArrow = findClosestArrow(localDown, boardOrigin, arrows, cellSize)
 
                         var isLongPressTriggered = false
                         var longPressJob: Job? = null
                         if (candidateArrow != null) {
                             longPressJob = coroutineScope.launch {
                                 delay(380L)
-                                if (!pastSlop && !isMultiTouch) {
+                                if (!isDragging && !isMultiTouch) {
                                     isLongPressTriggered = true
                                     onArrowLongPress(candidateArrow, true)
                                 }
@@ -204,17 +203,17 @@ fun PuzzleBoardCanvas(
                                     val zoomChange = event.calculateZoom()
                                     val panChange = event.calculatePan()
 
-                                    if (!pastSlop) {
+                                    if (!isDragging) {
                                         zoomAccum *= zoomChange
                                         panAccum += panChange
                                         val centroidSize = event.calculateCentroidSize(useCurrent = false)
                                         val zoomMotion = kotlin.math.abs(1f - zoomAccum) * centroidSize
-                                        if (zoomMotion > touchSlop || panAccum.getDistance() > touchSlop) {
-                                            pastSlop = true
+                                        if (zoomMotion > dragThreshold || panAccum.getDistance() > dragThreshold) {
+                                            isDragging = true
                                         }
                                     }
 
-                                    if (pastSlop) {
+                                    if (isDragging) {
                                         // Pinch sensitivity multiplier for responsive zoom feel
                                         val effectiveZoom = 1f + (zoomChange - 1f) * 1.15f
                                         val newScale = (scale * effectiveZoom).coerceIn(minScale, maxScale)
@@ -229,8 +228,8 @@ fun PuzzleBoardCanvas(
                                             )
                                         } else currentPan
 
-                                        val maxPanX = (width * (newScale - 1f).coerceAtLeast(0f) / 2f) + (width * 0.35f)
-                                        val maxPanY = (height * (newScale - 1f).coerceAtLeast(0f) / 2f) + (height * 0.35f)
+                                        val maxPanX = (boardWidth * (newScale - 1f).coerceAtLeast(0f) / 2f) + (viewportWidth * 0.35f)
+                                        val maxPanY = (boardHeight * (newScale - 1f).coerceAtLeast(0f) / 2f) + (viewportHeight * 0.35f)
 
                                         scale = newScale
                                         panX = newPan.x.coerceIn(-maxPanX, maxPanX)
@@ -240,11 +239,11 @@ fun PuzzleBoardCanvas(
                                     }
                                 } else if (pressedList.size == 1) {
                                     val change = pressedList.first()
-                                    val currentPos = change.position
-                                    val dragDist = (currentPos - startPos).getDistance()
+                                    lastPos = change.position
+                                    val dragDist = (lastPos - startPos).getDistance()
 
-                                    if (dragDist > touchSlop) {
-                                        pastSlop = true
+                                    if (dragDist > dragThreshold) {
+                                        isDragging = true
                                         longPressJob?.cancel()
                                         if (isLongPressTriggered && candidateArrow != null) {
                                             onArrowLongPress(candidateArrow, false)
@@ -252,10 +251,10 @@ fun PuzzleBoardCanvas(
                                         }
                                     }
 
-                                    if (pastSlop && scale > 1.02f) {
+                                    if (isDragging && scale > 1.02f) {
                                         val delta = change.positionChange()
-                                        val maxPanX = (width * (scale - 1f) / 2f) + (width * 0.35f)
-                                        val maxPanY = (height * (scale - 1f) / 2f) + (height * 0.35f)
+                                        val maxPanX = (boardWidth * (scale - 1f) / 2f) + (viewportWidth * 0.35f)
+                                        val maxPanY = (boardHeight * (scale - 1f) / 2f) + (viewportHeight * 0.35f)
 
                                         panX = (panX + delta.x).coerceIn(-maxPanX, maxPanX)
                                         panY = (panY + delta.y).coerceIn(-maxPanY, maxPanY)
@@ -296,9 +295,12 @@ fun PuzzleBoardCanvas(
 
                         // Post-gesture handling: Settle / Coasting / Taps
                         val elapsed = System.currentTimeMillis() - startTime
-                        if (!pastSlop && !isMultiTouch && !isLongPressTriggered && elapsed < 450) {
+                        val totalMovement = (lastPos - startPos).getDistance()
+
+                        // A tap is recognized if not multi-touch, no heavy drag, and duration < 450ms
+                        if (!isMultiTouch && !isLongPressTriggered && totalMovement < dragThreshold && elapsed < 450) {
                             val now = System.currentTimeMillis()
-                            if (now - lastTapTime < 320 && (startPos - lastTapPos).getDistance() < touchSlop * 2.5f) {
+                            if (now - lastTapTime < 320 && (startPos - lastTapPos).getDistance() < dragThreshold * 1.5f) {
                                 // Double tap: Toggle between 1.0x overview and comfortable zoomed inspection
                                 settleJob = coroutineScope.launch {
                                     if (scale > 1.15f) {
@@ -324,8 +326,8 @@ fun PuzzleBoardCanvas(
                                         val targetZoom = minOf(2.8f, maxScale)
                                         val targetPanX = -(startPos.x - center.x) * (targetZoom - 1f)
                                         val targetPanY = -(startPos.y - center.y) * (targetZoom - 1f)
-                                        val maxPX = (width * (targetZoom - 1f) / 2f) + (width * 0.35f)
-                                        val maxPY = (height * (targetZoom - 1f) / 2f) + (height * 0.35f)
+                                        val maxPX = (boardWidth * (targetZoom - 1f) / 2f) + (viewportWidth * 0.35f)
+                                        val maxPY = (boardHeight * (targetZoom - 1f) / 2f) + (viewportHeight * 0.35f)
 
                                         launch {
                                             val sAnim = Animatable(scale)
@@ -352,11 +354,16 @@ fun PuzzleBoardCanvas(
                                 lastTapTime = now
                                 lastTapPos = startPos
 
-                                // Spawn tap particle at local board coordinate
-                                tapParticles.add(TapParticle(origin = localStart, color = Color(0xFF64748B)))
+                                // Try hit test at lastPos (where finger lifted), fallback to startPos
+                                val localUp = center + (lastPos - Offset(panX, panY) - center) / scale
+                                val tappedArrow = findClosestArrow(localUp, boardOrigin, arrows, cellSize)
+                                    ?: candidateArrow
 
-                                if (candidateArrow != null) {
-                                    onArrowClick(candidateArrow)
+                                // Spawn tap particle at local board coordinate
+                                tapParticles.add(TapParticle(origin = localUp, color = Color(0xFF64748B)))
+
+                                if (tappedArrow != null) {
+                                    onArrowClick(tappedArrow)
                                 }
                             }
                         } else if (scale < 1.0f) {
@@ -389,8 +396,8 @@ fun PuzzleBoardCanvas(
                                 while (hypot(vx, vy) > 30f) {
                                     val curPX = panX + vx * 0.016f
                                     val curPY = panY + vy * 0.016f
-                                    val maxPX = (width * (scale - 1f) / 2f) + (width * 0.35f)
-                                    val maxPY = (height * (scale - 1f) / 2f) + (height * 0.35f)
+                                    val maxPX = (boardWidth * (scale - 1f) / 2f) + (viewportWidth * 0.35f)
+                                    val maxPY = (boardHeight * (scale - 1f) / 2f) + (viewportHeight * 0.35f)
 
                                     if (curPX !in -maxPX..maxPX) vx = -vx * 0.25f
                                     if (curPY !in -maxPY..maxPY) vy = -vy * 0.25f
@@ -412,19 +419,18 @@ fun PuzzleBoardCanvas(
                 translate(panX, panY)
                 scale(scale, scale, pivot = center)
             }) {
-                // Pure white canvas background
-                drawRect(color = Color.White)
+                // Background is completely transparent; surroundings adapt naturally to theme
 
                 // 1. Grid Lines / Dots only if user activated via '#' Booster button
                 if (isGridLinesActive) {
-                    drawGridLines(xSize, ySize, cellSize, theme.gridLine)
-                    drawGridDots(xSize, ySize, cellSize, theme.gridDot)
+                    drawGridLines(boardOrigin, xSize, ySize, cellSize, theme.gridLine)
+                    drawGridDots(boardOrigin, xSize, ySize, cellSize, theme.gridDot)
                 }
 
                 // 2. Draw Preview Ray if an arrow is long-pressed
                 val previewArrow = arrows.firstOrNull { it.id == previewRayArrowId }
                 if (previewArrow != null) {
-                    drawPreviewRay(previewArrow, xSize, ySize, cellSize, theme.arrowHint)
+                    drawPreviewRay(boardOrigin, previewArrow, xSize, ySize, cellSize, theme.arrowHint)
                 }
 
                 // 3. Draw All Arrows (Static, flying out, or wrong-move bouncing)
@@ -432,6 +438,7 @@ fun PuzzleBoardCanvas(
                     if (arrow.state == ArrowState.CLEARED) continue
 
                     drawArrowEntity(
+                        origin = boardOrigin,
                         arrow = arrow,
                         xSize = xSize,
                         ySize = ySize,
@@ -451,7 +458,7 @@ fun PuzzleBoardCanvas(
             Surface(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(8.dp)
+                    .padding(12.dp)
                     .clickable {
                         settleJob?.cancel()
                         settleJob = coroutineScope.launch {
@@ -513,7 +520,75 @@ fun PuzzleBoardCanvas(
     }
 }
 
+/**
+ * Finds the arrow physically closest to the given touch point using continuous Euclidean distance to line segments.
+ * Eliminates integer grid truncation errors and misclicks between close arrows.
+ */
+private fun findClosestArrow(
+    touchPoint: Offset,
+    origin: Offset,
+    arrows: List<Arrow>,
+    cellSize: Float
+): Arrow? {
+    val hitThreshold = cellSize * 0.65f // Generous hit tolerance ensuring zero missed clicks
+    var bestArrow: Arrow? = null
+    var bestDist = Float.MAX_VALUE
+
+    for (arrow in arrows) {
+        if (arrow.state == ArrowState.CLEARED || arrow.state == ArrowState.FLYING_OUT) continue
+
+        val bodyPts = arrow.body.map { coord ->
+            Offset(origin.x + (coord.x + 0.5f) * cellSize, origin.y + (coord.y + 0.5f) * cellSize)
+        }
+        if (bodyPts.isEmpty()) continue
+
+        var minArrowDist = Float.MAX_VALUE
+
+        // 1. Distance to body segments
+        for (i in 0 until bodyPts.size - 1) {
+            val d = distanceToSegment(touchPoint, bodyPts[i], bodyPts[i + 1])
+            if (d < minArrowDist) minArrowDist = d
+        }
+
+        // If single cell arrow
+        if (bodyPts.size == 1) {
+            val d = (touchPoint - bodyPts[0]).getDistance()
+            if (d < minArrowDist) minArrowDist = d
+        }
+
+        // 2. Distance to arrowhead tip
+        val headCenter = bodyPts.last()
+        val headTip = Offset(
+            headCenter.x + arrow.direction.dx * (cellSize * 0.45f),
+            headCenter.y + arrow.direction.dy * (cellSize * 0.45f)
+        )
+        val headDist = distanceToSegment(touchPoint, headCenter, headTip)
+        if (headDist < minArrowDist) minArrowDist = headDist
+
+        if (minArrowDist <= hitThreshold && minArrowDist < bestDist) {
+            bestDist = minArrowDist
+            bestArrow = arrow
+        }
+    }
+
+    return bestArrow
+}
+
+private fun distanceToSegment(p: Offset, a: Offset, b: Offset): Float {
+    val vx = b.x - a.x
+    val vy = b.y - a.y
+    val segLenSq = vx * vx + vy * vy
+    if (segLenSq == 0f) {
+        return (p - a).getDistance()
+    }
+    val t = (((p.x - a.x) * vx + (p.y - a.y) * vy) / segLenSq).coerceIn(0f, 1f)
+    val projX = a.x + t * vx
+    val projY = a.y + t * vy
+    return hypot(p.x - projX, p.y - projY)
+}
+
 private fun DrawScope.drawArrowEntity(
+    origin: Offset,
     arrow: Arrow,
     xSize: Int,
     ySize: Int,
@@ -540,7 +615,7 @@ private fun DrawScope.drawArrowEntity(
     // Build the full motion track: body points + escape extension along arrow.direction
     val track = mutableListOf<Offset>()
     for (coord in arrow.body) {
-        track.add(Offset((coord.x + 0.5f) * cellSize, (coord.y + 0.5f) * cellSize))
+        track.add(Offset(origin.x + (coord.x + 0.5f) * cellSize, origin.y + (coord.y + 0.5f) * cellSize))
     }
     val headPt = track.last()
     val extSteps = maxOf(xSize, ySize) + arrow.body.size + 4
@@ -700,38 +775,39 @@ private fun DrawScope.drawTapParticles(particles: List<TapParticle>) {
     }
 }
 
-private fun DrawScope.drawGridLines(xSize: Int, ySize: Int, cellSize: Float, color: Color) {
+private fun DrawScope.drawGridLines(origin: Offset, xSize: Int, ySize: Int, cellSize: Float, color: Color) {
     for (x in 0..xSize) {
         drawLine(
             color = color,
-            start = Offset(x * cellSize, 0f),
-            end = Offset(x * cellSize, ySize * cellSize),
+            start = Offset(origin.x + x * cellSize, origin.y),
+            end = Offset(origin.x + x * cellSize, origin.y + ySize * cellSize),
             strokeWidth = 1.2f
         )
     }
     for (y in 0..ySize) {
         drawLine(
             color = color,
-            start = Offset(0f, y * cellSize),
-            end = Offset(xSize * cellSize, y * cellSize),
+            start = Offset(origin.x, origin.y + y * cellSize),
+            end = Offset(origin.x + xSize * cellSize, origin.y + y * cellSize),
             strokeWidth = 1.2f
         )
     }
 }
 
-private fun DrawScope.drawGridDots(xSize: Int, ySize: Int, cellSize: Float, color: Color) {
+private fun DrawScope.drawGridDots(origin: Offset, xSize: Int, ySize: Int, cellSize: Float, color: Color) {
     for (x in 0..xSize) {
         for (y in 0..ySize) {
             drawCircle(
                 color = color,
                 radius = 3.0f,
-                center = Offset(x * cellSize, y * cellSize)
+                center = Offset(origin.x + x * cellSize, origin.y + y * cellSize)
             )
         }
     }
 }
 
 private fun DrawScope.drawPreviewRay(
+    origin: Offset,
     arrow: Arrow,
     xSize: Int,
     ySize: Int,
@@ -739,16 +815,16 @@ private fun DrawScope.drawPreviewRay(
     color: Color
 ) {
     val headCenter = Offset(
-        x = (arrow.head.x + 0.5f) * cellSize,
-        y = (arrow.head.y + 0.5f) * cellSize
+        x = origin.x + (arrow.head.x + 0.5f) * cellSize,
+        y = origin.y + (arrow.head.y + 0.5f) * cellSize
     )
 
     var endOffset = headCenter
     when (arrow.direction) {
-        Direction.UP -> endOffset = Offset(headCenter.x, -cellSize)
-        Direction.DOWN -> endOffset = Offset(headCenter.x, (ySize + 1) * cellSize)
-        Direction.LEFT -> endOffset = Offset(-cellSize, headCenter.y)
-        Direction.RIGHT -> endOffset = Offset((xSize + 1) * cellSize, headCenter.y)
+        Direction.UP -> endOffset = Offset(headCenter.x, origin.y - cellSize)
+        Direction.DOWN -> endOffset = Offset(headCenter.x, origin.y + (ySize + 1) * cellSize)
+        Direction.LEFT -> endOffset = Offset(origin.x - cellSize, headCenter.y)
+        Direction.RIGHT -> endOffset = Offset(origin.x + (xSize + 1) * cellSize, headCenter.y)
     }
 
     drawLine(
