@@ -1,0 +1,313 @@
+package com.arrowescape.puzzle.game
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.arrowescape.puzzle.audio.AudioHapticManager
+import com.arrowescape.puzzle.core.engine.GridOccupancyMap
+import com.arrowescape.puzzle.core.engine.LevelGenerator
+import com.arrowescape.puzzle.core.engine.PuzzleSolver
+import com.arrowescape.puzzle.core.model.Arrow
+import com.arrowescape.puzzle.core.model.ArrowState
+import com.arrowescape.puzzle.core.model.LevelData
+import com.arrowescape.puzzle.data.UserPreferencesRepository
+import com.arrowescape.puzzle.ui.theme.ThemePreset
+import com.arrowescape.puzzle.ui.theme.ThemePresets
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+data class GameUiState(
+    val levelData: LevelData? = null,
+    val arrows: List<Arrow> = emptyList(),
+    val heartsRemaining: Int = 3,
+    val maxHearts: Int = 3,
+    val isLevelComplete: Boolean = false,
+    val isGameOver: Boolean = false,
+    val comboCount: Int = 0,
+    val cheerMessage: String? = null,
+    val isGridLinesActive: Boolean = false,
+    val isHammerModeActive: Boolean = false,
+    val previewRayArrowId: String? = null,
+    val activeTheme: ThemePreset = ThemePresets.CleanLight,
+    val currentLevelNumber: Int = 1,
+    val coins: Int = 100,
+    val streakDays: Int = 1,
+    val hintsAvailable: Int = 3,
+    val hammersAvailable: Int = 2,
+    val wandsAvailable: Int = 2
+)
+
+class GameViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository = UserPreferencesRepository(application)
+    val audioHapticManager = AudioHapticManager(application)
+
+    private val _uiState = MutableStateFlow(GameUiState())
+    val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
+
+    private var occupancyMap = GridOccupancyMap(4, 4)
+
+    init {
+        viewModelScope.launch {
+            repository.userGameData.collect { data ->
+                val theme = ThemePresets.all.getOrElse(data.themeIndex) { ThemePresets.CleanLight }
+                audioHapticManager.isSoundEnabled = data.soundEnabled
+                audioHapticManager.isVibrationEnabled = data.vibrationEnabled
+
+                _uiState.update { current ->
+                    current.copy(
+                        currentLevelNumber = data.currentLevel,
+                        coins = data.coins,
+                        streakDays = data.streakDays,
+                        hintsAvailable = data.freeHints,
+                        hammersAvailable = data.freeHammers,
+                        wandsAvailable = data.freeWands,
+                        activeTheme = theme
+                    )
+                }
+
+                // If not loaded yet, load current level
+                if (_uiState.value.levelData == null) {
+                    loadLevel(data.currentLevel)
+                }
+            }
+        }
+    }
+
+    fun loadLevel(levelNumber: Int) {
+        val level = LevelGenerator.generateLevel(levelNumber)
+        occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
+            rebuild(level.arrows)
+        }
+
+        _uiState.update {
+            it.copy(
+                levelData = level,
+                arrows = level.arrows,
+                heartsRemaining = level.maxHearts,
+                maxHearts = level.maxHearts,
+                isLevelComplete = false,
+                isGameOver = false,
+                comboCount = 0,
+                cheerMessage = null,
+                isHammerModeActive = false,
+                previewRayArrowId = null
+            )
+        }
+    }
+
+    fun onArrowClicked(clickedArrow: Arrow) {
+        if (_uiState.value.isLevelComplete || _uiState.value.isGameOver) return
+        if (clickedArrow.state == ArrowState.CLEARED || clickedArrow.state == ArrowState.FLYING_OUT) return
+
+        // Check if Hammer booster mode is active
+        if (_uiState.value.isHammerModeActive) {
+            executeHammerStrike(clickedArrow)
+            return
+        }
+
+        audioHapticManager.playTap()
+
+        val canEscape = PuzzleSolver.canMoveOut(clickedArrow, occupancyMap)
+
+        if (canEscape) {
+            // SUCCESSFUL MOVE
+            audioHapticManager.playArrowFly()
+            val newCombo = _uiState.value.comboCount + 1
+            val cheer = calculateCheerMessage(newCombo)
+
+            // Update arrow state to flying out
+            occupancyMap.release(clickedArrow)
+
+            _uiState.update { state ->
+                val updatedArrows = state.arrows.map {
+                    if (it.id == clickedArrow.id) it.copyWithState(ArrowState.FLYING_OUT) else it
+                }
+                state.copy(
+                    arrows = updatedArrows,
+                    comboCount = newCombo,
+                    cheerMessage = cheer
+                )
+            }
+
+            // Animate flight and transition to CLEARED
+            viewModelScope.launch {
+                delay(320)
+                _uiState.update { state ->
+                    val finalArrows = state.arrows.map {
+                        if (it.id == clickedArrow.id) it.copyWithState(ArrowState.CLEARED) else it
+                    }
+                    val allCleared = finalArrows.all { it.state == ArrowState.CLEARED }
+                    state.copy(arrows = finalArrows, isLevelComplete = allCleared)
+                }
+
+                if (_uiState.value.isLevelComplete) {
+                    handleLevelComplete()
+                }
+            }
+        } else {
+            // WRONG MOVE: Collision
+            audioHapticManager.playWrongMove()
+
+            val newHearts = (_uiState.value.heartsRemaining - 1).coerceAtLeast(0)
+            val isOver = newHearts <= 0
+
+            _uiState.update { state ->
+                val flashedArrows = state.arrows.map {
+                    if (it.id == clickedArrow.id) it.copyWithState(ArrowState.WRONG_FLASH) else it
+                }
+                state.copy(
+                    arrows = flashedArrows,
+                    heartsRemaining = newHearts,
+                    comboCount = 0,
+                    cheerMessage = null,
+                    isGameOver = isOver
+                )
+            }
+
+            // Reset red flash after short delay
+            viewModelScope.launch {
+                delay(400)
+                _uiState.update { state ->
+                    val resetArrows = state.arrows.map {
+                        if (it.id == clickedArrow.id && it.state == ArrowState.WRONG_FLASH) {
+                            it.copyWithState(ArrowState.IDLE)
+                        } else it
+                    }
+                    state.copy(arrows = resetArrows)
+                }
+            }
+        }
+    }
+
+    fun onArrowLongPress(arrow: Arrow, isPressed: Boolean) {
+        _uiState.update {
+            it.copy(previewRayArrowId = if (isPressed) arrow.id else null)
+        }
+    }
+
+    fun useHint() {
+        val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap) ?: return
+        viewModelScope.launch {
+            if (repository.useBooster("hint")) {
+                audioHapticManager.playBoosterUse()
+                _uiState.update { state ->
+                    val updated = state.arrows.map {
+                        if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
+                    }
+                    state.copy(arrows = updated)
+                }
+            }
+        }
+    }
+
+    fun toggleHammerMode() {
+        _uiState.update {
+            it.copy(isHammerModeActive = !it.isHammerModeActive)
+        }
+    }
+
+    private fun executeHammerStrike(target: Arrow) {
+        viewModelScope.launch {
+            if (repository.useBooster("hammer")) {
+                audioHapticManager.playBoosterUse()
+                occupancyMap.release(target)
+
+                _uiState.update { state ->
+                    val updated = state.arrows.map {
+                        if (it.id == target.id) it.copyWithState(ArrowState.CLEARED) else it
+                    }
+                    val allCleared = updated.all { it.state == ArrowState.CLEARED }
+                    state.copy(
+                        arrows = updated,
+                        isHammerModeActive = false,
+                        isLevelComplete = allCleared
+                    )
+                }
+
+                if (_uiState.value.isLevelComplete) {
+                    handleLevelComplete()
+                }
+            }
+        }
+    }
+
+    fun useMagicWand() {
+        val target = PuzzleSolver.getMagicWandTarget(_uiState.value.arrows, occupancyMap) ?: return
+        viewModelScope.launch {
+            if (repository.useBooster("wand")) {
+                audioHapticManager.playBoosterUse()
+                occupancyMap.release(target)
+
+                _uiState.update { state ->
+                    val updated = state.arrows.map {
+                        if (it.id == target.id) it.copyWithState(ArrowState.FLYING_OUT) else it
+                    }
+                    state.copy(arrows = updated)
+                }
+
+                delay(280)
+                _uiState.update { state ->
+                    val updated = state.arrows.map {
+                        if (it.id == target.id) it.copyWithState(ArrowState.CLEARED) else it
+                    }
+                    val allCleared = updated.all { it.state == ArrowState.CLEARED }
+                    state.copy(arrows = updated, isLevelComplete = allCleared)
+                }
+
+                if (_uiState.value.isLevelComplete) {
+                    handleLevelComplete()
+                }
+            }
+        }
+    }
+
+    fun toggleGridLines() {
+        _uiState.update {
+            it.copy(isGridLinesActive = !it.isGridLinesActive)
+        }
+    }
+
+    fun cycleTheme() {
+        viewModelScope.launch {
+            val nextIndex = (_uiState.value.activeTheme.name.let {
+                ThemePresets.all.indexOfFirst { t -> t.name == it }
+            } + 1) % ThemePresets.all.size
+            repository.setTheme(nextIndex)
+        }
+    }
+
+    fun nextLevel() {
+        val nextLvl = _uiState.value.currentLevelNumber + 1
+        viewModelScope.launch {
+            repository.updateLevel(nextLvl)
+            loadLevel(nextLvl)
+        }
+    }
+
+    fun restartLevel() {
+        loadLevel(_uiState.value.currentLevelNumber)
+    }
+
+    private fun handleLevelComplete() {
+        audioHapticManager.playLevelWin()
+        viewModelScope.launch {
+            repository.addCoins(25)
+        }
+    }
+
+    private fun calculateCheerMessage(combo: Int): String? {
+        return when (combo) {
+            3 -> "Nice!"
+            5 -> "Great!"
+            8 -> "Awesome!"
+            12 -> "Unstoppable!"
+            16 -> "Masterful!"
+            else -> null
+        }
+    }
+}

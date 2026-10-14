@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Arrow Escape</string>
+    <string name="subtitle">Directional Puzzle Maze</string>
+    <string name="play">PLAY</string>
+    <string name="daily_challenge">DAILY CHALLENGE</string>
+    <string name="level_prefix">Level %1$d</string>
+    <string name="booster_hint">Hint</string>
+    <string name="booster_hammer">Hammer</string>
+    <string name="booster_wand">Wand</string>
+    <string name="booster_grid">Grid</string>
+    <string name="hearts_left">Hearts</string>
+    <string name="coins">Coins</string>
+    <string name="streak_days">Day %1$d Streak</string>
+</resources>

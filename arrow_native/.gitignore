@@ -1,0 +1,72 @@
+# =========================
+# Gradle
+# =========================
+.gradle/
+**/build/
+build/
+
+# Gradle temporary files
+gradle-temp/
+
+# Gradle cache
+.gradle-cache/
+
+
+# =========================
+# Android Studio / IntelliJ
+# =========================
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Keep useful shared configs (optional)
+!.idea/codeStyles/
+!.idea/runConfigurations/
+
+
+# =========================
+# Local configuration
+# =========================
+local.properties
+
+
+# =========================
+# Build outputs
+# =========================
+*.apk
+*.aab
+*.apks
+*.zip
+
+
+# =========================
+# Signing files
+# =========================
+*.jks
+*.keystore
+
+
+# =========================
+# Logs
+# =========================
+*.log
+
+
+# =========================
+# OS generated files
+# =========================
+.DS_Store
+Thumbs.db
+
+
+# =========================
+# Kotlin
+# =========================
+*.kotlin_module
+
+
+# =========================
+# Firebase (optional)
+# =========================
+# google-services.json

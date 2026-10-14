@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Stylized Arrow Maze Icon -->
+    <path
+        android:fillColor="#38BDF8"
+        android:pathData="M54,24 L74,48 L62,48 L62,76 L46,76 L46,48 L34,48 Z" />
+    <path
+        android:fillColor="#818CF8"
+        android:pathData="M24,54 L48,34 L48,46 L76,46 L76,62 L48,62 L48,74 Z"
+        android:fillAlpha="0.6" />
+</vector>
