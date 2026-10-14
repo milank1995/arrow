@@ -10,7 +10,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.arrowescape.puzzle.core.model.Arrow
+import com.arrowescape.puzzle.core.model.ArrowState
 import com.arrowescape.puzzle.game.GameUiState
 import com.arrowescape.puzzle.ui.components.BoosterBar
 import com.arrowescape.puzzle.ui.components.CheerOverlay
@@ -18,7 +21,6 @@ import com.arrowescape.puzzle.ui.components.GameHeader
 import com.arrowescape.puzzle.ui.components.GameOverDialog
 import com.arrowescape.puzzle.ui.components.LevelVictoryDialog
 import com.arrowescape.puzzle.ui.components.PuzzleBoardCanvas
-import com.arrowescape.puzzle.core.model.Arrow
 
 @Composable
 fun GamePlayScreen(
@@ -37,9 +39,12 @@ fun GamePlayScreen(
 ) {
     val level = uiState.levelData
     val theme = uiState.activeTheme
+    val remainingArrowsCount = uiState.arrows.count { 
+        it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT 
+    }
 
     Surface(
-        color = theme.background,
+        color = Color.White,
         modifier = modifier.fillMaxSize()
     ) {
         Column(
@@ -47,14 +52,13 @@ fun GamePlayScreen(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxSize()
         ) {
-            // 1. TOP GAMEPLAY HEADER
+            // 1. TOP GAMEPLAY HEADER (Matches Screenshot 2 & 3)
             if (level != null) {
                 GameHeader(
                     levelNumber = uiState.currentLevelNumber,
-                    difficulty = level.difficulty,
                     heartsRemaining = uiState.heartsRemaining,
                     maxHearts = uiState.maxHearts,
-                    coins = uiState.coins,
+                    remainingArrowsCount = remainingArrowsCount,
                     theme = theme,
                     onBackClick = onBackToHomeClick,
                     onThemeClick = onThemeClick
@@ -89,33 +93,28 @@ fun GamePlayScreen(
                 )
             }
 
-            // 3. BOTTOM BOOSTER CONTROLS
+            // 3. BOTTOM BOOSTER CONTROLS (Matches Screenshot 2 & 3: Hint & Grid pods)
             BoosterBar(
                 hintsCount = uiState.hintsAvailable,
-                hammersCount = uiState.hammersAvailable,
-                wandsCount = uiState.wandsAvailable,
-                isHammerActive = uiState.isHammerModeActive,
                 isGridLinesActive = uiState.isGridLinesActive,
                 theme = theme,
                 onHintClick = onHintClick,
-                onHammerClick = onHammerClick,
-                onWandClick = onWandClick,
                 onGridClick = onGridClick
             )
         }
 
-        // VICTORY MODAL
+        // VICTORY DIALOG
         if (uiState.isLevelComplete) {
             LevelVictoryDialog(
                 levelNumber = uiState.currentLevelNumber,
-                coinsEarned = 25,
+                coinsEarned = 50 + (uiState.comboCount * 5),
                 streakDays = uiState.streakDays,
                 theme = theme,
                 onNextLevelClick = onNextLevelClick
             )
         }
 
-        // GAME OVER MODAL
+        // GAME OVER DIALOG
         if (uiState.isGameOver) {
             GameOverDialog(
                 theme = theme,

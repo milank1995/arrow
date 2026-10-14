@@ -7,18 +7,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoFixHigh
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,123 +33,87 @@ import com.arrowescape.puzzle.ui.theme.ThemePreset
 @Composable
 fun BoosterBar(
     hintsCount: Int,
-    hammersCount: Int,
-    wandsCount: Int,
-    isHammerActive: Boolean,
     isGridLinesActive: Boolean,
     theme: ThemePreset,
     onHintClick: () -> Unit,
-    onHammerClick: () -> Unit,
-    onWandClick: () -> Unit,
     onGridClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
-        color = theme.surface,
-        shadowElevation = 8.dp,
+        color = Color.White,
         modifier = modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 12.dp, horizontal = 20.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
+                .padding(top = 8.dp, bottom = 28.dp),
+            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 1. Hint Booster
-            BoosterButton(
-                icon = Icons.Default.Lightbulb,
-                label = "Hint",
-                badgeText = "$hintsCount",
-                isActive = false,
-                theme = theme,
-                onClick = onHintClick
-            )
-
-            // 2. Hammer Booster
-            BoosterButton(
-                icon = Icons.Default.Build,
-                label = "Hammer",
-                badgeText = "$hammersCount",
-                isActive = isHammerActive,
-                theme = theme,
-                onClick = onHammerClick
-            )
-
-            // 3. Magic Wand Booster
-            BoosterButton(
-                icon = Icons.Default.AutoFixHigh,
-                label = "Wand",
-                badgeText = "$wandsCount",
-                isActive = false,
-                theme = theme,
-                onClick = onWandClick
-            )
-
-            // 4. Grid Lines Toggle
-            BoosterButton(
-                icon = if (isGridLinesActive) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                label = "Grid",
-                badgeText = if (isGridLinesActive) "ON" else "OFF",
-                isActive = isGridLinesActive,
-                theme = theme,
-                onClick = onGridClick
-            )
-        }
-    }
-}
-
-@Composable
-private fun BoosterButton(
-    icon: ImageVector,
-    label: String,
-    badgeText: String,
-    isActive: Boolean,
-    theme: ThemePreset,
-    onClick: () -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable(onClick = onClick)
-    ) {
-        BadgedBox(
-            badge = {
-                Badge(
-                    containerColor = if (isActive) Color(0xFFF59E0B) else theme.arrowDefault,
-                    contentColor = Color.White
+            // 1. Hint Pod with count badge underneath
+            Box(
+                contentAlignment = Alignment.BottomCenter,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                // Pod Circle
+                Box(
+                    modifier = Modifier
+                        .size(58.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFEEF2F6))
+                        .clickable(onClick = onHintClick),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(text = badgeText, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                    Icon(
+                        imageVector = Icons.Default.Lightbulb,
+                        contentDescription = "Hint",
+                        tint = Color(0xFF1E293B),
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+
+                // Count Badge Pill overlapping bottom
+                Box(
+                    modifier = Modifier
+                        .offset(y = 8.dp)
+                        .clip(RoundedCornerShape(percent = 50))
+                        .background(Color.White)
+                        .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(percent = 50))
+                        .padding(horizontal = 8.dp, vertical = 2.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "$hintsCount",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1E293B)
+                    )
                 }
             }
-        ) {
+
+            Spacer(modifier = Modifier.size(16.dp))
+
+            // 2. Grid (#) Pod
             Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(52.dp)
-                    .clip(CircleShape)
-                    .background(
-                        if (isActive) Color(0xFFF59E0B).copy(alpha = 0.2f) else theme.background
-                    )
-                    .border(
-                        width = if (isActive) 2.dp else 1.dp,
-                        color = if (isActive) Color(0xFFF59E0B) else theme.gridDot,
-                        shape = CircleShape
-                    )
+                modifier = Modifier.padding(horizontal = 16.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = label,
-                    tint = if (isActive) Color(0xFFF59E0B) else theme.textPrimary,
-                    modifier = Modifier.size(24.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(58.dp)
+                        .clip(CircleShape)
+                        .background(if (isGridLinesActive) Color(0xFFCBD5E1) else Color(0xFFEEF2F6))
+                        .clickable(onClick = onGridClick),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "#",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1E293B)
+                    )
+                }
             }
         }
-        Text(
-            text = label,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Medium,
-            color = theme.textSecondary,
-            modifier = Modifier.padding(top = 4.dp)
-        )
     }
 }

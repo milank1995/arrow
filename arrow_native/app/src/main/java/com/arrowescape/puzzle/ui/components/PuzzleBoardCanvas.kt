@@ -1,6 +1,5 @@
 package com.arrowescape.puzzle.ui.components
 
-import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -30,9 +29,6 @@ import com.arrowescape.puzzle.core.model.ArrowState
 import com.arrowescape.puzzle.core.model.Direction
 import com.arrowescape.puzzle.core.model.GridCoordinate
 import com.arrowescape.puzzle.ui.theme.ThemePreset
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 
 @Composable
 fun PuzzleBoardCanvas(
@@ -102,21 +98,22 @@ fun PuzzleBoardCanvas(
                     )
                 }
         ) {
-            // 1. Draw Grid Lines if enabled
+            // Draw background
+            drawRect(color = Color.White)
+
+            // 1. Grid Lines / Dots only if user turned them on via the '#' Booster button
             if (isGridLinesActive) {
                 drawGridLines(xSize, ySize, cellSize, theme.gridLine)
+                drawGridDots(xSize, ySize, cellSize, theme.gridDot)
             }
 
-            // 2. Draw Grid Dots at all intersections
-            drawGridDots(xSize, ySize, cellSize, theme.gridDot)
-
-            // 3. Draw Preview Ray if an arrow is long-pressed
+            // 2. Draw Preview Ray if an arrow is long-pressed
             val previewArrow = arrows.firstOrNull { it.id == previewRayArrowId }
             if (previewArrow != null) {
                 drawPreviewRay(previewArrow, xSize, ySize, cellSize, theme.arrowHint)
             }
 
-            // 4. Draw All Arrows
+            // 3. Draw All Arrows (Dark slate stroke + sharp arrowhead)
             for (arrow in arrows) {
                 if (arrow.state == ArrowState.CLEARED) continue
 
@@ -137,7 +134,7 @@ private fun DrawScope.drawGridLines(xSize: Int, ySize: Int, cellSize: Float, col
             color = color,
             start = Offset(x * cellSize, 0f),
             end = Offset(x * cellSize, ySize * cellSize),
-            strokeWidth = 1.5f
+            strokeWidth = 1.2f
         )
     }
     for (y in 0..ySize) {
@@ -145,7 +142,7 @@ private fun DrawScope.drawGridLines(xSize: Int, ySize: Int, cellSize: Float, col
             color = color,
             start = Offset(0f, y * cellSize),
             end = Offset(xSize * cellSize, y * cellSize),
-            strokeWidth = 1.5f
+            strokeWidth = 1.2f
         )
     }
 }
@@ -155,7 +152,7 @@ private fun DrawScope.drawGridDots(xSize: Int, ySize: Int, cellSize: Float, colo
         for (y in 0..ySize) {
             drawCircle(
                 color = color,
-                radius = 3.5f,
+                radius = 3.0f,
                 center = Offset(x * cellSize, y * cellSize)
             )
         }
@@ -201,16 +198,16 @@ private fun DrawScope.drawArrowEntity(
         ArrowState.HINTED -> theme.arrowHint
         ArrowState.WRONG_FLASH -> theme.arrowWrong
         ArrowState.FLYING_OUT -> theme.arrowClear
-        else -> theme.arrowColors.getOrElse(arrow.colorIndex) { theme.arrowDefault }
+        else -> theme.arrowDefault
     }
 
-    val strokeWidth = cellSize * 0.28f * (if (arrow.state == ArrowState.HINTED) hintPulseScale else 1.0f)
+    val strokeWidth = cellSize * 0.16f * (if (arrow.state == ArrowState.HINTED) hintPulseScale else 1.0f)
     val headCenter = Offset(
         x = (arrow.head.x + 0.5f) * cellSize,
         y = (arrow.head.y + 0.5f) * cellSize
     )
 
-    // Draw body path if arrow has tail segments
+    // Draw body path connecting all coordinates in arrow.body
     if (arrow.body.size > 1) {
         val path = Path()
         val first = arrow.body.first()
@@ -233,17 +230,16 @@ private fun DrawScope.drawArrowEntity(
         )
     }
 
-    // Draw Arrowhead at head position rotated along direction
-    val headSize = cellSize * 0.42f
+    // Draw sharp solid arrowhead matching original game
+    val headSize = cellSize * 0.44f
     rotate(
         degrees = arrow.direction.angleDegrees,
         pivot = headCenter
     ) {
         val arrowHeadPath = Path().apply {
-            moveTo(headCenter.x, headCenter.y - headSize * 0.55f) // Tip pointing UP initially
-            lineTo(headCenter.x + headSize * 0.5f, headCenter.y + headSize * 0.35f)
-            lineTo(headCenter.x, headCenter.y + headSize * 0.15f) // Inner notch
-            lineTo(headCenter.x - headSize * 0.5f, headCenter.y + headSize * 0.35f)
+            moveTo(headCenter.x, headCenter.y - headSize * 0.55f) // Forward tip
+            lineTo(headCenter.x + headSize * 0.40f, headCenter.y + headSize * 0.32f) // Right base
+            lineTo(headCenter.x - headSize * 0.40f, headCenter.y + headSize * 0.32f) // Left base
             close()
         }
 

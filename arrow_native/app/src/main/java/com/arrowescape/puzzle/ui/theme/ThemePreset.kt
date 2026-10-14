@@ -22,23 +22,20 @@ data class ThemePreset(
 object ThemePresets {
     val CleanLight = ThemePreset(
         name = "Clean Light",
-        background = Color(0xFFF1F5F9), // Slate 100
+        background = Color(0xFFFFFFFF),
         surface = Color(0xFFFFFFFF),
         gridDot = Color(0xFFCBD5E1),
         gridLine = Color(0xFFE2E8F0),
-        arrowDefault = Color(0xFF2563EB), // Blue 600
+        arrowDefault = Color(0xFF1E293B), // Dark navy / slate 800
         arrowColors = listOf(
-            Color(0xFF2563EB), // Blue
-            Color(0xFF0D9488), // Teal
-            Color(0xFF7C3AED), // Violet
-            Color(0xFFD97706)  // Amber
+            Color(0xFF1E293B) // All arrows use uniform dark slate in original
         ),
         arrowHint = Color(0xFFF59E0B), // Golden yellow
         arrowWrong = Color(0xFFEF4444), // Crimson red
-        arrowClear = Color(0xFF10B981), // Emerald green
-        textPrimary = Color(0xFF0F172A),
+        arrowClear = Color(0xFF1E293B), // Dark navy / slate
+        textPrimary = Color(0xFF1E293B),
         textSecondary = Color(0xFF64748B),
-        boosterBg = Color(0xFFFFFFFF),
+        boosterBg = Color(0xFFEEF2F6),
         isDark = false
     )
 

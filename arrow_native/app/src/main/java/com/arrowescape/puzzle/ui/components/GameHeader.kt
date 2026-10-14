@@ -13,13 +13,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.MonetizationOn
+import androidx.compose.material.icons.filled.NorthEast
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,24 +29,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.arrowescape.puzzle.core.model.LevelDifficulty
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 
 @Composable
 fun GameHeader(
     levelNumber: Int,
-    difficulty: LevelDifficulty,
     heartsRemaining: Int,
     maxHearts: Int,
-    coins: Int,
+    remainingArrowsCount: Int,
     theme: ThemePreset,
     onBackClick: () -> Unit,
     onThemeClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
-        color = theme.surface,
-        shadowElevation = 3.dp,
+        color = Color.White,
         modifier = modifier.fillMaxWidth()
     ) {
         Row(
@@ -55,97 +51,102 @@ fun GameHeader(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-            // Back button
-            IconButton(
-                onClick = onBackClick,
-                modifier = Modifier
-                    .size(42.dp)
-                    .clip(CircleShape)
-                    .background(theme.background)
+            // LEFT: Pause icon + Theme palette pod
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = theme.textPrimary
-                )
-            }
+                // Pause button (two vertical bars)
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.size(38.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Pause,
+                        contentDescription = "Pause",
+                        tint = Color(0xFF1E293B),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
 
-            // Level & Difficulty Info
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = "Level $levelNumber",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = theme.textPrimary
-                )
+                // Theme palette button inside rounded pod
                 Box(
                     modifier = Modifier
-                        .padding(top = 2.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(
-                            when (difficulty) {
-                                LevelDifficulty.EASY -> Color(0xFF10B981).copy(alpha = 0.15f)
-                                LevelDifficulty.MEDIUM -> Color(0xFFF59E0B).copy(alpha = 0.15f)
-                                LevelDifficulty.HARD -> Color(0xFFEF4444).copy(alpha = 0.15f)
-                            }
-                        )
-                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                        .size(38.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0xFFEEF2F6)),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = difficulty.label.uppercase(),
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = when (difficulty) {
-                            LevelDifficulty.EASY -> Color(0xFF059669)
-                            LevelDifficulty.MEDIUM -> Color(0xFFD97706)
-                            LevelDifficulty.HARD -> Color(0xFFDC2626)
-                        }
-                    )
+                    IconButton(
+                        onClick = onThemeClick,
+                        modifier = Modifier.size(38.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Palette,
+                            contentDescription = "Themes",
+                            tint = Color(0xFF1E293B),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
 
-            // Stats: Hearts & Theme Switcher
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                // Hearts counter
+            // CENTER: 3 Red Hearts + "Level X"
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                // 3 Hearts Row
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color(0xFFEF4444).copy(alpha = 0.12f))
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Favorite,
-                        contentDescription = "Hearts",
-                        tint = Color(0xFFEF4444),
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "$heartsRemaining",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
-                        color = Color(0xFFEF4444)
-                    )
+                    for (i in 0 until maxHearts) {
+                        val isAlive = i < heartsRemaining
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = "Heart",
+                            tint = if (isAlive) Color(0xFFFF5252) else Color(0xFFE2E8F0),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
 
-                Spacer(modifier = Modifier.width(8.dp))
+                // Level text directly below hearts
+                Text(
+                    text = "Level $levelNumber",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1E293B),
+                    modifier = Modifier.padding(top = 2.dp)
+                )
+            }
 
-                // Theme switcher button
-                IconButton(
-                    onClick = onThemeClick,
-                    modifier = Modifier
-                        .size(38.dp)
-                        .clip(CircleShape)
-                        .background(theme.background)
+            // RIGHT: Remaining Arrows Badge (↗ N)
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(percent = 50))
+                    .background(Color(0xFFEEF2F6))
+                    .padding(horizontal = 14.dp, vertical = 7.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Palette,
-                        contentDescription = "Cycle Theme",
-                        tint = theme.textPrimary,
-                        modifier = Modifier.size(20.dp)
+                        imageVector = Icons.Default.NorthEast,
+                        contentDescription = "Remaining arrows",
+                        tint = Color(0xFF1E293B),
+                        modifier = Modifier.size(17.dp)
+                    )
+                    Text(
+                        text = "$remainingArrowsCount",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1E293B)
                     )
                 }
             }
