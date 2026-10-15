@@ -27,6 +27,8 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
@@ -35,8 +37,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import java.time.LocalDate
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -310,11 +314,18 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Modern Obsidian/Slate Daily Challenge Capsule
+                // Daily Challenge Capsule: Locked below Level 5 (Unity DailyChallengeUnlockLevel = 5), dynamic when unlocked
+                val isUnlocked = uiState.currentLevelNumber >= 5
+                val todayStr = remember { LocalDate.now().toString() }
+                val isCompletedToday = uiState.completedDailyDates.contains(todayStr)
+
                 Surface(
                     shape = RoundedCornerShape(percent = 50),
-                    color = Color(0xFF1E293B),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF334155)),
+                    color = if (isUnlocked && !isCompletedToday) Color(0xFF1E293B) else Color(0xFF1E293B),
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        if (isUnlocked && !isCompletedToday) Color(0xFFD97706) else Color(0xFF334155)
+                    ),
                     shadowElevation = 3.dp,
                     modifier = Modifier
                         .widthIn(max = 380.dp)
@@ -328,19 +339,33 @@ fun HomeScreen(
                             .fillMaxSize()
                             .padding(horizontal = 12.dp)
                     ) {
-                        // Badge with amber lock icon
+                        // Dynamic Icon Badge
                         Box(
                             modifier = Modifier
                                 .size(42.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF334155)),
+                                .background(
+                                    when {
+                                        !isUnlocked -> Color(0xFF334155)
+                                        isCompletedToday -> Color(0xFF064E3B)
+                                        else -> Color(0xFF78350F)
+                                    }
+                                ),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Lock,
-                                contentDescription = "Locked",
-                                tint = Color(0xFFFBBF24),
-                                modifier = Modifier.size(19.dp)
+                                imageVector = when {
+                                    !isUnlocked -> Icons.Default.Lock
+                                    isCompletedToday -> Icons.Default.Check
+                                    else -> Icons.Default.DateRange
+                                },
+                                contentDescription = if (isUnlocked) "Daily Challenge" else "Locked",
+                                tint = when {
+                                    !isUnlocked -> Color(0xFFFBBF24)
+                                    isCompletedToday -> Color(0xFF34D399)
+                                    else -> Color(0xFFFBBF24)
+                                },
+                                modifier = Modifier.size(20.dp)
                             )
                         }
 
@@ -355,10 +380,18 @@ fun HomeScreen(
                                 color = Color.White
                             )
                             Text(
-                                text = "Unlocks at Level 5",
+                                text = when {
+                                    !isUnlocked -> "Unlocks at Level 5"
+                                    isCompletedToday -> "✓ Completed Today"
+                                    else -> "Today's Challenge • +100 Coins"
+                                },
                                 fontSize = 12.sp,
-                                color = Color(0xFF94A3B8),
-                                fontWeight = FontWeight.Medium
+                                color = when {
+                                    !isUnlocked -> Color(0xFF94A3B8)
+                                    isCompletedToday -> Color(0xFF34D399)
+                                    else -> Color(0xFFFDE68A)
+                                },
+                                fontWeight = if (isUnlocked && !isCompletedToday) FontWeight.Bold else FontWeight.Medium
                             )
                         }
                     }

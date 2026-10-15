@@ -1,6 +1,7 @@
 package com.arrowescape.puzzle
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arrowescape.puzzle.game.GameViewModel
+import com.arrowescape.puzzle.ui.components.DailyCalendarDialog
 import com.arrowescape.puzzle.ui.screens.GamePlayScreen
 import com.arrowescape.puzzle.ui.screens.HomeScreen
 
@@ -36,6 +38,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val uiState by gameViewModel.uiState.collectAsState()
             var currentScreen by remember { mutableStateOf(AppScreen.HOME) }
+            var showDailyCalendarDialog by remember { mutableStateOf(false) }
 
             MaterialTheme {
                 Surface(
@@ -53,9 +56,16 @@ class MainActivity : ComponentActivity() {
                                         currentScreen = AppScreen.GAMEPLAY
                                     },
                                     onDailyChallengeClick = {
-                                        // Load today's authentic daily challenge level
-                                        gameViewModel.loadDailyLevel(1)
-                                        currentScreen = AppScreen.GAMEPLAY
+                                        if (uiState.currentLevelNumber >= 5) {
+                                            showDailyCalendarDialog = true
+                                        } else {
+                                            val needed = 5 - uiState.currentLevelNumber
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                "Complete $needed more level${if (needed > 1) "s" else ""} to unlock Daily Challenges!",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
                                     },
                                     onThemeClick = {
                                         gameViewModel.cycleTheme()
@@ -91,12 +101,19 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.setTheme(selectedTheme)
                                     },
                                     onNextLevelClick = {
+                                        val wasDaily = uiState.isDailyChallengeMode
                                         gameViewModel.nextLevel()
+                                        if (wasDaily) {
+                                            currentScreen = AppScreen.HOME
+                                        }
                                     },
                                     onRestartClick = {
                                         gameViewModel.restartLevel()
                                     },
                                     onBackToHomeClick = {
+                                        if (uiState.isDailyChallengeMode) {
+                                            gameViewModel.loadLevel(uiState.currentLevelNumber)
+                                        }
                                         currentScreen = AppScreen.HOME
                                     },
                                     onIdlePromptSound = {
@@ -105,6 +122,22 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         }
+                    }
+
+                    // Daily Calendar Modal Dialog
+                    if (showDailyCalendarDialog) {
+                        DailyCalendarDialog(
+                            completedDates = uiState.completedDailyDates,
+                            streakDays = uiState.streakDays,
+                            theme = uiState.activeTheme,
+                            onPlayDate = { dateString ->
+                                gameViewModel.startDailyChallenge(dateString)
+                                currentScreen = AppScreen.GAMEPLAY
+                            },
+                            onDismiss = {
+                                showDailyCalendarDialog = false
+                            }
+                        )
                     }
                 }
             }

@@ -17,6 +17,7 @@ import com.arrowescape.puzzle.ui.theme.ThemePresets
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.time.LocalDate
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -42,7 +43,11 @@ data class GameUiState(
     val streakDays: Int = 1,
     val hintsAvailable: Int = 3,
     val hammersAvailable: Int = 2,
-    val wandsAvailable: Int = 2
+    val wandsAvailable: Int = 2,
+    val isDailyChallengeMode: Boolean = false,
+    val activeDailyDate: String? = null,
+    val activeDailyIndex: Int = 1,
+    val completedDailyDates: Set<String> = emptySet()
 )
 
 class GameViewModel(private val app: Application) : AndroidViewModel(app) {
@@ -71,6 +76,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         hintsAvailable = data.freeHints,
                         hammersAvailable = data.freeHammers,
                         wandsAvailable = data.freeWands,
+                        completedDailyDates = data.completedDailyDates,
                         activeTheme = theme
                     )
                 }
@@ -100,12 +106,22 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 comboCount = 0,
                 cheerMessage = null,
                 isHammerModeActive = false,
-                previewRayArrowId = null
+                previewRayArrowId = null,
+                isDailyChallengeMode = false,
+                activeDailyDate = null,
+                activeDailyIndex = 1
             )
         }
     }
 
-    fun loadDailyLevel(dailyIndex: Int = 1) {
+    fun startDailyChallenge(dateString: String = LocalDate.now().toString()) {
+        val date = try {
+            LocalDate.parse(dateString)
+        } catch (e: Exception) {
+            LocalDate.now()
+        }
+        val dayOfYear = date.dayOfYear
+        val dailyIndex = ((dayOfYear - 1) % 99) + 1
         val level = LevelLoader.loadDailyLevel(app, dailyIndex)
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)
@@ -122,7 +138,10 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 comboCount = 0,
                 cheerMessage = null,
                 isHammerModeActive = false,
-                previewRayArrowId = null
+                previewRayArrowId = null,
+                isDailyChallengeMode = true,
+                activeDailyDate = date.toString(),
+                activeDailyIndex = dailyIndex
             )
         }
     }
@@ -394,15 +413,25 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun nextLevel() {
-        val nextLvl = _uiState.value.currentLevelNumber + 1
-        viewModelScope.launch {
-            repository.updateLevel(nextLvl)
-            loadLevel(nextLvl)
+        if (_uiState.value.isDailyChallengeMode) {
+            // When completing a daily level, reload current campaign level so player returns to campaign
+            loadLevel(_uiState.value.currentLevelNumber)
+        } else {
+            val nextLvl = _uiState.value.currentLevelNumber + 1
+            viewModelScope.launch {
+                repository.updateLevel(nextLvl)
+                loadLevel(nextLvl)
+            }
         }
     }
 
     fun restartLevel() {
-        loadLevel(_uiState.value.currentLevelNumber)
+        if (_uiState.value.isDailyChallengeMode) {
+            val dateStr = _uiState.value.activeDailyDate ?: LocalDate.now().toString()
+            startDailyChallenge(dateStr)
+        } else {
+            loadLevel(_uiState.value.currentLevelNumber)
+        }
     }
 
     fun playHintNudge() {
@@ -423,7 +452,12 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private fun handleLevelComplete() {
         viewModelScope.launch {
-            repository.addCoins(25)
+            if (_uiState.value.isDailyChallengeMode) {
+                val dateStr = _uiState.value.activeDailyDate ?: LocalDate.now().toString()
+                repository.recordDailyCompletion(dateStr)
+            } else {
+                repository.addCoins(25)
+            }
         }
     }
 

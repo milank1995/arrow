@@ -109,6 +109,8 @@ fun GamePlayScreen(
                         remainingArrowsCount = remainingArrowsCount,
                         totalArrowsCount = totalArrowsCount,
                         theme = theme,
+                        isDailyChallenge = uiState.isDailyChallengeMode,
+                        dailyDateString = uiState.activeDailyDate,
                         onBackClick = onBackToHomeClick,
                         onThemeClick = { showThemeDialog = true },
                         modifier = Modifier.widthIn(max = 540.dp)
@@ -182,9 +184,10 @@ fun GamePlayScreen(
         if (uiState.isLevelComplete) {
             LevelVictoryDialog(
                 levelNumber = uiState.currentLevelNumber,
-                coinsEarned = 50 + (uiState.comboCount * 5),
+                coinsEarned = if (uiState.isDailyChallengeMode) 100 else 50 + (uiState.comboCount * 5),
                 streakDays = uiState.streakDays,
                 theme = theme,
+                isDailyChallenge = uiState.isDailyChallengeMode,
                 onNextLevelClick = onNextLevelClick
             )
         }

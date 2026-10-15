@@ -60,6 +60,8 @@ fun GameHeader(
     remainingArrowsCount: Int,
     totalArrowsCount: Int = remainingArrowsCount,
     theme: ThemePreset,
+    isDailyChallenge: Boolean = false,
+    dailyDateString: String? = null,
     onBackClick: () -> Unit,
     onThemeClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -171,7 +173,7 @@ fun GameHeader(
 
                     // Level text directly below hearts
                     Text(
-                        text = "Level $levelNumber",
+                        text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = theme.textPrimary,

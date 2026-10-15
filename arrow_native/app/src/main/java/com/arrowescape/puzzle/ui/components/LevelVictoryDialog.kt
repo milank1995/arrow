@@ -52,6 +52,7 @@ fun LevelVictoryDialog(
     coinsEarned: Int,
     streakDays: Int,
     theme: ThemePreset,
+    isDailyChallenge: Boolean = false,
     onNextLevelClick: () -> Unit
 ) {
     val cardScale = remember { Animatable(0.88f) }
@@ -143,14 +144,14 @@ fun LevelVictoryDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "LEVEL COMPLETE!",
+                    text = if (isDailyChallenge) "DAILY CHALLENGE CLEARED!" else "LEVEL COMPLETE!",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Black,
                     color = theme.textPrimary
                 )
 
                 Text(
-                    text = "Level $levelNumber cleared smoothly",
+                    text = if (isDailyChallenge) "You earned today's special challenge reward!" else "Level $levelNumber cleared smoothly",
                     fontSize = 14.sp,
                     color = theme.textSecondary,
                     modifier = Modifier.padding(top = 4.dp)
