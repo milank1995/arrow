@@ -65,7 +65,7 @@ fun BoosterBar(
     val idleTransition = rememberInfiniteTransition(label = "idleHintTransition")
     val idlePulseScale by idleTransition.animateFloat(
         initialValue = 1.0f,
-        targetValue = 1.14f,
+        targetValue = 1.12f,
         animationSpec = infiniteRepeatable(
             animation = tween(750, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
@@ -74,7 +74,7 @@ fun BoosterBar(
     )
     val idleHaloScale by idleTransition.animateFloat(
         initialValue = 1.0f,
-        targetValue = 1.55f,
+        targetValue = 1.50f,
         animationSpec = infiniteRepeatable(
             animation = tween(1250, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Restart
@@ -91,7 +91,7 @@ fun BoosterBar(
         label = "idleHaloAlpha"
     )
 
-    // Minimal, transparent bottom bar with no bulky docks or button backgrounds
+    // Clean, transparent, unclipped bottom bar with ample bottom padding
     Surface(
         color = Color.Transparent,
         modifier = modifier.fillMaxWidth()
@@ -99,19 +99,18 @@ fun BoosterBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 28.dp),
-            horizontalArrangement = Arrangement.spacedBy(48.dp, Alignment.CenterHorizontally),
+                .padding(top = 10.dp, bottom = 44.dp), // Generous bottom padding to clear navigation bar
+            horizontalArrangement = Arrangement.spacedBy(56.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 1. HINT ICON (Completely transparent background, vector lightbulb + count/play badge)
+            // 1. HINT ICON (Unclipped container, larger icon, badge securely positioned)
             val combinedHintScale = hintPressScale.value * if (isIdlePromptActive) idlePulseScale else 1f
 
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .size(56.dp)
+                    .size(width = 68.dp, height = 76.dp)
                     .scale(combinedHintScale)
-                    .clip(CircleShape)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
@@ -124,68 +123,70 @@ fun BoosterBar(
                         onHintClick()
                     }
             ) {
-                // Radiating idle halo ring (only visible when idle)
+                // Radiating idle halo ring
                 if (isIdlePromptActive) {
                     Box(
                         modifier = Modifier
-                            .size(50.dp)
+                            .size(54.dp)
+                            .align(Alignment.TopCenter)
+                            .offset(y = 2.dp)
                             .scale(idleHaloScale)
                             .clip(CircleShape)
                             .border(1.5.dp, theme.arrowHint.copy(alpha = idleHaloAlpha), CircleShape)
                     )
                 }
 
-                // Clean Vector Lightbulb
+                // Generously Sized Vector Lightbulb (42dp for easy recognition)
                 Icon(
                     imageVector = Icons.Default.Lightbulb,
                     contentDescription = "Hint",
                     tint = theme.arrowHint,
-                    modifier = Modifier.size(34.dp)
+                    modifier = Modifier
+                        .size(42.dp)
+                        .align(Alignment.TopCenter)
+                        .offset(y = 2.dp)
                 )
 
                 // Clean Badge Pill: Count Number or Mini Play Icon (No "AD Free" text)
                 Surface(
                     shape = RoundedCornerShape(percent = 50),
-                    color = theme.surface.copy(alpha = 0.90f),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
-                    shadowElevation = 1.dp,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .offset(y = 4.dp)
+                    color = theme.surface,
+                    border = androidx.compose.foundation.BorderStroke(1.2.dp, theme.gridLine),
+                    shadowElevation = 2.dp,
+                    modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
                     Box(
-                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
+                        modifier = Modifier.padding(horizontal = 9.dp, vertical = 2.5.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         if (hintsCount > 0) {
                             Text(
                                 text = "$hintsCount",
-                                fontSize = 11.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = theme.textPrimary
                             )
                         } else {
-                            // Mini video/play icon instead of "AD Free" text
+                            // Clean play triangle icon
                             Icon(
                                 imageVector = Icons.Default.PlayArrow,
                                 contentDescription = "Watch Ad for Free Hint",
                                 tint = theme.arrowHint,
-                                modifier = Modifier.size(13.dp)
+                                modifier = Modifier.size(15.dp)
                             )
                         }
                     }
                 }
             }
 
-            // 2. GRID GUIDE ICON (Completely transparent background, vector grid + miniature eye badge)
-            val gridColor = if (isGridLinesActive) theme.arrowDefault else theme.textSecondary.copy(alpha = 0.70f)
+            // 2. GRID GUIDE ICON (Unclipped container, larger icon, intact eye badge)
+            val gridColor = if (isGridLinesActive) theme.arrowDefault else theme.textSecondary.copy(alpha = 0.75f)
 
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .size(56.dp)
+                    .size(width = 68.dp, height = 76.dp)
                     .scale(gridPressScale.value)
-                    .clip(CircleShape)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
@@ -198,9 +199,13 @@ fun BoosterBar(
                         onGridClick()
                     }
             ) {
-                // Crisp Vector Grid Alignment Icon with rounded stroke caps
-                Canvas(modifier = Modifier.size(30.dp)) {
-                    val strokeW = 2.4.dp.toPx()
+                // Generously Sized Vector Grid Icon (38dp) with smooth rounded stroke caps
+                Canvas(
+                    modifier = Modifier
+                        .size(38.dp)
+                        .align(Alignment.Center)
+                ) {
+                    val strokeW = 2.8.dp.toPx()
                     val pad = 3.dp.toPx()
                     val w = size.width
                     val h = size.height
@@ -237,23 +242,23 @@ fun BoosterBar(
                     )
                 }
 
-                // Miniature Eye Badge at top-right (matching Unity reference, theme-adaptive)
+                // Intact Miniature Eye Badge at top-right (NOT clipped)
                 Surface(
                     shape = CircleShape,
-                    color = if (isGridLinesActive) theme.arrowDefault else theme.surface.copy(alpha = 0.90f),
+                    color = if (isGridLinesActive) theme.arrowDefault else theme.surface,
                     border = androidx.compose.foundation.BorderStroke(
                         1.dp,
                         if (isGridLinesActive) theme.arrowDefault else theme.gridLine
                     ),
-                    shadowElevation = 1.dp,
+                    shadowElevation = 2.dp,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .offset(x = 2.dp, y = 2.dp)
+                        .offset(x = 2.dp, y = 4.dp)
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(17.dp)
-                            .padding(2.dp),
+                            .size(20.dp)
+                            .padding(2.5.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -262,7 +267,7 @@ fun BoosterBar(
                             tint = if (isGridLinesActive) {
                                 if (theme.isDark) Color.Black else Color.White
                             } else theme.textSecondary,
-                            modifier = Modifier.size(11.dp)
+                            modifier = Modifier.size(13.dp)
                         )
                     }
                 }
