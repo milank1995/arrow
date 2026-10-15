@@ -235,7 +235,7 @@ fun GameHeader(
                     .padding(horizontal = 16.dp, vertical = 2.dp)
                     .height(6.dp)
                     .clip(RoundedCornerShape(3.dp))
-                    .background(theme.gridLine.copy(alpha = 0.35f))
+                    .background(if (theme.isDark) Color(0xFF334155) else Color(0xFFE2E8F0))
             ) {
                 if (animatedProgress > 0f) {
                     Box(
