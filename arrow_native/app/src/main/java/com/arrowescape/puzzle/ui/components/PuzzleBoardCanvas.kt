@@ -101,7 +101,7 @@ fun PuzzleBoardCanvas(
         arrows.flatMap { it.body }.toSet()
     }
 
-    // Reset zoom and pan, and launch cascading assembly animation whenever a new level is loaded
+    // Reset zoom and pan, and launch cascading write-on path assembly animation whenever a new level is loaded
     val introProgress = remember { Animatable(0f) }
     LaunchedEffect(xSize, ySize, arrows.size, arrows.firstOrNull()?.id) {
         settleJob?.cancel()
@@ -111,7 +111,7 @@ fun PuzzleBoardCanvas(
         introProgress.snapTo(0f)
         introProgress.animateTo(
             targetValue = 1f,
-            animationSpec = tween(durationMillis = 2200, easing = LinearEasing)
+            animationSpec = tween(durationMillis = 1450, easing = LinearEasing)
         )
     }
 
@@ -458,9 +458,23 @@ fun PuzzleBoardCanvas(
                 }
         ) {
             val center = Offset(size.width / 2f, size.height / 2f)
+            // Subtle tactile zoom-in and zoom-out breathing during level intro
+            val introZoom = if (introProgress.value >= 1f) 1.0f else {
+                val t = introProgress.value
+                when {
+                    t < 0.72f -> {
+                        val p = FastOutSlowInEasing.transform(t / 0.72f)
+                        0.94f + 0.085f * p
+                    }
+                    else -> {
+                        val p = FastOutSlowInEasing.transform((t - 0.72f) / 0.28f)
+                        1.025f - 0.025f * p
+                    }
+                }
+            }
             withTransform({
                 translate(panX, panY)
-                scale(scale, scale, pivot = center)
+                scale(scale * introZoom, scale * introZoom, pivot = center)
             }) {
                 // Background is completely transparent; surroundings adapt naturally to theme
 
@@ -488,16 +502,14 @@ fun PuzzleBoardCanvas(
                     drawPreviewRay(boardOrigin, previewArrowToRender, xSize, ySize, cellSize, previewAlpha)
                 }
 
-                // 4. Draw All Arrows (Radial Magnetic Convergence: arrows fly in from outside the screen to form the level)
+                // 4. Draw All Arrows (Progressive Path Drawing: arrows draw from tail X to head Y in place)
                 val boardCenterX = xSize / 2f
                 val boardCenterY = ySize / 2f
                 val maxBoardDist = hypot(boardCenterX, boardCenterY).coerceAtLeast(1f)
-                val screenTravelDist = maxOf(size.width, size.height) * 0.60f + 180f
 
                 for (arrow in arrows) {
                     if (arrow.state == ArrowState.CLEARED) continue
 
-                    // Radial outward flight vector from board center to arrow's resting coordinate
                     val arrowHead = arrow.head
                     val arrowTail = arrow.body.firstOrNull() ?: arrowHead
                     val arrowCenterX = (arrowHead.x + arrowTail.x) / 2f
@@ -505,59 +517,28 @@ fun PuzzleBoardCanvas(
                     val dx = arrowCenterX - boardCenterX
                     val dy = arrowCenterY - boardCenterY
                     val distFromCenter = hypot(dx, dy)
-
-                    val (dirX, dirY) = if (distFromCenter > 0.01f) {
-                        (dx / distFromCenter) to (dy / distFromCenter)
-                    } else {
-                        0f to -1f
-                    }
-
                     val normDist = (distFromCenter / maxBoardDist).coerceIn(0f, 1f)
 
-                    // Staggered cascade: center arrows start flying in first, outer arrows follow
-                    val startTime = 0.05f + normDist * 0.42f
-                    val flightWindow = 0.50f
-                    val localProg = if (introProgress.value >= 1f) 1f else ((introProgress.value - startTime) / flightWindow).coerceIn(0f, 1f)
+                    // Staggered cascade: center arrows start drawing first, outer arrows follow
+                    val startTime = normDist * 0.28f
+                    val drawWindow = 0.64f
+                    val localProg = if (introProgress.value >= 1f) 1f else ((introProgress.value - startTime) / drawWindow).coerceIn(0f, 1f)
 
-                    // FastOutSlowInEasing provides a sustained, steady gliding speed and gentle brake into position
-                    val easedFlight = if (localProg >= 1f) 1f else FastOutSlowInEasing.transform(localProg)
-                    val remainingDistRatio = 1f - easedFlight
+                    val easedDraw = if (localProg >= 1f) 1f else FastOutSlowInEasing.transform(localProg)
+                    val introAlpha = if (localProg >= 1f) 1f else (localProg / 0.15f).coerceIn(0f, 1f)
 
-                    val currentFlyOffsetX = if (localProg >= 1f) 0f else dirX * screenTravelDist * remainingDistRatio
-                    val currentFlyOffsetY = if (localProg >= 1f) 0f else dirY * screenTravelDist * remainingDistRatio
-
-                    val arrowScale = when {
-                        localProg >= 1f -> 1.0f
-                        localProg < 0.85f -> 0.88f + 0.12f * (localProg / 0.85f) // Scales smoothly up from 88% to 100% during flight
-                        else -> {
-                            // Soft tactile cushion as piece locks into its grid slot (1.00 -> 1.035 -> 1.00)
-                            val t = (localProg - 0.85f) / 0.15f
-                            1.0f + sin(t * PI.toFloat()) * 0.035f
-                        }
-                    }
-                    val introAlpha = if (localProg >= 1f) 1f else (localProg / 0.18f).coerceIn(0f, 1f)
-
-                    val pivot = Offset(
-                        boardOrigin.x + (arrowCenterX + 0.5f) * cellSize,
-                        boardOrigin.y + (arrowCenterY + 0.5f) * cellSize
+                    drawArrowEntity(
+                        origin = boardOrigin,
+                        arrow = arrow,
+                        xSize = xSize,
+                        ySize = ySize,
+                        cellSize = cellSize,
+                        theme = theme,
+                        hintPulseScale = hintPulseScale,
+                        previewRayArrowId = previewRayArrowId,
+                        drawProgress = easedDraw,
+                        introAlpha = introAlpha
                     )
-
-                    withTransform({
-                        translate(left = currentFlyOffsetX, top = currentFlyOffsetY)
-                        scale(arrowScale, arrowScale, pivot = pivot)
-                    }) {
-                        drawArrowEntity(
-                            origin = boardOrigin,
-                            arrow = arrow,
-                            xSize = xSize,
-                            ySize = ySize,
-                            cellSize = cellSize,
-                            theme = theme,
-                            hintPulseScale = hintPulseScale,
-                            previewRayArrowId = previewRayArrowId,
-                            introAlpha = introAlpha
-                        )
-                    }
                 }
 
             }
@@ -718,6 +699,7 @@ private fun DrawScope.drawArrowEntity(
     theme: ThemePreset,
     hintPulseScale: Float,
     previewRayArrowId: String?,
+    drawProgress: Float = 1.0f,
     introAlpha: Float = 1.0f
 ) {
     val isPreviewHold = (arrow.id == previewRayArrowId)
@@ -785,18 +767,25 @@ private fun DrawScope.drawArrowEntity(
         1.0f
     }
 
-    // Sample the moving polyline segment along the track
+    // Progressive draw length during intro write-on animation
+    val visibleBodyLen = if (arrow.state == ArrowState.IDLE && drawProgress < 1f) {
+        originalBodyLen * drawProgress
+    } else {
+        originalBodyLen.toFloat()
+    }
+
+    // Sample the moving or progressively drawing polyline segment along the track
     val sampledPoints = sampleTrackSegment(
         track = track,
         startDist = displacement,
-        endDist = originalBodyLen + displacement
+        endDist = visibleBodyLen + displacement
     )
 
-    if (sampledPoints.isEmpty()) return
+    if (sampledPoints.isEmpty() && originalBodyLen > 0) return
 
     val renderColor = baseColor.copy(alpha = alpha * introAlpha)
 
-    // 1. Draw body stroke along the moving polyline with smooth rounded corner fillets
+    // 1. Draw body stroke along the polyline with smooth rounded corner fillets
     if (sampledPoints.size > 1) {
         val path = buildRoundedCornerPath(sampledPoints, radius = cellSize * 0.32f)
         drawPath(
@@ -810,23 +799,38 @@ private fun DrawScope.drawArrowEntity(
         )
     }
 
-    // 2. Draw crisp, sharp triangular arrowhead at the moving head point (acute angle, flush with stem)
-    val currentHead = sampledPoints.last()
-    rotate(
-        degrees = arrow.direction.angleDegrees,
-        pivot = currentHead
-    ) {
-        val arrowHeadPath = Path().apply {
-            moveTo(currentHead.x, currentHead.y - headSize * 0.58f) // Sharp forward tip
-            lineTo(currentHead.x + headSize * 0.40f, currentHead.y + headSize * 0.30f) // Right base
-            lineTo(currentHead.x - headSize * 0.40f, currentHead.y + headSize * 0.30f) // Left base
-            close()
+    // Arrowhead pop-in scale during intro
+    val headPopScale = when {
+        drawProgress >= 1f -> 1.0f
+        originalBodyLen == 0 -> {
+            if (drawProgress < 0.80f) (drawProgress / 0.80f) * 1.10f
+            else 1.0f + sin(((drawProgress - 0.80f) / 0.20f) * PI.toFloat()) * 0.10f
         }
+        drawProgress < 0.62f -> 0.0f
+        drawProgress < 0.85f -> ((drawProgress - 0.62f) / 0.23f) * 1.12f
+        else -> 1.0f + sin(((drawProgress - 0.85f) / 0.15f) * PI.toFloat()) * 0.12f
+    }
+    val effectiveHeadSize = headSize * headPopScale
 
-        drawPath(
-            path = arrowHeadPath,
-            color = renderColor
-        )
+    // 2. Draw crisp, sharp triangular arrowhead at the head point
+    if (effectiveHeadSize > 0.5f) {
+        val currentHead = if (displacement > 0.001f && sampledPoints.isNotEmpty()) sampledPoints.last() else headPt
+        rotate(
+            degrees = arrow.direction.angleDegrees,
+            pivot = currentHead
+        ) {
+            val arrowHeadPath = Path().apply {
+                moveTo(currentHead.x, currentHead.y - effectiveHeadSize * 0.58f) // Sharp forward tip
+                lineTo(currentHead.x + effectiveHeadSize * 0.40f, currentHead.y + effectiveHeadSize * 0.30f) // Right base
+                lineTo(currentHead.x - effectiveHeadSize * 0.40f, currentHead.y + effectiveHeadSize * 0.30f) // Left base
+                close()
+            }
+
+            drawPath(
+                path = arrowHeadPath,
+                color = renderColor
+            )
+        }
     }
 }
 
