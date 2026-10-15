@@ -546,8 +546,22 @@ fun PuzzleBoardCanvas(
                     }
                 }
             }
+            // Subtle directional micro-jolt camera shake on blocked obstacle collision
+            val flashingArrow = arrows.firstOrNull { it.state == ArrowState.WRONG_FLASH }
+            val blockedShakeOffset = if (flashingArrow != null) {
+                val t = flashingArrow.flightProgress
+                val decay = (1f - t).coerceIn(0f, 1f)
+                val shakeMagnitude = 2.4.dp.toPx() * decay
+                val oscillation = sin(t * 3f * PI.toFloat())
+                val dir = flashingArrow.direction
+                Offset(
+                    x = dir.dx * oscillation * shakeMagnitude,
+                    y = dir.dy * oscillation * shakeMagnitude
+                )
+            } else Offset.Zero
+
             withTransform({
-                translate(panX, panY)
+                translate(panX + blockedShakeOffset.x, panY + blockedShakeOffset.y)
                 scale(scale * introZoom, scale * introZoom, pivot = center)
             }) {
                 // Background is completely transparent; surroundings adapt naturally to theme
