@@ -1,6 +1,7 @@
 package com.arrowescape.puzzle.ui.components
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
@@ -107,7 +108,7 @@ fun PuzzleBoardCanvas(
         introProgress.snapTo(0f)
         introProgress.animateTo(
             targetValue = 1f,
-            animationSpec = tween(durationMillis = 680, easing = FastOutSlowInEasing)
+            animationSpec = tween(durationMillis = 1250, easing = CubicBezierEasing(0.12f, 1.0f, 0.25f, 1.0f))
         )
     }
 
@@ -436,7 +437,7 @@ fun PuzzleBoardCanvas(
                 // Background is completely transparent; surroundings adapt naturally to theme
 
                 // 1. Subtle level silhouette cell dots (fade in first to outline level structure)
-                val dotsAlpha = if (introProgress.value >= 1f) 0.35f else (introProgress.value / 0.25f).coerceIn(0f, 1f) * 0.35f
+                val dotsAlpha = if (introProgress.value >= 1f) 0.35f else (introProgress.value / 0.20f).coerceIn(0f, 1f) * 0.35f
                 for (coord in initialLevelCells) {
                     drawCircle(
                         color = Color(0xFF94A3B8).copy(alpha = dotsAlpha),
@@ -459,35 +460,54 @@ fun PuzzleBoardCanvas(
                     drawPreviewRay(boardOrigin, previewArrowToRender, xSize, ySize, cellSize, previewAlpha)
                 }
 
-                // 4. Draw All Arrows (Cascading radial assembly on level intro, static, flying out, or wrong-move bouncing)
+                // 4. Draw All Arrows (Radial Magnetic Convergence: arrows fly in from outside the screen to form the level)
                 val boardCenterX = xSize / 2f
                 val boardCenterY = ySize / 2f
                 val maxBoardDist = hypot(boardCenterX, boardCenterY).coerceAtLeast(1f)
+                val screenTravelDist = maxOf(size.width, size.height) * 0.70f + 250f
 
                 for (arrow in arrows) {
                     if (arrow.state == ArrowState.CLEARED) continue
 
-                    // Radial cascade calculation during level initialization
+                    // Radial outward flight vector from board center to arrow's resting coordinate
                     val arrowHead = arrow.head
                     val arrowTail = arrow.body.firstOrNull() ?: arrowHead
                     val arrowCenterX = (arrowHead.x + arrowTail.x) / 2f
                     val arrowCenterY = (arrowHead.y + arrowTail.y) / 2f
-                    val distFromCenter = hypot(arrowCenterX - boardCenterX, arrowCenterY - boardCenterY)
+                    val dx = arrowCenterX - boardCenterX
+                    val dy = arrowCenterY - boardCenterY
+                    val distFromCenter = hypot(dx, dy)
+
+                    val (dirX, dirY) = if (distFromCenter > 0.01f) {
+                        (dx / distFromCenter) to (dy / distFromCenter)
+                    } else {
+                        0f to -1f
+                    }
+
                     val normDist = (distFromCenter / maxBoardDist).coerceIn(0f, 1f)
 
-                    // Staggered ripple window across the 680ms assembly
-                    val startTime = normDist * 0.42f
-                    val rippleWindow = 0.38f
-                    val localProg = if (introProgress.value >= 1f) 1f else ((introProgress.value - startTime) / rippleWindow).coerceIn(0f, 1f)
+                    // Staggered cascade: center arrows start flying in first, outer arrows follow
+                    val startTime = 0.04f + normDist * 0.42f
+                    val flightWindow = 0.50f
+                    val localProg = if (introProgress.value >= 1f) 1f else ((introProgress.value - startTime) / flightWindow).coerceIn(0f, 1f)
 
-                    if (localProg <= 0f) continue // Arrow not yet reached by the assembly wave
+                    // Cubic ease-out: rapid entry from outside the gameplay area, silky smooth deceleration into position
+                    val inv = 1f - localProg
+                    val easedFlight = if (localProg >= 1f) 1f else (1f - inv * inv * inv)
+                    val remainingDistRatio = 1f - easedFlight
+
+                    val currentFlyOffsetX = if (localProg >= 1f) 0f else dirX * screenTravelDist * remainingDistRatio
+                    val currentFlyOffsetY = if (localProg >= 1f) 0f else dirY * screenTravelDist * remainingDistRatio
 
                     val arrowScale = when {
                         localProg >= 1f -> 1.0f
-                        localProg < 0.70f -> (localProg / 0.70f) * 1.08f // Energetic pop up to 108%
-                        else -> 1.08f - ((localProg - 0.70f) / 0.30f) * 0.08f // Settle crisply back to 100%
+                        localProg < 0.82f -> 0.86f + 0.14f * (localProg / 0.82f) // Scales smoothly up from 86% to 100% during flight
+                        else -> {
+                            // Soft tactile cushion as piece locks into its grid slot (1.00 -> 1.04 -> 1.00)
+                            val t = (localProg - 0.82f) / 0.18f
+                            1.0f + sin(t * PI.toFloat()) * 0.04f
+                        }
                     }
-                    val dropOffsetY = if (localProg >= 1f) 0f else (1f - localProg) * (cellSize * 0.30f)
                     val introAlpha = if (localProg >= 1f) 1f else (localProg / 0.25f).coerceIn(0f, 1f)
 
                     val pivot = Offset(
@@ -496,7 +516,7 @@ fun PuzzleBoardCanvas(
                     )
 
                     withTransform({
-                        translate(top = dropOffsetY)
+                        translate(left = currentFlyOffsetX, top = currentFlyOffsetY)
                         scale(arrowScale, arrowScale, pivot = pivot)
                     }) {
                         drawArrowEntity(
