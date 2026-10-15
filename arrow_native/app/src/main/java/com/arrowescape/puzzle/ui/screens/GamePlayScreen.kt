@@ -94,10 +94,12 @@ fun GamePlayScreen(
                     )
                 }
 
-                // Combo praise floating overlay
+                // Running-style combo praise notification banner positioned below header and above gameplay
                 CheerOverlay(
                     message = uiState.cheerMessage,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 8.dp)
                 )
             }
 

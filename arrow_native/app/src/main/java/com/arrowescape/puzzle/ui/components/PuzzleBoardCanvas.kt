@@ -61,15 +61,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.PI
-import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
-
-private data class TapParticle(
-    val origin: Offset,
-    val progress: Animatable<Float, *> = Animatable(0f),
-    val color: Color
-)
 
 private data class VelSample(
     val delta: Offset,
@@ -124,8 +117,6 @@ fun PuzzleBoardCanvas(
         label = "hintPulse"
     )
 
-    // Tap ripple particles list
-    val tapParticles = remember { mutableStateListOf<TapParticle>() }
 
     // Smooth animated preview beam alpha matching Unity's CanvasGroup fade (lineCg.DOFade)
     val previewAlpha by animateFloatAsState(
@@ -378,8 +369,6 @@ fun PuzzleBoardCanvas(
                                 val tappedArrow = findClosestArrow(localUp, boardOrigin, arrows, cellSize, xSize, ySize)
                                     ?: candidateArrow
 
-                                // Spawn tap particle at local board coordinate (Unity TapParticleEffect color #0088F5)
-                                tapParticles.add(TapParticle(origin = localUp, color = Color(0xFF0088F5)))
 
                                 if (tappedArrow != null) {
                                     onArrowClick(tappedArrow)
@@ -479,8 +468,6 @@ fun PuzzleBoardCanvas(
                     )
                 }
 
-                // 4. Draw Tap Particles
-                drawTapParticles(tapParticles)
             }
         }
 
@@ -536,17 +523,6 @@ fun PuzzleBoardCanvas(
                     )
                 }
             }
-        }
-    }
-
-    // Launch animations for tap particles
-    tapParticles.forEach { particle ->
-        LaunchedEffect(particle) {
-            particle.progress.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
-            )
-            tapParticles.remove(particle)
         }
     }
 }
@@ -851,49 +827,6 @@ private fun lerpOffset(p0: Offset, p1: Offset, t: Float): Offset {
         x = p0.x + (p1.x - p0.x) * t,
         y = p0.y + (p1.y - p0.y) * t
     )
-}
-
-private fun DrawScope.drawTapParticles(particles: List<TapParticle>) {
-    for (p in particles) {
-        val prog = p.progress.value
-        val alpha = (1f - prog).coerceIn(0f, 1f)
-        if (alpha <= 0f) continue
-
-        // 1. Expanding soft shockwave ring (Unity TapParticleEffect)
-        val ringRadius = (6.dp.toPx() + prog * 30.dp.toPx())
-        drawCircle(
-            color = p.color.copy(alpha = alpha * 0.70f),
-            radius = ringRadius,
-            center = p.origin,
-            style = Stroke(width = 2.2.dp.toPx())
-        )
-
-        // 2. Center flash dot
-        val centerDotRadius = (4.5.dp.toPx() * (1f - prog)).coerceAtLeast(0f)
-        if (centerDotRadius > 0.5f) {
-            drawCircle(
-                color = p.color.copy(alpha = alpha * 0.85f),
-                radius = centerDotRadius,
-                center = p.origin
-            )
-        }
-
-        // 3. 4 orbital sparkle dots traveling outward
-        val sparkDist = (8.dp.toPx() + prog * 32.dp.toPx())
-        val angles = listOf(45.0, 135.0, 225.0, 315.0)
-        for (deg in angles) {
-            val rad = deg * PI / 180.0
-            val sparkCenter = Offset(
-                x = (p.origin.x + sparkDist * cos(rad)).toFloat(),
-                y = (p.origin.y + sparkDist * sin(rad)).toFloat()
-            )
-            drawCircle(
-                color = p.color.copy(alpha = alpha * 0.85f),
-                radius = (2.5.dp.toPx() * (1f - prog * 0.6f)).coerceAtLeast(0.5f),
-                center = sparkCenter
-            )
-        }
-    }
 }
 
 private fun DrawScope.drawGridLines(origin: Offset, xSize: Int, ySize: Int, cellSize: Float, color: Color) {
