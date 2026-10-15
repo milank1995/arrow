@@ -1,7 +1,10 @@
 package com.arrowescape.puzzle.ui.components
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,16 +26,29 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.ui.theme.ThemePreset
+import kotlinx.coroutines.launch
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 @Composable
 fun GameHeader(
@@ -111,18 +127,34 @@ fun GameHeader(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    // 3 Hearts Row with rich coral-red tint and depth
+                    var prevHearts by remember { mutableIntStateOf(heartsRemaining) }
+                    var brokenHeartIndex by remember { mutableStateOf<Int?>(null) }
+
+                    LaunchedEffect(heartsRemaining) {
+                        if (heartsRemaining < prevHearts) {
+                            brokenHeartIndex = heartsRemaining
+                        } else if (heartsRemaining >= maxHearts) {
+                            brokenHeartIndex = null
+                        }
+                        prevHearts = heartsRemaining
+                    }
+
+                    // 3 Hearts Row with rich coral-red tint and depth + animated break explosion
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         for (i in 0 until maxHearts) {
                             val isAlive = i < heartsRemaining
-                            Icon(
-                                imageVector = Icons.Default.Favorite,
-                                contentDescription = "Heart",
-                                tint = if (isAlive) Color(0xFFFF4B4B) else Color(0xFFCBD5E1),
-                                modifier = Modifier.size(22.dp)
+                            val isBreaking = (i == brokenHeartIndex)
+                            AnimatedHeart(
+                                isAlive = isAlive,
+                                isBreaking = isBreaking,
+                                onBreakFinished = {
+                                    if (brokenHeartIndex == i) {
+                                        brokenHeartIndex = null
+                                    }
+                                }
                             )
                         }
                     }
@@ -201,3 +233,104 @@ fun GameHeader(
         }
     }
 }
+
+private data class HeartShard(
+    val vx: Float,
+    val vy: Float,
+    val size: Float
+)
+
+@Composable
+private fun AnimatedHeart(
+    isAlive: Boolean,
+    isBreaking: Boolean,
+    onBreakFinished: () -> Unit
+) {
+    val scale = remember { Animatable(1f) }
+    val rotation = remember { Animatable(0f) }
+    val breakProgress = remember { Animatable(0f) }
+
+    val shards = remember {
+        (0 until 7).map { i ->
+            val angle = (i * 51.4f + kotlin.random.Random.nextFloat() * 20f - 10f) * (PI.toFloat() / 180f)
+            val speed = 28f + kotlin.random.Random.nextFloat() * 22f
+            HeartShard(
+                vx = cos(angle) * speed,
+                vy = sin(angle) * speed,
+                size = 2.4f + kotlin.random.Random.nextFloat() * 1.6f
+            )
+        }
+    }
+
+    LaunchedEffect(isBreaking) {
+        if (isBreaking) {
+            breakProgress.snapTo(0f)
+            // Recoil scale pop + shake rotation + break shards explosion matching Unity HeartAnimationController
+            launch {
+                scale.animateTo(1.38f, tween(90, easing = FastOutSlowInEasing))
+                scale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+            }
+            launch {
+                rotation.animateTo(-18f, tween(65))
+                rotation.animateTo(15f, tween(75))
+                rotation.animateTo(-8f, tween(65))
+                rotation.animateTo(0f, tween(65))
+            }
+            launch {
+                breakProgress.animateTo(1f, tween(340, easing = FastOutSlowInEasing))
+                onBreakFinished()
+            }
+        }
+    }
+
+    val heartColor = when {
+        isBreaking -> {
+            val t = breakProgress.value
+            // Cross-fade from bright coral-red to inactive slate-gray
+            Color(
+                red = androidx.compose.ui.util.lerp(1f, 0.796f, t),
+                green = androidx.compose.ui.util.lerp(0.294f, 0.835f, t),
+                blue = androidx.compose.ui.util.lerp(0.294f, 0.882f, t),
+                alpha = 1f
+            )
+        }
+        isAlive -> Color(0xFFFF4B4B)
+        else -> Color(0xFFCBD5E1)
+    }
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(22.dp)
+            .scale(scale.value)
+            .rotate(rotation.value)
+            .drawWithContent {
+                drawContent()
+                // Render break shard particles bursting outward
+                if (isBreaking && breakProgress.value < 1f) {
+                    val p = breakProgress.value
+                    val shardAlpha = (1f - p).coerceIn(0f, 1f)
+                    val density = this.density
+                    val center = Offset(size.width / 2f, size.height / 2f)
+
+                    for (shard in shards) {
+                        val pos = center + Offset(shard.vx * p * density, shard.vy * p * density)
+                        val radius = (shard.size * (1f - p * 0.5f)) * density
+                        drawCircle(
+                            color = Color(0xFFFF4B4B).copy(alpha = shardAlpha),
+                            radius = radius,
+                            center = pos
+                        )
+                    }
+                }
+            }
+    ) {
+        Icon(
+            imageVector = Icons.Default.Favorite,
+            contentDescription = "Heart",
+            tint = heartColor,
+            modifier = Modifier.size(22.dp)
+        )
+    }
+}
+

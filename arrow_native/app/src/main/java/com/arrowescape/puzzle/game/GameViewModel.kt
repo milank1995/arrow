@@ -28,6 +28,7 @@ data class GameUiState(
     val heartsRemaining: Int = 3,
     val maxHearts: Int = 3,
     val isLevelComplete: Boolean = false,
+    val isCelebrationBurstActive: Boolean = false,
     val isGameOver: Boolean = false,
     val comboCount: Int = 0,
     val cheerMessage: String? = null,
@@ -192,16 +193,16 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     delay(16)
                 }
 
-                _uiState.update { state ->
-                    val finalArrows = state.arrows.map {
-                        if (it.id == currentArrow.id) it.copyWithState(ArrowState.CLEARED) else it
-                    }
-                    val allCleared = finalArrows.all { it.state == ArrowState.CLEARED }
-                    state.copy(arrows = finalArrows, isLevelComplete = allCleared)
+                val finalArrows = _uiState.value.arrows.map {
+                    if (it.id == currentArrow.id) it.copyWithState(ArrowState.CLEARED) else it
                 }
-
-                if (_uiState.value.isLevelComplete) {
-                    handleLevelComplete()
+                val allCleared = finalArrows.all { it.state == ArrowState.CLEARED }
+                if (allCleared) {
+                    triggerLevelVictory(finalArrows)
+                } else {
+                    _uiState.update { state ->
+                        state.copy(arrows = finalArrows)
+                    }
                 }
             }
         } else {
@@ -288,20 +289,16 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 audioHapticManager.playBoosterUse()
                 occupancyMap.release(target)
 
-                _uiState.update { state ->
-                    val updated = state.arrows.map {
-                        if (it.id == target.id) it.copyWithState(ArrowState.CLEARED) else it
-                    }
-                    val allCleared = updated.all { it.state == ArrowState.CLEARED }
-                    state.copy(
-                        arrows = updated,
-                        isHammerModeActive = false,
-                        isLevelComplete = allCleared
-                    )
+                val updated = _uiState.value.arrows.map {
+                    if (it.id == target.id) it.copyWithState(ArrowState.CLEARED) else it
                 }
+                val allCleared = updated.all { it.state == ArrowState.CLEARED }
+                _uiState.update { it.copy(isHammerModeActive = false) }
 
-                if (_uiState.value.isLevelComplete) {
-                    handleLevelComplete()
+                if (allCleared) {
+                    triggerLevelVictory(updated)
+                } else {
+                    _uiState.update { it.copy(arrows = updated) }
                 }
             }
         }
@@ -322,16 +319,16 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 }
 
                 delay(280)
-                _uiState.update { state ->
-                    val updated = state.arrows.map {
-                        if (it.id == target.id) it.copyWithState(ArrowState.CLEARED) else it
-                    }
-                    val allCleared = updated.all { it.state == ArrowState.CLEARED }
-                    state.copy(arrows = updated, isLevelComplete = allCleared)
+                val updated = _uiState.value.arrows.map {
+                    if (it.id == target.id) it.copyWithState(ArrowState.CLEARED) else it
                 }
-
-                if (_uiState.value.isLevelComplete) {
-                    handleLevelComplete()
+                val allCleared = updated.all { it.state == ArrowState.CLEARED }
+                if (allCleared) {
+                    triggerLevelVictory(updated)
+                } else {
+                    _uiState.update { state ->
+                        state.copy(arrows = updated)
+                    }
                 }
             }
         }
@@ -364,8 +361,19 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         loadLevel(_uiState.value.currentLevelNumber)
     }
 
-    private fun handleLevelComplete() {
+    private suspend fun triggerLevelVictory(finalArrows: List<Arrow>) {
+        _uiState.update { state ->
+            state.copy(arrows = finalArrows, isCelebrationBurstActive = true)
+        }
         audioHapticManager.playLevelWin()
+        delay(950)
+        _uiState.update { state ->
+            state.copy(isLevelComplete = true, isCelebrationBurstActive = false)
+        }
+        handleLevelComplete()
+    }
+
+    private fun handleLevelComplete() {
         viewModelScope.launch {
             repository.addCoins(25)
         }

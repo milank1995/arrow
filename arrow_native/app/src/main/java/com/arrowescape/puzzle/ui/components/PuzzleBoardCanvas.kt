@@ -39,10 +39,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -73,6 +76,34 @@ private data class VelSample(
     val timeMs: Long
 )
 
+private data class TapSpark(
+    val vx: Float,
+    val vy: Float,
+    val color: Color,
+    val maxRadius: Float
+)
+
+private data class ActiveTapEffect(
+    val id: Long,
+    val center: Offset,
+    val startTime: Long,
+    val durationMs: Long = 300L,
+    val sparks: List<TapSpark>
+)
+
+private data class ConfettiPiece(
+    val x: Float,
+    val y: Float,
+    val vx: Float,
+    val vy: Float,
+    val color: Color,
+    val width: Float,
+    val height: Float,
+    val rotation: Float,
+    val rotSpeed: Float,
+    val isRibbon: Boolean
+)
+
 @Composable
 fun PuzzleBoardCanvas(
     xSize: Int,
@@ -80,6 +111,7 @@ fun PuzzleBoardCanvas(
     arrows: List<Arrow>,
     theme: ThemePreset,
     isGridLinesActive: Boolean,
+    isCelebrationBurstActive: Boolean = false,
     previewRayArrowId: String?,
     onArrowClick: (Arrow) -> Unit,
     onArrowLongPress: (Arrow, isPressed: Boolean) -> Unit,
@@ -174,6 +206,62 @@ fun PuzzleBoardCanvas(
         val currentMaxScale by rememberUpdatedState(maxScale)
         val currentOnArrowClick by rememberUpdatedState(onArrowClick)
         val currentOnArrowLongPress by rememberUpdatedState(onArrowLongPress)
+
+        val activeTapEffects = remember { mutableStateListOf<ActiveTapEffect>() }
+        val confettiPieces = remember { mutableStateListOf<ConfettiPiece>() }
+        var confettiStartTime by remember { mutableLongStateOf(0L) }
+        var animTick by remember { mutableLongStateOf(0L) }
+
+        LaunchedEffect(isCelebrationBurstActive) {
+            if (isCelebrationBurstActive) {
+                confettiStartTime = System.currentTimeMillis()
+                val festiveColors = listOf(
+                    Color(0xFFFF4B4B), // Coral Red
+                    Color(0xFFFFB800), // Golden Amber
+                    Color(0xFF10B981), // Emerald
+                    Color(0xFF3B82F6), // Electric Blue
+                    Color(0xFF8B5CF6), // Royal Violet
+                    Color(0xFFEC4899), // Hot Pink
+                    Color(0xFF00E5FF)  // Cyan
+                )
+                val centerX = viewportWidth / 2f
+                val centerY = viewportHeight * 0.45f
+                confettiPieces.clear()
+                val pieces = (0 until 65).map { i ->
+                    val angle = (kotlin.random.Random.nextFloat() * 360f) * (PI.toFloat() / 180f)
+                    val speed = 250f + kotlin.random.Random.nextFloat() * 520f
+                    val isRibbon = (i % 3 != 0)
+                    ConfettiPiece(
+                        x = centerX + (kotlin.random.Random.nextFloat() - 0.5f) * 60f,
+                        y = centerY + (kotlin.random.Random.nextFloat() - 0.5f) * 40f,
+                        vx = kotlin.math.cos(angle) * speed * 0.85f,
+                        vy = -kotlin.math.abs(kotlin.math.sin(angle)) * speed - 160f,
+                        color = festiveColors[i % festiveColors.size],
+                        width = if (isRibbon) 10f + kotlin.random.Random.nextFloat() * 6f else 6f,
+                        height = if (isRibbon) 5f + kotlin.random.Random.nextFloat() * 3f else 6f,
+                        rotation = kotlin.random.Random.nextFloat() * 360f,
+                        rotSpeed = (kotlin.random.Random.nextFloat() - 0.5f) * 720f,
+                        isRibbon = isRibbon
+                    )
+                }
+                confettiPieces.addAll(pieces)
+            } else {
+                confettiPieces.clear()
+            }
+        }
+
+        LaunchedEffect(activeTapEffects.isNotEmpty() || (isCelebrationBurstActive && confettiPieces.isNotEmpty())) {
+            while (activeTapEffects.isNotEmpty() || (isCelebrationBurstActive && confettiPieces.isNotEmpty())) {
+                withFrameNanos { frameTimeNanos ->
+                    animTick = frameTimeNanos
+                }
+                val tNow = System.currentTimeMillis()
+                activeTapEffects.removeAll { tNow - it.startTime > it.durationMs }
+                if (tNow - confettiStartTime > 1100L) {
+                    confettiPieces.clear()
+                }
+            }
+        }
 
         Canvas(
             modifier = Modifier
@@ -332,6 +420,35 @@ fun PuzzleBoardCanvas(
                         val isTap = !isMultiTouch && !isDragging && !isLongPressTriggered && totalMovement < dragThreshold && elapsed < 550
 
                         if (isTap) {
+                            // Touch Spark & Ripple Effect (TapParticleEffect matching Unity)
+                            val sparkColors = listOf(
+                                theme.arrowDefault,
+                                Color(0xFFFFD166),
+                                Color(0xFF06D6A0),
+                                Color(0xFF118AB2),
+                                Color(0xFFEF476F),
+                                Color(0xFF8338EC)
+                            )
+                            val sparks = (0 until 6).map { i ->
+                                val angle = (i * 60f + kotlin.random.Random.nextFloat() * 24f - 12f) * (PI.toFloat() / 180f)
+                                val speed = 28f + kotlin.random.Random.nextFloat() * 28f
+                                TapSpark(
+                                    vx = kotlin.math.cos(angle) * speed,
+                                    vy = kotlin.math.sin(angle) * speed,
+                                    color = sparkColors[i % sparkColors.size],
+                                    maxRadius = 2.4f + kotlin.random.Random.nextFloat() * 1.6f
+                                )
+                            }
+                            activeTapEffects.add(
+                                ActiveTapEffect(
+                                    id = System.nanoTime(),
+                                    center = startPos,
+                                    startTime = System.currentTimeMillis(),
+                                    durationMs = 280L,
+                                    sparks = sparks
+                                )
+                            )
+
                             val localUp = center + (lastPos - Offset(panX, panY) - center) / scale
                             // Target resolution: check candidateArrow first, or find closest at localDown or localUp
                             val resolvedArrow = candidateArrow
@@ -457,6 +574,7 @@ fun PuzzleBoardCanvas(
                     }
                 }
         ) {
+            if (animTick > 0L) { /* Redraw subscription for dynamic particle animations */ }
             val center = Offset(size.width / 2f, size.height / 2f)
             // Subtle tactile zoom-in and zoom-out breathing during level intro
             val introZoom = if (introProgress.value >= 1f) 1.0f else {
@@ -541,6 +659,77 @@ fun PuzzleBoardCanvas(
                     )
                 }
 
+            }
+
+            // 5. Draw Touch Spark & Ripple Effects (TapParticleEffect matching Unity)
+            val now = System.currentTimeMillis()
+            val canvasDensity = this.density
+            for (effect in activeTapEffects) {
+                val progress = ((now - effect.startTime).toFloat() / effect.durationMs).coerceIn(0f, 1f)
+                if (progress >= 1f) continue
+                val eased = FastOutSlowInEasing.transform(progress)
+
+                // Expanding soft ripple ring
+                val ringRadius = (5f + 25f * eased) * canvasDensity
+                val ringAlpha = (1f - progress).coerceIn(0f, 1f) * 0.72f
+                val ringStroke = (2.2f * (1f - progress * 0.7f)).coerceAtLeast(0.8f) * canvasDensity
+                drawCircle(
+                    color = theme.arrowDefault.copy(alpha = ringAlpha),
+                    radius = ringRadius,
+                    center = effect.center,
+                    style = Stroke(width = ringStroke)
+                )
+
+                // Bursting star sparks
+                for (spark in effect.sparks) {
+                    val sparkPos = effect.center + Offset(spark.vx * eased * canvasDensity, spark.vy * eased * canvasDensity)
+                    val sparkAlpha = (1f - progress).coerceIn(0f, 1f)
+                    val sparkSize = (spark.maxRadius * (1f - progress * 0.55f)) * canvasDensity
+                    drawCircle(
+                        color = spark.color.copy(alpha = sparkAlpha),
+                        radius = sparkSize,
+                        center = sparkPos
+                    )
+                }
+            }
+
+            // 6. Draw Confetti Celebration Burst (PlayLastArrowBurstDelayed matching Unity)
+            if (confettiPieces.isNotEmpty() && confettiStartTime > 0L) {
+                val elapsedSec = ((now - confettiStartTime).toFloat() / 1000f).coerceAtLeast(0f)
+                val celebrationDuration = 0.95f
+                val progress = (elapsedSec / celebrationDuration).coerceIn(0f, 1f)
+                val alpha = if (progress < 0.70f) 1.0f else ((1.0f - progress) / 0.30f).coerceIn(0f, 1f)
+                val gravity = 980f // px/s^2
+
+                for (piece in confettiPieces) {
+                    val curX = piece.x + piece.vx * elapsedSec
+                    val curY = piece.y + piece.vy * elapsedSec + 0.5f * gravity * elapsedSec * elapsedSec
+                    val curRot = piece.rotation + piece.rotSpeed * elapsedSec
+
+                    if (piece.isRibbon) {
+                        // Flutter ribbon: simulate 3D rotation with cosine width scaling
+                        val flutterScale = kotlin.math.abs(kotlin.math.cos(curRot * (PI.toFloat() / 180f)))
+                        val ribbonWidth = (piece.width * flutterScale).coerceAtLeast(1.5f) * canvasDensity
+                        val ribbonHeight = piece.height * canvasDensity
+
+                        rotate(curRot, pivot = Offset(curX, curY)) {
+                            drawRoundRect(
+                                color = piece.color.copy(alpha = alpha),
+                                topLeft = Offset(curX - ribbonWidth / 2f, curY - ribbonHeight / 2f),
+                                size = Size(ribbonWidth, ribbonHeight),
+                                cornerRadius = CornerRadius(1.8f * canvasDensity)
+                            )
+                        }
+                    } else {
+                        // Star sparkle particle
+                        val starRadius = (piece.width * 0.5f * (1f - progress * 0.3f)) * canvasDensity
+                        drawCircle(
+                            color = piece.color.copy(alpha = alpha),
+                            radius = starRadius,
+                            center = Offset(curX, curY)
+                        )
+                    }
+                }
             }
         }
 

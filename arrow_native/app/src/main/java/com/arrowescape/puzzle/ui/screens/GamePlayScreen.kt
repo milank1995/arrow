@@ -88,6 +88,7 @@ fun GamePlayScreen(
                         arrows = uiState.arrows,
                         theme = theme,
                         isGridLinesActive = uiState.isGridLinesActive,
+                        isCelebrationBurstActive = uiState.isCelebrationBurstActive,
                         previewRayArrowId = uiState.previewRayArrowId,
                         onArrowClick = onArrowClick,
                         onArrowLongPress = onArrowLongPress
