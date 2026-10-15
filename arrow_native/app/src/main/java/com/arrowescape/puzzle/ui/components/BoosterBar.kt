@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -140,34 +141,20 @@ fun BoosterBar(
 
             Spacer(modifier = Modifier.size(16.dp))
 
-            // 2. Grid (#) Pod
+            // 2. Grid (#) Pod with eye badge (matching Unity Screenshot 2)
             Box(
+                contentAlignment = Alignment.TopEnd,
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .scale(gridScale.value),
-                contentAlignment = Alignment.Center
+                    .scale(gridScale.value)
             ) {
-                val gridPodBg = if (isGridLinesActive) {
-                    if (theme.isDark) theme.arrowDefault else Color(0xFF3B82F6)
-                } else {
-                    theme.boosterBg
-                }
-                val gridPodTextColor = if (isGridLinesActive) {
-                    if (theme.isDark) Color(0xFF0F172A) else Color.White
-                } else {
-                    theme.textPrimary
-                }
-
+                // Base Pod Circle
                 Box(
                     modifier = Modifier
                         .size(62.dp)
                         .clip(CircleShape)
-                        .background(gridPodBg)
-                        .border(
-                            1.dp,
-                            if (isGridLinesActive) Color.Transparent else theme.gridLine,
-                            CircleShape
-                        )
+                        .background(theme.boosterBg)
+                        .border(1.dp, theme.gridLine, CircleShape)
                         .clickable {
                             coroutineScope.launch {
                                 gridScale.animateTo(0.85f, tween(60))
@@ -182,8 +169,33 @@ fun BoosterBar(
                         text = "#",
                         fontSize = 30.sp,
                         fontWeight = FontWeight.Bold,
-                        color = gridPodTextColor
+                        color = theme.textPrimary
                     )
+                }
+
+                // Eye status badge at top-right (matches Unity Screenshot 2 gridEyeImg)
+                if (isGridLinesActive) {
+                    Surface(
+                        shape = CircleShape,
+                        color = theme.surface,
+                        shadowElevation = 2.dp,
+                        border = androidx.compose.foundation.BorderStroke(1.2.dp, theme.textPrimary),
+                        modifier = Modifier.offset(x = 4.dp, y = (-4).dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(22.dp)
+                                .padding(3.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Visibility,
+                                contentDescription = "Grid Guides Active",
+                                tint = theme.textPrimary,
+                                modifier = Modifier.size(13.dp)
+                            )
+                        }
+                    }
                 }
             }
         }

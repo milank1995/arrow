@@ -46,6 +46,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -155,6 +156,12 @@ fun PuzzleBoardCanvas(
         targetValue = if (previewRayArrowId != null) 1.0f else 0.0f,
         animationSpec = tween(durationMillis = 160, easing = FastOutSlowInEasing),
         label = "previewAlpha"
+    )
+    // Smooth animated grid guide lines alpha matching Unity CanvasGroup fade (gridLineCg.DOFade)
+    val gridLinesAlpha by animateFloatAsState(
+        targetValue = if (isGridLinesActive) 1.0f else 0.0f,
+        animationSpec = tween(durationMillis = 260, easing = FastOutSlowInEasing),
+        label = "gridLinesAlpha"
     )
     var lastPreviewArrow by remember { mutableStateOf<Arrow?>(null) }
     val activePreviewArrow = arrows.firstOrNull { it.id == previewRayArrowId }
@@ -570,10 +577,23 @@ fun PuzzleBoardCanvas(
             }) {
                 // Background is completely transparent; surroundings adapt naturally to theme
 
-                // 1. Full Grid Lines (background) only if user activated via '#' Booster button
-                if (isGridLinesActive) {
-                    drawGridLines(boardOrigin, xSize, ySize, cellSize, theme.gridLine)
-                    drawGridDots(boardOrigin, xSize, ySize, cellSize, theme.gridDot)
+                // 1. Extended Guide Lines & Dots matching Unity Screenshot 2 (animated fade)
+                if (gridLinesAlpha > 0.01f) {
+                    drawExtendedGridLines(
+                        origin = boardOrigin,
+                        xSize = xSize,
+                        ySize = ySize,
+                        cellSize = cellSize,
+                        canvasSize = size,
+                        color = theme.gridLine.copy(alpha = 0.75f * gridLinesAlpha)
+                    )
+                    drawGridDots(
+                        origin = boardOrigin,
+                        xSize = xSize,
+                        ySize = ySize,
+                        cellSize = cellSize,
+                        color = theme.gridDot.copy(alpha = 0.75f * gridLinesAlpha)
+                    )
                 }
 
                 // 2. Cleared Area Silhouette Dots:
@@ -1103,21 +1123,63 @@ private fun lerpOffset(p0: Offset, p1: Offset, t: Float): Offset {
     )
 }
 
-private fun DrawScope.drawGridLines(origin: Offset, xSize: Int, ySize: Int, cellSize: Float, color: Color) {
+private fun DrawScope.drawExtendedGridLines(
+    origin: Offset,
+    xSize: Int,
+    ySize: Int,
+    cellSize: Float,
+    canvasSize: Size,
+    color: Color
+) {
+    val boardWidth = xSize * cellSize
+    val boardHeight = ySize * cellSize
+
+    // Extend generously across the screen height and width (matching Unity Screenshot 2)
+    val extendY = canvasSize.height.coerceAtLeast(boardHeight * 2.0f)
+    val startY = origin.y - extendY * 0.70f
+    val endY = origin.y + boardHeight + extendY * 0.70f
+
+    val extendX = canvasSize.width.coerceAtLeast(boardWidth * 2.0f)
+    val startX = origin.x - extendX * 0.70f
+    val endX = origin.x + boardWidth + extendX * 0.70f
+
+    val strokeWidth = 1.0f
+
+    // 1. Vertical guide lines extending far upwards toward header and downwards
+    val vBrush = Brush.verticalGradient(
+        0.00f to color.copy(alpha = 0f),
+        0.18f to color,
+        0.82f to color,
+        1.00f to color.copy(alpha = 0f),
+        startY = startY,
+        endY = endY
+    )
     for (x in 0..xSize) {
+        val posX = origin.x + x * cellSize
         drawLine(
-            color = color,
-            start = Offset(origin.x + x * cellSize, origin.y),
-            end = Offset(origin.x + x * cellSize, origin.y + ySize * cellSize),
-            strokeWidth = 1.2f
+            brush = vBrush,
+            start = Offset(posX, startY),
+            end = Offset(posX, endY),
+            strokeWidth = strokeWidth
         )
     }
+
+    // 2. Horizontal guide lines extending far left and right toward screen margins
+    val hBrush = Brush.horizontalGradient(
+        0.00f to color.copy(alpha = 0f),
+        0.18f to color,
+        0.82f to color,
+        1.00f to color.copy(alpha = 0f),
+        startX = startX,
+        endX = endX
+    )
     for (y in 0..ySize) {
+        val posY = origin.y + y * cellSize
         drawLine(
-            color = color,
-            start = Offset(origin.x, origin.y + y * cellSize),
-            end = Offset(origin.x + xSize * cellSize, origin.y + y * cellSize),
-            strokeWidth = 1.2f
+            brush = hBrush,
+            start = Offset(startX, posY),
+            end = Offset(endX, posY),
+            strokeWidth = strokeWidth
         )
     }
 }
@@ -1127,7 +1189,7 @@ private fun DrawScope.drawGridDots(origin: Offset, xSize: Int, ySize: Int, cellS
         for (y in 0..ySize) {
             drawCircle(
                 color = color,
-                radius = 3.0f,
+                radius = 1.8f,
                 center = Offset(origin.x + x * cellSize, origin.y + y * cellSize)
             )
         }
