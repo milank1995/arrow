@@ -129,7 +129,7 @@ fun PuzzleBoardCanvas(
         introProgress.snapTo(0f)
         introProgress.animateTo(
             targetValue = 1f,
-            animationSpec = tween(durationMillis = 1450, easing = LinearEasing)
+            animationSpec = tween(durationMillis = 920, easing = LinearEasing)
         )
     }
 
@@ -532,17 +532,17 @@ fun PuzzleBoardCanvas(
         ) {
             if (animTick > 0L) { /* Redraw subscription for dynamic particle animations */ }
             val center = Offset(size.width / 2f, size.height / 2f)
-            // Subtle tactile zoom-in and zoom-out breathing during level intro
+            // Tactile zoom-in and zoom-out breathing during level intro (0.88x -> 1.045x -> 1.0x)
             val introZoom = if (introProgress.value >= 1f) 1.0f else {
                 val t = introProgress.value
                 when {
-                    t < 0.72f -> {
-                        val p = FastOutSlowInEasing.transform(t / 0.72f)
-                        0.94f + 0.085f * p
+                    t < 0.65f -> {
+                        val p = FastOutSlowInEasing.transform(t / 0.65f)
+                        0.88f + 0.165f * p
                     }
                     else -> {
-                        val p = FastOutSlowInEasing.transform((t - 0.72f) / 0.28f)
-                        1.025f - 0.025f * p
+                        val p = FastOutSlowInEasing.transform((t - 0.65f) / 0.35f)
+                        1.045f - 0.045f * p
                     }
                 }
             }
@@ -566,31 +566,17 @@ fun PuzzleBoardCanvas(
             }) {
                 // Background is completely transparent; surroundings adapt naturally to theme
 
-                // 1. Subtle level silhouette cell dots (fade in first to outline level structure)
-                val dotsAlpha = if (introProgress.value >= 1f) 0.35f else (introProgress.value / 0.16f).coerceIn(0f, 1f) * 0.35f
-                for (coord in initialLevelCells) {
-                    drawCircle(
-                        color = Color(0xFF94A3B8).copy(alpha = dotsAlpha),
-                        radius = (cellSize * 0.055f).coerceIn(1.8f, 3.2f),
-                        center = Offset(
-                            boardOrigin.x + (coord.x + 0.5f) * cellSize,
-                            boardOrigin.y + (coord.y + 0.5f) * cellSize
-                        )
-                    )
-                }
-
-                // 2. Full Grid Lines / Dots only if user activated via '#' Booster button
+                // 1. Full Grid Lines (background) only if user activated via '#' Booster button
                 if (isGridLinesActive) {
                     drawGridLines(boardOrigin, xSize, ySize, cellSize, theme.gridLine)
-                    drawGridDots(boardOrigin, xSize, ySize, cellSize, theme.gridDot)
                 }
 
-                // 3. Draw Preview Ray if an arrow is long-pressed (smooth animated fade matching Unity lineCg.DOFade)
+                // 2. Draw Preview Ray if an arrow is long-pressed (smooth animated fade matching Unity lineCg.DOFade)
                 if (previewArrowToRender != null && previewAlpha > 0.01f) {
                     drawPreviewRay(boardOrigin, previewArrowToRender, xSize, ySize, cellSize, previewAlpha)
                 }
 
-                // 4. Draw All Arrows (Progressive Path Drawing: arrows draw from tail X to head Y in place)
+                // 3. Draw All Arrows (Progressive Path Drawing: arrows draw from tail X to head Y in place)
                 val boardCenterX = xSize / 2f
                 val boardCenterY = ySize / 2f
                 val maxBoardDist = hypot(boardCenterX, boardCenterY).coerceAtLeast(1f)
@@ -629,6 +615,22 @@ fun PuzzleBoardCanvas(
                     )
                 }
 
+                // 4. Grid Dots Layer: rendered ON TOP of arrows matching Unity's pegboard layering (gridDotsRT)
+                val dotsAlpha = if (introProgress.value >= 1f) 0.42f else (introProgress.value / 0.15f).coerceIn(0f, 1f) * 0.42f
+                for (coord in initialLevelCells) {
+                    drawCircle(
+                        color = Color(0xFF94A3B8).copy(alpha = dotsAlpha),
+                        radius = (cellSize * 0.055f).coerceIn(2.0f, 3.2f),
+                        center = Offset(
+                            boardOrigin.x + (coord.x + 0.5f) * cellSize,
+                            boardOrigin.y + (coord.y + 0.5f) * cellSize
+                        )
+                    )
+                }
+
+                if (isGridLinesActive) {
+                    drawGridDots(boardOrigin, xSize, ySize, cellSize, theme.gridDot)
+                }
             }
 
             // 5. Draw Confetti Celebration Burst (PlayLastArrowBurstDelayed matching Unity)
@@ -836,9 +838,9 @@ private fun DrawScope.drawArrowEntity(
 
     val baseColor = when {
         arrow.state == ArrowState.WRONG_FLASH -> theme.arrowWrong
+        isLaunching -> Color(0xFF0088F5)   // Electric Dodger Blue for Click Pop Takeoff (Unity correctArrowAnimColor)
         arrow.isHighlighted -> theme.arrowWrong
         isPreviewHold -> Color(0xFF0088F5) // Luminous Electric Sky Blue for Long-Press Hold (Unity Screenshot 2)
-        isLaunching -> Color(0xFF0088F5)   // Electric Dodger Blue for Click Pop Takeoff (Unity correctArrowAnimColor)
         arrow.state == ArrowState.HINTED -> theme.arrowHint
         else -> theme.arrowDefault
     }
@@ -849,7 +851,7 @@ private fun DrawScope.drawArrowEntity(
     val scaleMultiplier = when {
         isPreviewHold -> 1.10f * (1f + (hintPulseScale - 1f) * 0.35f) // Subtle +10% expansion with gentle breathing
         isLaunching -> 1.18f
-        arrow.state == ArrowState.WRONG_FLASH -> 1.15f
+        arrow.state == ArrowState.WRONG_FLASH -> 1.0f + sin(arrow.flightProgress * PI.toFloat()) * 0.16f
         arrow.state == ArrowState.HINTED -> hintPulseScale
         else -> 1.0f
     }
@@ -885,7 +887,7 @@ private fun DrawScope.drawArrowEntity(
         ArrowState.WRONG_FLASH -> {
             // Physical impact punch forward into obstacle and elastic recoil spring back (Unity DOTween punch)
             val t = arrow.flightProgress
-            (sin(t * PI.toFloat()) * 0.32f - sin(t * 2f * PI.toFloat()) * 0.10f).coerceAtLeast(-0.15f)
+            (sin(t * PI.toFloat()) * 0.30f - sin(t * 2.5f * PI.toFloat()) * 0.08f * (1f - t)).coerceAtLeast(-0.15f)
         }
         else -> 0f
     }
