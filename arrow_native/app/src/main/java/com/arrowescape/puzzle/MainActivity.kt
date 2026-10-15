@@ -98,6 +98,9 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onBackToHomeClick = {
                                         currentScreen = AppScreen.HOME
+                                    },
+                                    onIdlePromptSound = {
+                                        gameViewModel.playHintNudge()
                                     }
                                 )
                             }

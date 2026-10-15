@@ -235,7 +235,7 @@ fun GameHeader(
                     .padding(horizontal = 16.dp, vertical = 2.dp)
                     .height(6.dp)
                     .clip(RoundedCornerShape(3.dp))
-                    .background(if (theme.isDark) Color(0xFF334155) else Color(0xFFE2E8F0))
+                    .background(theme.gridLine)
             ) {
                 if (animatedProgress > 0f) {
                     Box(
@@ -246,8 +246,8 @@ fun GameHeader(
                             .background(
                                 Brush.horizontalGradient(
                                     colors = listOf(
-                                        Color(0xFF3B82F6), // Vibrant Electric Blue
-                                        Color(0xFF06B6D4)  // Cyan
+                                        theme.arrowClear,
+                                        theme.arrowDefault
                                     )
                                 )
                             )

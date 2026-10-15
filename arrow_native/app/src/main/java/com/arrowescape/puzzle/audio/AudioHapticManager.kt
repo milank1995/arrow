@@ -140,6 +140,13 @@ class AudioHapticManager(private val context: Context) {
         }
     }
 
+    fun playHintNudge() {
+        playTone(startFreq = 580f, endFreq = 780f, durationMs = 130, volume = 0.35f)
+        if (isVibrationEnabled) {
+            vibrate(VibrationEffect.createOneShot(15, 50))
+        }
+    }
+
     private fun vibrate(effect: VibrationEffect) {
         if (vibrator?.hasVibrator() == true) {
             vibrator.vibrate(effect)

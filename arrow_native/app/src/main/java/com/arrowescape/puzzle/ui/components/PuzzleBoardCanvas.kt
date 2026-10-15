@@ -605,7 +605,7 @@ fun PuzzleBoardCanvas(
 
                 // 3. Draw Preview Ray if an arrow is long-pressed (smooth animated fade matching Unity lineCg.DOFade)
                 if (previewArrowToRender != null && previewAlpha > 0.01f) {
-                    drawPreviewRay(boardOrigin, previewArrowToRender, xSize, ySize, cellSize, previewAlpha)
+                    drawPreviewRay(boardOrigin, previewArrowToRender, xSize, ySize, cellSize, previewAlpha, theme.arrowClear)
                 }
 
                 // 4. Draw All Arrows (Progressive Path Drawing, drawn ON TOP of the background dots)
@@ -854,9 +854,9 @@ private fun DrawScope.drawArrowEntity(
 
     val baseColor = when {
         arrow.state == ArrowState.WRONG_FLASH -> theme.arrowWrong
-        isLaunching -> Color(0xFF0088F5)   // Electric Dodger Blue for Click Pop Takeoff (Unity correctArrowAnimColor)
+        isLaunching -> theme.arrowClear   // Theme-adaptive celebration color on moving out
         arrow.isHighlighted -> theme.arrowWrong
-        isPreviewHold -> Color(0xFF0088F5) // Luminous Electric Sky Blue for Long-Press Hold (Unity Screenshot 2)
+        isPreviewHold -> theme.arrowClear // Theme-adaptive preview color
         arrow.state == ArrowState.HINTED -> theme.arrowHint
         else -> theme.arrowDefault
     }
@@ -1149,7 +1149,8 @@ private fun DrawScope.drawPreviewRay(
     xSize: Int,
     ySize: Int,
     cellSize: Float,
-    previewAlpha: Float
+    previewAlpha: Float,
+    rayColor: Color
 ) {
     val headCenter = Offset(
         x = origin.x + (arrow.head.x + 0.5f) * cellSize,
@@ -1170,10 +1171,10 @@ private fun DrawScope.drawPreviewRay(
         y = headCenter.y + arrow.direction.dy * (cellSize * 0.40f)
     )
 
-    // Delicate, elegant hairline sightline matching Unity Screenshot 2 (#38BDF8 / #0088F5)
+    // Delicate, elegant hairline sightline matching Unity Screenshot 2
     // 1. Soft subtle micro-halo
     drawLine(
-        color = Color(0xFF0088F5).copy(alpha = 0.15f * previewAlpha),
+        color = rayColor.copy(alpha = 0.20f * previewAlpha),
         start = startOffset,
         end = endOffset,
         strokeWidth = 3.6.dp.toPx(),
@@ -1182,7 +1183,7 @@ private fun DrawScope.drawPreviewRay(
 
     // 2. Crisp, refined hairline sightline
     drawLine(
-        color = Color(0xFF38BDF8).copy(alpha = 0.60f * previewAlpha),
+        color = rayColor.copy(alpha = 0.75f * previewAlpha),
         start = startOffset,
         end = endOffset,
         strokeWidth = 1.5.dp.toPx(),

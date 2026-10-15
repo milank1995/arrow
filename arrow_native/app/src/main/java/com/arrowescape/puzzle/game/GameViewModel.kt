@@ -405,6 +405,10 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         loadLevel(_uiState.value.currentLevelNumber)
     }
 
+    fun playHintNudge() {
+        audioHapticManager.playHintNudge()
+    }
+
     private suspend fun triggerLevelVictory(finalArrows: List<Arrow>) {
         _uiState.update { state ->
             state.copy(arrows = finalArrows, isCelebrationBurstActive = true)
