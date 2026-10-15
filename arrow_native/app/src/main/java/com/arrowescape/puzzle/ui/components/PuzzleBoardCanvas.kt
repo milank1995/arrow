@@ -76,21 +76,6 @@ private data class VelSample(
     val timeMs: Long
 )
 
-private data class TapSpark(
-    val vx: Float,
-    val vy: Float,
-    val color: Color,
-    val maxRadius: Float
-)
-
-private data class ActiveTapEffect(
-    val id: Long,
-    val center: Offset,
-    val startTime: Long,
-    val durationMs: Long = 300L,
-    val sparks: List<TapSpark>
-)
-
 private data class ConfettiPiece(
     val x: Float,
     val y: Float,
@@ -207,7 +192,6 @@ fun PuzzleBoardCanvas(
         val currentOnArrowClick by rememberUpdatedState(onArrowClick)
         val currentOnArrowLongPress by rememberUpdatedState(onArrowLongPress)
 
-        val activeTapEffects = remember { mutableStateListOf<ActiveTapEffect>() }
         val confettiPieces = remember { mutableStateListOf<ConfettiPiece>() }
         var confettiStartTime by remember { mutableLongStateOf(0L) }
         var animTick by remember { mutableLongStateOf(0L) }
@@ -250,13 +234,12 @@ fun PuzzleBoardCanvas(
             }
         }
 
-        LaunchedEffect(activeTapEffects.isNotEmpty() || (isCelebrationBurstActive && confettiPieces.isNotEmpty())) {
-            while (activeTapEffects.isNotEmpty() || (isCelebrationBurstActive && confettiPieces.isNotEmpty())) {
+        LaunchedEffect(isCelebrationBurstActive && confettiPieces.isNotEmpty()) {
+            while (isCelebrationBurstActive && confettiPieces.isNotEmpty()) {
                 withFrameNanos { frameTimeNanos ->
                     animTick = frameTimeNanos
                 }
                 val tNow = System.currentTimeMillis()
-                activeTapEffects.removeAll { tNow - it.startTime > it.durationMs }
                 if (tNow - confettiStartTime > 1100L) {
                     confettiPieces.clear()
                 }
@@ -420,35 +403,6 @@ fun PuzzleBoardCanvas(
                         val isTap = !isMultiTouch && !isDragging && !isLongPressTriggered && totalMovement < dragThreshold && elapsed < 550
 
                         if (isTap) {
-                            // Touch Spark & Ripple Effect (TapParticleEffect matching Unity)
-                            val sparkColors = listOf(
-                                theme.arrowDefault,
-                                Color(0xFFFFD166),
-                                Color(0xFF06D6A0),
-                                Color(0xFF118AB2),
-                                Color(0xFFEF476F),
-                                Color(0xFF8338EC)
-                            )
-                            val sparks = (0 until 6).map { i ->
-                                val angle = (i * 60f + kotlin.random.Random.nextFloat() * 24f - 12f) * (PI.toFloat() / 180f)
-                                val speed = 28f + kotlin.random.Random.nextFloat() * 28f
-                                TapSpark(
-                                    vx = kotlin.math.cos(angle) * speed,
-                                    vy = kotlin.math.sin(angle) * speed,
-                                    color = sparkColors[i % sparkColors.size],
-                                    maxRadius = 2.4f + kotlin.random.Random.nextFloat() * 1.6f
-                                )
-                            }
-                            activeTapEffects.add(
-                                ActiveTapEffect(
-                                    id = System.nanoTime(),
-                                    center = startPos,
-                                    startTime = System.currentTimeMillis(),
-                                    durationMs = 280L,
-                                    sparks = sparks
-                                )
-                            )
-
                             val localUp = center + (lastPos - Offset(panX, panY) - center) / scale
                             // Target resolution: check candidateArrow first, or find closest at localDown or localUp
                             val resolvedArrow = candidateArrow
@@ -661,40 +615,10 @@ fun PuzzleBoardCanvas(
 
             }
 
-            // 5. Draw Touch Spark & Ripple Effects (TapParticleEffect matching Unity)
-            val now = System.currentTimeMillis()
-            val canvasDensity = this.density
-            for (effect in activeTapEffects) {
-                val progress = ((now - effect.startTime).toFloat() / effect.durationMs).coerceIn(0f, 1f)
-                if (progress >= 1f) continue
-                val eased = FastOutSlowInEasing.transform(progress)
-
-                // Expanding soft ripple ring
-                val ringRadius = (5f + 25f * eased) * canvasDensity
-                val ringAlpha = (1f - progress).coerceIn(0f, 1f) * 0.72f
-                val ringStroke = (2.2f * (1f - progress * 0.7f)).coerceAtLeast(0.8f) * canvasDensity
-                drawCircle(
-                    color = theme.arrowDefault.copy(alpha = ringAlpha),
-                    radius = ringRadius,
-                    center = effect.center,
-                    style = Stroke(width = ringStroke)
-                )
-
-                // Bursting star sparks
-                for (spark in effect.sparks) {
-                    val sparkPos = effect.center + Offset(spark.vx * eased * canvasDensity, spark.vy * eased * canvasDensity)
-                    val sparkAlpha = (1f - progress).coerceIn(0f, 1f)
-                    val sparkSize = (spark.maxRadius * (1f - progress * 0.55f)) * canvasDensity
-                    drawCircle(
-                        color = spark.color.copy(alpha = sparkAlpha),
-                        radius = sparkSize,
-                        center = sparkPos
-                    )
-                }
-            }
-
-            // 6. Draw Confetti Celebration Burst (PlayLastArrowBurstDelayed matching Unity)
+            // 5. Draw Confetti Celebration Burst (PlayLastArrowBurstDelayed matching Unity)
             if (confettiPieces.isNotEmpty() && confettiStartTime > 0L) {
+                val now = System.currentTimeMillis()
+                val canvasDensity = this.density
                 val elapsedSec = ((now - confettiStartTime).toFloat() / 1000f).coerceAtLeast(0f)
                 val celebrationDuration = 0.95f
                 val progress = (elapsedSec / celebrationDuration).coerceIn(0f, 1f)
