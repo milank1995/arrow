@@ -3,6 +3,7 @@ package com.arrowescape.puzzle.ui.components
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
@@ -108,7 +109,7 @@ fun PuzzleBoardCanvas(
         introProgress.snapTo(0f)
         introProgress.animateTo(
             targetValue = 1f,
-            animationSpec = tween(durationMillis = 1250, easing = CubicBezierEasing(0.12f, 1.0f, 0.25f, 1.0f))
+            animationSpec = tween(durationMillis = 2200, easing = LinearEasing)
         )
     }
 
@@ -185,7 +186,7 @@ fun PuzzleBoardCanvas(
 
                         var isLongPressTriggered = false
                         var longPressJob: Job? = null
-                        if (candidateArrow != null && introProgress.value >= 0.90f) {
+                        if (candidateArrow != null && introProgress.value >= 0.94f) {
                             longPressJob = coroutineScope.launch {
                                 delay(380L)
                                 if (!isDragging && !isMultiTouch) {
@@ -377,7 +378,7 @@ fun PuzzleBoardCanvas(
                                     ?: candidateArrow
 
 
-                                if (tappedArrow != null && introProgress.value >= 0.90f) {
+                                if (tappedArrow != null && introProgress.value >= 0.94f) {
                                     onArrowClick(tappedArrow)
                                 }
                             }
@@ -437,7 +438,7 @@ fun PuzzleBoardCanvas(
                 // Background is completely transparent; surroundings adapt naturally to theme
 
                 // 1. Subtle level silhouette cell dots (fade in first to outline level structure)
-                val dotsAlpha = if (introProgress.value >= 1f) 0.35f else (introProgress.value / 0.20f).coerceIn(0f, 1f) * 0.35f
+                val dotsAlpha = if (introProgress.value >= 1f) 0.35f else (introProgress.value / 0.16f).coerceIn(0f, 1f) * 0.35f
                 for (coord in initialLevelCells) {
                     drawCircle(
                         color = Color(0xFF94A3B8).copy(alpha = dotsAlpha),
@@ -464,7 +465,7 @@ fun PuzzleBoardCanvas(
                 val boardCenterX = xSize / 2f
                 val boardCenterY = ySize / 2f
                 val maxBoardDist = hypot(boardCenterX, boardCenterY).coerceAtLeast(1f)
-                val screenTravelDist = maxOf(size.width, size.height) * 0.70f + 250f
+                val screenTravelDist = maxOf(size.width, size.height) * 0.60f + 180f
 
                 for (arrow in arrows) {
                     if (arrow.state == ArrowState.CLEARED) continue
@@ -487,13 +488,12 @@ fun PuzzleBoardCanvas(
                     val normDist = (distFromCenter / maxBoardDist).coerceIn(0f, 1f)
 
                     // Staggered cascade: center arrows start flying in first, outer arrows follow
-                    val startTime = 0.04f + normDist * 0.42f
+                    val startTime = 0.05f + normDist * 0.42f
                     val flightWindow = 0.50f
                     val localProg = if (introProgress.value >= 1f) 1f else ((introProgress.value - startTime) / flightWindow).coerceIn(0f, 1f)
 
-                    // Cubic ease-out: rapid entry from outside the gameplay area, silky smooth deceleration into position
-                    val inv = 1f - localProg
-                    val easedFlight = if (localProg >= 1f) 1f else (1f - inv * inv * inv)
+                    // FastOutSlowInEasing provides a sustained, steady gliding speed and gentle brake into position
+                    val easedFlight = if (localProg >= 1f) 1f else FastOutSlowInEasing.transform(localProg)
                     val remainingDistRatio = 1f - easedFlight
 
                     val currentFlyOffsetX = if (localProg >= 1f) 0f else dirX * screenTravelDist * remainingDistRatio
@@ -501,14 +501,14 @@ fun PuzzleBoardCanvas(
 
                     val arrowScale = when {
                         localProg >= 1f -> 1.0f
-                        localProg < 0.82f -> 0.86f + 0.14f * (localProg / 0.82f) // Scales smoothly up from 86% to 100% during flight
+                        localProg < 0.85f -> 0.88f + 0.12f * (localProg / 0.85f) // Scales smoothly up from 88% to 100% during flight
                         else -> {
-                            // Soft tactile cushion as piece locks into its grid slot (1.00 -> 1.04 -> 1.00)
-                            val t = (localProg - 0.82f) / 0.18f
-                            1.0f + sin(t * PI.toFloat()) * 0.04f
+                            // Soft tactile cushion as piece locks into its grid slot (1.00 -> 1.035 -> 1.00)
+                            val t = (localProg - 0.85f) / 0.15f
+                            1.0f + sin(t * PI.toFloat()) * 0.035f
                         }
                     }
-                    val introAlpha = if (localProg >= 1f) 1f else (localProg / 0.25f).coerceIn(0f, 1f)
+                    val introAlpha = if (localProg >= 1f) 1f else (localProg / 0.18f).coerceIn(0f, 1f)
 
                     val pivot = Offset(
                         boardOrigin.x + (arrowCenterX + 0.5f) * cellSize,
