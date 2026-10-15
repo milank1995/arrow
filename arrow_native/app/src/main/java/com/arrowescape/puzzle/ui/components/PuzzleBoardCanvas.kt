@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -168,7 +169,8 @@ fun PuzzleBoardCanvas(
         // Fit board into viewport with comfortable margin (92% width, 90% height)
         val availableWidth = viewportWidth * 0.92f
         val availableHeight = viewportHeight * 0.90f
-        val cellSize = minOf(availableWidth / xSize, availableHeight / ySize)
+        val maxCellPx = with(LocalDensity.current) { 50.dp.toPx() }
+        val cellSize = minOf(availableWidth / xSize, availableHeight / ySize).coerceAtMost(maxCellPx)
         val boardWidth = cellSize * xSize
         val boardHeight = cellSize * ySize
         val boardOrigin = Offset(
@@ -826,9 +828,9 @@ private fun DrawScope.drawArrowEntity(
         else -> theme.arrowDefault
     }
 
-    // Balanced stroke width with controlled expansion pulse when held or clicked
-    val minStroke = 2.5.dp.toPx()
-    val maxStroke = 9.dp.toPx()
+    // Balanced, consistent stroke width across all level densities (4.2dp .. 5.8dp range)
+    val minStroke = 4.2.dp.toPx()
+    val maxStroke = 5.8.dp.toPx()
     val scaleMultiplier = when {
         isPreviewHold -> 1.10f * (1f + (hintPulseScale - 1f) * 0.35f) // Subtle +10% expansion with gentle breathing
         isLaunching -> 1.18f
@@ -836,12 +838,12 @@ private fun DrawScope.drawArrowEntity(
         arrow.state == ArrowState.HINTED -> hintPulseScale
         else -> 1.0f
     }
-    val strokeWidth = (cellSize * 0.215f).coerceIn(minStroke, maxStroke) * scaleMultiplier
+    val strokeWidth = (cellSize * 0.17f).coerceIn(minStroke, maxStroke) * scaleMultiplier
 
-    // Balanced arrowhead size to maintain crisp, proportional triangular heads across all board densities
-    val minHead = 9.dp.toPx()
-    val maxHead = 22.dp.toPx()
-    val headSize = (cellSize * 0.50f).coerceIn(minHead, maxHead) * (if (isPreviewHold) 1.08f else if (isLaunching) 1.12f else 1.0f)
+    // Refined crisp arrowhead size maintaining brand consistency across all levels (11.5dp .. 15.5dp range)
+    val minHead = 11.5.dp.toPx()
+    val maxHead = 15.5.dp.toPx()
+    val headSize = (cellSize * 0.38f).coerceIn(minHead, maxHead) * (if (isPreviewHold) 1.08f else if (isLaunching) 1.12f else 1.0f)
 
     // Build the full motion track: body points + escape extension along arrow.direction
     val track = mutableListOf<Offset>()
