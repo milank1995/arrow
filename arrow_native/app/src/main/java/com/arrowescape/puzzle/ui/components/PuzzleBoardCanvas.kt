@@ -97,12 +97,18 @@ fun PuzzleBoardCanvas(
         arrows.flatMap { it.body }.toSet()
     }
 
-    // Reset zoom and pan whenever a new level is loaded or grid dimensions change
-    LaunchedEffect(xSize, ySize, arrows.size) {
+    // Reset zoom and pan, and launch cascading assembly animation whenever a new level is loaded
+    val introProgress = remember { Animatable(0f) }
+    LaunchedEffect(xSize, ySize, arrows.size, arrows.firstOrNull()?.id) {
         settleJob?.cancel()
         scale = 1f
         panX = 0f
         panY = 0f
+        introProgress.snapTo(0f)
+        introProgress.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(durationMillis = 680, easing = FastOutSlowInEasing)
+        )
     }
 
     // Hint pulse animation
@@ -178,7 +184,7 @@ fun PuzzleBoardCanvas(
 
                         var isLongPressTriggered = false
                         var longPressJob: Job? = null
-                        if (candidateArrow != null) {
+                        if (candidateArrow != null && introProgress.value >= 0.90f) {
                             longPressJob = coroutineScope.launch {
                                 delay(380L)
                                 if (!isDragging && !isMultiTouch) {
@@ -370,7 +376,7 @@ fun PuzzleBoardCanvas(
                                     ?: candidateArrow
 
 
-                                if (tappedArrow != null) {
+                                if (tappedArrow != null && introProgress.value >= 0.90f) {
                                     onArrowClick(tappedArrow)
                                 }
                             }
@@ -429,10 +435,11 @@ fun PuzzleBoardCanvas(
             }) {
                 // Background is completely transparent; surroundings adapt naturally to theme
 
-                // 1. Subtle level silhouette cell dots (revealed when arrows clear, matching Unity Screenshot 1)
+                // 1. Subtle level silhouette cell dots (fade in first to outline level structure)
+                val dotsAlpha = if (introProgress.value >= 1f) 0.35f else (introProgress.value / 0.25f).coerceIn(0f, 1f) * 0.35f
                 for (coord in initialLevelCells) {
                     drawCircle(
-                        color = Color(0xFF94A3B8).copy(alpha = 0.35f),
+                        color = Color(0xFF94A3B8).copy(alpha = dotsAlpha),
                         radius = (cellSize * 0.055f).coerceIn(1.8f, 3.2f),
                         center = Offset(
                             boardOrigin.x + (coord.x + 0.5f) * cellSize,
@@ -452,20 +459,58 @@ fun PuzzleBoardCanvas(
                     drawPreviewRay(boardOrigin, previewArrowToRender, xSize, ySize, cellSize, previewAlpha)
                 }
 
-                // 4. Draw All Arrows (Static, flying out, or wrong-move bouncing)
+                // 4. Draw All Arrows (Cascading radial assembly on level intro, static, flying out, or wrong-move bouncing)
+                val boardCenterX = xSize / 2f
+                val boardCenterY = ySize / 2f
+                val maxBoardDist = hypot(boardCenterX, boardCenterY).coerceAtLeast(1f)
+
                 for (arrow in arrows) {
                     if (arrow.state == ArrowState.CLEARED) continue
 
-                    drawArrowEntity(
-                        origin = boardOrigin,
-                        arrow = arrow,
-                        xSize = xSize,
-                        ySize = ySize,
-                        cellSize = cellSize,
-                        theme = theme,
-                        hintPulseScale = hintPulseScale,
-                        previewRayArrowId = previewRayArrowId
+                    // Radial cascade calculation during level initialization
+                    val arrowHead = arrow.head
+                    val arrowTail = arrow.body.firstOrNull() ?: arrowHead
+                    val arrowCenterX = (arrowHead.x + arrowTail.x) / 2f
+                    val arrowCenterY = (arrowHead.y + arrowTail.y) / 2f
+                    val distFromCenter = hypot(arrowCenterX - boardCenterX, arrowCenterY - boardCenterY)
+                    val normDist = (distFromCenter / maxBoardDist).coerceIn(0f, 1f)
+
+                    // Staggered ripple window across the 680ms assembly
+                    val startTime = normDist * 0.42f
+                    val rippleWindow = 0.38f
+                    val localProg = if (introProgress.value >= 1f) 1f else ((introProgress.value - startTime) / rippleWindow).coerceIn(0f, 1f)
+
+                    if (localProg <= 0f) continue // Arrow not yet reached by the assembly wave
+
+                    val arrowScale = when {
+                        localProg >= 1f -> 1.0f
+                        localProg < 0.70f -> (localProg / 0.70f) * 1.08f // Energetic pop up to 108%
+                        else -> 1.08f - ((localProg - 0.70f) / 0.30f) * 0.08f // Settle crisply back to 100%
+                    }
+                    val dropOffsetY = if (localProg >= 1f) 0f else (1f - localProg) * (cellSize * 0.30f)
+                    val introAlpha = if (localProg >= 1f) 1f else (localProg / 0.25f).coerceIn(0f, 1f)
+
+                    val pivot = Offset(
+                        boardOrigin.x + (arrowCenterX + 0.5f) * cellSize,
+                        boardOrigin.y + (arrowCenterY + 0.5f) * cellSize
                     )
+
+                    withTransform({
+                        translate(top = dropOffsetY)
+                        scale(arrowScale, arrowScale, pivot = pivot)
+                    }) {
+                        drawArrowEntity(
+                            origin = boardOrigin,
+                            arrow = arrow,
+                            xSize = xSize,
+                            ySize = ySize,
+                            cellSize = cellSize,
+                            theme = theme,
+                            hintPulseScale = hintPulseScale,
+                            previewRayArrowId = previewRayArrowId,
+                            introAlpha = introAlpha
+                        )
+                    }
                 }
 
             }
@@ -617,7 +662,8 @@ private fun DrawScope.drawArrowEntity(
     cellSize: Float,
     theme: ThemePreset,
     hintPulseScale: Float,
-    previewRayArrowId: String?
+    previewRayArrowId: String?,
+    introAlpha: Float = 1.0f
 ) {
     val isPreviewHold = (arrow.id == previewRayArrowId)
     val isLaunching = (arrow.state == ArrowState.FLYING_OUT && arrow.flightProgress < 0.35f)
@@ -693,7 +739,7 @@ private fun DrawScope.drawArrowEntity(
 
     if (sampledPoints.isEmpty()) return
 
-    val renderColor = baseColor.copy(alpha = alpha)
+    val renderColor = baseColor.copy(alpha = alpha * introAlpha)
 
     // 1. Draw body stroke along the moving polyline with smooth rounded corner fillets
     if (sampledPoints.size > 1) {
