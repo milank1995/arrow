@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -88,40 +89,38 @@ fun GameHeader(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Pause button (two vertical bars) inside rounded pod
-                    Box(
-                        modifier = Modifier
-                            .size(38.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(theme.boosterBg)
-                            .border(1.dp, theme.gridLine, RoundedCornerShape(12.dp)),
-                        contentAlignment = Alignment.Center
+                    // Pause button inside rounded tactile pod
+                    Surface(
+                        shape = RoundedCornerShape(14.dp),
+                        color = theme.boosterBg,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
+                        shadowElevation = 1.dp,
+                        modifier = Modifier.size(40.dp)
                     ) {
                         IconButton(
                             onClick = onBackClick,
-                            modifier = Modifier.size(38.dp)
+                            modifier = Modifier.fillMaxSize()
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Pause,
                                 contentDescription = "Pause",
                                 tint = theme.textPrimary,
-                                modifier = Modifier.size(22.dp)
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                     }
 
-                    // Theme palette button inside rounded pod
-                    Box(
-                        modifier = Modifier
-                            .size(38.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(theme.boosterBg)
-                            .border(1.dp, theme.gridLine, RoundedCornerShape(12.dp)),
-                        contentAlignment = Alignment.Center
+                    // Theme palette button inside rounded tactile pod
+                    Surface(
+                        shape = RoundedCornerShape(14.dp),
+                        color = theme.boosterBg,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
+                        shadowElevation = 1.dp,
+                        modifier = Modifier.size(40.dp)
                     ) {
                         IconButton(
                             onClick = onThemeClick,
-                            modifier = Modifier.size(38.dp)
+                            modifier = Modifier.fillMaxSize()
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Palette,
@@ -180,7 +179,7 @@ fun GameHeader(
                     )
                 }
 
-                // RIGHT: Remaining Arrows Badge (solid bold ↗ icon + count, matching Screenshot 1)
+                // RIGHT: Remaining Arrows Goal Badge
                 val badgeScale = remember { Animatable(1f) }
                 var prevRemainingCount by remember { mutableIntStateOf(remainingArrowsCount) }
 
@@ -192,18 +191,17 @@ fun GameHeader(
                     prevRemainingCount = remainingArrowsCount
                 }
 
-                Box(
-                    modifier = Modifier
-                        .scale(badgeScale.value)
-                        .clip(RoundedCornerShape(percent = 50))
-                        .background(theme.boosterBg)
-                        .border(1.dp, theme.gridLine, RoundedCornerShape(percent = 50))
-                        .padding(horizontal = 14.dp, vertical = 7.dp),
-                    contentAlignment = Alignment.Center
+                Surface(
+                    shape = RoundedCornerShape(percent = 50),
+                    color = theme.boosterBg,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
+                    shadowElevation = 1.dp,
+                    modifier = Modifier.scale(badgeScale.value)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
                     ) {
                         // Bold solid directional arrow icon matching Screenshot 1
                         androidx.compose.foundation.Canvas(modifier = Modifier.size(15.dp)) {
@@ -230,19 +228,21 @@ fun GameHeader(
                 }
             }
 
-            // Subtle, thin progress bar along the bottom border of the header
+            // Sleek continuous HUD progress bar under header
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(2.5.dp)
-                    .background(theme.gridLine.copy(alpha = 0.6f))
+                    .padding(horizontal = 16.dp, vertical = 2.dp)
+                    .height(6.dp)
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(theme.gridLine.copy(alpha = 0.35f))
             ) {
                 if (animatedProgress > 0f) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(animatedProgress)
                             .fillMaxHeight()
-                            .clip(RoundedCornerShape(topEnd = 1.25.dp, bottomEnd = 1.25.dp))
+                            .clip(RoundedCornerShape(3.dp))
                             .background(
                                 Brush.horizontalGradient(
                                     colors = listOf(

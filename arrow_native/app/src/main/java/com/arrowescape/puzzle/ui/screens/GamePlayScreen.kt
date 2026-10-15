@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -69,16 +70,24 @@ fun GamePlayScreen(
             // 1. TOP GAMEPLAY HEADER (Matches Screenshot 2 & 3)
             if (level != null) {
                 val totalArrowsCount = uiState.levelData?.arrows?.size ?: uiState.arrows.size
-                GameHeader(
-                    levelNumber = uiState.currentLevelNumber,
-                    heartsRemaining = uiState.heartsRemaining,
-                    maxHearts = uiState.maxHearts,
-                    remainingArrowsCount = remainingArrowsCount,
-                    totalArrowsCount = totalArrowsCount,
-                    theme = theme,
-                    onBackClick = onBackToHomeClick,
-                    onThemeClick = { showThemeDialog = true }
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    GameHeader(
+                        levelNumber = uiState.currentLevelNumber,
+                        heartsRemaining = uiState.heartsRemaining,
+                        maxHearts = uiState.maxHearts,
+                        remainingArrowsCount = remainingArrowsCount,
+                        totalArrowsCount = totalArrowsCount,
+                        theme = theme,
+                        onBackClick = onBackToHomeClick,
+                        onThemeClick = { showThemeDialog = true },
+                        modifier = Modifier.widthIn(max = 540.dp)
+                    )
+                }
             }
 
             // 2. MAIN PUZZLE BOARD CANVAS & CHEER OVERLAY
@@ -113,13 +122,21 @@ fun GamePlayScreen(
             }
 
             // 3. BOTTOM BOOSTER CONTROLS (Matches Screenshot 2 & 3: Hint & Grid pods)
-            BoosterBar(
-                hintsCount = uiState.hintsAvailable,
-                isGridLinesActive = uiState.isGridLinesActive,
-                theme = theme,
-                onHintClick = onHintClick,
-                onGridClick = onGridClick
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                BoosterBar(
+                    hintsCount = uiState.hintsAvailable,
+                    isGridLinesActive = uiState.isGridLinesActive,
+                    theme = theme,
+                    onHintClick = onHintClick,
+                    onGridClick = onGridClick,
+                    modifier = Modifier.widthIn(max = 540.dp)
+                )
+            }
         }
 
         // VICTORY DIALOG

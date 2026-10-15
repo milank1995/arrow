@@ -23,12 +23,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -39,9 +41,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,7 +72,7 @@ fun HomeScreen(
     )
 
     Surface(
-        color = Color.White,
+        color = Color(0xFFF8FAFC),
         modifier = modifier.fillMaxSize()
     ) {
         Column(
@@ -84,160 +85,279 @@ fun HomeScreen(
                 .displayCutoutPadding()
                 .padding(horizontal = 24.dp, vertical = 12.dp)
         ) {
-            // 1. TOP BAR: No Ads (left), Settings (right)
+            // 1. TOP BAR: Streak Pill (left) & Settings Gear Pod (right) - No Ads removed
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 12.dp)
+                    .padding(top = 10.dp)
             ) {
-                // No Ads Circle Button
-                NoAdsButton(onClick = { /* In-app purchase / remove ads */ })
-
-                // Settings Gear Button
-                IconButton(
-                    onClick = onSoundToggle,
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(CircleShape)
+                // Streak Pill Indicator
+                Surface(
+                    shape = RoundedCornerShape(percent = 50),
+                    color = Color(0xFFFFFBEB),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFDE68A)),
+                    shadowElevation = 1.dp,
+                    modifier = Modifier.height(40.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = "Settings",
-                        tint = Color(0xFF1E293B),
-                        modifier = Modifier.size(28.dp)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier.padding(horizontal = 14.dp)
+                    ) {
+                        Text(text = "🔥", fontSize = 16.sp)
+                        Text(
+                            text = "${uiState.streakDays} Day Streak",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFD97706)
+                        )
+                    }
+                }
+
+                // Settings Gear Pod
+                Surface(
+                    shape = CircleShape,
+                    color = Color.White,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                    shadowElevation = 1.dp,
+                    modifier = Modifier.size(42.dp)
+                ) {
+                    IconButton(
+                        onClick = onSoundToggle,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Settings",
+                            tint = Color(0xFF334155),
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
                 }
             }
 
-            // 2. CENTER HERO: Large Purple Number + "L E V E L"
+            // 2. CENTER HERO: Tactile Stage Card (Celebratory Stars, Large Number, Stage Badge) - NO "ARROW ESCAPE"
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.weight(1f)
             ) {
-                Text(
-                    text = "${uiState.currentLevelNumber}",
-                    fontSize = 96.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF6656C3),
-                    lineHeight = 100.sp
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "L E V E L",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 10.sp,
-                    color = Color(0xFF6656C3)
-                )
+                Surface(
+                    shape = RoundedCornerShape(32.dp),
+                    color = Color.White,
+                    shadowElevation = 8.dp,
+                    border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFFEDE9FE)),
+                    modifier = Modifier
+                        .widthIn(max = 340.dp)
+                        .fillMaxWidth(0.85f)
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(
+                                        Color(0xFFFAFAFE),
+                                        Color(0xFFF5F3FF)
+                                    )
+                                )
+                            )
+                            .padding(horizontal = 24.dp, vertical = 34.dp)
+                    ) {
+                        // 3 Celebratory Mastery Stars
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = "Star",
+                                tint = Color(0xFFF59E0B),
+                                modifier = Modifier.size(22.dp)
+                            )
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = "Star",
+                                tint = Color(0xFFF59E0B),
+                                modifier = Modifier.size(30.dp)
+                            )
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = "Star",
+                                tint = Color(0xFFF59E0B),
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Bold, prominent Level Number
+                        Text(
+                            text = "${uiState.currentLevelNumber}",
+                            fontSize = 88.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color(0xFF6366F1),
+                            lineHeight = 90.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        // Refined "LEVEL" tracking badge
+                        Surface(
+                            shape = RoundedCornerShape(percent = 50),
+                            color = Color(0xFFEEF2FF),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFC7D2FE))
+                        ) {
+                            Text(
+                                text = "L E V E L",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = 6.sp,
+                                color = Color(0xFF4F46E5),
+                                modifier = Modifier.padding(horizontal = 18.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
             }
 
-            // 3. BOTTOM BUTTONS: Green Play Capsule + Gray Daily Challenge Capsule
+            // 3. BOTTOM BUTTONS: 3D Tactile Play Pill + Modern Slate Daily Challenge Pill
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 28.dp)
+                    .padding(bottom = 24.dp)
             ) {
-                // Primary Play Pill Button
+                // Primary Play 3D Pill Button with physical bevel shadow
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.85f)
-                        .height(64.dp)
+                        .widthIn(max = 380.dp)
+                        .fillMaxWidth(0.88f)
+                        .height(68.dp)
                         .scale(playScale)
-                        .clip(RoundedCornerShape(percent = 50))
-                        .background(Color(0xFF4CD86F))
-                        .clickable(onClick = onPlayClick)
-                        .padding(horizontal = 10.dp),
+                        .clickable(onClick = onPlayClick),
                     contentAlignment = Alignment.Center
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                    // 3D Bottom Bevel Layer
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(62.dp)
+                            .align(Alignment.BottomCenter)
+                            .clip(RoundedCornerShape(percent = 50))
+                            .background(Color(0xFF047857))
+                    )
+                    // Top Surface Gradient Layer
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(62.dp)
+                            .align(Alignment.TopCenter)
+                            .clip(RoundedCornerShape(percent = 50))
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(
+                                        Color(0xFF34D399), // Emerald highlight
+                                        Color(0xFF059669)  // Emerald body
+                                    )
+                                )
+                            )
+                            .padding(horizontal = 12.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        // White circle with green play triangle on the left
-                        Box(
-                            modifier = Modifier
-                                .size(46.dp)
-                                .clip(CircleShape)
-                                .background(Color.White),
-                            contentAlignment = Alignment.Center
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.PlayArrow,
-                                contentDescription = "Play Icon",
-                                tint = Color(0xFF4CD86F),
-                                modifier = Modifier.size(30.dp)
-                            )
-                        }
+                            // Crisp circular pod with play icon
+                            Box(
+                                modifier = Modifier
+                                    .size(46.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.PlayArrow,
+                                    contentDescription = "Play Icon",
+                                    tint = Color(0xFF059669),
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            }
 
-                        // Centered text "Play"
-                        Box(
-                            modifier = Modifier.weight(1f),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Play",
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                        }
+                            // Centered bold "PLAY" text
+                            Box(
+                                modifier = Modifier.weight(1f),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "PLAY",
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Black,
+                                    letterSpacing = 2.sp,
+                                    color = Color.White
+                                )
+                            }
 
-                        // Invisible balancer box on right so text stays perfectly centered
-                        Spacer(modifier = Modifier.size(46.dp))
+                            // Balancer spacer
+                            Spacer(modifier = Modifier.size(46.dp))
+                        }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // Secondary Daily Challenge Pill Button
-                Box(
+                // Modern Obsidian/Slate Daily Challenge Capsule
+                Surface(
+                    shape = RoundedCornerShape(percent = 50),
+                    color = Color(0xFF1E293B),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF334155)),
+                    shadowElevation = 3.dp,
                     modifier = Modifier
-                        .fillMaxWidth(0.85f)
+                        .widthIn(max = 380.dp)
+                        .fillMaxWidth(0.88f)
                         .height(62.dp)
-                        .clip(RoundedCornerShape(percent = 50))
-                        .background(Color(0xFF908B88))
                         .clickable(onClick = onDailyChallengeClick)
-                        .padding(horizontal = 10.dp),
-                    contentAlignment = Alignment.CenterStart
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 12.dp)
                     ) {
-                        // Dark slate disc with lock icon
+                        // Badge with amber lock icon
                         Box(
                             modifier = Modifier
-                                .size(44.dp)
+                                .size(42.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF4A4643)),
+                                .background(Color(0xFF334155)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Lock,
                                 contentDescription = "Locked",
-                                tint = Color.White,
-                                modifier = Modifier.size(20.dp)
+                                tint = Color(0xFFFBBF24),
+                                modifier = Modifier.size(19.dp)
                             )
                         }
 
-                        Spacer(modifier = Modifier.width(16.dp))
+                        Spacer(modifier = Modifier.width(14.dp))
 
-                        // Text column: "Daily Challenge" and "Level 5"
+                        // Text column
                         Column {
                             Text(
                                 text = "Daily Challenge",
-                                fontSize = 17.sp,
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
                             )
                             Text(
-                                text = "Level 5",
+                                text = "Unlocks at Level 5",
                                 fontSize = 12.sp,
-                                color = Color(0xFFDCDAD7),
+                                color = Color(0xFF94A3B8),
                                 fontWeight = FontWeight.Medium
                             )
                         }
@@ -245,42 +365,5 @@ fun HomeScreen(
                 }
             }
         }
-    }
-}
-
-/**
- * Minimalist circular "No Ads" button matching Screenshot 1
- */
-@Composable
-private fun NoAdsButton(onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .size(44.dp)
-            .clip(CircleShape)
-            .background(Color.White)
-            .border(1.5.dp, Color(0xFFE2E8F0), CircleShape)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        Canvas(modifier = Modifier.size(26.dp)) {
-            // Draw circle with orange slash
-            val r = size.minDimension / 2f
-            val c = Offset(size.width / 2f, size.height / 2f)
-            
-            // Draw small "AD" text or inner badge representation
-            drawLine(
-                color = Color(0xFFF97316),
-                start = Offset(4f, size.height - 4f),
-                end = Offset(size.width - 4f, 4f),
-                strokeWidth = 3f,
-                cap = StrokeCap.Round
-            )
-        }
-        Text(
-            text = "AD",
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Black,
-            color = Color(0xFF2563EB)
-        )
     }
 }

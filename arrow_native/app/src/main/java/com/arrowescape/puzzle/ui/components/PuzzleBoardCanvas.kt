@@ -570,6 +570,15 @@ fun PuzzleBoardCanvas(
             }) {
                 // Background is completely transparent; surroundings adapt naturally to theme
 
+                // 0. Subtle stage mat border framing the puzzle board
+                drawRoundRect(
+                    color = theme.gridLine.copy(alpha = 0.25f),
+                    topLeft = boardOrigin - Offset(8f, 8f),
+                    size = Size(boardWidth + 16f, boardHeight + 16f),
+                    cornerRadius = CornerRadius(16f, 16f),
+                    style = Stroke(width = 1.5f)
+                )
+
                 // 1. Full Grid Lines (background) only if user activated via '#' Booster button
                 if (isGridLinesActive) {
                     drawGridLines(boardOrigin, xSize, ySize, cellSize, theme.gridLine)

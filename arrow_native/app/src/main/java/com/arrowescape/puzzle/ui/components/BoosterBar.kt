@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -60,20 +61,20 @@ fun BoosterBar(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 1. Hint Pod with count or [AD] Free badge underneath (Matches Screenshot 1)
+            // 1. Hint Companion Pod
             Box(
                 contentAlignment = Alignment.BottomCenter,
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 14.dp)
                     .scale(hintScale.value)
             ) {
-                // Pod Circle with theme tint and border
-                Box(
+                Surface(
+                    shape = CircleShape,
+                    color = theme.boosterBg,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
+                    shadowElevation = 2.dp,
                     modifier = Modifier
                         .size(62.dp)
-                        .clip(CircleShape)
-                        .background(theme.boosterBg)
-                        .border(1.dp, theme.gridLine, CircleShape)
                         .clickable {
                             coroutineScope.launch {
                                 hintScale.animateTo(0.85f, tween(60))
@@ -81,15 +82,19 @@ fun BoosterBar(
                                 hintScale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
                             }
                             onHintClick()
-                        },
-                    contentAlignment = Alignment.Center
+                        }
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Lightbulb,
-                        contentDescription = "Hint",
-                        tint = theme.textPrimary,
-                        modifier = Modifier.size(30.dp)
-                    )
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Lightbulb,
+                            contentDescription = "Hint",
+                            tint = theme.textPrimary,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
                 }
 
                 // Count or [AD] Free Badge overlapping bottom
@@ -101,7 +106,7 @@ fun BoosterBar(
                     border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine)
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(3.dp)
                     ) {
@@ -113,7 +118,6 @@ fun BoosterBar(
                                 color = theme.textPrimary
                             )
                         } else {
-                            // [AD] film badge + "Free" text
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(3.dp))
@@ -140,10 +144,10 @@ fun BoosterBar(
 
             Spacer(modifier = Modifier.size(16.dp))
 
-            // 2. Grid (#) Pod
+            // 2. Grid (#) Companion Pod
             Box(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 14.dp)
                     .scale(gridScale.value),
                 contentAlignment = Alignment.Center
             ) {
@@ -158,16 +162,16 @@ fun BoosterBar(
                     theme.textPrimary
                 }
 
-                Box(
+                Surface(
+                    shape = CircleShape,
+                    color = gridPodBg,
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        if (isGridLinesActive) Color.Transparent else theme.gridLine
+                    ),
+                    shadowElevation = if (isGridLinesActive) 4.dp else 2.dp,
                     modifier = Modifier
                         .size(62.dp)
-                        .clip(CircleShape)
-                        .background(gridPodBg)
-                        .border(
-                            1.dp,
-                            if (isGridLinesActive) Color.Transparent else theme.gridLine,
-                            CircleShape
-                        )
                         .clickable {
                             coroutineScope.launch {
                                 gridScale.animateTo(0.85f, tween(60))
@@ -175,15 +179,19 @@ fun BoosterBar(
                                 gridScale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
                             }
                             onGridClick()
-                        },
-                    contentAlignment = Alignment.Center
+                        }
                 ) {
-                    Text(
-                        text = "#",
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = gridPodTextColor
-                    )
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = "#",
+                            fontSize = 30.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = gridPodTextColor
+                        )
+                    }
                 }
             }
         }
