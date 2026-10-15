@@ -16,7 +16,8 @@ data class Arrow(
     val bendCount: Int = 0,
     val colorIndex: Int = 0,
     val state: ArrowState = ArrowState.IDLE,
-    val flightProgress: Float = 0f
+    val flightProgress: Float = 0f,
+    val isHighlighted: Boolean = false
 ) {
     /**
      * All occupied grid coordinates (tail + bend segments + head).
@@ -28,7 +29,11 @@ data class Arrow(
         return allPoints.contains(coord)
     }
 
-    fun copyWithState(newState: ArrowState, progress: Float = 0f): Arrow {
-        return copy(state = newState, flightProgress = progress)
+    fun copyWithState(
+        newState: ArrowState,
+        progress: Float = 0f,
+        highlighted: Boolean = isHighlighted
+    ): Arrow {
+        return copy(state = newState, flightProgress = progress, isHighlighted = highlighted)
     }
 }

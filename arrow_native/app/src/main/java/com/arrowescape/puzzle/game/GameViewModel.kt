@@ -143,78 +143,25 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         val canEscape = PuzzleSolver.canMoveOut(currentArrow, occupancyMap)
 
         if (canEscape) {
-            // SUCCESSFUL MOVE
-            val newCombo = _uiState.value.comboCount + 1
-            audioHapticManager.playArrowFly(newCombo)
-            val cheer = calculateCheerMessage(newCombo)
-
-            // Update arrow state to flying out
-            occupancyMap.release(currentArrow)
-
-            _uiState.update { state ->
-                val updatedArrows = state.arrows.map {
-                    if (it.id == currentArrow.id) it.copyWithState(ArrowState.FLYING_OUT) else it
-                }
-                state.copy(
-                    arrows = updatedArrows,
-                    comboCount = newCombo,
-                    cheerMessage = cheer,
-                    cheerFromLeft = if (cheer != null) !state.cheerFromLeft else state.cheerFromLeft
-                )
-            }
-
-            // Auto-dismiss in-app cheer notification after 1.8 seconds
-            cheerDismissJob?.cancel()
-            if (cheer != null) {
-                cheerDismissJob = viewModelScope.launch {
-                    delay(1800)
-                    _uiState.update { it.copy(cheerMessage = null) }
-                }
-            }
-
-            // Animate flight smoothly at 60fps and transition to CLEARED
-            viewModelScope.launch {
-                val durationMs = 520L
-                val startTime = System.currentTimeMillis()
-                while (true) {
-                    val elapsed = System.currentTimeMillis() - startTime
-                    val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
-                    // Smooth, dynamic kinematic exit curve with immediate responsiveness and accelerating escape
-                    val easedProgress = rawProgress * (0.35f + 0.65f * rawProgress)
-                    _uiState.update { state ->
-                        val updated = state.arrows.map {
-                            if (it.id == currentArrow.id && it.state == ArrowState.FLYING_OUT) {
-                                it.copy(flightProgress = easedProgress)
-                            } else it
-                        }
-                        state.copy(arrows = updated)
-                    }
-                    if (rawProgress >= 1f) break
-                    delay(16)
-                }
-
-                val finalArrows = _uiState.value.arrows.map {
-                    if (it.id == currentArrow.id) it.copyWithState(ArrowState.CLEARED) else it
-                }
-                val allCleared = finalArrows.all { it.state == ArrowState.CLEARED }
-                if (allCleared) {
-                    triggerLevelVictory(finalArrows)
-                } else {
-                    _uiState.update { state ->
-                        state.copy(arrows = finalArrows)
-                    }
-                }
-            }
+            launchArrowFlight(currentArrow)
         } else {
             // WRONG MOVE: Collision
             audioHapticManager.playWrongMove()
 
-            val newHearts = (_uiState.value.heartsRemaining - 1).coerceAtLeast(0)
+            val isAlreadyHighlighted = currentArrow.isHighlighted
+            val newHearts = if (isAlreadyHighlighted) {
+                // If user clicks on the same highlighted, blocked arrow again, deduct only one life for that interaction
+                _uiState.value.heartsRemaining
+            } else {
+                (_uiState.value.heartsRemaining - 1).coerceAtLeast(0)
+            }
             val isOver = newHearts <= 0
 
             _uiState.update { state ->
                 val flashedArrows = state.arrows.map {
-                    if (it.id == currentArrow.id) it.copyWithState(ArrowState.WRONG_FLASH) else it
+                    if (it.id == currentArrow.id) {
+                        it.copyWithState(ArrowState.WRONG_FLASH, highlighted = true)
+                    } else it
                 }
                 state.copy(
                     arrows = flashedArrows,
@@ -225,7 +172,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 )
             }
 
-            // Animate collision spring-bounce and reset
+            // Animate collision spring-bounce and reset to IDLE (keeping highlighted = true)
             viewModelScope.launch {
                 val durationMs = 280L
                 val startTime = System.currentTimeMillis()
@@ -247,10 +194,93 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 _uiState.update { state ->
                     val resetArrows = state.arrows.map {
                         if (it.id == currentArrow.id && it.state == ArrowState.WRONG_FLASH) {
-                            it.copyWithState(ArrowState.IDLE, 0f)
+                            it.copyWithState(ArrowState.IDLE, 0f, highlighted = true)
                         } else it
                     }
                     state.copy(arrows = resetArrows)
+                }
+            }
+        }
+    }
+
+    private fun launchArrowFlight(arrow: Arrow) {
+        val newCombo = _uiState.value.comboCount + 1
+        audioHapticManager.playArrowFly(newCombo)
+        val cheer = calculateCheerMessage(newCombo)
+
+        // Release grid occupancy immediately so following arrows can move
+        occupancyMap.release(arrow)
+
+        _uiState.update { state ->
+            val updatedArrows = state.arrows.map {
+                if (it.id == arrow.id) it.copyWithState(ArrowState.FLYING_OUT, highlighted = false) else it
+            }
+            state.copy(
+                arrows = updatedArrows,
+                comboCount = newCombo,
+                cheerMessage = cheer,
+                cheerFromLeft = if (cheer != null) !state.cheerFromLeft else state.cheerFromLeft
+            )
+        }
+
+        // Auto-dismiss in-app cheer notification after 1.8 seconds
+        cheerDismissJob?.cancel()
+        if (cheer != null) {
+            cheerDismissJob = viewModelScope.launch {
+                delay(1800)
+                _uiState.update { it.copy(cheerMessage = null) }
+            }
+        }
+
+        // Check if any highlighted arrows became unblocked by this arrow moving out
+        checkAndAutoReleaseHighlightedArrows()
+
+        // Animate flight smoothly at 60fps and transition to CLEARED
+        viewModelScope.launch {
+            val durationMs = 520L
+            val startTime = System.currentTimeMillis()
+            while (true) {
+                val elapsed = System.currentTimeMillis() - startTime
+                val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
+                val easedProgress = rawProgress * (0.35f + 0.65f * rawProgress)
+                _uiState.update { state ->
+                    val updated = state.arrows.map {
+                        if (it.id == arrow.id && it.state == ArrowState.FLYING_OUT) {
+                            it.copy(flightProgress = easedProgress)
+                        } else it
+                    }
+                    state.copy(arrows = updated)
+                }
+                if (rawProgress >= 1f) break
+                delay(16)
+            }
+
+            val finalArrows = _uiState.value.arrows.map {
+                if (it.id == arrow.id) it.copyWithState(ArrowState.CLEARED, highlighted = false) else it
+            }
+            val allCleared = finalArrows.all { it.state == ArrowState.CLEARED }
+            if (allCleared) {
+                triggerLevelVictory(finalArrows)
+            } else {
+                _uiState.update { state ->
+                    state.copy(arrows = finalArrows)
+                }
+                // Check once again when completely cleared in case another path opened
+                checkAndAutoReleaseHighlightedArrows()
+            }
+        }
+    }
+
+    private fun checkAndAutoReleaseHighlightedArrows() {
+        viewModelScope.launch {
+            delay(80)
+            val highlightedCandidates = _uiState.value.arrows.filter {
+                it.isHighlighted && it.state == ArrowState.IDLE
+            }
+            for (candidate in highlightedCandidates) {
+                if (PuzzleSolver.canMoveOut(candidate, occupancyMap)) {
+                    launchArrowFlight(candidate)
+                    break
                 }
             }
         }
@@ -299,6 +329,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     triggerLevelVictory(updated)
                 } else {
                     _uiState.update { it.copy(arrows = updated) }
+                    checkAndAutoReleaseHighlightedArrows()
                 }
             }
         }
@@ -329,6 +360,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     _uiState.update { state ->
                         state.copy(arrows = updated)
                     }
+                    checkAndAutoReleaseHighlightedArrows()
                 }
             }
         }

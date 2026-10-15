@@ -128,4 +128,42 @@ class PuzzleEngineTest {
         val movable = PuzzleSolver.findAllMovableArrows(level.arrows, occupancy)
         assertTrue("Parsed level must have at least one movable arrow", movable.isNotEmpty())
     }
+
+    @Test
+    fun testBlockedArrowHighlightAndAutoRelease() {
+        val occupancy = GridOccupancyMap(5, 5)
+
+        // Arrow A pointing UP at (2, 2) -> blocked by Arrow B at (2, 1)
+        val arrowA = Arrow(
+            id = "aA",
+            head = GridCoordinate(2, 2),
+            direction = Direction.UP,
+            body = listOf(GridCoordinate(2, 3), GridCoordinate(2, 2))
+        )
+
+        // Arrow B at (2, 1) pointing RIGHT -> free to escape
+        val arrowB = Arrow(
+            id = "aB",
+            head = GridCoordinate(2, 1),
+            direction = Direction.RIGHT,
+            body = listOf(GridCoordinate(1, 1), GridCoordinate(2, 1))
+        )
+
+        occupancy.occupy(arrowA)
+        occupancy.occupy(arrowB)
+
+        // 1. Initial blocked state
+        assertFalse(PuzzleSolver.canMoveOut(arrowA, occupancy))
+        val highlightedA = arrowA.copyWithState(ArrowState.IDLE, highlighted = true)
+        assertTrue(highlightedA.isHighlighted)
+
+        // 2. Arrow B escapes and releases occupancy
+        assertTrue(PuzzleSolver.canMoveOut(arrowB, occupancy))
+        occupancy.release(arrowB)
+
+        // 3. Arrow A is now eligible for automatic release
+        assertTrue("Arrow A must now be clear for auto-release", PuzzleSolver.canMoveOut(highlightedA, occupancy))
+        val releasedA = highlightedA.copyWithState(ArrowState.FLYING_OUT, highlighted = false)
+        assertFalse("Highlight must clear upon release", releasedA.isHighlighted)
+    }
 }

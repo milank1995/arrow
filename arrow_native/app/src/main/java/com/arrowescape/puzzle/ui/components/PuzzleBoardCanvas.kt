@@ -836,15 +836,16 @@ private fun DrawScope.drawArrowEntity(
 
     val baseColor = when {
         arrow.state == ArrowState.WRONG_FLASH -> theme.arrowWrong
+        arrow.isHighlighted -> theme.arrowWrong
         isPreviewHold -> Color(0xFF0088F5) // Luminous Electric Sky Blue for Long-Press Hold (Unity Screenshot 2)
         isLaunching -> Color(0xFF0088F5)   // Electric Dodger Blue for Click Pop Takeoff (Unity correctArrowAnimColor)
         arrow.state == ArrowState.HINTED -> theme.arrowHint
         else -> theme.arrowDefault
     }
 
-    // Balanced, consistent stroke width across all level densities (4.2dp .. 5.8dp range)
-    val minStroke = 4.2.dp.toPx()
-    val maxStroke = 5.8.dp.toPx()
+    // Thinner, sleek stroke width across all level densities (3.0dp .. 4.2dp range)
+    val minStroke = 3.0.dp.toPx()
+    val maxStroke = 4.2.dp.toPx()
     val scaleMultiplier = when {
         isPreviewHold -> 1.10f * (1f + (hintPulseScale - 1f) * 0.35f) // Subtle +10% expansion with gentle breathing
         isLaunching -> 1.18f
@@ -852,12 +853,12 @@ private fun DrawScope.drawArrowEntity(
         arrow.state == ArrowState.HINTED -> hintPulseScale
         else -> 1.0f
     }
-    val strokeWidth = (cellSize * 0.17f).coerceIn(minStroke, maxStroke) * scaleMultiplier
+    val strokeWidth = (cellSize * 0.12f).coerceIn(minStroke, maxStroke) * scaleMultiplier
 
-    // Refined crisp arrowhead size maintaining brand consistency across all levels (11.5dp .. 15.5dp range)
-    val minHead = 11.5.dp.toPx()
-    val maxHead = 15.5.dp.toPx()
-    val headSize = (cellSize * 0.38f).coerceIn(minHead, maxHead) * (if (isPreviewHold) 1.08f else if (isLaunching) 1.12f else 1.0f)
+    // Refined crisp arrowhead size maintaining brand consistency across all levels (8.5dp .. 11.5dp range)
+    val minHead = 8.5.dp.toPx()
+    val maxHead = 11.5.dp.toPx()
+    val headSize = (cellSize * 0.28f).coerceIn(minHead, maxHead) * (if (isPreviewHold) 1.08f else if (isLaunching) 1.12f else 1.0f)
 
     // Build the full motion track: body points + escape extension along arrow.direction
     val track = mutableListOf<Offset>()
