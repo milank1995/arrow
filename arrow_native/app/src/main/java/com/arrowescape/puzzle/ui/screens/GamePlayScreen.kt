@@ -97,6 +97,7 @@ fun GamePlayScreen(
                 // Running-style combo praise notification banner positioned below header and above gameplay
                 CheerOverlay(
                     message = uiState.cheerMessage,
+                    fromLeft = uiState.cheerFromLeft,
                     modifier = Modifier
                         .align(Alignment.TopCenter)
                         .padding(top = 8.dp)

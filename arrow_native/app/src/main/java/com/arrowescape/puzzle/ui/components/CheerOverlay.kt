@@ -2,8 +2,7 @@ package com.arrowescape.puzzle.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -32,26 +31,44 @@ import androidx.compose.ui.unit.sp
 
 /**
  * Modern arcade running-style banner that glides horizontally beneath the header.
- * Displays combo cheers with dynamic tier-based vibrant gradients and crisp typography.
+ * Alternates directional flow:
+ *   - fromLeft = true: Glides smoothly from Left -> Center, pauses, then exits toward Right.
+ *   - fromLeft = false: Glides smoothly from Right -> Center, pauses, then exits toward Left.
  */
 @Composable
 fun CheerOverlay(
     message: String?,
+    fromLeft: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    val enterTransition = if (fromLeft) {
+        slideInHorizontally(
+            initialOffsetX = { fullWidth -> -fullWidth - 180 },
+            animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing)
+        ) + fadeIn(animationSpec = tween(250))
+    } else {
+        slideInHorizontally(
+            initialOffsetX = { fullWidth -> fullWidth + 180 },
+            animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing)
+        ) + fadeIn(animationSpec = tween(250))
+    }
+
+    val exitTransition = if (fromLeft) {
+        slideOutHorizontally(
+            targetOffsetX = { fullWidth -> fullWidth + 180 },
+            animationSpec = tween(durationMillis = 500, easing = FastOutLinearInEasing)
+        ) + fadeOut(animationSpec = tween(250))
+    } else {
+        slideOutHorizontally(
+            targetOffsetX = { fullWidth -> -fullWidth - 180 },
+            animationSpec = tween(durationMillis = 500, easing = FastOutLinearInEasing)
+        ) + fadeOut(animationSpec = tween(250))
+    }
+
     AnimatedVisibility(
         visible = message != null,
-        enter = slideInHorizontally(
-            initialOffsetX = { fullWidth -> fullWidth + 120 },
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioLowBouncy,
-                stiffness = Spring.StiffnessMediumLow
-            )
-        ) + fadeIn(animationSpec = tween(180)),
-        exit = slideOutHorizontally(
-            targetOffsetX = { fullWidth -> -fullWidth - 120 },
-            animationSpec = tween(durationMillis = 320, easing = FastOutLinearInEasing)
-        ) + fadeOut(animationSpec = tween(220)),
+        enter = enterTransition,
+        exit = exitTransition,
         modifier = modifier
     ) {
         if (message != null) {

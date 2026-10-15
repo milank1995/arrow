@@ -31,6 +31,7 @@ data class GameUiState(
     val isGameOver: Boolean = false,
     val comboCount: Int = 0,
     val cheerMessage: String? = null,
+    val cheerFromLeft: Boolean = true,
     val isGridLinesActive: Boolean = false,
     val isHammerModeActive: Boolean = false,
     val previewRayArrowId: String? = null,
@@ -155,28 +156,29 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 state.copy(
                     arrows = updatedArrows,
                     comboCount = newCombo,
-                    cheerMessage = cheer
+                    cheerMessage = cheer,
+                    cheerFromLeft = if (cheer != null) !state.cheerFromLeft else state.cheerFromLeft
                 )
             }
 
-            // Auto-dismiss in-app cheer notification after 1.4 seconds
+            // Auto-dismiss in-app cheer notification after 1.8 seconds
             cheerDismissJob?.cancel()
             if (cheer != null) {
                 cheerDismissJob = viewModelScope.launch {
-                    delay(1400)
+                    delay(1800)
                     _uiState.update { it.copy(cheerMessage = null) }
                 }
             }
 
             // Animate flight smoothly at 60fps and transition to CLEARED
             viewModelScope.launch {
-                val durationMs = 320L
+                val durationMs = 520L
                 val startTime = System.currentTimeMillis()
                 while (true) {
                     val elapsed = System.currentTimeMillis() - startTime
                     val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
-                    // FastOutLinearIn easing: rawProgress * rawProgress
-                    val easedProgress = rawProgress * rawProgress
+                    // Smooth, dynamic kinematic exit curve with immediate responsiveness and accelerating escape
+                    val easedProgress = rawProgress * (0.35f + 0.65f * rawProgress)
                     _uiState.update { state ->
                         val updated = state.arrows.map {
                             if (it.id == clickedArrow.id && it.state == ArrowState.FLYING_OUT) {
