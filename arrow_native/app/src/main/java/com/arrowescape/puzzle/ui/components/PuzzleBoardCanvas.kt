@@ -945,6 +945,36 @@ private fun DrawScope.drawArrowEntity(
             )
         }
     }
+
+    // 3. Draw Aerodynamic Flight Trail Speed Lines when escaping
+    if (arrow.state == ArrowState.FLYING_OUT && sampledPoints.isNotEmpty() && arrow.flightProgress in 0.04f..0.96f) {
+        val tailPt = sampledPoints.first()
+        val dirX = arrow.direction.dx.toFloat()
+        val dirY = arrow.direction.dy.toFloat()
+        val perpX = -dirY
+        val perpY = dirX
+
+        val progressFactor = sin(arrow.flightProgress * PI.toFloat()).coerceIn(0.2f, 1f)
+        val trailLen = cellSize * 0.48f * progressFactor
+        val trailAlpha = (alpha * 0.38f * progressFactor).coerceIn(0f, 1f)
+        val trailColor = renderColor.copy(alpha = trailAlpha)
+        val trailWidth = (strokeWidth * 0.36f).coerceAtLeast(1f)
+
+        // Center streak
+        val cStart = Offset(tailPt.x - dirX * (cellSize * 0.08f), tailPt.y - dirY * (cellSize * 0.08f))
+        val cEnd = Offset(cStart.x - dirX * trailLen, cStart.y - dirY * trailLen)
+        drawLine(color = trailColor, start = cStart, end = cEnd, strokeWidth = trailWidth, cap = StrokeCap.Round)
+
+        // Flanking left streak
+        val lStart = Offset(cStart.x + perpX * (cellSize * 0.18f), cStart.y + perpY * (cellSize * 0.18f))
+        val lEnd = Offset(lStart.x - dirX * (trailLen * 0.68f), lStart.y - dirY * (trailLen * 0.68f))
+        drawLine(color = trailColor, start = lStart, end = lEnd, strokeWidth = trailWidth * 0.85f, cap = StrokeCap.Round)
+
+        // Flanking right streak
+        val rStart = Offset(cStart.x - perpX * (cellSize * 0.18f), cStart.y - perpY * (cellSize * 0.18f))
+        val rEnd = Offset(rStart.x - dirX * (trailLen * 0.68f), rStart.y - dirY * (trailLen * 0.68f))
+        drawLine(color = trailColor, start = rStart, end = rEnd, strokeWidth = trailWidth * 0.85f, cap = StrokeCap.Round)
+    }
 }
 
 /**

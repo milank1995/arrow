@@ -1,5 +1,9 @@
 package com.arrowescape.puzzle.ui.components
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,14 +23,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.ui.theme.ThemePreset
+import kotlinx.coroutines.launch
 
 @Composable
 fun BoosterBar(
@@ -37,6 +45,10 @@ fun BoosterBar(
     onGridClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val hintScale = remember { Animatable(1f) }
+    val gridScale = remember { Animatable(1f) }
+
     Surface(
         color = Color.White,
         modifier = modifier.fillMaxWidth()
@@ -51,7 +63,9 @@ fun BoosterBar(
             // 1. Hint Pod with count or [AD] Free badge underneath (Matches Screenshot 1)
             Box(
                 contentAlignment = Alignment.BottomCenter,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .scale(hintScale.value)
             ) {
                 // Pod Circle with soft ambient tint
                 Box(
@@ -59,7 +73,14 @@ fun BoosterBar(
                         .size(62.dp)
                         .clip(CircleShape)
                         .background(Color(0xFFE8EEF5))
-                        .clickable(onClick = onHintClick),
+                        .clickable {
+                            coroutineScope.launch {
+                                hintScale.animateTo(0.85f, tween(60))
+                                hintScale.animateTo(1.12f, tween(90))
+                                hintScale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+                            }
+                            onHintClick()
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -120,7 +141,9 @@ fun BoosterBar(
 
             // 2. Grid (#) Pod
             Box(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .scale(gridScale.value),
                 contentAlignment = Alignment.Center
             ) {
                 Box(
@@ -128,7 +151,14 @@ fun BoosterBar(
                         .size(62.dp)
                         .clip(CircleShape)
                         .background(if (isGridLinesActive) Color(0xFFCBD5E1) else Color(0xFFE8EEF5))
-                        .clickable(onClick = onGridClick),
+                        .clickable {
+                            coroutineScope.launch {
+                                gridScale.animateTo(0.85f, tween(60))
+                                gridScale.animateTo(1.12f, tween(90))
+                                gridScale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+                            }
+                            onGridClick()
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
