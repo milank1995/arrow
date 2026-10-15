@@ -648,18 +648,18 @@ private fun DrawScope.drawArrowEntity(
 
     val baseColor = when {
         arrow.state == ArrowState.WRONG_FLASH -> theme.arrowWrong
-        isPreviewHold -> Color(0xFF0647DB) // Deep Vivid Sapphire Blue for Long-Press Hold (Unity LongPressBlueArrow)
+        isPreviewHold -> Color(0xFF0088F5) // Luminous Electric Sky Blue for Long-Press Hold (Unity Screenshot 2)
         isLaunching -> Color(0xFF0088F5)   // Electric Dodger Blue for Click Pop Takeoff (Unity correctArrowAnimColor)
         arrow.state == ArrowState.HINTED -> theme.arrowHint
         else -> theme.arrowDefault
     }
 
-    // Clamped stroke width with expansion pulse when held or clicked
+    // Clamped stroke width with controlled expansion pulse when held or clicked
     val minStroke = 4.dp.toPx()
     val maxStroke = 9.dp.toPx()
     val scaleMultiplier = when {
-        isPreviewHold -> 1.30f * hintPulseScale
-        isLaunching -> 1.22f
+        isPreviewHold -> 1.10f * (1f + (hintPulseScale - 1f) * 0.35f) // Subtle +10% expansion with gentle breathing
+        isLaunching -> 1.18f
         arrow.state == ArrowState.WRONG_FLASH -> 1.15f
         arrow.state == ArrowState.HINTED -> hintPulseScale
         else -> 1.0f
@@ -669,7 +669,7 @@ private fun DrawScope.drawArrowEntity(
     // Clamped arrowhead size to maintain sharp, distinct triangular heads
     val minHead = 12.dp.toPx()
     val maxHead = 26.dp.toPx()
-    val headSize = (cellSize * 0.48f).coerceIn(minHead, maxHead) * (if (isPreviewHold) 1.22f else if (isLaunching) 1.15f else 1.0f)
+    val headSize = (cellSize * 0.48f).coerceIn(minHead, maxHead) * (if (isPreviewHold) 1.08f else if (isLaunching) 1.12f else 1.0f)
 
     // Build the full motion track: body points + escape extension along arrow.direction
     val track = mutableListOf<Offset>()
@@ -733,16 +733,16 @@ private fun DrawScope.drawArrowEntity(
         )
     }
 
-    // 2. Draw refined broader triangular arrowhead at the moving head point
+    // 2. Draw crisp, sharp triangular arrowhead at the moving head point (acute angle, flush with stem)
     val currentHead = sampledPoints.last()
     rotate(
         degrees = arrow.direction.angleDegrees,
         pivot = currentHead
     ) {
         val arrowHeadPath = Path().apply {
-            moveTo(currentHead.x, currentHead.y - headSize * 0.58f) // Forward tip
-            lineTo(currentHead.x + headSize * 0.45f, currentHead.y + headSize * 0.34f) // Right base
-            lineTo(currentHead.x - headSize * 0.45f, currentHead.y + headSize * 0.34f) // Left base
+            moveTo(currentHead.x, currentHead.y - headSize * 0.60f) // Sharp forward tip
+            lineTo(currentHead.x + headSize * 0.38f, currentHead.y + headSize * 0.30f) // Right base
+            lineTo(currentHead.x - headSize * 0.38f, currentHead.y + headSize * 0.30f) // Left base
             close()
         }
 
@@ -948,61 +948,28 @@ private fun DrawScope.drawPreviewRay(
         Direction.RIGHT -> endOffset = Offset(origin.x + (xSize + 1.5f) * cellSize, headCenter.y)
     }
 
-    // Unity reference: LongPressBlue #0088F5
-    val beamColor = Color(0xFF0088F5)
+    // Start line seamlessly from the forward tip of the arrowhead
+    val startOffset = Offset(
+        x = headCenter.x + arrow.direction.dx * (cellSize * 0.38f),
+        y = headCenter.y + arrow.direction.dy * (cellSize * 0.38f)
+    )
 
-    // 1. Soft diffused outer glow aura
+    // Delicate, elegant hairline sightline matching Unity Screenshot 2 (#38BDF8 / #0088F5)
+    // 1. Soft subtle micro-halo
     drawLine(
-        color = beamColor.copy(alpha = 0.22f * previewAlpha),
-        start = headCenter,
+        color = Color(0xFF0088F5).copy(alpha = 0.16f * previewAlpha),
+        start = startOffset,
         end = endOffset,
-        strokeWidth = 11.dp.toPx(),
+        strokeWidth = 3.6.dp.toPx(),
         cap = StrokeCap.Round
     )
 
-    // 2. Concentrated inner glow
+    // 2. Crisp, refined hairline sightline
     drawLine(
-        color = beamColor.copy(alpha = 0.45f * previewAlpha),
-        start = headCenter,
+        color = Color(0xFF38BDF8).copy(alpha = 0.60f * previewAlpha),
+        start = startOffset,
         end = endOffset,
-        strokeWidth = 5.5.dp.toPx(),
+        strokeWidth = 1.4.dp.toPx(),
         cap = StrokeCap.Round
-    )
-
-    // 3. High-contrast crisp core guidance ray
-    drawLine(
-        color = beamColor.copy(alpha = 0.95f * previewAlpha),
-        start = headCenter,
-        end = endOffset,
-        strokeWidth = 2.8.dp.toPx(),
-        cap = StrokeCap.Round
-    )
-
-    // 4. Directional exit beacon chevron / arrowhead at destination edge
-    rotate(
-        degrees = arrow.direction.angleDegrees,
-        pivot = endOffset
-    ) {
-        val exitHeadSize = 15.dp.toPx()
-        val exitHeadPath = Path().apply {
-            moveTo(endOffset.x, endOffset.y - exitHeadSize * 0.58f)
-            lineTo(endOffset.x + exitHeadSize * 0.46f, endOffset.y + exitHeadSize * 0.36f)
-            lineTo(endOffset.x - exitHeadSize * 0.46f, endOffset.y + exitHeadSize * 0.36f)
-            close()
-        }
-        drawPath(path = exitHeadPath, color = beamColor.copy(alpha = 0.95f * previewAlpha))
-    }
-
-    // 5. Pulsing beacon ring and dot at origin head
-    drawCircle(
-        color = beamColor.copy(alpha = 0.65f * previewAlpha),
-        radius = 8.dp.toPx(),
-        center = headCenter,
-        style = Stroke(width = 2.dp.toPx())
-    )
-    drawCircle(
-        color = beamColor.copy(alpha = 0.95f * previewAlpha),
-        radius = 3.5.dp.toPx(),
-        center = headCenter
     )
 }
