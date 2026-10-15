@@ -115,8 +115,12 @@ fun PuzzleBoardCanvas(
     var lastTapPos by remember { mutableStateOf(Offset.Zero) }
 
     // Remember the initial level silhouette cells to render subtle cell dots for cleared areas
-    val initialLevelCells = remember(xSize, ySize, arrows.size) {
-        arrows.flatMap { it.body }.toSet()
+    val initialLevelCells = remember(xSize, ySize, arrows.size, arrows.firstOrNull()?.id) {
+        arrows.flatMap { it.allPoints }.toSet()
+    }
+    val clearedCells = remember(arrows, initialLevelCells) {
+        val activeCoords = arrows.filter { it.state != ArrowState.CLEARED }.flatMap { it.allPoints }.toSet()
+        initialLevelCells.filter { it !in activeCoords }
     }
 
     // Reset zoom and pan, and launch cascading write-on path assembly animation whenever a new level is loaded
@@ -569,14 +573,33 @@ fun PuzzleBoardCanvas(
                 // 1. Full Grid Lines (background) only if user activated via '#' Booster button
                 if (isGridLinesActive) {
                     drawGridLines(boardOrigin, xSize, ySize, cellSize, theme.gridLine)
+                    drawGridDots(boardOrigin, xSize, ySize, cellSize, theme.gridDot)
                 }
 
-                // 2. Draw Preview Ray if an arrow is long-pressed (smooth animated fade matching Unity lineCg.DOFade)
+                // 2. Cleared Area Silhouette Dots:
+                // Only become visible once an arrow has moved out of the gameplay area.
+                // Layered in the background under active arrows so arrows always render in front.
+                if (clearedCells.isNotEmpty()) {
+                    val dotColor = if (theme.isDark) Color(0xFF64748B) else Color(0xFF94A3B8)
+                    val dotRadius = (cellSize * 0.065f).coerceIn(2.2f, 3.4f)
+                    for (coord in clearedCells) {
+                        drawCircle(
+                            color = dotColor.copy(alpha = 0.85f),
+                            radius = dotRadius,
+                            center = Offset(
+                                boardOrigin.x + (coord.x + 0.5f) * cellSize,
+                                boardOrigin.y + (coord.y + 0.5f) * cellSize
+                            )
+                        )
+                    }
+                }
+
+                // 3. Draw Preview Ray if an arrow is long-pressed (smooth animated fade matching Unity lineCg.DOFade)
                 if (previewArrowToRender != null && previewAlpha > 0.01f) {
                     drawPreviewRay(boardOrigin, previewArrowToRender, xSize, ySize, cellSize, previewAlpha)
                 }
 
-                // 3. Draw All Arrows (Progressive Path Drawing: arrows draw from tail X to head Y in place)
+                // 4. Draw All Arrows (Progressive Path Drawing, drawn ON TOP of the background dots)
                 val boardCenterX = xSize / 2f
                 val boardCenterY = ySize / 2f
                 val maxBoardDist = hypot(boardCenterX, boardCenterY).coerceAtLeast(1f)
@@ -613,23 +636,6 @@ fun PuzzleBoardCanvas(
                         drawProgress = easedDraw,
                         introAlpha = introAlpha
                     )
-                }
-
-                // 4. Grid Dots Layer: rendered ON TOP of arrows matching Unity's pegboard layering (gridDotsRT)
-                val dotsAlpha = if (introProgress.value >= 1f) 0.42f else (introProgress.value / 0.15f).coerceIn(0f, 1f) * 0.42f
-                for (coord in initialLevelCells) {
-                    drawCircle(
-                        color = Color(0xFF94A3B8).copy(alpha = dotsAlpha),
-                        radius = (cellSize * 0.055f).coerceIn(2.0f, 3.2f),
-                        center = Offset(
-                            boardOrigin.x + (coord.x + 0.5f) * cellSize,
-                            boardOrigin.y + (coord.y + 0.5f) * cellSize
-                        )
-                    )
-                }
-
-                if (isGridLinesActive) {
-                    drawGridDots(boardOrigin, xSize, ySize, cellSize, theme.gridDot)
                 }
             }
 
