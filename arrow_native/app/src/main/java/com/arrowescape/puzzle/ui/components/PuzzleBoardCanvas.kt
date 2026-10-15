@@ -577,22 +577,23 @@ fun PuzzleBoardCanvas(
             }) {
                 // Background is completely transparent; surroundings adapt naturally to theme
 
-                // 1. Extended Guide Lines & Dots matching Unity Screenshot 2 (animated fade)
+                // 1. Arrow Escape Guide Rays & Dots matching Unity Screenshot 2 (animated fade)
                 if (gridLinesAlpha > 0.01f) {
-                    drawExtendedGridLines(
+                    drawArrowGuideRays(
                         origin = boardOrigin,
                         xSize = xSize,
                         ySize = ySize,
                         cellSize = cellSize,
                         canvasSize = size,
-                        color = theme.gridLine.copy(alpha = 0.75f * gridLinesAlpha)
+                        arrows = arrows,
+                        color = theme.gridLine.copy(alpha = 0.32f * gridLinesAlpha)
                     )
                     drawGridDots(
                         origin = boardOrigin,
                         xSize = xSize,
                         ySize = ySize,
                         cellSize = cellSize,
-                        color = theme.gridDot.copy(alpha = 0.75f * gridLinesAlpha)
+                        color = theme.gridDot.copy(alpha = 0.45f * gridLinesAlpha)
                     )
                 }
 
@@ -1123,18 +1124,18 @@ private fun lerpOffset(p0: Offset, p1: Offset, t: Float): Offset {
     )
 }
 
-private fun DrawScope.drawExtendedGridLines(
+private fun DrawScope.drawArrowGuideRays(
     origin: Offset,
     xSize: Int,
     ySize: Int,
     cellSize: Float,
     canvasSize: Size,
+    arrows: List<Arrow>,
     color: Color
 ) {
     val boardWidth = xSize * cellSize
     val boardHeight = ySize * cellSize
 
-    // Extend generously across the screen height and width (matching Unity Screenshot 2)
     val extendY = canvasSize.height.coerceAtLeast(boardHeight * 2.0f)
     val startY = origin.y - extendY * 0.70f
     val endY = origin.y + boardHeight + extendY * 0.70f
@@ -1145,39 +1146,112 @@ private fun DrawScope.drawExtendedGridLines(
 
     val strokeWidth = 1.0f
 
-    // 1. Vertical guide lines extending far upwards toward header and downwards
-    val vBrush = Brush.verticalGradient(
-        0.00f to color.copy(alpha = 0f),
-        0.18f to color,
-        0.82f to color,
-        1.00f to color.copy(alpha = 0f),
-        startY = startY,
-        endY = endY
-    )
-    for (x in 0..xSize) {
-        val posX = origin.x + x * cellSize
+    val activeArrows = arrows.filter { it.state != ArrowState.CLEARED }
+
+    // Aggregate unique corridors to avoid redundant redraws
+    val upCols = mutableMapOf<Int, Float>() // col -> max Y (base of arrow)
+    val downCols = mutableMapOf<Int, Float>() // col -> min Y (base of arrow)
+    val leftRows = mutableMapOf<Int, Float>() // row -> max X (base of arrow)
+    val rightRows = mutableMapOf<Int, Float>() // row -> min X (base of arrow)
+
+    for (arrow in activeArrows) {
+        val head = arrow.head
+        val allPts = arrow.allPoints
+        when (arrow.direction) {
+            Direction.UP -> {
+                val col = head.x
+                val maxSegmentY = allPts.filter { it.x == col }.maxOfOrNull { it.y } ?: head.y
+                val baseY = origin.y + (maxSegmentY + 0.5f) * cellSize
+                upCols[col] = maxOf(upCols[col] ?: baseY, baseY)
+            }
+            Direction.DOWN -> {
+                val col = head.x
+                val minSegmentY = allPts.filter { it.x == col }.minOfOrNull { it.y } ?: head.y
+                val baseY = origin.y + (minSegmentY + 0.5f) * cellSize
+                downCols[col] = minOf(downCols[col] ?: baseY, baseY)
+            }
+            Direction.LEFT -> {
+                val row = head.y
+                val maxSegmentX = allPts.filter { it.y == row }.maxOfOrNull { it.x } ?: head.x
+                val baseX = origin.x + (maxSegmentX + 0.5f) * cellSize
+                leftRows[row] = maxOf(leftRows[row] ?: baseX, baseX)
+            }
+            Direction.RIGHT -> {
+                val row = head.y
+                val minSegmentX = allPts.filter { it.y == row }.minOfOrNull { it.x } ?: head.x
+                val baseX = origin.x + (minSegmentX + 0.5f) * cellSize
+                rightRows[row] = minOf(rightRows[row] ?: baseX, baseX)
+            }
+        }
+    }
+
+    // 1. UP guide rays shooting vertically to header
+    for ((col, fromY) in upCols) {
+        val posX = origin.x + (col + 0.5f) * cellSize
+        val brush = Brush.verticalGradient(
+            0.00f to color.copy(alpha = 0f),
+            0.20f to color,
+            1.00f to color,
+            startY = startY,
+            endY = fromY
+        )
         drawLine(
-            brush = vBrush,
+            brush = brush,
             start = Offset(posX, startY),
+            end = Offset(posX, fromY),
+            strokeWidth = strokeWidth
+        )
+    }
+
+    // 2. DOWN guide rays shooting vertically to bottom
+    for ((col, fromY) in downCols) {
+        val posX = origin.x + (col + 0.5f) * cellSize
+        val brush = Brush.verticalGradient(
+            0.00f to color,
+            0.80f to color,
+            1.00f to color.copy(alpha = 0f),
+            startY = fromY,
+            endY = endY
+        )
+        drawLine(
+            brush = brush,
+            start = Offset(posX, fromY),
             end = Offset(posX, endY),
             strokeWidth = strokeWidth
         )
     }
 
-    // 2. Horizontal guide lines extending far left and right toward screen margins
-    val hBrush = Brush.horizontalGradient(
-        0.00f to color.copy(alpha = 0f),
-        0.18f to color,
-        0.82f to color,
-        1.00f to color.copy(alpha = 0f),
-        startX = startX,
-        endX = endX
-    )
-    for (y in 0..ySize) {
-        val posY = origin.y + y * cellSize
+    // 3. LEFT guide rays shooting horizontally to left edge
+    for ((row, fromX) in leftRows) {
+        val posY = origin.y + (row + 0.5f) * cellSize
+        val brush = Brush.horizontalGradient(
+            0.00f to color.copy(alpha = 0f),
+            0.20f to color,
+            1.00f to color,
+            startX = startX,
+            endX = fromX
+        )
         drawLine(
-            brush = hBrush,
+            brush = brush,
             start = Offset(startX, posY),
+            end = Offset(fromX, posY),
+            strokeWidth = strokeWidth
+        )
+    }
+
+    // 4. RIGHT guide rays shooting horizontally to right edge
+    for ((row, fromX) in rightRows) {
+        val posY = origin.y + (row + 0.5f) * cellSize
+        val brush = Brush.horizontalGradient(
+            0.00f to color,
+            0.80f to color,
+            1.00f to color.copy(alpha = 0f),
+            startX = fromX,
+            endX = endX
+        )
+        drawLine(
+            brush = brush,
+            start = Offset(fromX, posY),
             end = Offset(endX, posY),
             strokeWidth = strokeWidth
         )
@@ -1185,12 +1259,12 @@ private fun DrawScope.drawExtendedGridLines(
 }
 
 private fun DrawScope.drawGridDots(origin: Offset, xSize: Int, ySize: Int, cellSize: Float, color: Color) {
-    for (x in 0..xSize) {
-        for (y in 0..ySize) {
+    for (x in 0 until xSize) {
+        for (y in 0 until ySize) {
             drawCircle(
                 color = color,
                 radius = 1.8f,
-                center = Offset(origin.x + x * cellSize, origin.y + y * cellSize)
+                center = Offset(origin.x + (x + 0.5f) * cellSize, origin.y + (y + 0.5f) * cellSize)
             )
         }
     }
