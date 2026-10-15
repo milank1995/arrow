@@ -900,19 +900,10 @@ private fun DrawScope.drawArrowEntity(
 
     val renderColor = baseColor.copy(alpha = alpha * introAlpha)
 
-    // 1. Draw body stroke along the polyline with smooth rounded corner fillets
-    if (sampledPoints.size > 1) {
-        val path = buildRoundedCornerPath(sampledPoints, radius = cellSize * 0.32f)
-        drawPath(
-            path = path,
-            color = renderColor,
-            style = Stroke(
-                width = strokeWidth,
-                cap = StrokeCap.Round,
-                join = StrokeJoin.Round
-            )
-        )
-    }
+    // Pre-calculate paths for arrow body and head to allow 2.5D tactile drop shadow rendering
+    val bodyPath = if (sampledPoints.size > 1) {
+        buildRoundedCornerPath(sampledPoints, radius = cellSize * 0.32f)
+    } else null
 
     // Arrowhead pop-in scale during intro
     val headPopScale = when {
@@ -926,21 +917,71 @@ private fun DrawScope.drawArrowEntity(
         else -> 1.0f + sin(((drawProgress - 0.85f) / 0.15f) * PI.toFloat()) * 0.12f
     }
     val effectiveHeadSize = headSize * headPopScale
+    val currentHead = if (displacement > 0.001f && sampledPoints.isNotEmpty()) sampledPoints.last() else headPt
 
-    // 2. Draw crisp, sharp triangular arrowhead at the head point
-    if (effectiveHeadSize > 0.5f) {
-        val currentHead = if (displacement > 0.001f && sampledPoints.isNotEmpty()) sampledPoints.last() else headPt
+    val arrowHeadPath = if (effectiveHeadSize > 0.5f) {
+        Path().apply {
+            moveTo(currentHead.x, currentHead.y - effectiveHeadSize * 0.58f) // Sharp forward tip
+            lineTo(currentHead.x + effectiveHeadSize * 0.40f, currentHead.y + effectiveHeadSize * 0.30f) // Right base
+            lineTo(currentHead.x - effectiveHeadSize * 0.40f, currentHead.y + effectiveHeadSize * 0.30f) // Left base
+            close()
+        }
+    } else null
+
+    // 1. Soft Ambient Drop Shadow (2.5D tactile board-piece effect)
+    val isFlying = arrow.state == ArrowState.FLYING_OUT
+    val shadowOffsetY = if (isFlying) 2.6.dp.toPx() else 1.6.dp.toPx()
+    val shadowAlpha = (if (isFlying) 0.16f else 0.12f) * alpha * introAlpha
+    val shadowColor = Color.Black.copy(alpha = shadowAlpha)
+
+    if (shadowAlpha > 0.005f) {
+        withTransform({
+            translate(left = 0f, top = shadowOffsetY)
+        }) {
+            if (bodyPath != null) {
+                drawPath(
+                    path = bodyPath,
+                    color = shadowColor,
+                    style = Stroke(
+                        width = strokeWidth,
+                        cap = StrokeCap.Round,
+                        join = StrokeJoin.Round
+                    )
+                )
+            }
+            if (arrowHeadPath != null) {
+                rotate(
+                    degrees = arrow.direction.angleDegrees,
+                    pivot = currentHead
+                ) {
+                    drawPath(
+                        path = arrowHeadPath,
+                        color = shadowColor
+                    )
+                }
+            }
+        }
+    }
+
+    // 2. Draw Main Arrow Body stroke along the polyline
+    if (bodyPath != null) {
+        drawPath(
+            path = bodyPath,
+            color = renderColor,
+            style = Stroke(
+                width = strokeWidth,
+                cap = StrokeCap.Round,
+                join = StrokeJoin.Round
+            )
+        )
+    }
+
+    // 3. Draw Main Sharp triangular arrowhead at the head point
+    if (arrowHeadPath != null) {
         rotate(
             degrees = arrow.direction.angleDegrees,
             pivot = currentHead
         ) {
-            val arrowHeadPath = Path().apply {
-                moveTo(currentHead.x, currentHead.y - effectiveHeadSize * 0.58f) // Sharp forward tip
-                lineTo(currentHead.x + effectiveHeadSize * 0.40f, currentHead.y + effectiveHeadSize * 0.30f) // Right base
-                lineTo(currentHead.x - effectiveHeadSize * 0.40f, currentHead.y + effectiveHeadSize * 0.30f) // Left base
-                close()
-            }
-
             drawPath(
                 path = arrowHeadPath,
                 color = renderColor

@@ -91,10 +91,19 @@ class AudioHapticManager(private val context: Context) {
         }
     }
 
-    fun playArrowFly() {
-        playTone(startFreq = 350f, endFreq = 950f, durationMs = 120, volume = 0.5f)
+    fun playArrowFly(comboCount: Int = 0) {
+        // Harmonious pentatonic pitch steps for ascending combo excitement:
+        // C4, D4, E4, G4, A4, C5, D5, E5
+        val scaleSteps = floatArrayOf(1.0f, 1.122f, 1.260f, 1.498f, 1.682f, 2.0f, 2.245f, 2.52f)
+        val step = (comboCount.coerceAtLeast(1) - 1) % scaleSteps.size
+        val pitchFactor = scaleSteps[step]
+        val startFreq = 340f * pitchFactor
+        val endFreq = (880f * pitchFactor).coerceAtMost(3600f)
+
+        playTone(startFreq = startFreq, endFreq = endFreq, durationMs = 120, volume = 0.5f)
         if (isVibrationEnabled) {
-            vibrate(VibrationEffect.createOneShot(25, 120))
+            val hapticIntensity = (22 + (comboCount.coerceAtMost(8) * 4)).coerceIn(20, 55)
+            vibrate(VibrationEffect.createOneShot(hapticIntensity.toLong(), 120))
         }
     }
 

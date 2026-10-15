@@ -170,8 +170,20 @@ fun GameHeader(
                 }
 
                 // RIGHT: Remaining Arrows Badge (solid bold ↗ icon + count, matching Screenshot 1)
+                val badgeScale = remember { Animatable(1f) }
+                var prevRemainingCount by remember { mutableIntStateOf(remainingArrowsCount) }
+
+                LaunchedEffect(remainingArrowsCount) {
+                    if (remainingArrowsCount < prevRemainingCount) {
+                        badgeScale.animateTo(1.18f, tween(65, easing = FastOutSlowInEasing))
+                        badgeScale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+                    }
+                    prevRemainingCount = remainingArrowsCount
+                }
+
                 Box(
                     modifier = Modifier
+                        .scale(badgeScale.value)
                         .clip(RoundedCornerShape(percent = 50))
                         .background(Color(0xFFEEF2F6))
                         .padding(horizontal = 14.dp, vertical = 7.dp),

@@ -144,8 +144,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
         if (canEscape) {
             // SUCCESSFUL MOVE
-            audioHapticManager.playArrowFly()
             val newCombo = _uiState.value.comboCount + 1
+            audioHapticManager.playArrowFly(newCombo)
             val cheer = calculateCheerMessage(newCombo)
 
             // Update arrow state to flying out
