@@ -232,9 +232,6 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             }
         }
 
-        // Check if any highlighted arrows became unblocked by this arrow moving out
-        checkAndAutoReleaseHighlightedArrows()
-
         // Animate flight smoothly at 60fps and transition to CLEARED
         viewModelScope.launch {
             val durationMs = 520L
@@ -265,7 +262,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 _uiState.update { state ->
                     state.copy(arrows = finalArrows)
                 }
-                // Check once again when completely cleared in case another path opened
+                // Check once the active arrow has COMPLETELY cleared the board (strictly sequential exits)
                 checkAndAutoReleaseHighlightedArrows()
             }
         }
@@ -273,7 +270,14 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private fun checkAndAutoReleaseHighlightedArrows() {
         viewModelScope.launch {
-            delay(80)
+            // Guard: wait if any arrow is currently in flight to ensure strictly sequential exits
+            if (_uiState.value.arrows.any { it.state == ArrowState.FLYING_OUT }) {
+                return@launch
+            }
+            delay(120) // Brief natural pause between sequential exits matching Unity
+            if (_uiState.value.arrows.any { it.state == ArrowState.FLYING_OUT }) {
+                return@launch
+            }
             val highlightedCandidates = _uiState.value.arrows.filter {
                 it.isHighlighted && it.state == ArrowState.IDLE
             }
@@ -283,6 +287,14 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     break
                 }
             }
+        }
+    }
+
+    fun setTheme(theme: ThemePreset) {
+        viewModelScope.launch {
+            val index = ThemePresets.all.indexOfFirst { it.name == theme.name }.coerceAtLeast(0)
+            repository.setTheme(index)
+            _uiState.update { it.copy(activeTheme = theme) }
         }
     }
 

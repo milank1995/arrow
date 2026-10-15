@@ -71,7 +71,7 @@ fun GameHeader(
     )
 
     Surface(
-        color = Color.White,
+        color = Color.Transparent,
         modifier = modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {

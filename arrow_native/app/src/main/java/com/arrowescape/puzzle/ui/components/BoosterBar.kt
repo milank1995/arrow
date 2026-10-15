@@ -50,7 +50,7 @@ fun BoosterBar(
     val gridScale = remember { Animatable(1f) }
 
     Surface(
-        color = Color.White,
+        color = Color.Transparent,
         modifier = modifier.fillMaxWidth()
     ) {
         Row(

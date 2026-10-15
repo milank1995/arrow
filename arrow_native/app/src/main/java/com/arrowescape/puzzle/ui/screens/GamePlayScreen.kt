@@ -11,6 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +28,8 @@ import com.arrowescape.puzzle.ui.components.GameHeader
 import com.arrowescape.puzzle.ui.components.GameOverDialog
 import com.arrowescape.puzzle.ui.components.LevelVictoryDialog
 import com.arrowescape.puzzle.ui.components.PuzzleBoardCanvas
+import com.arrowescape.puzzle.ui.components.ThemeCustomizationDialog
+import com.arrowescape.puzzle.ui.theme.ThemePreset
 
 @Composable
 fun GamePlayScreen(
@@ -34,12 +40,13 @@ fun GamePlayScreen(
     onHammerClick: () -> Unit,
     onWandClick: () -> Unit,
     onGridClick: () -> Unit,
-    onThemeClick: () -> Unit,
+    onThemeSelect: (ThemePreset) -> Unit,
     onNextLevelClick: () -> Unit,
     onRestartClick: () -> Unit,
     onBackToHomeClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showThemeDialog by remember { mutableStateOf(false) }
     val level = uiState.levelData
     val theme = uiState.activeTheme
     val remainingArrowsCount = uiState.arrows.count { 
@@ -47,7 +54,7 @@ fun GamePlayScreen(
     }
 
     Surface(
-        color = Color.White,
+        color = theme.background,
         modifier = modifier.fillMaxSize()
     ) {
         Column(
@@ -70,7 +77,7 @@ fun GamePlayScreen(
                     totalArrowsCount = totalArrowsCount,
                     theme = theme,
                     onBackClick = onBackToHomeClick,
-                    onThemeClick = onThemeClick
+                    onThemeClick = { showThemeDialog = true }
                 )
             }
 
@@ -132,6 +139,19 @@ fun GamePlayScreen(
                 theme = theme,
                 onRestartClick = onRestartClick,
                 onHomeClick = onBackToHomeClick
+            )
+        }
+
+        // THEME CUSTOMIZATION DIALOG
+        if (showThemeDialog) {
+            ThemeCustomizationDialog(
+                activeTheme = theme,
+                onThemeSelect = { selectedTheme ->
+                    onThemeSelect(selectedTheme)
+                },
+                onDismiss = {
+                    showThemeDialog = false
+                }
             )
         }
     }

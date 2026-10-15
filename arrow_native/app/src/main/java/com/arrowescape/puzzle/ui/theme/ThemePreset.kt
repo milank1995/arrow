@@ -83,5 +83,63 @@ object ThemePresets {
         isDark = false
     )
 
-    val all = listOf(CleanLight, MidnightDark, CalmPastel)
+    val WarmSepia = ThemePreset(
+        name = "Warm Sepia",
+        background = Color(0xFFFAF1E4), // Authentic Unity Screenshot 3 Cream/Beige
+        surface = Color(0xFFFFFDF9),
+        gridDot = Color(0xFFC7B299),
+        gridLine = Color(0xFFEFE3D3),
+        arrowDefault = Color(0xFF543A24), // Dark wood sepia
+        arrowColors = listOf(
+            Color(0xFF543A24),
+            Color(0xFF7EA030)
+        ),
+        arrowHint = Color(0xFFE09F3E),
+        arrowWrong = Color(0xFFD94E34),
+        arrowClear = Color(0xFF7EA030), // Olive green
+        textPrimary = Color(0xFF3D2614),
+        textSecondary = Color(0xFF8C7355),
+        boosterBg = Color(0xFFF3E8D8),
+        isDark = false
+    )
+
+    val MintFresh = ThemePreset(
+        name = "Mint Fresh",
+        background = Color(0xFFF0FDF4),
+        surface = Color(0xFFFFFFFF),
+        gridDot = Color(0xFFA7F3D0),
+        gridLine = Color(0xFFDCFCE7),
+        arrowDefault = Color(0xFF059669),
+        arrowColors = listOf(
+            Color(0xFF059669)
+        ),
+        arrowHint = Color(0xFFD97706),
+        arrowWrong = Color(0xFFE11D48),
+        arrowClear = Color(0xFF10B981),
+        textPrimary = Color(0xFF064E3B),
+        textSecondary = Color(0xFF047857),
+        boosterBg = Color(0xFFDCFCE7),
+        isDark = false
+    )
+
+    val SunsetRose = ThemePreset(
+        name = "Sunset Rose",
+        background = Color(0xFFFFF1F2),
+        surface = Color(0xFFFFFFFF),
+        gridDot = Color(0xFFFECDD3),
+        gridLine = Color(0xFFFFE4E6),
+        arrowDefault = Color(0xFFE11D48),
+        arrowColors = listOf(
+            Color(0xFFE11D48)
+        ),
+        arrowHint = Color(0xFFD97706),
+        arrowWrong = Color(0xFFDC2626),
+        arrowClear = Color(0xFF059669),
+        textPrimary = Color(0xFF881337),
+        textSecondary = Color(0xFFBE123C),
+        boosterBg = Color(0xFFFFE4E6),
+        isDark = false
+    )
+
+    val all = listOf(CleanLight, WarmSepia, MidnightDark, CalmPastel, MintFresh, SunsetRose)
 }

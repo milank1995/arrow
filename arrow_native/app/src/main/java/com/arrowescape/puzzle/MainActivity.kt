@@ -87,8 +87,8 @@ class MainActivity : ComponentActivity() {
                                     onGridClick = {
                                         gameViewModel.toggleGridLines()
                                     },
-                                    onThemeClick = {
-                                        gameViewModel.cycleTheme()
+                                    onThemeSelect = { selectedTheme ->
+                                        gameViewModel.setTheme(selectedTheme)
                                     },
                                     onNextLevelClick = {
                                         gameViewModel.nextLevel()
