@@ -128,17 +128,18 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun onArrowClicked(clickedArrow: Arrow) {
         if (_uiState.value.isLevelComplete || _uiState.value.isGameOver) return
-        if (clickedArrow.state == ArrowState.CLEARED || clickedArrow.state == ArrowState.FLYING_OUT) return
+        val currentArrow = _uiState.value.arrows.firstOrNull { it.id == clickedArrow.id } ?: clickedArrow
+        if (currentArrow.state == ArrowState.CLEARED || currentArrow.state == ArrowState.FLYING_OUT) return
 
         // Check if Hammer booster mode is active
         if (_uiState.value.isHammerModeActive) {
-            executeHammerStrike(clickedArrow)
+            executeHammerStrike(currentArrow)
             return
         }
 
         audioHapticManager.playTap()
 
-        val canEscape = PuzzleSolver.canMoveOut(clickedArrow, occupancyMap)
+        val canEscape = PuzzleSolver.canMoveOut(currentArrow, occupancyMap)
 
         if (canEscape) {
             // SUCCESSFUL MOVE
@@ -147,11 +148,11 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             val cheer = calculateCheerMessage(newCombo)
 
             // Update arrow state to flying out
-            occupancyMap.release(clickedArrow)
+            occupancyMap.release(currentArrow)
 
             _uiState.update { state ->
                 val updatedArrows = state.arrows.map {
-                    if (it.id == clickedArrow.id) it.copyWithState(ArrowState.FLYING_OUT) else it
+                    if (it.id == currentArrow.id) it.copyWithState(ArrowState.FLYING_OUT) else it
                 }
                 state.copy(
                     arrows = updatedArrows,
@@ -181,7 +182,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     val easedProgress = rawProgress * (0.35f + 0.65f * rawProgress)
                     _uiState.update { state ->
                         val updated = state.arrows.map {
-                            if (it.id == clickedArrow.id && it.state == ArrowState.FLYING_OUT) {
+                            if (it.id == currentArrow.id && it.state == ArrowState.FLYING_OUT) {
                                 it.copy(flightProgress = easedProgress)
                             } else it
                         }
@@ -193,7 +194,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
                 _uiState.update { state ->
                     val finalArrows = state.arrows.map {
-                        if (it.id == clickedArrow.id) it.copyWithState(ArrowState.CLEARED) else it
+                        if (it.id == currentArrow.id) it.copyWithState(ArrowState.CLEARED) else it
                     }
                     val allCleared = finalArrows.all { it.state == ArrowState.CLEARED }
                     state.copy(arrows = finalArrows, isLevelComplete = allCleared)
@@ -212,7 +213,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
             _uiState.update { state ->
                 val flashedArrows = state.arrows.map {
-                    if (it.id == clickedArrow.id) it.copyWithState(ArrowState.WRONG_FLASH) else it
+                    if (it.id == currentArrow.id) it.copyWithState(ArrowState.WRONG_FLASH) else it
                 }
                 state.copy(
                     arrows = flashedArrows,
@@ -232,7 +233,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
                     _uiState.update { state ->
                         val updated = state.arrows.map {
-                            if (it.id == clickedArrow.id && it.state == ArrowState.WRONG_FLASH) {
+                            if (it.id == currentArrow.id && it.state == ArrowState.WRONG_FLASH) {
                                 it.copy(flightProgress = rawProgress)
                             } else it
                         }
@@ -244,7 +245,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
                 _uiState.update { state ->
                     val resetArrows = state.arrows.map {
-                        if (it.id == clickedArrow.id && it.state == ArrowState.WRONG_FLASH) {
+                        if (it.id == currentArrow.id && it.state == ArrowState.WRONG_FLASH) {
                             it.copyWithState(ArrowState.IDLE, 0f)
                         } else it
                     }
