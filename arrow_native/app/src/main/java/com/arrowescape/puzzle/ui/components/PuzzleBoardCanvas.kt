@@ -654,9 +654,9 @@ private fun DrawScope.drawArrowEntity(
         else -> theme.arrowDefault
     }
 
-    // Clamped stroke width with controlled expansion pulse when held or clicked
-    val minStroke = 4.dp.toPx()
-    val maxStroke = 9.dp.toPx()
+    // Clamped stroke width with controlled expansion pulse when held or clicked (arcade bold presence)
+    val minStroke = 5.5.dp.toPx()
+    val maxStroke = 12.dp.toPx()
     val scaleMultiplier = when {
         isPreviewHold -> 1.10f * (1f + (hintPulseScale - 1f) * 0.35f) // Subtle +10% expansion with gentle breathing
         isLaunching -> 1.18f
@@ -664,12 +664,12 @@ private fun DrawScope.drawArrowEntity(
         arrow.state == ArrowState.HINTED -> hintPulseScale
         else -> 1.0f
     }
-    val strokeWidth = (cellSize * 0.18f).coerceIn(minStroke, maxStroke) * scaleMultiplier
+    val strokeWidth = (cellSize * 0.26f).coerceIn(minStroke, maxStroke) * scaleMultiplier
 
-    // Clamped arrowhead size to maintain sharp, distinct triangular heads
-    val minHead = 12.dp.toPx()
-    val maxHead = 26.dp.toPx()
-    val headSize = (cellSize * 0.48f).coerceIn(minHead, maxHead) * (if (isPreviewHold) 1.08f else if (isLaunching) 1.12f else 1.0f)
+    // Clamped arrowhead size to maintain bold, distinct, sharp triangular heads
+    val minHead = 14.dp.toPx()
+    val maxHead = 30.dp.toPx()
+    val headSize = (cellSize * 0.58f).coerceIn(minHead, maxHead) * (if (isPreviewHold) 1.08f else if (isLaunching) 1.12f else 1.0f)
 
     // Build the full motion track: body points + escape extension along arrow.direction
     val track = mutableListOf<Offset>()
@@ -721,7 +721,7 @@ private fun DrawScope.drawArrowEntity(
 
     // 1. Draw body stroke along the moving polyline with smooth rounded corner fillets
     if (sampledPoints.size > 1) {
-        val path = buildRoundedCornerPath(sampledPoints, radius = cellSize * 0.30f)
+        val path = buildRoundedCornerPath(sampledPoints, radius = cellSize * 0.35f)
         drawPath(
             path = path,
             color = renderColor,
@@ -740,9 +740,9 @@ private fun DrawScope.drawArrowEntity(
         pivot = currentHead
     ) {
         val arrowHeadPath = Path().apply {
-            moveTo(currentHead.x, currentHead.y - headSize * 0.60f) // Sharp forward tip
-            lineTo(currentHead.x + headSize * 0.38f, currentHead.y + headSize * 0.30f) // Right base
-            lineTo(currentHead.x - headSize * 0.38f, currentHead.y + headSize * 0.30f) // Left base
+            moveTo(currentHead.x, currentHead.y - headSize * 0.65f) // Sharp forward tip
+            lineTo(currentHead.x + headSize * 0.44f, currentHead.y + headSize * 0.32f) // Right base
+            lineTo(currentHead.x - headSize * 0.44f, currentHead.y + headSize * 0.32f) // Left base
             close()
         }
 
@@ -950,26 +950,26 @@ private fun DrawScope.drawPreviewRay(
 
     // Start line seamlessly from the forward tip of the arrowhead
     val startOffset = Offset(
-        x = headCenter.x + arrow.direction.dx * (cellSize * 0.38f),
-        y = headCenter.y + arrow.direction.dy * (cellSize * 0.38f)
+        x = headCenter.x + arrow.direction.dx * (cellSize * 0.44f),
+        y = headCenter.y + arrow.direction.dy * (cellSize * 0.44f)
     )
 
     // Delicate, elegant hairline sightline matching Unity Screenshot 2 (#38BDF8 / #0088F5)
     // 1. Soft subtle micro-halo
     drawLine(
-        color = Color(0xFF0088F5).copy(alpha = 0.16f * previewAlpha),
+        color = Color(0xFF0088F5).copy(alpha = 0.18f * previewAlpha),
         start = startOffset,
         end = endOffset,
-        strokeWidth = 3.6.dp.toPx(),
+        strokeWidth = 4.2.dp.toPx(),
         cap = StrokeCap.Round
     )
 
     // 2. Crisp, refined hairline sightline
     drawLine(
-        color = Color(0xFF38BDF8).copy(alpha = 0.60f * previewAlpha),
+        color = Color(0xFF38BDF8).copy(alpha = 0.70f * previewAlpha),
         start = startOffset,
         end = endOffset,
-        strokeWidth = 1.4.dp.toPx(),
+        strokeWidth = 1.8.dp.toPx(),
         cap = StrokeCap.Round
     )
 }
