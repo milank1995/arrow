@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -87,17 +88,26 @@ fun GameHeader(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Pause button (two vertical bars)
-                    IconButton(
-                        onClick = onBackClick,
-                        modifier = Modifier.size(38.dp)
+                    // Pause button (two vertical bars) inside rounded pod
+                    Box(
+                        modifier = Modifier
+                            .size(38.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(theme.boosterBg)
+                            .border(1.dp, theme.gridLine, RoundedCornerShape(12.dp)),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Pause,
-                            contentDescription = "Pause",
-                            tint = Color(0xFF1E293B),
-                            modifier = Modifier.size(24.dp)
-                        )
+                        IconButton(
+                            onClick = onBackClick,
+                            modifier = Modifier.size(38.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Pause,
+                                contentDescription = "Pause",
+                                tint = theme.textPrimary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
                     }
 
                     // Theme palette button inside rounded pod
@@ -105,7 +115,8 @@ fun GameHeader(
                         modifier = Modifier
                             .size(38.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(Color(0xFFEEF2F6)),
+                            .background(theme.boosterBg)
+                            .border(1.dp, theme.gridLine, RoundedCornerShape(12.dp)),
                         contentAlignment = Alignment.Center
                     ) {
                         IconButton(
@@ -115,7 +126,7 @@ fun GameHeader(
                             Icon(
                                 imageVector = Icons.Default.Palette,
                                 contentDescription = "Themes",
-                                tint = Color(0xFF1E293B),
+                                tint = theme.textPrimary,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -164,7 +175,7 @@ fun GameHeader(
                         text = "Level $levelNumber",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E293B),
+                        color = theme.textPrimary,
                         modifier = Modifier.padding(top = 3.dp)
                     )
                 }
@@ -185,7 +196,8 @@ fun GameHeader(
                     modifier = Modifier
                         .scale(badgeScale.value)
                         .clip(RoundedCornerShape(percent = 50))
-                        .background(Color(0xFFEEF2F6))
+                        .background(theme.boosterBg)
+                        .border(1.dp, theme.gridLine, RoundedCornerShape(percent = 50))
                         .padding(horizontal = 14.dp, vertical = 7.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -205,14 +217,14 @@ fun GameHeader(
                                 lineTo(size.width * 0.35f, size.height * 0.05f)
                                 close()
                             }
-                            drawPath(path = path, color = Color(0xFF1E293B))
+                            drawPath(path = path, color = theme.textPrimary)
                         }
 
                         Text(
                             text = "$remainingArrowsCount",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1E293B)
+                            color = theme.textPrimary
                         )
                     }
                 }
@@ -223,7 +235,7 @@ fun GameHeader(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(2.5.dp)
-                    .background(Color(0xFFF1F5F9))
+                    .background(theme.gridLine.copy(alpha = 0.6f))
             ) {
                 if (animatedProgress > 0f) {
                     Box(

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -94,6 +95,7 @@ fun LevelVictoryDialog(
             colors = CardDefaults.cardColors(containerColor = theme.surface),
             elevation = CardDefaults.cardElevation(16.dp),
             modifier = Modifier
+                .widthIn(max = 400.dp)
                 .fillMaxWidth()
                 .padding(16.dp)
                 .scale(cardScale.value)
@@ -215,7 +217,7 @@ fun LevelVictoryDialog(
                         text = "CONTINUE",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = if (theme.isDark) Color(0xFF0F172A) else Color.White
                     )
                 }
             }

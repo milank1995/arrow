@@ -580,7 +580,7 @@ fun PuzzleBoardCanvas(
                 // Only become visible once an arrow has moved out of the gameplay area.
                 // Layered in the background under active arrows so arrows always render in front.
                 if (clearedCells.isNotEmpty()) {
-                    val dotColor = if (theme.isDark) Color(0xFF64748B) else Color(0xFF94A3B8)
+                    val dotColor = theme.gridDot
                     val dotRadius = (cellSize * 0.065f).coerceIn(2.2f, 3.4f)
                     for (coord in clearedCells) {
                         drawCircle(
@@ -711,7 +711,8 @@ fun PuzzleBoardCanvas(
                         }
                     },
                 shape = RoundedCornerShape(14.dp),
-                color = Color(0xDD1E293B),
+                color = if (theme.isDark) Color(0xEE334155) else Color(0xEE1E293B),
+                border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine.copy(alpha = 0.5f)),
                 shadowElevation = 4.dp
             ) {
                 Row(

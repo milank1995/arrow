@@ -67,12 +67,13 @@ fun BoosterBar(
                     .padding(horizontal = 16.dp)
                     .scale(hintScale.value)
             ) {
-                // Pod Circle with soft ambient tint
+                // Pod Circle with theme tint and border
                 Box(
                     modifier = Modifier
                         .size(62.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFE8EEF5))
+                        .background(theme.boosterBg)
+                        .border(1.dp, theme.gridLine, CircleShape)
                         .clickable {
                             coroutineScope.launch {
                                 hintScale.animateTo(0.85f, tween(60))
@@ -86,7 +87,7 @@ fun BoosterBar(
                     Icon(
                         imageVector = Icons.Default.Lightbulb,
                         contentDescription = "Hint",
-                        tint = Color(0xFF1E293B),
+                        tint = theme.textPrimary,
                         modifier = Modifier.size(30.dp)
                     )
                 }
@@ -95,9 +96,9 @@ fun BoosterBar(
                 Surface(
                     modifier = Modifier.offset(y = 8.dp),
                     shape = RoundedCornerShape(percent = 50),
-                    color = Color.White,
+                    color = theme.surface,
                     shadowElevation = 2.dp,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0))
+                    border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine)
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
@@ -109,28 +110,28 @@ fun BoosterBar(
                                 text = "$hintsCount",
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1E293B)
+                                color = theme.textPrimary
                             )
                         } else {
                             // [AD] film badge + "Free" text
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(3.dp))
-                                    .background(Color(0xFF1E293B))
+                                    .background(theme.textPrimary)
                                     .padding(horizontal = 3.dp, vertical = 1.dp)
                             ) {
                                 Text(
                                     text = "AD",
                                     fontSize = 8.sp,
                                     fontWeight = FontWeight.Black,
-                                    color = Color.White
+                                    color = if (theme.isDark) theme.background else Color.White
                                 )
                             }
                             Text(
                                 text = "Free",
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1E293B)
+                                color = theme.textPrimary
                             )
                         }
                     }
@@ -146,11 +147,27 @@ fun BoosterBar(
                     .scale(gridScale.value),
                 contentAlignment = Alignment.Center
             ) {
+                val gridPodBg = if (isGridLinesActive) {
+                    if (theme.isDark) theme.arrowDefault else Color(0xFF3B82F6)
+                } else {
+                    theme.boosterBg
+                }
+                val gridPodTextColor = if (isGridLinesActive) {
+                    if (theme.isDark) Color(0xFF0F172A) else Color.White
+                } else {
+                    theme.textPrimary
+                }
+
                 Box(
                     modifier = Modifier
                         .size(62.dp)
                         .clip(CircleShape)
-                        .background(if (isGridLinesActive) Color(0xFFCBD5E1) else Color(0xFFE8EEF5))
+                        .background(gridPodBg)
+                        .border(
+                            1.dp,
+                            if (isGridLinesActive) Color.Transparent else theme.gridLine,
+                            CircleShape
+                        )
                         .clickable {
                             coroutineScope.launch {
                                 gridScale.animateTo(0.85f, tween(60))
@@ -165,7 +182,7 @@ fun BoosterBar(
                         text = "#",
                         fontSize = 30.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E293B)
+                        color = gridPodTextColor
                     )
                 }
             }

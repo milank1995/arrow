@@ -79,7 +79,7 @@ object ThemePresets {
         arrowClear = Color(0xFF10B981),
         textPrimary = Color(0xFF3B0764),
         textSecondary = Color(0xFF7E22CE),
-        boosterBg = Color(0xFFFFFFFF),
+        boosterBg = Color(0xFFF3E8FF),
         isDark = false
     )
 

@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -40,10 +42,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 import com.arrowescape.puzzle.ui.theme.ThemePresets
 
@@ -53,14 +57,28 @@ fun ThemeCustomizationDialog(
     onThemeSelect: (ThemePreset) -> Unit,
     onDismiss: () -> Unit
 ) {
-    Dialog(onDismissRequest = onDismiss) {
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val screenHeight = configuration.screenHeightDp.dp
+    val dialogWidth = minOf(screenWidth - 32.dp, 440.dp)
+    val maxDialogHeight = (screenHeight * 0.88f).coerceAtMost(620.dp)
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
         Surface(
             shape = RoundedCornerShape(24.dp),
-            color = Color.White,
-            shadowElevation = 12.dp,
+            color = if (activeTheme.isDark) Color(0xFF1E293B) else Color.White,
+            border = BorderStroke(
+                width = 1.dp,
+                color = if (activeTheme.isDark) Color(0xFF334155) else Color(0xFFE2E8F0)
+            ),
+            shadowElevation = 16.dp,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp)
+                .width(dialogWidth)
+                .heightIn(max = maxDialogHeight)
+                .padding(vertical = 12.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -78,12 +96,12 @@ fun ThemeCustomizationDialog(
                             text = "Color Themes",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF0F172A)
+                            color = if (activeTheme.isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
                         )
                         Text(
                             text = "Choose your board & arrow styling",
                             fontSize = 12.sp,
-                            color = Color(0xFF64748B)
+                            color = if (activeTheme.isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
                         )
                     }
 
@@ -92,12 +110,12 @@ fun ThemeCustomizationDialog(
                         modifier = Modifier
                             .size(34.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFFF1F5F9))
+                            .background(if (activeTheme.isDark) Color(0xFF334155) else Color(0xFFF1F5F9))
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = Color(0xFF475569),
+                            tint = if (activeTheme.isDark) Color(0xFFF8FAFC) else Color(0xFF475569),
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -108,13 +126,16 @@ fun ThemeCustomizationDialog(
                 // THEME SWATCHES LIST
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f, fill = false)
                 ) {
                     items(ThemePresets.all) { preset ->
                         val isSelected = preset.name == activeTheme.name
 
                         ThemeSwatchCard(
                             preset = preset,
+                            activeTheme = activeTheme,
                             isSelected = isSelected,
                             onClick = {
                                 onThemeSelect(preset)
@@ -130,11 +151,24 @@ fun ThemeCustomizationDialog(
 @Composable
 private fun ThemeSwatchCard(
     preset: ThemePreset,
+    activeTheme: ThemePreset,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val borderColor = if (isSelected) Color(0xFF3B82F6) else Color(0xFFE2E8F0)
-    val bgColor = if (isSelected) Color(0xFFF0F7FF) else Color(0xFFF8FAFC)
+    val borderColor = if (isSelected) {
+        Color(0xFF3B82F6)
+    } else {
+        if (activeTheme.isDark) Color(0xFF334155) else Color(0xFFE2E8F0)
+    }
+
+    val bgColor = if (isSelected) {
+        if (activeTheme.isDark) Color(0xFF1E3A8A).copy(alpha = 0.35f) else Color(0xFFEFF6FF)
+    } else {
+        if (activeTheme.isDark) Color(0xFF0F172A) else Color(0xFFF8FAFC)
+    }
+
+    val titleColor = if (activeTheme.isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+    val subtitleColor = if (activeTheme.isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
 
     Row(
         modifier = Modifier
@@ -160,7 +194,11 @@ private fun ThemeSwatchCard(
                 modifier = Modifier
                     .size(42.dp)
                     .clip(CircleShape)
-                    .border(1.5.dp, Color(0xFFCBD5E1), CircleShape)
+                    .border(
+                        1.5.dp,
+                        if (activeTheme.isDark) Color(0xFF475569) else Color(0xFFCBD5E1),
+                        CircleShape
+                    )
             ) {
                 Canvas(modifier = Modifier.size(42.dp)) {
                     // Left half: Background color
@@ -181,7 +219,7 @@ private fun ThemeSwatchCard(
                     )
                     // Center separator line
                     drawLine(
-                        color = Color(0x33000000),
+                        color = if (activeTheme.isDark) Color(0x66FFFFFF) else Color(0x33000000),
                         start = Offset(size.width / 2f, 0f),
                         end = Offset(size.width / 2f, size.height),
                         strokeWidth = 1.2f
@@ -195,12 +233,12 @@ private fun ThemeSwatchCard(
                     text = preset.name,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0F172A)
+                    color = titleColor
                 )
                 Text(
                     text = getThemeSubtitle(preset.name),
                     fontSize = 12.sp,
-                    color = Color(0xFF64748B)
+                    color = subtitleColor
                 )
             }
         }
