@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.core.model.Arrow
 import com.arrowescape.puzzle.core.model.ArrowState
 import com.arrowescape.puzzle.core.model.Direction
+import com.arrowescape.puzzle.core.model.GridCoordinate
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -186,9 +187,9 @@ fun PuzzleBoardCanvas(
 
                         var isLongPressTriggered = false
                         var longPressJob: Job? = null
-                        if (candidateArrow != null && introProgress.value >= 0.94f) {
+                        if (candidateArrow != null) {
                             longPressJob = coroutineScope.launch {
-                                delay(380L)
+                                delay(480L)
                                 if (!isDragging && !isMultiTouch) {
                                     isLongPressTriggered = true
                                     onArrowLongPress(candidateArrow, true)
@@ -315,71 +316,79 @@ fun PuzzleBoardCanvas(
                         val elapsed = System.currentTimeMillis() - startTime
                         val totalMovement = (lastPos - startPos).getDistance()
 
-                        // A tap is recognized if not multi-touch, no heavy drag, and duration < 450ms
-                        if (!isMultiTouch && !isLongPressTriggered && totalMovement < dragThreshold && elapsed < 450) {
-                            val now = System.currentTimeMillis()
-                            if (now - lastTapTime < 320 && (startPos - lastTapPos).getDistance() < dragThreshold * 1.5f) {
-                                // Double tap: Toggle between 1.0x overview and comfortable zoomed inspection
-                                settleJob = coroutineScope.launch {
-                                    if (scale > 1.15f) {
-                                        launch {
-                                            val sAnim = Animatable(scale)
-                                            sAnim.animateTo(1.0f, tween(250, easing = FastOutSlowInEasing)) {
-                                                scale = value
-                                            }
-                                        }
-                                        launch {
-                                            val pxAnim = Animatable(panX)
-                                            pxAnim.animateTo(0f, tween(250, easing = FastOutSlowInEasing)) {
-                                                panX = value
-                                            }
-                                        }
-                                        launch {
-                                            val pyAnim = Animatable(panY)
-                                            pyAnim.animateTo(0f, tween(250, easing = FastOutSlowInEasing)) {
-                                                panY = value
-                                            }
-                                        }
-                                    } else {
-                                        val targetZoom = minOf(2.8f, maxScale)
-                                        val targetPanX = -(startPos.x - center.x) * (targetZoom - 1f)
-                                        val targetPanY = -(startPos.y - center.y) * (targetZoom - 1f)
-                                        val maxPX = (boardWidth * (targetZoom - 1f) / 2f) + (viewportWidth * 0.35f)
-                                        val maxPY = (boardHeight * (targetZoom - 1f) / 2f) + (viewportHeight * 0.35f)
+                        // A tap is recognized if not multi-touch, no dragging, no hold for preview ray, and duration < 550ms
+                        val isTap = !isMultiTouch && !isDragging && !isLongPressTriggered && totalMovement < dragThreshold && elapsed < 550
 
-                                        launch {
-                                            val sAnim = Animatable(scale)
-                                            sAnim.animateTo(targetZoom, tween(250, easing = FastOutSlowInEasing)) {
-                                                scale = value
+                        if (isTap) {
+                            // Primary target is candidateArrow (determined accurately at startPos on touch DOWN).
+                            // Fallback to localUp only if startPos was not directly on an arrow.
+                            val localUp = center + (lastPos - Offset(panX, panY) - center) / scale
+                            val targetArrow = candidateArrow ?: findClosestArrow(localUp, boardOrigin, arrows, cellSize, xSize, ySize)
+
+                            if (targetArrow != null) {
+                                // Direct arrow tap!
+                                // If the level intro assembly is still playing, finish it instantly and fire the tap
+                                if (introProgress.value < 1f) {
+                                    coroutineScope.launch { introProgress.snapTo(1f) }
+                                }
+                                onArrowClick(targetArrow)
+                                lastTapTime = 0L // Reset so rapid subsequent arrow taps are never intercepted as double-tap zoom
+                            } else {
+                                // Tapped on empty board space: evaluate double-tap zoom
+                                val now = System.currentTimeMillis()
+                                if (now - lastTapTime < 320 && (startPos - lastTapPos).getDistance() < dragThreshold * 1.5f) {
+                                    // Double tap: Toggle between 1.0x overview and comfortable zoomed inspection
+                                    settleJob = coroutineScope.launch {
+                                        if (scale > 1.15f) {
+                                            launch {
+                                                val sAnim = Animatable(scale)
+                                                sAnim.animateTo(1.0f, tween(250, easing = FastOutSlowInEasing)) {
+                                                    scale = value
+                                                }
                                             }
-                                        }
-                                        launch {
-                                            val pxAnim = Animatable(panX)
-                                            pxAnim.animateTo(targetPanX.coerceIn(-maxPX, maxPX), tween(250, easing = FastOutSlowInEasing)) {
-                                                panX = value
+                                            launch {
+                                                val pxAnim = Animatable(panX)
+                                                pxAnim.animateTo(0f, tween(250, easing = FastOutSlowInEasing)) {
+                                                    panX = value
+                                                }
                                             }
-                                        }
-                                        launch {
-                                            val pyAnim = Animatable(panY)
-                                            pyAnim.animateTo(targetPanY.coerceIn(-maxPY, maxPY), tween(250, easing = FastOutSlowInEasing)) {
-                                                panY = value
+                                            launch {
+                                                val pyAnim = Animatable(panY)
+                                                pyAnim.animateTo(0f, tween(250, easing = FastOutSlowInEasing)) {
+                                                    panY = value
+                                                }
+                                            }
+                                        } else {
+                                            val targetZoom = minOf(2.8f, maxScale)
+                                            val targetPanX = -(startPos.x - center.x) * (targetZoom - 1f)
+                                            val targetPanY = -(startPos.y - center.y) * (targetZoom - 1f)
+                                            val maxPX = (boardWidth * (targetZoom - 1f) / 2f) + (viewportWidth * 0.35f)
+                                            val maxPY = (boardHeight * (targetZoom - 1f) / 2f) + (viewportHeight * 0.35f)
+
+                                            launch {
+                                                val sAnim = Animatable(scale)
+                                                sAnim.animateTo(targetZoom, tween(250, easing = FastOutSlowInEasing)) {
+                                                    scale = value
+                                                }
+                                            }
+                                            launch {
+                                                val pxAnim = Animatable(panX)
+                                                pxAnim.animateTo(targetPanX.coerceIn(-maxPX, maxPX), tween(250, easing = FastOutSlowInEasing)) {
+                                                    panX = value
+                                                }
+                                            }
+                                            launch {
+                                                val pyAnim = Animatable(panY)
+                                                pyAnim.animateTo(targetPanY.coerceIn(-maxPY, maxPY), tween(250, easing = FastOutSlowInEasing)) {
+                                                    panY = value
+                                                }
                                             }
                                         }
                                     }
-                                }
-                                lastTapTime = 0L
-                            } else {
-                                lastTapTime = now
-                                lastTapPos = startPos
-
-                                // Try hit test at lastPos (where finger lifted), fallback to startPos
-                                val localUp = center + (lastPos - Offset(panX, panY) - center) / scale
-                                val tappedArrow = findClosestArrow(localUp, boardOrigin, arrows, cellSize, xSize, ySize)
-                                    ?: candidateArrow
-
-
-                                if (tappedArrow != null && introProgress.value >= 0.94f) {
-                                    onArrowClick(tappedArrow)
+                                    lastTapTime = 0L
+                                } else {
+                                    lastTapTime = now
+                                    lastTapPos = startPos
                                 }
                             }
                         } else if (scale < 1.0f) {
@@ -609,22 +618,24 @@ private fun findClosestArrow(
     val col = kotlin.math.floor((touchPoint.x - origin.x) / cellSize).toInt()
     val row = kotlin.math.floor((touchPoint.y - origin.y) / cellSize).toInt()
     if (col in 0 until xSize && row in 0 until ySize) {
+        val targetCoord = GridCoordinate(col, row)
         val directHit = arrows.firstOrNull { arrow ->
             arrow.state != ArrowState.CLEARED && arrow.state != ArrowState.FLYING_OUT &&
-            arrow.body.any { it.x == col && it.y == row }
+            arrow.isPointInside(targetCoord)
         }
         if (directHit != null) return directHit
     }
 
-    // 2. Proximity fallback for taps on borders, arrowheads, or near cells
-    val hitThreshold = cellSize * 0.70f
+    // 2. Strict proximity fallback only for taps near arrowhead tip or within empty cells
+    val hitThreshold = cellSize * 0.35f
     var bestArrow: Arrow? = null
     var bestDist = Float.MAX_VALUE
 
     for (arrow in arrows) {
         if (arrow.state == ArrowState.CLEARED || arrow.state == ArrowState.FLYING_OUT) continue
 
-        val bodyPts = arrow.body.map { coord ->
+        val allCoords = arrow.allPoints
+        val bodyPts = allCoords.map { coord ->
             Offset(origin.x + (coord.x + 0.5f) * cellSize, origin.y + (coord.y + 0.5f) * cellSize)
         }
         if (bodyPts.isEmpty()) continue
@@ -644,7 +655,10 @@ private fun findClosestArrow(
         }
 
         // Distance to arrowhead tip
-        val headCenter = bodyPts.last()
+        val headCenter = Offset(
+            origin.x + (arrow.head.x + 0.5f) * cellSize,
+            origin.y + (arrow.head.y + 0.5f) * cellSize
+        )
         val headTip = Offset(
             headCenter.x + arrow.direction.dx * (cellSize * 0.48f),
             headCenter.y + arrow.direction.dy * (cellSize * 0.48f)
