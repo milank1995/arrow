@@ -62,6 +62,7 @@ fun HomeScreen(
     onDailyChallengeClick: () -> Unit,
     onThemeClick: () -> Unit,
     onSoundToggle: () -> Unit,
+    onDevTestClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "playPulse")
@@ -89,7 +90,7 @@ fun HomeScreen(
                 .displayCutoutPadding()
                 .padding(horizontal = 24.dp, vertical = 12.dp)
         ) {
-            // 1. TOP BAR: Streak Pill (left) & Settings Gear Pod (right) - No Ads removed
+            // 1. TOP BAR: Streak Pill (left) & Dev Test Lab + Settings Gear Pod (right)
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
@@ -120,24 +121,55 @@ fun HomeScreen(
                     }
                 }
 
-                // Settings Gear Pod
-                Surface(
-                    shape = CircleShape,
-                    color = Color.White,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-                    shadowElevation = 1.dp,
-                    modifier = Modifier.size(42.dp)
+                // Right Group: Dev Test Lab Pill + Settings Gear Pod
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    IconButton(
-                        onClick = onSoundToggle,
-                        modifier = Modifier.fillMaxSize()
+                    // Dev Test Lab Pill
+                    Surface(
+                        shape = RoundedCornerShape(percent = 50),
+                        color = Color(0xFFFEF3C7),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFDE68A)),
+                        shadowElevation = 1.dp,
+                        modifier = Modifier
+                            .height(40.dp)
+                            .clickable(onClick = onDevTestClick)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings",
-                            tint = Color(0xFF334155),
-                            modifier = Modifier.size(22.dp)
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            modifier = Modifier.padding(horizontal = 12.dp)
+                        ) {
+                            Text(text = "🧪", fontSize = 15.sp)
+                            Text(
+                                text = "Test Lab",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFB45309)
+                            )
+                        }
+                    }
+
+                    // Settings Gear Pod
+                    Surface(
+                        shape = CircleShape,
+                        color = Color.White,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                        shadowElevation = 1.dp,
+                        modifier = Modifier.size(42.dp)
+                    ) {
+                        IconButton(
+                            onClick = onSoundToggle,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Settings",
+                                tint = Color(0xFF334155),
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
                     }
                 }
             }

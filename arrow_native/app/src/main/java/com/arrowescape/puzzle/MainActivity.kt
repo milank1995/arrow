@@ -19,12 +19,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arrowescape.puzzle.game.GameViewModel
 import com.arrowescape.puzzle.ui.components.DailyCalendarDialog
+import com.arrowescape.puzzle.ui.screens.DevTestScreen
 import com.arrowescape.puzzle.ui.screens.GamePlayScreen
 import com.arrowescape.puzzle.ui.screens.HomeScreen
 
 enum class AppScreen {
     HOME,
-    GAMEPLAY
+    GAMEPLAY,
+    DEV_TEST
 }
 
 class MainActivity : ComponentActivity() {
@@ -73,6 +75,9 @@ class MainActivity : ComponentActivity() {
                                     onSoundToggle = {
                                         gameViewModel.audioHapticManager.isSoundEnabled =
                                             !gameViewModel.audioHapticManager.isSoundEnabled
+                                    },
+                                    onDevTestClick = {
+                                        currentScreen = AppScreen.DEV_TEST
                                     }
                                 )
                             }
@@ -118,6 +123,18 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onIdlePromptSound = {
                                         gameViewModel.playHintNudge()
+                                    }
+                                )
+                            }
+                            AppScreen.DEV_TEST -> {
+                                DevTestScreen(
+                                    theme = uiState.activeTheme,
+                                    audioHapticManager = gameViewModel.audioHapticManager,
+                                    onBackToHomeClick = {
+                                        currentScreen = AppScreen.HOME
+                                    },
+                                    onThemeSelect = { selectedTheme ->
+                                        gameViewModel.setTheme(selectedTheme)
                                     }
                                 )
                             }
