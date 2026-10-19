@@ -54,6 +54,8 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.input.pointer.changedToDown
+import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalDensity
@@ -75,6 +77,15 @@ import kotlin.math.sin
 private data class VelSample(
     val delta: Offset,
     val timeMs: Long
+)
+
+private data class TouchRecord(
+    val downPos: Offset,
+    val downTime: Long,
+    var lastPos: Offset,
+    val candidateArrow: Arrow?,
+    var isLongPressTriggered: Boolean = false,
+    var longPressJob: Job? = null
 )
 
 private data class ConfettiPiece(
@@ -110,9 +121,6 @@ fun PuzzleBoardCanvas(
     var panX by remember { mutableFloatStateOf(0f) }
     var panY by remember { mutableFloatStateOf(0f) }
     var settleJob by remember { mutableStateOf<Job?>(null) }
-
-    var lastTapTime by remember { mutableLongStateOf(0L) }
-    var lastTapPos by remember { mutableStateOf(Offset.Zero) }
 
     // Remember the initial level silhouette cells to render subtle cell dots for cleared areas
     val initialLevelCells = remember(xSize, ySize, arrows.size, arrows.firstOrNull()?.id) {
@@ -197,6 +205,8 @@ fun PuzzleBoardCanvas(
         val currentMaxScale by rememberUpdatedState(maxScale)
         val currentOnArrowClick by rememberUpdatedState(onArrowClick)
         val currentOnArrowLongPress by rememberUpdatedState(onArrowLongPress)
+        val minTouchTargetPx = with(LocalDensity.current) { 28.dp.toPx() }
+        val currentMinTouchTargetPx by rememberUpdatedState(minTouchTargetPx)
 
         val confettiPieces = remember { mutableStateListOf<ConfettiPiece>() }
         var confettiStartTime by remember { mutableLongStateOf(0L) }
@@ -261,72 +271,100 @@ fun PuzzleBoardCanvas(
                         val down = awaitFirstDown(requireUnconsumed = false)
                         settleJob?.cancel() // Stop ongoing inertia or animation immediately on new touch
 
-                        val startTime = System.currentTimeMillis()
-                        val startPos = down.position
-                        var lastPos = down.position
-                        var isMultiTouch = false
-                        var isDragging = false
-                        val dragThreshold = 18.dp.toPx() // Intentional drag threshold (avoids dropping taps on micro-jitter)
-
                         val center = Offset(currentViewportWidth / 2f, currentViewportHeight / 2f)
+                        val dragThreshold = 20.dp.toPx()
 
-                        // Locate candidate arrow under touch using high-precision Euclidean distance
-                        val localDown = center + (startPos - Offset(panX, panY) - center) / scale
-                        val candidateArrow = findClosestArrow(localDown, currentBoardOrigin, currentArrows, currentCellSize)
+                        // Track all active touch points individually to support rapid succession and multi-finger tapping
+                        val activeTouches = mutableMapOf<Long, TouchRecord>()
 
-                        var isLongPressTriggered = false
-                        var longPressJob: Job? = null
-                        if (candidateArrow != null) {
-                            longPressJob = coroutineScope.launch {
+                        val localDown = center + (down.position - Offset(panX, panY) - center) / scale
+                        val firstCandidate = findClosestArrow(localDown, currentBoardOrigin, currentArrows, currentCellSize, currentMinTouchTargetPx)
+
+                        val firstRecord = TouchRecord(
+                            downPos = down.position,
+                            downTime = System.currentTimeMillis(),
+                            lastPos = down.position,
+                            candidateArrow = firstCandidate
+                        )
+                        if (firstCandidate != null) {
+                            firstRecord.longPressJob = coroutineScope.launch {
                                 delay(480L)
-                                if (!isDragging && !isMultiTouch) {
-                                    isLongPressTriggered = true
-                                    currentOnArrowLongPress(candidateArrow, true)
-                                }
+                                firstRecord.isLongPressTriggered = true
+                                currentOnArrowLongPress(firstCandidate, true)
                             }
                         }
+                        activeTouches[down.id.value] = firstRecord
 
-                        // Velocity tracking buffer for inertia coasting
+                        var isPinching = false
+                        var isPanning = false
+                        var zoomAccum = 1f
+                        var panAccum = Offset.Zero
                         val velBuf = ArrayDeque<VelSample>(6)
                         var lastMoveTime = System.currentTimeMillis()
 
                         try {
-                            var zoomAccum = 1f
-                            var panAccum = Offset.Zero
-
                             do {
                                 val event = awaitPointerEvent()
                                 val now = System.currentTimeMillis()
-                                val pressedList = event.changes.filter { it.pressed }
 
-                                if (pressedList.size >= 2) {
-                                    isMultiTouch = true
-                                    longPressJob?.cancel()
-                                    if (isLongPressTriggered && candidateArrow != null) {
-                                        currentOnArrowLongPress(candidateArrow, false)
-                                        isLongPressTriggered = false
+                                // 1. Register any new pointer that touched down (supports fast multi-finger/alternating thumb taps)
+                                for (change in event.changes) {
+                                    if (change.changedToDown() && !activeTouches.containsKey(change.id.value)) {
+                                        val pLocalDown = center + (change.position - Offset(panX, panY) - center) / scale
+                                        val pCandidate = findClosestArrow(pLocalDown, currentBoardOrigin, currentArrows, currentCellSize, currentMinTouchTargetPx)
+                                        val rec = TouchRecord(
+                                            downPos = change.position,
+                                            downTime = now,
+                                            lastPos = change.position,
+                                            candidateArrow = pCandidate
+                                        )
+                                        if (pCandidate != null && !isPinching && !isPanning) {
+                                            rec.longPressJob = coroutineScope.launch {
+                                                delay(480L)
+                                                if (!isPinching && !isPanning) {
+                                                    rec.isLongPressTriggered = true
+                                                    currentOnArrowLongPress(pCandidate, true)
+                                                }
+                                            }
+                                        }
+                                        activeTouches[change.id.value] = rec
                                     }
+                                }
 
-                                    val centroid = event.calculateCentroid()
+                                // 2. Update positions for active pointers
+                                val pressedList = event.changes.filter { it.pressed }
+                                for (p in pressedList) {
+                                    activeTouches[p.id.value]?.lastPos = p.position
+                                }
+
+                                // 3. Multi-touch gesture handling (Pinch-to-zoom)
+                                if (pressedList.size >= 2) {
                                     val zoomChange = event.calculateZoom()
                                     val panChange = event.calculatePan()
+                                    zoomAccum *= zoomChange
+                                    panAccum += panChange
+                                    val centroidSize = event.calculateCentroidSize(useCurrent = false)
+                                    val zoomMotion = kotlin.math.abs(1f - zoomAccum) * centroidSize
 
-                                    if (!isDragging) {
-                                        zoomAccum *= zoomChange
-                                        panAccum += panChange
-                                        val centroidSize = event.calculateCentroidSize(useCurrent = false)
-                                        val zoomMotion = kotlin.math.abs(1f - zoomAccum) * centroidSize
+                                    if (!isPinching) {
                                         if (zoomMotion > dragThreshold || panAccum.getDistance() > dragThreshold) {
-                                            isDragging = true
+                                            isPinching = true
+                                            // Cancel all preview long-presses when pinching begins
+                                            activeTouches.values.forEach { rec ->
+                                                rec.longPressJob?.cancel()
+                                                if (rec.isLongPressTriggered && rec.candidateArrow != null) {
+                                                    currentOnArrowLongPress(rec.candidateArrow, false)
+                                                    rec.isLongPressTriggered = false
+                                                }
+                                            }
                                         }
                                     }
 
-                                    if (isDragging) {
-                                        // Pinch sensitivity multiplier for responsive zoom feel
+                                    if (isPinching) {
+                                        val centroid = event.calculateCentroid()
                                         val effectiveZoom = 1f + (zoomChange - 1f) * 1.15f
                                         val newScale = (scale * effectiveZoom).coerceIn(minScale, currentMaxScale)
 
-                                        // Keep the world point under the pinch centroid stationary
                                         val oldScale = scale
                                         val currentPan = Offset(panX, panY)
                                         val newPan = if (oldScale > 0.001f) {
@@ -345,21 +383,23 @@ fun PuzzleBoardCanvas(
 
                                         event.changes.forEach { it.consume() }
                                     }
-                                } else if (pressedList.size == 1) {
+                                } else if (pressedList.size == 1 && scale > 1.05f) {
+                                    // Single-finger panning when zoomed in
                                     val change = pressedList.first()
-                                    lastPos = change.position
-                                    val dragDist = (lastPos - startPos).getDistance()
-
+                                    val rec = activeTouches[change.id.value]
+                                    val dragDist = if (rec != null) (change.position - rec.downPos).getDistance() else 0f
                                     if (dragDist > dragThreshold) {
-                                        isDragging = true
-                                        longPressJob?.cancel()
-                                        if (isLongPressTriggered && candidateArrow != null) {
-                                            currentOnArrowLongPress(candidateArrow, false)
-                                            isLongPressTriggered = false
+                                        if (!isPanning) {
+                                            isPanning = true
+                                            rec?.longPressJob?.cancel()
+                                            if (rec?.isLongPressTriggered == true && rec.candidateArrow != null) {
+                                                currentOnArrowLongPress(rec.candidateArrow, false)
+                                                rec.isLongPressTriggered = false
+                                            }
                                         }
                                     }
 
-                                    if (isDragging && scale > 1.02f) {
+                                    if (isPanning) {
                                         val delta = change.positionChange()
                                         val maxPanX = (currentBoardWidth * (scale - 1f) / 2f) + (currentViewportWidth * 0.35f)
                                         val maxPanY = (currentBoardHeight * (scale - 1f) / 2f) + (currentViewportHeight * 0.35f)
@@ -367,7 +407,6 @@ fun PuzzleBoardCanvas(
                                         panX = (panX + delta.x).coerceIn(-maxPanX, maxPanX)
                                         panY = (panY + delta.y).coerceIn(-maxPanY, maxPanY)
 
-                                        // Push into velocity buffer
                                         if (velBuf.size >= 5) velBuf.removeFirst()
                                         velBuf.addLast(VelSample(delta, now - lastMoveTime))
                                         lastMoveTime = now
@@ -375,15 +414,61 @@ fun PuzzleBoardCanvas(
                                         change.consume()
                                     }
                                 }
+
+                                // 4. Pointer releases: evaluate each lifted pointer for a responsive arrow tap
+                                val upChanges = event.changes.filter { it.changedToUp() }
+                                for (upChange in upChanges) {
+                                    val rec = activeTouches.remove(upChange.id.value)
+                                    if (rec != null) {
+                                        rec.longPressJob?.cancel()
+                                        if (rec.isLongPressTriggered && rec.candidateArrow != null) {
+                                            currentOnArrowLongPress(rec.candidateArrow, false)
+                                            rec.isLongPressTriggered = false
+                                        }
+
+                                        val elapsed = now - rec.downTime
+                                        val movement = (upChange.position - rec.downPos).getDistance()
+                                        val maxAllowedMove = if (scale > 1.05f) dragThreshold else (dragThreshold * 1.6f)
+
+                                        // A tap is recognized if not in an active pinch/pan drag, not holding preview ray, and within movement/time tolerances
+                                        val isTap = !isPinching && !isPanning && !rec.isLongPressTriggered && movement < maxAllowedMove && elapsed < 650L
+
+                                        if (isTap) {
+                                            val pLocalDown = center + (rec.downPos - Offset(panX, panY) - center) / scale
+                                            val pLocalUp = center + (upChange.position - Offset(panX, panY) - center) / scale
+                                            val pLocalMid = (pLocalDown + pLocalUp) / 2f
+
+                                            val resolvedArrow = rec.candidateArrow
+                                                ?: findClosestArrow(pLocalDown, currentBoardOrigin, currentArrows, currentCellSize, currentMinTouchTargetPx)
+                                                ?: findClosestArrow(pLocalUp, currentBoardOrigin, currentArrows, currentCellSize, currentMinTouchTargetPx)
+                                                ?: findClosestArrow(pLocalMid, currentBoardOrigin, currentArrows, currentCellSize, currentMinTouchTargetPx)
+
+                                            val targetArrow = if (resolvedArrow != null) {
+                                                currentArrows.firstOrNull { it.id == resolvedArrow.id } ?: resolvedArrow
+                                            } else null
+
+                                            if (targetArrow != null && targetArrow.state != ArrowState.CLEARED && targetArrow.state != ArrowState.FLYING_OUT) {
+                                                if (introProgress.value < 1f) {
+                                                    coroutineScope.launch { introProgress.snapTo(1f) }
+                                                }
+                                                currentOnArrowClick(targetArrow)
+                                                upChange.consume()
+                                            }
+                                        }
+                                    }
+                                }
                             } while (event.changes.any { it.pressed })
                         } finally {
-                            longPressJob?.cancel()
-                            if (isLongPressTriggered && candidateArrow != null) {
-                                currentOnArrowLongPress(candidateArrow, false)
+                            activeTouches.values.forEach { rec ->
+                                rec.longPressJob?.cancel()
+                                if (rec.isLongPressTriggered && rec.candidateArrow != null) {
+                                    currentOnArrowLongPress(rec.candidateArrow, false)
+                                }
                             }
+                            activeTouches.clear()
                         }
 
-                        // Calculate release velocity for inertia coasting
+                        // Calculate release velocity for inertia coasting when panning zoomed board
                         var inertiaVel = Offset.Zero
                         if (velBuf.isNotEmpty()) {
                             var totalWeight = 0f
@@ -401,93 +486,8 @@ fun PuzzleBoardCanvas(
                             }
                         }
 
-                        // Post-gesture handling: Settle / Coasting / Taps
-                        val elapsed = System.currentTimeMillis() - startTime
-                        val totalMovement = (lastPos - startPos).getDistance()
-
-                        // A tap is recognized if not multi-touch, no dragging, no hold for preview ray, and duration < 550ms
-                        val isTap = !isMultiTouch && !isDragging && !isLongPressTriggered && totalMovement < dragThreshold && elapsed < 550
-
-                        if (isTap) {
-                            val localUp = center + (lastPos - Offset(panX, panY) - center) / scale
-                            // Target resolution: check candidateArrow first, or find closest at localDown or localUp
-                            val resolvedArrow = candidateArrow
-                                ?: findClosestArrow(localDown, currentBoardOrigin, currentArrows, currentCellSize)
-                                ?: findClosestArrow(localUp, currentBoardOrigin, currentArrows, currentCellSize)
-
-                            // Ensure we reference the active state of this arrow from currentArrows
-                            val targetArrow = if (resolvedArrow != null) {
-                                currentArrows.firstOrNull { it.id == resolvedArrow.id } ?: resolvedArrow
-                            } else null
-
-                            if (targetArrow != null && targetArrow.state != ArrowState.CLEARED && targetArrow.state != ArrowState.FLYING_OUT) {
-                                // Direct arrow tap!
-                                // If the level intro assembly is still playing, finish it instantly and fire the tap
-                                if (introProgress.value < 1f) {
-                                    coroutineScope.launch { introProgress.snapTo(1f) }
-                                }
-                                currentOnArrowClick(targetArrow)
-                                lastTapTime = 0L // Reset so rapid subsequent arrow taps are never intercepted as double-tap zoom
-                            } else if (resolvedArrow == null) {
-                                // Tapped on empty board space: evaluate double-tap zoom
-                                val now = System.currentTimeMillis()
-                                if (now - lastTapTime < 320 && (startPos - lastTapPos).getDistance() < dragThreshold * 1.5f) {
-                                    // Double tap: Toggle between 1.0x overview and comfortable zoomed inspection
-                                    settleJob = coroutineScope.launch {
-                                        if (scale > 1.15f) {
-                                            launch {
-                                                val sAnim = Animatable(scale)
-                                                sAnim.animateTo(1.0f, tween(250, easing = FastOutSlowInEasing)) {
-                                                    scale = value
-                                                }
-                                            }
-                                            launch {
-                                                val pxAnim = Animatable(panX)
-                                                pxAnim.animateTo(0f, tween(250, easing = FastOutSlowInEasing)) {
-                                                    panX = value
-                                                }
-                                            }
-                                            launch {
-                                                val pyAnim = Animatable(panY)
-                                                pyAnim.animateTo(0f, tween(250, easing = FastOutSlowInEasing)) {
-                                                    panY = value
-                                                }
-                                            }
-                                        } else {
-                                            val targetZoom = minOf(2.8f, currentMaxScale)
-                                            val targetPanX = -(startPos.x - center.x) * (targetZoom - 1f)
-                                            val targetPanY = -(startPos.y - center.y) * (targetZoom - 1f)
-                                            val maxPX = (currentBoardWidth * (targetZoom - 1f) / 2f) + (currentViewportWidth * 0.35f)
-                                            val maxPY = (currentBoardHeight * (targetZoom - 1f) / 2f) + (currentViewportHeight * 0.35f)
-
-                                            launch {
-                                                val sAnim = Animatable(scale)
-                                                sAnim.animateTo(targetZoom, tween(250, easing = FastOutSlowInEasing)) {
-                                                    scale = value
-                                                }
-                                            }
-                                            launch {
-                                                val pxAnim = Animatable(panX)
-                                                pxAnim.animateTo(targetPanX.coerceIn(-maxPX, maxPX), tween(250, easing = FastOutSlowInEasing)) {
-                                                    panX = value
-                                                }
-                                            }
-                                            launch {
-                                                val pyAnim = Animatable(panY)
-                                                pyAnim.animateTo(targetPanY.coerceIn(-maxPY, maxPY), tween(250, easing = FastOutSlowInEasing)) {
-                                                    panY = value
-                                                }
-                                            }
-                                        }
-                                    }
-                                    lastTapTime = 0L
-                                } else {
-                                    lastTapTime = now
-                                    lastTapPos = startPos
-                                }
-                            }
-                        } else if (scale < 1.0f) {
-                            // Rubber-band settle back to 1.0x when released below normal scale
+                        // Rubber-band settle back to 1.0x when released below normal scale
+                        if (scale < 1.0f) {
                             settleJob = coroutineScope.launch {
                                 launch {
                                     val sAnim = Animatable(scale)
@@ -748,46 +748,86 @@ fun PuzzleBoardCanvas(
 }
 
 /**
- * Finds the arrow physically selected by the touch point using high-precision continuous Euclidean geometry.
- * Evaluates the exact distance to each arrow's stem segments, arrowhead spine, and arrowhead wings.
- * The arrow with the absolute minimum physical distance to the user's touch is selected,
- * guaranteeing zero accidental neighbor clicks and 100% responsiveness on both stem and arrowhead.
+ * Accurately finds the arrow targeted by a touch using a two-stage hybrid hit-test:
+ * 1. Direct Cell Hit: If touch falls within any grid cell occupied by an active arrow,
+ *    that arrow is immediately recognized with priority (zero dead zone within cells).
+ * 2. Continuous Proximity & Contour Geometry: If touch lands slightly outside the cell
+ *    (especially common on small 1-2 cell arrows or rapid taps), computes Euclidean distance
+ *    to cell bounds, polyline stem segments, and arrowhead polygon.
+ * The closest arrow within an adaptive hit tolerance is selected, guaranteeing maximum
+ * responsiveness while strictly preventing accidental selection of adjacent arrows.
  */
 private fun findClosestArrow(
     touchPoint: Offset,
     origin: Offset,
     arrows: List<Arrow>,
-    cellSize: Float
+    cellSize: Float,
+    minTouchTargetPx: Float
 ): Arrow? {
-    val hitThreshold = cellSize * 0.44f // Responsive hit tolerance strictly within arrow influence, preventing neighbor overlap
+    val activeArrows = arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
+    if (activeArrows.isEmpty()) return null
+
+    // 1. Direct Cell Hit Test:
+    // Determine the exact grid cell corresponding to the touch point
+    val relX = touchPoint.x - origin.x
+    val relY = touchPoint.y - origin.y
+    val cellX = kotlin.math.floor(relX / cellSize).toInt()
+    val cellY = kotlin.math.floor(relY / cellSize).toInt()
+    val touchedCoord = GridCoordinate(cellX, cellY)
+
+    val directHits = activeArrows.filter { it.isPointInside(touchedCoord) }
+    if (directHits.size == 1) {
+        return directHits.first()
+    }
+
+    // 2. Proximity & Contour Hit Test:
+    // Adaptive hit tolerance ensures small arrows remain easily clickable without shrinking to tiny targets
+    val hitTolerance = maxOf(cellSize * 0.85f, minTouchTargetPx)
+
     var bestArrow: Arrow? = null
-    var bestDist = Float.MAX_VALUE
+    var bestScore = Float.MAX_VALUE
 
-    for (arrow in arrows) {
-        if (arrow.state == ArrowState.CLEARED || arrow.state == ArrowState.FLYING_OUT) continue
-
+    for (arrow in activeArrows) {
         val allCoords = arrow.allPoints
         if (allCoords.isEmpty()) continue
 
+        // A. Minimum distance to any cell bounding box occupied by this arrow
+        var minCellBoxDist = Float.MAX_VALUE
+        for (coord in allCoords) {
+            val cLeft = origin.x + coord.x * cellSize
+            val cTop = origin.y + coord.y * cellSize
+            val cRight = cLeft + cellSize
+            val cBottom = cTop + cellSize
+
+            val dx = when {
+                touchPoint.x < cLeft -> cLeft - touchPoint.x
+                touchPoint.x > cRight -> touchPoint.x - cRight
+                else -> 0f
+            }
+            val dy = when {
+                touchPoint.y < cTop -> cTop - touchPoint.y
+                touchPoint.y > cBottom -> touchPoint.y - cBottom
+                else -> 0f
+            }
+            val d = hypot(dx, dy)
+            if (d < minCellBoxDist) minCellBoxDist = d
+        }
+
+        // B. Minimum distance to arrow body polyline stem segments
         val bodyPts = allCoords.map { coord ->
             Offset(origin.x + (coord.x + 0.5f) * cellSize, origin.y + (coord.y + 0.5f) * cellSize)
         }
-
-        var minArrowDist = Float.MAX_VALUE
-
-        // 1. Distance to body segments (stem)
-        for (i in 0 until bodyPts.size - 1) {
-            val d = distanceToSegment(touchPoint, bodyPts[i], bodyPts[i + 1])
-            if (d < minArrowDist) minArrowDist = d
-        }
-
-        // Single-cell arrow stem
+        var minStemDist = Float.MAX_VALUE
         if (bodyPts.size == 1) {
-            val d = (touchPoint - bodyPts[0]).getDistance()
-            if (d < minArrowDist) minArrowDist = d
+            minStemDist = (touchPoint - bodyPts[0]).getDistance()
+        } else {
+            for (i in 0 until bodyPts.size - 1) {
+                val d = distanceToSegment(touchPoint, bodyPts[i], bodyPts[i + 1])
+                if (d < minStemDist) minStemDist = d
+            }
         }
 
-        // 2. Distance to arrowhead spine (from head center forward to tip)
+        // C. Distance to arrowhead spine and wings
         val headCenter = Offset(
             origin.x + (arrow.head.x + 0.5f) * cellSize,
             origin.y + (arrow.head.y + 0.5f) * cellSize
@@ -797,26 +837,33 @@ private fun findClosestArrow(
             headCenter.y + arrow.direction.dy * (cellSize * 0.48f)
         )
         val headSpineDist = distanceToSegment(touchPoint, headCenter, headTip)
-        if (headSpineDist < minArrowDist) minArrowDist = headSpineDist
 
-        // 3. Distance to arrowhead wings (left and right corners of triangular arrowhead)
         val perpDx = -arrow.direction.dy.toFloat()
         val perpDy = arrow.direction.dx.toFloat()
         val wingLeft = Offset(
-            headCenter.x + perpDx * (cellSize * 0.20f),
-            headCenter.y + perpDy * (cellSize * 0.20f)
+            headCenter.x + perpDx * (cellSize * 0.25f),
+            headCenter.y + perpDy * (cellSize * 0.25f)
         )
         val wingRight = Offset(
-            headCenter.x - perpDx * (cellSize * 0.20f),
-            headCenter.y - perpDy * (cellSize * 0.20f)
+            headCenter.x - perpDx * (cellSize * 0.25f),
+            headCenter.y - perpDy * (cellSize * 0.25f)
         )
         val wingLeftDist = distanceToSegment(touchPoint, headCenter, wingLeft)
         val wingRightDist = distanceToSegment(touchPoint, headCenter, wingRight)
-        if (wingLeftDist < minArrowDist) minArrowDist = wingLeftDist
-        if (wingRightDist < minArrowDist) minArrowDist = wingRightDist
 
-        if (minArrowDist <= hitThreshold && minArrowDist < bestDist) {
-            bestDist = minArrowDist
+        val minHeadDist = minOf(headSpineDist, wingLeftDist, wingRightDist)
+
+        val physicalDist = minOf(minCellBoxDist, minStemDist, minHeadDist)
+
+        // Scoring: direct cell hit has minCellBoxDist == 0f
+        val score = if (minCellBoxDist == 0f) {
+            minOf(minStemDist, minHeadDist) * 0.5f
+        } else {
+            physicalDist + cellSize * 0.5f
+        }
+
+        if (physicalDist <= hitTolerance && score < bestScore) {
+            bestScore = score
             bestArrow = arrow
         }
     }
