@@ -314,7 +314,8 @@ fun PuzzleBoardCanvas(
                             currentArrows,
                             currentCellSize,
                             currentHeadSize,
-                            currentMinTouchTargetPx
+                            currentMinTouchTargetPx,
+                            currentOccupancyMap
                         )
 
                         val firstRecord = TouchRecord(
@@ -355,7 +356,8 @@ fun PuzzleBoardCanvas(
                                             currentArrows,
                                             currentCellSize,
                                             currentHeadSize,
-                                            currentMinTouchTargetPx
+                                            currentMinTouchTargetPx,
+                                            currentOccupancyMap
                                         )
                                         val rec = TouchRecord(
                                             downPos = change.position,
@@ -496,7 +498,8 @@ fun PuzzleBoardCanvas(
                                                     currentArrows,
                                                     currentCellSize,
                                                     currentHeadSize,
-                                                    currentMinTouchTargetPx
+                                                    currentMinTouchTargetPx,
+                                                    currentOccupancyMap
                                                 ) ?: if (movement > 0f) {
                                                     findClosestArrow(
                                                         pLocalUp,
@@ -504,7 +507,8 @@ fun PuzzleBoardCanvas(
                                                         currentArrows,
                                                         currentCellSize,
                                                         currentHeadSize,
-                                                        currentMinTouchTargetPx
+                                                        currentMinTouchTargetPx,
+                                                        currentOccupancyMap
                                                     )
                                                 } else null
                                             }
@@ -821,7 +825,8 @@ private fun findClosestArrow(
     arrows: List<Arrow>,
     cellSize: Float,
     headSize: Float,
-    minTouchTargetPx: Float
+    minTouchTargetPx: Float,
+    occupancy: GridOccupancyMap? = null
 ): Arrow? {
     val activeArrows = arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
     if (activeArrows.isEmpty()) return null
@@ -908,14 +913,23 @@ private fun findClosestArrow(
         // Check if the touch is inside this arrow's allocated grid cell
         val isInsideAllocatedCell = arrow.isPointInside(touchedCoord) || (arrow.head == touchedCoord)
 
+        // Movable Protection: Check if this arrow has an unobstructed exit path
+        val isMovable = occupancy != null && PuzzleSolver.canMoveOut(arrow, occupancy)
+
         // Effective distance score:
         // - Direct hits inside the arrowhead triangle get absolute priority (distance = 0)
-        // - Hits inside the arrow's allocated cell get a strong territorial ownership bonus (x0.65)
-        // - Other touches use physical geometric distance
+        // - Hits inside the arrow's allocated cell get a territorial ownership bonus (x0.85)
+        // - Movable Protection (x0.50): Clear unobstructed arrows receive strong priority over
+        //   neighboring blocked arrows, completely eliminating accidental life loss from
+        //   edge-of-thumb touches or adjacent placement.
         val score = when {
-            isInsideHeadTriangle -> 0f
-            isInsideAllocatedCell -> physicalDist * 0.65f
-            else -> physicalDist
+            isInsideHeadTriangle -> if (isMovable) 0f else 0.5f
+            else -> {
+                var s = physicalDist
+                if (isInsideAllocatedCell) s *= 0.85f
+                if (isMovable) s *= 0.50f
+                s
+            }
         }
 
         if (score < bestScore) {
