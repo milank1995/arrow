@@ -62,6 +62,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.arrowescape.puzzle.core.engine.GridOccupancyMap
+import com.arrowescape.puzzle.core.engine.PuzzleSolver
 import com.arrowescape.puzzle.core.model.Arrow
 import com.arrowescape.puzzle.core.model.ArrowState
 import com.arrowescape.puzzle.core.model.Direction
@@ -262,6 +264,27 @@ fun PuzzleBoardCanvas(
             }
         }
 
+        val occupancyMap = remember(xSize, ySize, currentArrows) {
+            GridOccupancyMap(xSize, ySize).apply { rebuild(currentArrows) }
+        }
+        var lastArrowClickTime by remember { mutableLongStateOf(0L) }
+
+        // Tactile zoom-in and zoom-out breathing during level intro (0.88x -> 1.045x -> 1.0x)
+        val introZoom = if (introProgress.value >= 1f) 1.0f else {
+            val t = introProgress.value
+            when {
+                t < 0.65f -> {
+                    val p = FastOutSlowInEasing.transform(t / 0.65f)
+                    0.88f + 0.165f * p
+                }
+                else -> {
+                    val p = FastOutSlowInEasing.transform((t - 0.65f) / 0.35f)
+                    1.045f - 0.045f * p
+                }
+            }
+        }
+        val currentIntroZoom by rememberUpdatedState(introZoom)
+
         Canvas(
             modifier = Modifier
                 .fillMaxSize()
@@ -277,8 +300,9 @@ fun PuzzleBoardCanvas(
                         // Track all active touch points individually to support rapid succession and multi-finger tapping
                         val activeTouches = mutableMapOf<Long, TouchRecord>()
 
-                        val localDown = center + (down.position - Offset(panX, panY) - center) / scale
-                        val firstCandidate = findClosestArrow(localDown, currentBoardOrigin, currentArrows, currentCellSize, currentMinTouchTargetPx)
+                        val effectiveScale = scale * currentIntroZoom
+                        val localDown = center + (down.position - Offset(panX, panY) - center) / effectiveScale
+                        val firstCandidate = findClosestArrow(localDown, currentBoardOrigin, currentArrows, xSize, ySize, currentCellSize, currentMinTouchTargetPx, occupancyMap)
 
                         val firstRecord = TouchRecord(
                             downPos = down.position,
@@ -310,8 +334,9 @@ fun PuzzleBoardCanvas(
                                 // 1. Register any new pointer that touched down (supports fast multi-finger/alternating thumb taps)
                                 for (change in event.changes) {
                                     if (change.changedToDown() && !activeTouches.containsKey(change.id.value)) {
-                                        val pLocalDown = center + (change.position - Offset(panX, panY) - center) / scale
-                                        val pCandidate = findClosestArrow(pLocalDown, currentBoardOrigin, currentArrows, currentCellSize, currentMinTouchTargetPx)
+                                        val pEffectiveScale = scale * currentIntroZoom
+                                        val pLocalDown = center + (change.position - Offset(panX, panY) - center) / pEffectiveScale
+                                        val pCandidate = findClosestArrow(pLocalDown, currentBoardOrigin, currentArrows, xSize, ySize, currentCellSize, currentMinTouchTargetPx, occupancyMap)
                                         val rec = TouchRecord(
                                             downPos = change.position,
                                             downTime = now,
@@ -434,22 +459,26 @@ fun PuzzleBoardCanvas(
                                         val isTap = !isPinching && !isPanning && !rec.isLongPressTriggered && movement < maxAllowedMove && elapsed < 650L
 
                                         if (isTap) {
-                                            val pLocalDown = center + (rec.downPos - Offset(panX, panY) - center) / scale
-                                            val pLocalUp = center + (upChange.position - Offset(panX, panY) - center) / scale
+                                            val effectiveReleaseScale = scale * currentIntroZoom
+                                            val pLocalDown = center + (rec.downPos - Offset(panX, panY) - center) / effectiveReleaseScale
+                                            val pLocalUp = center + (upChange.position - Offset(panX, panY) - center) / effectiveReleaseScale
 
-                                            val resolvedArrow = findClosestArrow(pLocalDown, currentBoardOrigin, currentArrows, currentCellSize, currentMinTouchTargetPx)
-                                                ?: if (movement > 0f) findClosestArrow(pLocalUp, currentBoardOrigin, currentArrows, currentCellSize, currentMinTouchTargetPx) else null
+                                            val resolvedArrow = findClosestArrow(pLocalDown, currentBoardOrigin, currentArrows, xSize, ySize, currentCellSize, currentMinTouchTargetPx, occupancyMap)
+                                                ?: if (movement > 0f) findClosestArrow(pLocalUp, currentBoardOrigin, currentArrows, xSize, ySize, currentCellSize, currentMinTouchTargetPx, occupancyMap) else null
 
                                             val targetArrow = if (resolvedArrow != null) {
                                                 currentArrows.firstOrNull { it.id == resolvedArrow.id } ?: resolvedArrow
                                             } else null
 
                                             if (targetArrow != null && targetArrow.state != ArrowState.CLEARED && targetArrow.state != ArrowState.FLYING_OUT) {
-                                                if (introProgress.value < 1f) {
-                                                    coroutineScope.launch { introProgress.snapTo(1f) }
+                                                if (now - lastArrowClickTime > 120L) {
+                                                    lastArrowClickTime = now
+                                                    if (introProgress.value < 1f) {
+                                                        coroutineScope.launch { introProgress.snapTo(1f) }
+                                                    }
+                                                    currentOnArrowClick(targetArrow)
+                                                    upChange.consume()
                                                 }
-                                                currentOnArrowClick(targetArrow)
-                                                upChange.consume()
                                             }
                                         }
                                     }
@@ -533,20 +562,6 @@ fun PuzzleBoardCanvas(
         ) {
             if (animTick > 0L) { /* Redraw subscription for dynamic particle animations */ }
             val center = Offset(size.width / 2f, size.height / 2f)
-            // Tactile zoom-in and zoom-out breathing during level intro (0.88x -> 1.045x -> 1.0x)
-            val introZoom = if (introProgress.value >= 1f) 1.0f else {
-                val t = introProgress.value
-                when {
-                    t < 0.65f -> {
-                        val p = FastOutSlowInEasing.transform(t / 0.65f)
-                        0.88f + 0.165f * p
-                    }
-                    else -> {
-                        val p = FastOutSlowInEasing.transform((t - 0.65f) / 0.35f)
-                        1.045f - 0.045f * p
-                    }
-                }
-            }
             // Subtle directional micro-jolt camera shake on blocked obstacle collision
             val flashingArrow = arrows.firstOrNull { it.state == ArrowState.WRONG_FLASH }
             val blockedShakeOffset = if (flashingArrow != null) {
@@ -745,29 +760,32 @@ fun PuzzleBoardCanvas(
 }
 
 /**
- * Accurately and reliably selects the arrow physically closest to the touch point.
- * Computes exact continuous Euclidean distance to the central stem polyline segments
- * and the triangular arrowhead contour (spine, base wings, and tip).
- * 
- * - Single-cell arrows and small arrows are 100% reliably responsive to a single tap.
- * - Hit tolerance is constrained to cellSize * 0.70f max so it NEVER reaches across adjacent cells.
- * - Proximity competition guarantees the arrow physically closest to the finger always wins,
- *   preventing accidental selections of neighboring arrows on dense grids.
- * - Tapping empty space beyond the arrow returns null, preventing phantom accidental selections.
+ * Dual-Phase Hit Detection matching the reference game's ChessLogic + ConfigurableLineFinderStrategy:
+ *
+ * PHASE 1 - Discrete Cell Occupancy Authority (ChessOccupancyMap):
+ * If the touch coordinates land inside any grid cell that belongs to an active arrow,
+ * that arrow is returned IMMEDIATELY. This guarantees 100% single-tap responsiveness
+ * for all arrows (including small 1-cell arrows on dense grids like Level 1000)
+ * and makes accidental neighbor selection mathematically impossible.
+ *
+ * PHASE 2 - Proximity Priority Search (ConfigurableLineFinderStrategy):
+ * If the touch lands on an empty margin cell or padding between arrows:
+ * - Prioritizes arrowhead proximity over long stem segments (headBuffer priority).
+ * - Applies Movable Protection Mode (favors unobstructed arrows over blocked arrows
+ *   in ambiguous margin touches to prevent accidental life deductions).
  */
 private fun findClosestArrow(
     touchPoint: Offset,
     origin: Offset,
     arrows: List<Arrow>,
+    xSize: Int,
+    ySize: Int,
     cellSize: Float,
-    minTouchTargetPx: Float
+    minTouchTargetPx: Float,
+    occupancy: GridOccupancyMap? = null
 ): Arrow? {
     val activeArrows = arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
     if (activeArrows.isEmpty()) return null
-
-    // Hit tolerance: allows comfortable single-tap hitting of small arrows,
-    // while strictly capped to cellSize * 0.70f to prevent accidental neighbor selection.
-    val hitTolerance = maxOf(cellSize * 0.52f, minTouchTargetPx.coerceAtMost(cellSize * 0.70f))
 
     val relX = touchPoint.x - origin.x
     val relY = touchPoint.y - origin.y
@@ -775,14 +793,33 @@ private fun findClosestArrow(
     val cellY = kotlin.math.floor(relY / cellSize).toInt()
     val touchedCoord = GridCoordinate(cellX, cellY)
 
+    // =========================================================================
+    // PHASE 1: DIRECT CELL OCCUPANCY AUTHORITY
+    // =========================================================================
+    if (cellX in 0 until xSize && cellY in 0 until ySize) {
+        // Fast-path: Check spatial occupancy map
+        val cellOccupant = occupancy?.get(touchedCoord)
+        if (cellOccupant != null && cellOccupant.state != ArrowState.CLEARED && cellOccupant.state != ArrowState.FLYING_OUT) {
+            return activeArrows.firstOrNull { it.id == cellOccupant.id } ?: cellOccupant
+        }
+        // Direct coordinate check across active arrows
+        val directArrow = activeArrows.firstOrNull { it.head == touchedCoord }
+            ?: activeArrows.firstOrNull { it.isPointInside(touchedCoord) }
+        if (directArrow != null) {
+            return directArrow
+        }
+    }
+
+    // =========================================================================
+    // PHASE 2: PROXIMITY PRIORITY SEARCH (Margin / Empty Neighbor Touches)
+    // =========================================================================
+    val searchRadius = maxOf(cellSize * 0.95f, minTouchTargetPx * 1.35f)
     var bestArrow: Arrow? = null
     var bestScore = Float.MAX_VALUE
 
     for (arrow in activeArrows) {
         val allCoords = arrow.allPoints
         if (allCoords.isEmpty()) continue
-
-        val isDirectCellOccupant = arrow.isPointInside(touchedCoord)
 
         // 1. Distance to polyline stem segments
         val bodyPts = allCoords.map { coord ->
@@ -812,27 +849,33 @@ private fun findClosestArrow(
         val perpDx = -arrow.direction.dy.toFloat()
         val perpDy = arrow.direction.dx.toFloat()
         val wingLeft = Offset(
-            headCenter.x + perpDx * (cellSize * 0.25f),
-            headCenter.y + perpDy * (cellSize * 0.25f)
+            headCenter.x + perpDx * (cellSize * 0.28f),
+            headCenter.y + perpDy * (cellSize * 0.28f)
         )
         val wingRight = Offset(
-            headCenter.x - perpDx * (cellSize * 0.25f),
-            headCenter.y - perpDy * (cellSize * 0.25f)
+            headCenter.x - perpDx * (cellSize * 0.28f),
+            headCenter.y - perpDy * (cellSize * 0.28f)
         )
-        val wingLeftDist = distanceToSegment(touchPoint, headCenter, wingLeft)
-        val wingRightDist = distanceToSegment(touchPoint, headCenter, wingRight)
-        val wingTipLeftDist = distanceToSegment(touchPoint, wingLeft, headTip)
-        val wingTipRightDist = distanceToSegment(touchPoint, wingRight, headTip)
-
-        val minHeadDist = minOf(headSpineDist, wingLeftDist, wingRightDist, wingTipLeftDist, wingTipRightDist)
+        val minHeadDist = minOf(
+            headSpineDist,
+            distanceToSegment(touchPoint, headCenter, wingLeft),
+            distanceToSegment(touchPoint, headCenter, wingRight),
+            distanceToSegment(touchPoint, wingLeft, headTip),
+            distanceToSegment(touchPoint, wingRight, headTip)
+        )
 
         val physicalDist = minOf(minStemDist, minHeadDist)
+        if (physicalDist > searchRadius) continue
 
-        // Scoring: If touch point lands inside a cell owned by this arrow, apply a 0.75x priority bias.
-        // This cleanly respects grid boundaries while continuous Euclidean distance prevents accidental misclicks!
-        val score = if (isDirectCellOccupant) physicalDist * 0.75f else physicalDist
+        // Priority 1: Head Priority (0.70x score multiplier for head hits)
+        var score = if (minHeadDist <= minStemDist) physicalDist * 0.70f else physicalDist
 
-        if (physicalDist <= hitTolerance && score < bestScore) {
+        // Priority 2: Movable Protection Mode (favors unobstructed arrows over blocked arrows)
+        if (occupancy != null && PuzzleSolver.canMoveOut(arrow, occupancy)) {
+            score *= 0.85f
+        }
+
+        if (score < bestScore) {
             bestScore = score
             bestArrow = arrow
         }
