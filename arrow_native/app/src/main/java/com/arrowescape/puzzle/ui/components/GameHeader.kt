@@ -47,6 +47,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.ui.theme.ThemePreset
+import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.cos
@@ -62,6 +65,10 @@ fun GameHeader(
     theme: ThemePreset,
     isDailyChallenge: Boolean = false,
     dailyDateString: String? = null,
+    isTestMode: Boolean = false,
+    onPrevLevelClick: (() -> Unit)? = null,
+    onNextLevelClick: (() -> Unit)? = null,
+    onLevelNumberClick: (() -> Unit)? = null,
     onBackClick: () -> Unit,
     onThemeClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -172,13 +179,77 @@ fun GameHeader(
                     }
 
                     // Level text directly below hearts
-                    Text(
-                        text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = theme.textPrimary,
-                        modifier = Modifier.padding(top = 3.dp)
-                    )
+                    if (isTestMode) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(2.dp),
+                            modifier = Modifier.padding(top = 2.dp)
+                        ) {
+                            if (onPrevLevelClick != null) {
+                                IconButton(
+                                    onClick = onPrevLevelClick,
+                                    modifier = Modifier.size(24.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "Previous Level",
+                                        tint = theme.textPrimary,
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                }
+                            }
+                            Surface(
+                                shape = RoundedCornerShape(percent = 50),
+                                color = theme.boosterBg,
+                                border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
+                                modifier = Modifier.clickable(enabled = onLevelNumberClick != null) {
+                                    onLevelNumberClick?.invoke()
+                                }
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    modifier = Modifier.padding(horizontal = 9.dp, vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = "Level $levelNumber",
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = theme.textPrimary
+                                    )
+                                    if (onLevelNumberClick != null) {
+                                        Text(
+                                            text = "▾",
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = theme.textSecondary
+                                        )
+                                    }
+                                }
+                            }
+                            if (onNextLevelClick != null) {
+                                IconButton(
+                                    onClick = onNextLevelClick,
+                                    modifier = Modifier.size(24.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                        contentDescription = "Next Level",
+                                        tint = theme.textPrimary,
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        Text(
+                            text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = theme.textPrimary,
+                            modifier = Modifier.padding(top = 3.dp)
+                        )
+                    }
                 }
 
                 // RIGHT: Remaining Arrows Goal Badge

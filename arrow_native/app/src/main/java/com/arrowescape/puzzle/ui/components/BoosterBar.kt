@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -55,6 +56,7 @@ fun BoosterBar(
     theme: ThemePreset,
     onHintClick: () -> Unit,
     onGridClick: () -> Unit,
+    onRestartClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -100,7 +102,7 @@ fun BoosterBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 10.dp, bottom = 44.dp), // Generous bottom padding to clear navigation bar
-            horizontalArrangement = Arrangement.spacedBy(56.dp, Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.spacedBy(if (onRestartClick != null) 38.dp else 56.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 1. HINT ICON (Unclipped container, larger icon, badge securely positioned)
@@ -270,6 +272,37 @@ fun BoosterBar(
                             modifier = Modifier.size(13.dp)
                         )
                     }
+                }
+            }
+
+            // 3. RESTART ICON (Shown in test mode)
+            if (onRestartClick != null) {
+                val restartPressScale = remember { Animatable(1f) }
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(width = 68.dp, height = 76.dp)
+                        .scale(restartPressScale.value)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            coroutineScope.launch {
+                                restartPressScale.animateTo(0.82f, tween(60))
+                                restartPressScale.animateTo(1.12f, tween(90))
+                                restartPressScale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+                            }
+                            onRestartClick()
+                        }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Restart Level",
+                        tint = theme.textPrimary,
+                        modifier = Modifier
+                            .size(38.dp)
+                            .align(Alignment.Center)
+                    )
                 }
             }
         }
