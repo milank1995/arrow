@@ -90,7 +90,7 @@ fun DevTestScreen(
     var showThemeDialog by remember { mutableStateOf(false) }
 
     fun loadLevel(levelNum: Int) {
-        val boundedLevel = levelNum.coerceIn(1, 1534)
+        val boundedLevel = levelNum.coerceIn(1, 1001)
         val level = LevelLoader.loadLevel(context, boundedLevel)
         levelData = level
         arrows = level.arrows
@@ -257,7 +257,7 @@ fun DevTestScreen(
                             }
                         },
                         onNextLevelClick = {
-                            if (currentLevelNumber < 1534) {
+                            if (currentLevelNumber < 1001) {
                                 loadLevel(currentLevelNumber + 1)
                             }
                         },
@@ -413,7 +413,7 @@ private fun LevelSelectorDialog(
                 }
 
                 Text(
-                    text = "Choose an authentic original game puzzle (1 to 1534):",
+                    text = "Choose an authentic original game puzzle (1 to 1001):",
                     fontSize = 13.sp,
                     color = Color(0xFF64748B),
                     modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
@@ -433,10 +433,11 @@ private fun LevelSelectorDialog(
                     5 to "Simple (5x5)",
                     20 to "Medium (6x6)",
                     50 to "Dense (20x24)",
-                    100 to "Labyrinth",
-                    250 to "Intricate",
-                    500 to "Master",
-                    1000 to "Ultra Hard"
+                    100 to "Labyrinth (45 arr)",
+                    500 to "Master (50+ arr)",
+                    999 to "Mega (37x53, 80+)",
+                    1000 to "Spiral Milestone",
+                    1001 to "Final Labyrinth (81)"
                 )
 
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -495,14 +496,14 @@ private fun LevelSelectorDialog(
                     OutlinedTextField(
                         value = inputLevelText,
                         onValueChange = { inputLevelText = it },
-                        label = { Text("Level # (1-1534)") },
+                        label = { Text("Level # (1-1001)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
                     Button(
                         onClick = {
-                            val lvl = inputLevelText.toIntOrNull()?.coerceIn(1, 1534) ?: currentLevel
+                            val lvl = inputLevelText.toIntOrNull()?.coerceIn(1, 1001) ?: currentLevel
                             onLevelSelected(lvl)
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4F46E5)),

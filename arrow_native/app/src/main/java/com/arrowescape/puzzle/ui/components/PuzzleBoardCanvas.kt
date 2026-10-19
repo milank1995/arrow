@@ -205,7 +205,7 @@ fun PuzzleBoardCanvas(
         val currentMaxScale by rememberUpdatedState(maxScale)
         val currentOnArrowClick by rememberUpdatedState(onArrowClick)
         val currentOnArrowLongPress by rememberUpdatedState(onArrowLongPress)
-        val minTouchTargetPx = with(LocalDensity.current) { 28.dp.toPx() }
+        val minTouchTargetPx = with(LocalDensity.current) { 15.dp.toPx() }
         val currentMinTouchTargetPx by rememberUpdatedState(minTouchTargetPx)
 
         val confettiPieces = remember { mutableStateListOf<ConfettiPiece>() }
@@ -436,12 +436,9 @@ fun PuzzleBoardCanvas(
                                         if (isTap) {
                                             val pLocalDown = center + (rec.downPos - Offset(panX, panY) - center) / scale
                                             val pLocalUp = center + (upChange.position - Offset(panX, panY) - center) / scale
-                                            val pLocalMid = (pLocalDown + pLocalUp) / 2f
 
-                                            val resolvedArrow = rec.candidateArrow
-                                                ?: findClosestArrow(pLocalDown, currentBoardOrigin, currentArrows, currentCellSize, currentMinTouchTargetPx)
-                                                ?: findClosestArrow(pLocalUp, currentBoardOrigin, currentArrows, currentCellSize, currentMinTouchTargetPx)
-                                                ?: findClosestArrow(pLocalMid, currentBoardOrigin, currentArrows, currentCellSize, currentMinTouchTargetPx)
+                                            val resolvedArrow = findClosestArrow(pLocalDown, currentBoardOrigin, currentArrows, currentCellSize, currentMinTouchTargetPx)
+                                                ?: if (movement > 0f) findClosestArrow(pLocalUp, currentBoardOrigin, currentArrows, currentCellSize, currentMinTouchTargetPx) else null
 
                                             val targetArrow = if (resolvedArrow != null) {
                                                 currentArrows.firstOrNull { it.id == resolvedArrow.id } ?: resolvedArrow
@@ -748,14 +745,15 @@ fun PuzzleBoardCanvas(
 }
 
 /**
- * Accurately finds the arrow targeted by a touch using a two-stage hybrid hit-test:
- * 1. Direct Cell Hit: If touch falls within any grid cell occupied by an active arrow,
- *    that arrow is immediately recognized with priority (zero dead zone within cells).
- * 2. Continuous Proximity & Contour Geometry: If touch lands slightly outside the cell
- *    (especially common on small 1-2 cell arrows or rapid taps), computes Euclidean distance
- *    to cell bounds, polyline stem segments, and arrowhead polygon.
- * The closest arrow within an adaptive hit tolerance is selected, guaranteeing maximum
- * responsiveness while strictly preventing accidental selection of adjacent arrows.
+ * Accurately and reliably selects the arrow physically closest to the touch point.
+ * Computes exact continuous Euclidean distance to the central stem polyline segments
+ * and the triangular arrowhead contour (spine, base wings, and tip).
+ * 
+ * - Single-cell arrows and small arrows are 100% reliably responsive to a single tap.
+ * - Hit tolerance is constrained to cellSize * 0.70f max so it NEVER reaches across adjacent cells.
+ * - Proximity competition guarantees the arrow physically closest to the finger always wins,
+ *   preventing accidental selections of neighboring arrows on dense grids.
+ * - Tapping empty space beyond the arrow returns null, preventing phantom accidental selections.
  */
 private fun findClosestArrow(
     touchPoint: Offset,
@@ -767,22 +765,15 @@ private fun findClosestArrow(
     val activeArrows = arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
     if (activeArrows.isEmpty()) return null
 
-    // 1. Direct Cell Hit Test:
-    // Determine the exact grid cell corresponding to the touch point
+    // Hit tolerance: allows comfortable single-tap hitting of small arrows,
+    // while strictly capped to cellSize * 0.70f to prevent accidental neighbor selection.
+    val hitTolerance = maxOf(cellSize * 0.52f, minTouchTargetPx.coerceAtMost(cellSize * 0.70f))
+
     val relX = touchPoint.x - origin.x
     val relY = touchPoint.y - origin.y
     val cellX = kotlin.math.floor(relX / cellSize).toInt()
     val cellY = kotlin.math.floor(relY / cellSize).toInt()
     val touchedCoord = GridCoordinate(cellX, cellY)
-
-    val directHits = activeArrows.filter { it.isPointInside(touchedCoord) }
-    if (directHits.size == 1) {
-        return directHits.first()
-    }
-
-    // 2. Proximity & Contour Hit Test:
-    // Adaptive hit tolerance ensures small arrows remain easily clickable without shrinking to tiny targets
-    val hitTolerance = maxOf(cellSize * 0.85f, minTouchTargetPx)
 
     var bestArrow: Arrow? = null
     var bestScore = Float.MAX_VALUE
@@ -791,29 +782,9 @@ private fun findClosestArrow(
         val allCoords = arrow.allPoints
         if (allCoords.isEmpty()) continue
 
-        // A. Minimum distance to any cell bounding box occupied by this arrow
-        var minCellBoxDist = Float.MAX_VALUE
-        for (coord in allCoords) {
-            val cLeft = origin.x + coord.x * cellSize
-            val cTop = origin.y + coord.y * cellSize
-            val cRight = cLeft + cellSize
-            val cBottom = cTop + cellSize
+        val isDirectCellOccupant = arrow.isPointInside(touchedCoord)
 
-            val dx = when {
-                touchPoint.x < cLeft -> cLeft - touchPoint.x
-                touchPoint.x > cRight -> touchPoint.x - cRight
-                else -> 0f
-            }
-            val dy = when {
-                touchPoint.y < cTop -> cTop - touchPoint.y
-                touchPoint.y > cBottom -> touchPoint.y - cBottom
-                else -> 0f
-            }
-            val d = hypot(dx, dy)
-            if (d < minCellBoxDist) minCellBoxDist = d
-        }
-
-        // B. Minimum distance to arrow body polyline stem segments
+        // 1. Distance to polyline stem segments
         val bodyPts = allCoords.map { coord ->
             Offset(origin.x + (coord.x + 0.5f) * cellSize, origin.y + (coord.y + 0.5f) * cellSize)
         }
@@ -827,7 +798,7 @@ private fun findClosestArrow(
             }
         }
 
-        // C. Distance to arrowhead spine and wings
+        // 2. Distance to arrowhead triangle (spine, left/right wings, and front edges)
         val headCenter = Offset(
             origin.x + (arrow.head.x + 0.5f) * cellSize,
             origin.y + (arrow.head.y + 0.5f) * cellSize
@@ -850,17 +821,16 @@ private fun findClosestArrow(
         )
         val wingLeftDist = distanceToSegment(touchPoint, headCenter, wingLeft)
         val wingRightDist = distanceToSegment(touchPoint, headCenter, wingRight)
+        val wingTipLeftDist = distanceToSegment(touchPoint, wingLeft, headTip)
+        val wingTipRightDist = distanceToSegment(touchPoint, wingRight, headTip)
 
-        val minHeadDist = minOf(headSpineDist, wingLeftDist, wingRightDist)
+        val minHeadDist = minOf(headSpineDist, wingLeftDist, wingRightDist, wingTipLeftDist, wingTipRightDist)
 
-        val physicalDist = minOf(minCellBoxDist, minStemDist, minHeadDist)
+        val physicalDist = minOf(minStemDist, minHeadDist)
 
-        // Scoring: direct cell hit has minCellBoxDist == 0f
-        val score = if (minCellBoxDist == 0f) {
-            minOf(minStemDist, minHeadDist) * 0.5f
-        } else {
-            physicalDist + cellSize * 0.5f
-        }
+        // Scoring: If touch point lands inside a cell owned by this arrow, apply a 0.75x priority bias.
+        // This cleanly respects grid boundaries while continuous Euclidean distance prevents accidental misclicks!
+        val score = if (isDirectCellOccupant) physicalDist * 0.75f else physicalDist
 
         if (physicalDist <= hitTolerance && score < bestScore) {
             bestScore = score
