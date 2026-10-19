@@ -197,6 +197,8 @@ fun PuzzleBoardCanvas(
         val targetMaxCellPx = maxOf(viewportWidth * 0.50f, 450f)
         val maxScale = (targetMaxCellPx / cellSize).coerceIn(5.0f, 18.0f)
 
+        val currentXSize by rememberUpdatedState(xSize)
+        val currentYSize by rememberUpdatedState(ySize)
         val currentArrows by rememberUpdatedState(arrows)
         val currentCellSize by rememberUpdatedState(cellSize)
         val currentBoardOrigin by rememberUpdatedState(boardOrigin)
@@ -267,7 +269,7 @@ fun PuzzleBoardCanvas(
         val occupancyMap = remember(xSize, ySize, currentArrows) {
             GridOccupancyMap(xSize, ySize).apply { rebuild(currentArrows) }
         }
-        var lastArrowClickTime by remember { mutableLongStateOf(0L) }
+        val currentOccupancyMap by rememberUpdatedState(occupancyMap)
 
         // Tactile zoom-in and zoom-out breathing during level intro (0.88x -> 1.045x -> 1.0x)
         val introZoom = if (introProgress.value >= 1f) 1.0f else {
@@ -289,20 +291,29 @@ fun PuzzleBoardCanvas(
             modifier = Modifier
                 .fillMaxSize()
                 .clipToBounds() // Prevents drawing over top bar or bottom booster bar
-                .pointerInput(Unit) {
+                .pointerInput(xSize, ySize, arrows.size, arrows.firstOrNull()?.id) {
                     awaitEachGesture {
                         val down = awaitFirstDown(requireUnconsumed = false)
                         settleJob?.cancel() // Stop ongoing inertia or animation immediately on new touch
 
                         val center = Offset(currentViewportWidth / 2f, currentViewportHeight / 2f)
-                        val dragThreshold = 20.dp.toPx()
+                        val dragThreshold = 18.dp.toPx()
 
                         // Track all active touch points individually to support rapid succession and multi-finger tapping
                         val activeTouches = mutableMapOf<Long, TouchRecord>()
 
                         val effectiveScale = scale * currentIntroZoom
                         val localDown = center + (down.position - Offset(panX, panY) - center) / effectiveScale
-                        val firstCandidate = findClosestArrow(localDown, currentBoardOrigin, currentArrows, xSize, ySize, currentCellSize, currentMinTouchTargetPx, occupancyMap)
+                        val firstCandidate = findClosestArrow(
+                            localDown,
+                            currentBoardOrigin,
+                            currentArrows,
+                            currentXSize,
+                            currentYSize,
+                            currentCellSize,
+                            currentMinTouchTargetPx,
+                            currentOccupancyMap
+                        )
 
                         val firstRecord = TouchRecord(
                             downPos = down.position,
@@ -336,7 +347,16 @@ fun PuzzleBoardCanvas(
                                     if (change.changedToDown() && !activeTouches.containsKey(change.id.value)) {
                                         val pEffectiveScale = scale * currentIntroZoom
                                         val pLocalDown = center + (change.position - Offset(panX, panY) - center) / pEffectiveScale
-                                        val pCandidate = findClosestArrow(pLocalDown, currentBoardOrigin, currentArrows, xSize, ySize, currentCellSize, currentMinTouchTargetPx, occupancyMap)
+                                        val pCandidate = findClosestArrow(
+                                            pLocalDown,
+                                            currentBoardOrigin,
+                                            currentArrows,
+                                            currentXSize,
+                                            currentYSize,
+                                            currentCellSize,
+                                            currentMinTouchTargetPx,
+                                            currentOccupancyMap
+                                        )
                                         val rec = TouchRecord(
                                             downPos = change.position,
                                             downTime = now,
@@ -453,32 +473,52 @@ fun PuzzleBoardCanvas(
 
                                         val elapsed = now - rec.downTime
                                         val movement = (upChange.position - rec.downPos).getDistance()
-                                        val maxAllowedMove = if (scale > 1.05f) dragThreshold else (dragThreshold * 1.6f)
+                                        val maxAllowedMove = if (scale > 1.05f) dragThreshold else (dragThreshold * 1.25f)
 
                                         // A tap is recognized if not in an active pinch/pan drag, not holding preview ray, and within movement/time tolerances
                                         val isTap = !isPinching && !isPanning && !rec.isLongPressTriggered && movement < maxAllowedMove && elapsed < 650L
 
                                         if (isTap) {
-                                            val effectiveReleaseScale = scale * currentIntroZoom
-                                            val pLocalDown = center + (rec.downPos - Offset(panX, panY) - center) / effectiveReleaseScale
-                                            val pLocalUp = center + (upChange.position - Offset(panX, panY) - center) / effectiveReleaseScale
+                                            // Down-Target Authority: Prioritize the candidate arrow determined at touch down.
+                                            // This prevents finger release jitter or thumb roll from reassigning selection to an unintended neighbor or center arrow.
+                                            val candidate = rec.candidateArrow?.let { cand ->
+                                                currentArrows.firstOrNull { it.id == cand.id && it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
+                                            }
 
-                                            val resolvedArrow = findClosestArrow(pLocalDown, currentBoardOrigin, currentArrows, xSize, ySize, currentCellSize, currentMinTouchTargetPx, occupancyMap)
-                                                ?: if (movement > 0f) findClosestArrow(pLocalUp, currentBoardOrigin, currentArrows, xSize, ySize, currentCellSize, currentMinTouchTargetPx, occupancyMap) else null
+                                            val targetArrow = candidate ?: run {
+                                                val effectiveReleaseScale = scale * currentIntroZoom
+                                                val pLocalDown = center + (rec.downPos - Offset(panX, panY) - center) / effectiveReleaseScale
+                                                val pLocalUp = center + (upChange.position - Offset(panX, panY) - center) / effectiveReleaseScale
 
-                                            val targetArrow = if (resolvedArrow != null) {
-                                                currentArrows.firstOrNull { it.id == resolvedArrow.id } ?: resolvedArrow
-                                            } else null
+                                                findClosestArrow(
+                                                    pLocalDown,
+                                                    currentBoardOrigin,
+                                                    currentArrows,
+                                                    currentXSize,
+                                                    currentYSize,
+                                                    currentCellSize,
+                                                    currentMinTouchTargetPx,
+                                                    currentOccupancyMap
+                                                ) ?: if (movement > 0f) {
+                                                    findClosestArrow(
+                                                        pLocalUp,
+                                                        currentBoardOrigin,
+                                                        currentArrows,
+                                                        currentXSize,
+                                                        currentYSize,
+                                                        currentCellSize,
+                                                        currentMinTouchTargetPx,
+                                                        currentOccupancyMap
+                                                    )
+                                                } else null
+                                            }
 
                                             if (targetArrow != null && targetArrow.state != ArrowState.CLEARED && targetArrow.state != ArrowState.FLYING_OUT) {
-                                                if (now - lastArrowClickTime > 120L) {
-                                                    lastArrowClickTime = now
-                                                    if (introProgress.value < 1f) {
-                                                        coroutineScope.launch { introProgress.snapTo(1f) }
-                                                    }
-                                                    currentOnArrowClick(targetArrow)
-                                                    upChange.consume()
+                                                if (introProgress.value < 1f) {
+                                                    coroutineScope.launch { introProgress.snapTo(1f) }
                                                 }
+                                                currentOnArrowClick(targetArrow)
+                                                upChange.consume()
                                             }
                                         }
                                     }
@@ -808,12 +848,21 @@ private fun findClosestArrow(
         if (directArrow != null) {
             return directArrow
         }
+    } else {
+        // Perimeter outward tip check: user tapped just outside the grid boundary where an arrow's head points
+        val perimeterHeadArrow = activeArrows.firstOrNull { arrow ->
+            arrow.head.step(arrow.direction) == touchedCoord
+        }
+        if (perimeterHeadArrow != null) {
+            return perimeterHeadArrow
+        }
     }
 
     // =========================================================================
     // PHASE 2: PROXIMITY PRIORITY SEARCH (Margin / Empty Neighbor Touches)
     // =========================================================================
-    val searchRadius = maxOf(cellSize * 0.95f, minTouchTargetPx * 1.35f)
+    // Tightly bounded to adjacent touch area to prevent jumping across to distant arrows
+    val searchRadius = minOf(maxOf(cellSize * 0.75f, minTouchTargetPx), cellSize * 1.15f)
     var bestArrow: Arrow? = null
     var bestScore = Float.MAX_VALUE
 
@@ -867,13 +916,8 @@ private fun findClosestArrow(
         val physicalDist = minOf(minStemDist, minHeadDist)
         if (physicalDist > searchRadius) continue
 
-        // Priority 1: Head Priority (0.70x score multiplier for head hits)
-        var score = if (minHeadDist <= minStemDist) physicalDist * 0.70f else physicalDist
-
-        // Priority 2: Movable Protection Mode (favors unobstructed arrows over blocked arrows)
-        if (occupancy != null && PuzzleSolver.canMoveOut(arrow, occupancy)) {
-            score *= 0.85f
-        }
+        // Head priority: slight tie-breaker for head hits
+        val score = if (minHeadDist <= minStemDist) physicalDist * 0.88f else physicalDist
 
         if (score < bestScore) {
             bestScore = score
