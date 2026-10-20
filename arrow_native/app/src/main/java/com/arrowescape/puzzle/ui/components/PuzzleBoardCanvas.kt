@@ -181,8 +181,8 @@ fun PuzzleBoardCanvas(
         val viewportHeight = constraints.maxHeight.toFloat()
 
         // Fit board into viewport with comfortable margin (92% width, 90% height)
-        val availableWidth = viewportWidth * 0.88f
-        val availableHeight = viewportHeight * 0.82f
+        val availableWidth = viewportWidth * 0.74f
+        val availableHeight = viewportHeight * 0.70f
         val maxCellPx = with(LocalDensity.current) { 50.dp.toPx() }
         val cellSize = minOf(availableWidth / xSize, availableHeight / ySize).coerceAtMost(maxCellPx)
         val boardWidth = cellSize * xSize
@@ -211,10 +211,10 @@ fun PuzzleBoardCanvas(
         val currentOnArrowLongPress by rememberUpdatedState(onArrowLongPress)
         val minTouchTargetPx = with(LocalDensity.current) { 15.dp.toPx() }
         val currentMinTouchTargetPx by rememberUpdatedState(minTouchTargetPx)
-        val minStrokePx = with(LocalDensity.current) { 3.8.dp.toPx() }
-        val maxStrokePx = with(LocalDensity.current) { 6.5.dp.toPx() }
-        val baseStrokeWidth = (cellSize * 0.25f).coerceIn(minStrokePx, maxStrokePx)
-        val baseHeadWidth = baseStrokeWidth * 1.90f
+        val minStrokePx = with(LocalDensity.current) { 1.6.dp.toPx() }
+        val maxStrokePx = with(LocalDensity.current) { 4.5.dp.toPx() }
+        val baseStrokeWidth = (cellSize * 0.20f).coerceIn(minStrokePx, maxStrokePx)
+        val baseHeadWidth = baseStrokeWidth * 2.0f
         val currentHeadSize by rememberUpdatedState(baseHeadWidth)
 
         val confettiPieces = remember { mutableStateListOf<ConfettiPiece>() }
@@ -828,10 +828,10 @@ private fun findClosestArrow(
     // Search threshold: comfortable touch radius around arrow shapes
     val maxSearchRadius = maxOf(cellSize * 0.85f, minTouchTargetPx)
 
-    // Match rendering proportions
+    // Exact Unity One proportions (headWidth = 2.0x stroke, headLength = 1.05x headWidth)
     val headWidth = headSize
-    val headLength = headWidth * 1.35f
-    val tipOffset = (cellSize * 0.38f).coerceAtLeast(headLength * 0.65f)
+    val headLength = headWidth * 1.05f
+    val tipOffset = (cellSize * 0.36f).coerceAtLeast(headLength * 0.55f)
 
     var bestArrow: Arrow? = null
     var minDistance = Float.MAX_VALUE
@@ -840,7 +840,7 @@ private fun findClosestArrow(
         val allCoords = arrow.allPoints
         if (allCoords.isEmpty()) continue
 
-        // 1. Arrowhead Hit Geometry (matching drawArrowEntity with clearance gap)
+        // 1. Arrowhead Hit Geometry (matching drawArrowEntity exact Unity shape)
         val headCenter = Offset(
             origin.x + (arrow.head.x + 0.5f) * cellSize,
             origin.y + (arrow.head.y + 0.5f) * cellSize
@@ -862,10 +862,6 @@ private fun findClosestArrow(
             headTip.x - dirX * headLength - perpX * (headWidth * 0.50f),
             headTip.y - dirY * headLength - perpY * (headWidth * 0.50f)
         )
-        val rearNotch = Offset(
-            headTip.x - dirX * (headLength * 0.88f),
-            headTip.y - dirY * (headLength * 0.88f)
-        )
 
         // Exact point-in-arrowhead-triangle test
         val isInsideHeadTriangle = isPointInTriangle(touchPoint, headTip, wingRight, wingLeft)
@@ -877,8 +873,7 @@ private fun findClosestArrow(
                 distanceToSegment(touchPoint, headCenter, headTip),
                 distanceToSegment(touchPoint, headTip, wingLeft),
                 distanceToSegment(touchPoint, headTip, wingRight),
-                distanceToSegment(touchPoint, wingLeft, rearNotch),
-                distanceToSegment(touchPoint, wingRight, rearNotch)
+                distanceToSegment(touchPoint, wingLeft, wingRight)
             )
         }
 
@@ -944,9 +939,10 @@ private fun DrawScope.drawArrowEntity(
         else -> theme.arrowDefault
     }
 
-    // 1:1.15 Golden Ratio stroke width: medium-bold, tactile (25% of cell size, 3.8dp .. 6.5dp)
-    val minStroke = 3.8.dp.toPx()
-    val maxStroke = 6.5.dp.toPx()
+    // Exact Unity One stroke: slender, crisp lines (20% of cell size, 1.6dp .. 4.5dp)
+    // Guarantees generous 3x-4x gap between parallel channels matching Image 2 perfectly
+    val minStroke = 1.6.dp.toPx()
+    val maxStroke = 4.5.dp.toPx()
     val scaleMultiplier = when {
         isPreviewHold -> 1.10f * (1f + (hintPulseScale - 1f) * 0.35f)
         isLaunching -> 1.18f
@@ -954,11 +950,11 @@ private fun DrawScope.drawArrowEntity(
         arrow.state == ArrowState.HINTED -> hintPulseScale
         else -> 1.0f
     }
-    val strokeWidth = (cellSize * 0.25f).coerceIn(minStroke, maxStroke) * scaleMultiplier
+    val strokeWidth = (cellSize * 0.20f).coerceIn(minStroke, maxStroke) * scaleMultiplier
 
-    // Refined New Unity One spearhead proportions (1.90x stroke width, 1.35x aspect ratio)
-    val headWidth = strokeWidth * 1.90f * (if (isPreviewHold) 1.08f else if (isLaunching) 1.12f else 1.0f)
-    val headLength = headWidth * 1.35f
+    // Exact Unity One arrowhead proportions (2.0x stroke width, 1.05x aspect ratio)
+    val headWidth = strokeWidth * 2.0f * (if (isPreviewHold) 1.08f else if (isLaunching) 1.12f else 1.0f)
+    val headLength = headWidth * 1.05f
 
     // Build the full motion track: body points + escape extension along arrow.direction
     val track = mutableListOf<Offset>()
@@ -1010,10 +1006,10 @@ private fun DrawScope.drawArrowEntity(
 
     val renderColor = baseColor.copy(alpha = alpha * introAlpha)
 
-    // 1. Draw body stroke along the polyline with tight, disciplined corner fillets (22% of cell)
-    // Keeps straight segments strictly parallel while rounding 90-degree turns cleanly (no noodle waves!)
+    // 1. Draw body stroke along the polyline with crisp, architectural corner fillets (16% of cell)
+    // Matches Unity Image 2's clean CAD circuit-like bends (no wavy noodle curves)
     if (sampledPoints.size > 1) {
-        val path = buildRoundedCornerPath(sampledPoints, radius = cellSize * 0.22f)
+        val path = buildRoundedCornerPath(sampledPoints, radius = cellSize * 0.16f)
         drawPath(
             path = path,
             color = renderColor,
@@ -1039,24 +1035,22 @@ private fun DrawScope.drawArrowEntity(
     val effectiveHeadWidth = headWidth * headPopScale
     val effectiveHeadLength = headLength * headPopScale
 
-    // 2. Draw sharp, elegant spearhead with intentional tip clearance gap
-    if (effectiveHeadWidth > 1f) {
+    // 2. Draw clean, crisp Unity One triangular spearhead with safe stopping gap
+    if (effectiveHeadWidth > 0.5f) {
         val currentHead = if (displacement > 0.001f && sampledPoints.isNotEmpty()) sampledPoints.last() else headPt
         rotate(
             degrees = arrow.direction.angleDegrees,
             pivot = currentHead
         ) {
-            // Forward tip stops at 0.38 * cellSize from center (leaving a crisp ~12-15% clearance gap from cell edge)
-            val tipForward = (cellSize * 0.38f).coerceAtLeast(effectiveHeadLength * 0.65f)
+            // Forward tip stops at 0.36 * cellSize from center (leaving clear safety gap before next channel)
+            val tipForward = (cellSize * 0.36f).coerceAtLeast(effectiveHeadLength * 0.55f)
 
             val arrowHeadPath = Path().apply {
                 // Forward sharp tip
                 moveTo(currentHead.x, currentHead.y - tipForward)
-                // Right wing tip
+                // Right base wing
                 lineTo(currentHead.x + effectiveHeadWidth * 0.50f, currentHead.y - tipForward + effectiveHeadLength)
-                // Rear notch where line stem joins
-                lineTo(currentHead.x, currentHead.y - tipForward + effectiveHeadLength * 0.88f)
-                // Left wing tip
+                // Left base wing
                 lineTo(currentHead.x - effectiveHeadWidth * 0.50f, currentHead.y - tipForward + effectiveHeadLength)
                 close()
             }
@@ -1142,7 +1136,7 @@ private fun buildRoundedCornerPath(points: List<Offset>, radius: Float): Path {
         }
 
         // Corner radius constrained by incoming and outgoing segment lengths
-        val r = minOf(radius, lenIn * 0.40f, lenOut * 0.40f)
+        val r = minOf(radius, lenIn * 0.30f, lenOut * 0.30f)
         val p1 = Offset(cur.x - uIn.x * r, cur.y - uIn.y * r)
         val p2 = Offset(cur.x + uOut.x * r, cur.y + uOut.y * r)
 
