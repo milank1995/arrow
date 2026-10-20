@@ -652,21 +652,25 @@ fun PuzzleBoardCanvas(
 
                 // 2. Cleared Area Silhouette Dots:
                 // Only become visible once an arrow has moved out of the gameplay area.
-                // Tactile pop-in and smooth fade animation matching New Unity One's cleared cell marks
+                // Delicate pinpoints with tactile pop-in matching New Unity One pixel-for-pixel
                 if (clearedCells.isNotEmpty()) {
                     val dotColor = theme.gridDot
-                    val minDotPx = 2.4f * this.density
-                    val maxDotPx = 5.2f * this.density
-                    val dotRadius = (cellSize * 0.10f).coerceIn(minDotPx, maxDotPx)
+                    val minDotPx = 0.85.dp.toPx()
+                    val maxDotPx = 2.0.dp.toPx()
+                    val dotRadius = (cellSize * 0.055f).coerceIn(minDotPx, maxDotPx)
                     val now = System.currentTimeMillis()
 
                     for (coord in clearedCells) {
                         val spawnTime = clearedCellTimestamps[coord] ?: 0L
                         val elapsed = (now - spawnTime).coerceAtLeast(0L)
-                        val animDuration = 320f
+                        val animDuration = 220f
                         val animProgress = if (spawnTime == 0L || elapsed >= animDuration) 1.0f else (elapsed / animDuration).coerceIn(0f, 1f)
-                        val popScale = if (animProgress >= 1f) 1.0f else FastOutSlowInEasing.transform(animProgress)
-                        val alpha = (animProgress * 0.85f).coerceIn(0f, 0.85f)
+                        val popScale = when {
+                            animProgress >= 1f -> 1.0f
+                            animProgress < 0.65f -> (animProgress / 0.65f) * 1.15f
+                            else -> 1.15f - ((animProgress - 0.65f) / 0.35f) * 0.15f
+                        }
+                        val alpha = (animProgress * 0.45f).coerceIn(0f, 0.45f)
 
                         drawCircle(
                             color = dotColor.copy(alpha = alpha),
@@ -855,10 +859,30 @@ private fun findClosestArrow(
     val activeArrows = arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
     if (activeArrows.isEmpty()) return null
 
-    // Search threshold: comfortable touch radius around arrow shapes
-    val maxSearchRadius = maxOf(cellSize * 0.85f, minTouchTargetPx)
+    // 1. Convert touch point to board grid coordinates
+    val relX = touchPoint.x - origin.x
+    val relY = touchPoint.y - origin.y
+    val cellX = kotlin.math.floor(relX / cellSize).toInt()
+    val cellY = kotlin.math.floor(relY / cellSize).toInt()
+    val touchedCoord = GridCoordinate(cellX, cellY)
 
-    // Exact Unity One proportions (headWidth = 2.0x stroke, headLength = 1.05x headWidth)
+    // 2. DISCRETE CELL OCCUPANCY AUTHORITY (100% Infallible Hit Testing)
+    // In Unity, each arrow collider occupies its respective grid cells.
+    // If the tap lands directly inside a cell owned by an active arrow, that arrow has 100% direct authority.
+    // Neighboring arrows (even if nearby or pointing toward this cell) can NEVER steal a tap inside an occupied cell.
+    val cellOccupant = occupancy?.get(touchedCoord)?.takeIf {
+        it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT
+    } ?: activeArrows.firstOrNull { it.isPointInside(touchedCoord) }
+
+    if (cellOccupant != null) {
+        return cellOccupant
+    }
+
+    // 3. BOUNDED PROXIMITY FALLBACK (For taps in empty margin space or cleared cells immediately adjacent to an arrow)
+    // Strict local threshold: max 0.72 of a cell. This allows comfortable taps just off an arrow's edge
+    // without ever selecting an arrow 2+ cells away in empty space.
+    val maxSearchRadius = cellSize * 0.72f
+
     val headWidth = headSize
     val headLength = headWidth * 1.05f
     val tipOffset = (cellSize * 0.32f).coerceAtLeast(headLength * 0.55f)
@@ -870,7 +894,17 @@ private fun findClosestArrow(
         val allCoords = arrow.allPoints
         if (allCoords.isEmpty()) continue
 
-        // 1. Arrowhead Hit Geometry (matching drawArrowEntity exact Unity shape)
+        // Quick AABB bounding box filter: skip arrows whose bounding box is further than maxSearchRadius
+        val minX = allCoords.minOf { it.x } * cellSize + origin.x - maxSearchRadius
+        val maxX = (allCoords.maxOf { it.x } + 1) * cellSize + origin.x + maxSearchRadius
+        val minY = allCoords.minOf { it.y } * cellSize + origin.y - maxSearchRadius
+        val maxY = (allCoords.maxOf { it.y } + 1) * cellSize + origin.y + maxSearchRadius
+
+        if (touchPoint.x < minX || touchPoint.x > maxX || touchPoint.y < minY || touchPoint.y > maxY) {
+            continue
+        }
+
+        // A. Arrowhead Hit Geometry (matching exact rendered triangular spearhead)
         val headCenter = Offset(
             origin.x + (arrow.head.x + 0.5f) * cellSize,
             origin.y + (arrow.head.y + 0.5f) * cellSize
@@ -893,9 +927,7 @@ private fun findClosestArrow(
             headTip.y - dirY * headLength - perpY * (headWidth * 0.50f)
         )
 
-        // Exact point-in-arrowhead-triangle test
         val isInsideHeadTriangle = isPointInTriangle(touchPoint, headTip, wingRight, wingLeft)
-
         val headDist = if (isInsideHeadTriangle) {
             0f
         } else {
@@ -907,23 +939,9 @@ private fun findClosestArrow(
             )
         }
 
-        // 2. Stem Body Hit Geometry (including extended tail cap):
-        val bodyPts = mutableListOf<Offset>()
-        val tailCoord = allCoords[0]
-        val tailCenter = Offset(origin.x + (tailCoord.x + 0.5f) * cellSize, origin.y + (tailCoord.y + 0.5f) * cellSize)
-        val tailDir = if (allCoords.size >= 2) {
-            val tdx = (allCoords[0].x - allCoords[1].x).toFloat()
-            val tdy = (allCoords[0].y - allCoords[1].y).toFloat()
-            val len = maxOf(0.001f, kotlin.math.sqrt(tdx * tdx + tdy * tdy))
-            Offset(tdx / len, tdy / len)
-        } else {
-            Offset(-dirX, -dirY)
-        }
-        val tailOffset = (tipOffset - (headWidth * 0.25f)).coerceAtLeast(0f)
-        bodyPts.add(tailCenter + tailDir * tailOffset)
-
-        for (coord in allCoords) {
-            bodyPts.add(Offset(origin.x + (coord.x + 0.5f) * cellSize, origin.y + (coord.y + 0.5f) * cellSize))
+        // B. Stem Body Hit Geometry (true centerline segments, zero artificial offset distortion)
+        val bodyPts = allCoords.map { coord ->
+            Offset(origin.x + (coord.x + 0.5f) * cellSize, origin.y + (coord.y + 0.5f) * cellSize)
         }
 
         var stemDist = Float.MAX_VALUE
@@ -937,7 +955,6 @@ private fun findClosestArrow(
         }
 
         val physicalDist = minOf(headDist, stemDist)
-
         if (physicalDist < minDistance) {
             minDistance = physicalDist
             bestArrow = arrow
