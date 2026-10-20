@@ -809,17 +809,15 @@ private fun isPointInTriangle(p: Offset, a: Offset, b: Offset, c: Offset): Boole
 }
 
 /**
- * Dual-Phase Hit Detection matching Unity's RaycastTry2D architecture,
- * enhanced with intelligent "Ready to Move" assistance for empty-space taps.
+ * Pure Geometric Hit Detection matching both Unity versions (RaycastTry2D & ConfigurableLineFinderStrategy).
+ * Evaluates exact physical Euclidean proximity to each arrow's rendered visual shape (arrowhead and stem).
  *
  * Guarantees:
- * 1. Arrowhead Priority (Step 1): Tapping on an arrowhead triangle selects that arrow immediately.
- * 2. Discrete Cell Occupancy Authority (Step 2 - Unity Model): If the tap point lands inside any cell
- *    occupied by an arrow (head, body, center, or tail), that arrow is selected with 100% certainty.
- *    Neighboring arrows can NEVER steal taps landing inside another arrow's cell.
- * 3. Intelligent "Ready to Move" Assistance (Step 3): If a tap lands in empty margin/padding space
- *    or cleared cells between arrows, the algorithm evaluates nearby candidates and triggers the arrow
- *    that is currently ready to move (canMoveOut), preventing accidental life loss.
+ * 1. The arrow physically closest to the finger ALWAYS wins. Zero distance distortion.
+ * 2. Zero "movable stealing": Blocked and movable arrows are treated with absolute geometric fairness.
+ *    A blocked arrow tapped by the user will ALWAYS respond with its wobble feedback.
+ * 3. Accurate response for all arrow sizes (including 1-cell arrows) without neighbor interference.
+ * 4. Taps far away in empty space (> maxSearchRadius) return null, preventing phantom clicks.
  */
 private fun findClosestArrow(
     touchPoint: Offset,
@@ -833,22 +831,11 @@ private fun findClosestArrow(
     val activeArrows = arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
     if (activeArrows.isEmpty()) return null
 
-    val relX = touchPoint.x - origin.x
-    val relY = touchPoint.y - origin.y
-    val cellX = kotlin.math.floor(relX / cellSize).toInt()
-    val cellY = kotlin.math.floor(relY / cellSize).toInt()
-    val touchedCoord = GridCoordinate(cellX, cellY)
+    // Search threshold: comfortable touch radius around arrow shapes
+    val maxSearchRadius = maxOf(cellSize * 0.85f, minTouchTargetPx)
 
-    // Data structure to hold candidate geometry
-    data class CandidateHit(
-        val arrow: Arrow,
-        val isInsideHeadTriangle: Boolean,
-        val headCenter: Offset,
-        val physicalDist: Float,
-        val isMovable: Boolean
-    )
-
-    val candidates = mutableListOf<CandidateHit>()
+    var bestArrow: Arrow? = null
+    var minDistance = Float.MAX_VALUE
 
     for (arrow in activeArrows) {
         val allCoords = arrow.allPoints
@@ -895,7 +882,8 @@ private fun findClosestArrow(
             )
         }
 
-        // 2. Stem Body Hit Geometry
+        // 2. Stem Body Hit Geometry:
+        // Physical distance to the polyline connecting body points
         val bodyPts = allCoords.map { coord ->
             Offset(origin.x + (coord.x + 0.5f) * cellSize, origin.y + (coord.y + 0.5f) * cellSize)
         }
@@ -909,53 +897,16 @@ private fun findClosestArrow(
             }
         }
 
+        // Physical Euclidean distance to this arrow's visual geometry
         val physicalDist = minOf(headDist, stemDist)
-        val isMovable = occupancy != null && PuzzleSolver.canMoveOut(arrow, occupancy)
 
-        candidates.add(
-            CandidateHit(
-                arrow = arrow,
-                isInsideHeadTriangle = isInsideHeadTriangle,
-                headCenter = headCenter,
-                physicalDist = physicalDist,
-                isMovable = isMovable
-            )
-        )
+        if (physicalDist < minDistance) {
+            minDistance = physicalDist
+            bestArrow = arrow
+        }
     }
 
-    // Step 1: Arrowhead Priority
-    // If the tap point is inside an arrowhead triangle, that arrow has absolute priority
-    val headHits = candidates.filter { it.isInsideHeadTriangle }
-    if (headHits.isNotEmpty()) {
-        return headHits.minByOrNull { (touchPoint - it.headCenter).getDistance() }?.arrow
-    }
-
-    // Step 2: Discrete Grid Cell Occupancy Authority (Replicating Unity's BoxCollider2D)
-    // If the tap lands within any grid cell occupied by an arrow (head, body, center, or tail),
-    // that arrow is selected with 100% deterministic authority.
-    val cellOccupant = occupancy?.get(touchedCoord)?.takeIf {
-        it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT
-    } ?: activeArrows.firstOrNull { it.isPointInside(touchedCoord) }
-
-    if (cellOccupant != null) {
-        return cellOccupant
-    }
-
-    // Step 3: Intelligent "Ready to Move" Fallback for Empty Space / Margin Taps
-    // When the user taps in empty margin padding or a cleared cell between arrows:
-    val maxSearchRadius = maxOf(cellSize * 0.90f, minTouchTargetPx * 1.10f)
-    val nearbyCandidates = candidates.filter { it.physicalDist <= maxSearchRadius }
-    if (nearbyCandidates.isEmpty()) return null
-
-    // Check which nearby arrow is currently ready to move
-    val movableNearby = nearbyCandidates.filter { it.isMovable }
-    if (movableNearby.isNotEmpty()) {
-        // Trigger the ready-to-move arrow closest to the tap!
-        return movableNearby.minByOrNull { it.physicalDist }?.arrow
-    }
-
-    // If none are ready to move, select the closest arrow to show blocked feedback
-    return nearbyCandidates.minByOrNull { it.physicalDist }?.arrow
+    return if (minDistance <= maxSearchRadius) bestArrow else null
 }
 
 private fun distanceToSegment(p: Offset, a: Offset, b: Offset): Float {
