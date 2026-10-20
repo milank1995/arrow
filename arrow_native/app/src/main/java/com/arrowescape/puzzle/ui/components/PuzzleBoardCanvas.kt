@@ -831,7 +831,7 @@ private fun findClosestArrow(
     // Exact Unity One proportions (headWidth = 2.0x stroke, headLength = 1.05x headWidth)
     val headWidth = headSize
     val headLength = headWidth * 1.05f
-    val tipOffset = (cellSize * 0.36f).coerceAtLeast(headLength * 0.55f)
+    val tipOffset = (cellSize * 0.32f).coerceAtLeast(headLength * 0.55f)
 
     var bestArrow: Arrow? = null
     var minDistance = Float.MAX_VALUE
@@ -877,10 +877,25 @@ private fun findClosestArrow(
             )
         }
 
-        // 2. Stem Body Hit Geometry:
-        val bodyPts = allCoords.map { coord ->
-            Offset(origin.x + (coord.x + 0.5f) * cellSize, origin.y + (coord.y + 0.5f) * cellSize)
+        // 2. Stem Body Hit Geometry (including extended tail cap):
+        val bodyPts = mutableListOf<Offset>()
+        val tailCoord = allCoords[0]
+        val tailCenter = Offset(origin.x + (tailCoord.x + 0.5f) * cellSize, origin.y + (tailCoord.y + 0.5f) * cellSize)
+        val tailDir = if (allCoords.size >= 2) {
+            val tdx = (allCoords[0].x - allCoords[1].x).toFloat()
+            val tdy = (allCoords[0].y - allCoords[1].y).toFloat()
+            val len = maxOf(0.001f, kotlin.math.sqrt(tdx * tdx + tdy * tdy))
+            Offset(tdx / len, tdy / len)
+        } else {
+            Offset(-dirX, -dirY)
         }
+        val tailOffset = (tipOffset - (headWidth * 0.25f)).coerceAtLeast(0f)
+        bodyPts.add(tailCenter + tailDir * tailOffset)
+
+        for (coord in allCoords) {
+            bodyPts.add(Offset(origin.x + (coord.x + 0.5f) * cellSize, origin.y + (coord.y + 0.5f) * cellSize))
+        }
+
         var stemDist = Float.MAX_VALUE
         if (bodyPts.size == 1) {
             stemDist = (touchPoint - bodyPts[0]).getDistance()
@@ -996,18 +1011,54 @@ private fun DrawScope.drawArrowEntity(
         originalBodyLen.toFloat()
     }
 
-    val sampledPoints = sampleTrackSegment(
+    val headDirX = arrow.direction.dx.toFloat()
+    val headDirY = arrow.direction.dy.toFloat()
+    val headDir = Offset(headDirX, headDirY)
+
+    val tailDir = if (arrow.body.size >= 2) {
+        val b0 = arrow.body[0]
+        val b1 = arrow.body[1]
+        val tdx = (b0.x - b1.x).toFloat()
+        val tdy = (b0.y - b1.y).toFloat()
+        val len = maxOf(0.001f, kotlin.math.sqrt(tdx * tdx + tdy * tdy))
+        Offset(tdx / len, tdy / len)
+    } else {
+        Offset(-headDirX, -headDirY)
+    }
+
+    // Symmetrical head tip and tail reach: both extend by exactly 0.32 * cellSize from cell center
+    val tipForward = (cellSize * 0.32f).coerceAtLeast(headLength * 0.55f)
+    val tailOffset = (tipForward - strokeWidth * 0.50f).coerceAtLeast(0f)
+    val stemHeadExtension = (tipForward - headLength * 0.40f).coerceAtLeast(0f)
+
+    val sampledTrackPoints = sampleTrackSegment(
         track = track,
         startDist = displacement,
         endDist = visibleBodyLen + displacement
     )
 
-    if (sampledPoints.isEmpty() && originalBodyLen > 0) return
+    if (sampledTrackPoints.isEmpty() && originalBodyLen > 0) return
+
+    // Build continuous, solid stem points:
+    // Tail extends symmetrically backward by tailOffset (with RoundCap reaching tipForward).
+    // Head extends forward by stemHeadExtension into the arrowhead body (eliminating all gaps and notches).
+    val sampledPoints = mutableListOf<Offset>()
+    if (sampledTrackPoints.isNotEmpty()) {
+        val firstPt = sampledTrackPoints.first()
+        sampledPoints.add(firstPt + tailDir * tailOffset)
+        sampledPoints.addAll(sampledTrackPoints)
+        val lastPt = sampledTrackPoints.last()
+        sampledPoints.add(lastPt + headDir * stemHeadExtension)
+    } else {
+        // Single cell arrow: line spans from extended tail to extended head inside triangle
+        sampledPoints.add(headPt + tailDir * tailOffset)
+        sampledPoints.add(headPt + headDir * stemHeadExtension)
+    }
 
     val renderColor = baseColor.copy(alpha = alpha * introAlpha)
 
     // 1. Draw body stroke along the polyline with crisp, architectural corner fillets (16% of cell)
-    // Matches Unity Image 2's clean CAD circuit-like bends (no wavy noodle curves)
+    // Seamlessly bridges right into the interior of the arrowhead
     if (sampledPoints.size > 1) {
         val path = buildRoundedCornerPath(sampledPoints, radius = cellSize * 0.16f)
         drawPath(
@@ -1035,16 +1086,13 @@ private fun DrawScope.drawArrowEntity(
     val effectiveHeadWidth = headWidth * headPopScale
     val effectiveHeadLength = headLength * headPopScale
 
-    // 2. Draw clean, crisp Unity One triangular spearhead with safe stopping gap
+    // 2. Draw clean, crisp Unity One triangular spearhead seamlessly covering the stem extension
     if (effectiveHeadWidth > 0.5f) {
-        val currentHead = if (displacement > 0.001f && sampledPoints.isNotEmpty()) sampledPoints.last() else headPt
+        val currentHead = if (displacement > 0.001f && sampledTrackPoints.isNotEmpty()) sampledTrackPoints.last() else headPt
         rotate(
             degrees = arrow.direction.angleDegrees,
             pivot = currentHead
         ) {
-            // Forward tip stops at 0.36 * cellSize from center (leaving clear safety gap before next channel)
-            val tipForward = (cellSize * 0.36f).coerceAtLeast(effectiveHeadLength * 0.55f)
-
             val arrowHeadPath = Path().apply {
                 // Forward sharp tip
                 moveTo(currentHead.x, currentHead.y - tipForward)
