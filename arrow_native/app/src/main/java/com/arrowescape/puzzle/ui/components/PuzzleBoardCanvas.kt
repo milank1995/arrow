@@ -128,9 +128,17 @@ fun PuzzleBoardCanvas(
     val initialLevelCells = remember(xSize, ySize, arrows.size, arrows.firstOrNull()?.id) {
         arrows.flatMap { it.allPoints }.toSet()
     }
+    val clearedCellTimestamps = remember(xSize, ySize, arrows.firstOrNull()?.id) { mutableMapOf<GridCoordinate, Long>() }
     val clearedCells = remember(arrows, initialLevelCells) {
         val activeCoords = arrows.filter { it.state != ArrowState.CLEARED }.flatMap { it.allPoints }.toSet()
-        initialLevelCells.filter { it !in activeCoords }
+        val cleared = initialLevelCells.filter { it !in activeCoords }.toSet()
+        val now = System.currentTimeMillis()
+        for (coord in cleared) {
+            if (!clearedCellTimestamps.containsKey(coord)) {
+                clearedCellTimestamps[coord] = now
+            }
+        }
+        cleared
     }
 
     // Reset zoom and pan, and launch cascading write-on path assembly animation whenever a new level is loaded
@@ -256,6 +264,17 @@ fun PuzzleBoardCanvas(
                 confettiPieces.addAll(pieces)
             } else {
                 confettiPieces.clear()
+            }
+        }
+
+        LaunchedEffect(clearedCells.size) {
+            if (clearedCells.isNotEmpty()) {
+                val animStart = System.currentTimeMillis()
+                while (System.currentTimeMillis() - animStart < 350L) {
+                    withFrameNanos { frameTimeNanos ->
+                        animTick = frameTimeNanos
+                    }
+                }
             }
         }
 
@@ -633,14 +652,25 @@ fun PuzzleBoardCanvas(
 
                 // 2. Cleared Area Silhouette Dots:
                 // Only become visible once an arrow has moved out of the gameplay area.
-                // Layered in the background under active arrows so arrows always render in front.
+                // Tactile pop-in and smooth fade animation matching New Unity One's cleared cell marks
                 if (clearedCells.isNotEmpty()) {
                     val dotColor = theme.gridDot
-                    val dotRadius = (cellSize * 0.065f).coerceIn(2.2f, 3.4f)
+                    val minDotPx = 2.4f * this.density
+                    val maxDotPx = 5.2f * this.density
+                    val dotRadius = (cellSize * 0.10f).coerceIn(minDotPx, maxDotPx)
+                    val now = System.currentTimeMillis()
+
                     for (coord in clearedCells) {
+                        val spawnTime = clearedCellTimestamps[coord] ?: 0L
+                        val elapsed = (now - spawnTime).coerceAtLeast(0L)
+                        val animDuration = 320f
+                        val animProgress = if (spawnTime == 0L || elapsed >= animDuration) 1.0f else (elapsed / animDuration).coerceIn(0f, 1f)
+                        val popScale = if (animProgress >= 1f) 1.0f else FastOutSlowInEasing.transform(animProgress)
+                        val alpha = (animProgress * 0.85f).coerceIn(0f, 0.85f)
+
                         drawCircle(
-                            color = dotColor.copy(alpha = 0.85f),
-                            radius = dotRadius,
+                            color = dotColor.copy(alpha = alpha),
+                            radius = dotRadius * popScale,
                             center = Offset(
                                 boardOrigin.x + (coord.x + 0.5f) * cellSize,
                                 boardOrigin.y + (coord.y + 0.5f) * cellSize
@@ -1029,7 +1059,8 @@ private fun DrawScope.drawArrowEntity(
     // Symmetrical head tip and tail reach: both extend by exactly 0.32 * cellSize from cell center
     val tipForward = (cellSize * 0.32f).coerceAtLeast(headLength * 0.55f)
     val tailOffset = (tipForward - strokeWidth * 0.50f).coerceAtLeast(0f)
-    val stemHeadExtension = (tipForward - headLength * 0.40f).coerceAtLeast(0f)
+    // Stem enters slightly past the base into the widest part of the triangle (no gap, no notch, no tip bulb)
+    val stemHeadOffset = tipForward - headLength + (strokeWidth * 0.25f)
 
     val sampledTrackPoints = sampleTrackSegment(
         track = track,
@@ -1039,20 +1070,23 @@ private fun DrawScope.drawArrowEntity(
 
     if (sampledTrackPoints.isEmpty() && originalBodyLen > 0) return
 
-    // Build continuous, solid stem points:
-    // Tail extends symmetrically backward by tailOffset (with RoundCap reaching tipForward).
-    // Head extends forward by stemHeadExtension into the arrowhead body (eliminating all gaps and notches).
+    // Clean, continuous polyline without backtracking or tip bulb artifacts:
+    // First point starts at extended tail; last point terminates inside the wide arrowhead base
     val sampledPoints = mutableListOf<Offset>()
     if (sampledTrackPoints.isNotEmpty()) {
-        val firstPt = sampledTrackPoints.first()
-        sampledPoints.add(firstPt + tailDir * tailOffset)
-        sampledPoints.addAll(sampledTrackPoints)
-        val lastPt = sampledTrackPoints.last()
-        sampledPoints.add(lastPt + headDir * stemHeadExtension)
+        val firstPt = sampledTrackPoints.first() + tailDir * tailOffset
+        val lastPt = sampledTrackPoints.last() + headDir * stemHeadOffset
+        sampledPoints.add(firstPt)
+        if (sampledTrackPoints.size > 2) {
+            for (i in 1 until sampledTrackPoints.size - 1) {
+                sampledPoints.add(sampledTrackPoints[i])
+            }
+        }
+        sampledPoints.add(lastPt)
     } else {
-        // Single cell arrow: line spans from extended tail to extended head inside triangle
+        // Single cell arrow: clean line from extended tail to arrowhead base
         sampledPoints.add(headPt + tailDir * tailOffset)
-        sampledPoints.add(headPt + headDir * stemHeadExtension)
+        sampledPoints.add(headPt + headDir * stemHeadOffset)
     }
 
     val renderColor = baseColor.copy(alpha = alpha * introAlpha)
