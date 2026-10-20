@@ -140,6 +140,7 @@ fun PuzzleBoardCanvas(
         }
         cleared
     }
+    val currentClearedCells by rememberUpdatedState(clearedCells)
 
     // Reset zoom and pan, and launch cascading write-on path assembly animation whenever a new level is loaded
     val introProgress = remember { Animatable(0f) }
@@ -188,9 +189,9 @@ fun PuzzleBoardCanvas(
         val viewportWidth = constraints.maxWidth.toFloat()
         val viewportHeight = constraints.maxHeight.toFloat()
 
-        // Fit board into viewport with comfortable margin (92% width, 90% height)
-        val availableWidth = viewportWidth * 0.74f
-        val availableHeight = viewportHeight * 0.70f
+        // Fit board into viewport with comfortable margin matching New Unity One (82% width, 80% height)
+        val availableWidth = viewportWidth * 0.82f
+        val availableHeight = viewportHeight * 0.80f
         val maxCellPx = with(LocalDensity.current) { 50.dp.toPx() }
         val cellSize = minOf(availableWidth / xSize, availableHeight / ySize).coerceAtMost(maxCellPx)
         val boardWidth = cellSize * xSize
@@ -322,6 +323,8 @@ fun PuzzleBoardCanvas(
 
                         val center = Offset(currentViewportWidth / 2f, currentViewportHeight / 2f)
                         val dragThreshold = 18.dp.toPx()
+                        val pinchMotionThreshold = 26.dp.toPx()
+                        val panGestureThreshold = 22.dp.toPx()
 
                         // Track all active touch points individually to support rapid succession and multi-finger tapping
                         val activeTouches = mutableMapOf<Long, TouchRecord>()
@@ -335,7 +338,8 @@ fun PuzzleBoardCanvas(
                             currentCellSize,
                             currentHeadSize,
                             currentMinTouchTargetPx,
-                            currentOccupancyMap
+                            currentOccupancyMap,
+                            currentClearedCells
                         )
 
                         val firstRecord = TouchRecord(
@@ -377,7 +381,8 @@ fun PuzzleBoardCanvas(
                                             currentCellSize,
                                             currentHeadSize,
                                             currentMinTouchTargetPx,
-                                            currentOccupancyMap
+                                            currentOccupancyMap,
+                                            currentClearedCells
                                         )
                                         val rec = TouchRecord(
                                             downPos = change.position,
@@ -414,7 +419,7 @@ fun PuzzleBoardCanvas(
                                     val zoomMotion = kotlin.math.abs(1f - zoomAccum) * centroidSize
 
                                     if (!isPinching) {
-                                        if (zoomMotion > dragThreshold || panAccum.getDistance() > dragThreshold) {
+                                        if (zoomMotion > pinchMotionThreshold || panAccum.getDistance() > panGestureThreshold) {
                                             isPinching = true
                                             // Cancel all preview long-presses when pinching begins
                                             activeTouches.values.forEach { rec ->
@@ -503,11 +508,13 @@ fun PuzzleBoardCanvas(
                                         if (isTap) {
                                             // Down-Target Authority: Prioritize the candidate arrow determined at touch down.
                                             // This prevents finger release jitter or thumb roll from reassigning selection to an unintended neighbor or center arrow.
-                                            val candidate = rec.candidateArrow?.let { cand ->
-                                                currentArrows.firstOrNull { it.id == cand.id && it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
-                                            }
-
-                                            val targetArrow = candidate ?: run {
+                                            // Down-Target Authority: If pointer hit an arrow at touch-down,
+                                            // only trigger that candidate arrow if it is still active.
+                                            // If it already escaped or cleared, DO NOT redirect the tap to a neighbor!
+                                            val targetArrow = if (rec.candidateArrow != null) {
+                                                currentArrows.firstOrNull { it.id == rec.candidateArrow.id && it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
+                                            } else {
+                                                // Only if touch-down landed in empty space, evaluate release position
                                                 val effectiveReleaseScale = scale * currentIntroZoom
                                                 val pLocalDown = center + (rec.downPos - Offset(panX, panY) - center) / effectiveReleaseScale
                                                 val pLocalUp = center + (upChange.position - Offset(panX, panY) - center) / effectiveReleaseScale
@@ -519,7 +526,8 @@ fun PuzzleBoardCanvas(
                                                     currentCellSize,
                                                     currentHeadSize,
                                                     currentMinTouchTargetPx,
-                                                    currentOccupancyMap
+                                                    currentOccupancyMap,
+                                                    currentClearedCells
                                                 ) ?: if (movement > 0f) {
                                                     findClosestArrow(
                                                         pLocalUp,
@@ -528,7 +536,8 @@ fun PuzzleBoardCanvas(
                                                         currentCellSize,
                                                         currentHeadSize,
                                                         currentMinTouchTargetPx,
-                                                        currentOccupancyMap
+                                                        currentOccupancyMap,
+                                                        currentClearedCells
                                                     )
                                                 } else null
                                             }
@@ -854,7 +863,8 @@ private fun findClosestArrow(
     cellSize: Float,
     headSize: Float,
     minTouchTargetPx: Float,
-    occupancy: GridOccupancyMap? = null
+    occupancy: GridOccupancyMap? = null,
+    clearedCells: Set<GridCoordinate> = emptySet()
 ): Arrow? {
     val activeArrows = arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
     if (activeArrows.isEmpty()) return null
@@ -866,10 +876,8 @@ private fun findClosestArrow(
     val cellY = kotlin.math.floor(relY / cellSize).toInt()
     val touchedCoord = GridCoordinate(cellX, cellY)
 
-    // 2. DISCRETE CELL OCCUPANCY AUTHORITY (100% Infallible Hit Testing)
-    // In Unity, each arrow collider occupies its respective grid cells.
-    // If the tap lands directly inside a cell owned by an active arrow, that arrow has 100% direct authority.
-    // Neighboring arrows (even if nearby or pointing toward this cell) can NEVER steal a tap inside an occupied cell.
+    // 2. DISCRETE CELL OCCUPANCY AUTHORITY (100% Infallible Direct Hit)
+    // If the tap lands directly inside a cell owned by an active arrow, select it immediately.
     val cellOccupant = occupancy?.get(touchedCoord)?.takeIf {
         it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT
     } ?: activeArrows.firstOrNull { it.isPointInside(touchedCoord) }
@@ -878,10 +886,17 @@ private fun findClosestArrow(
         return cellOccupant
     }
 
-    // 3. BOUNDED PROXIMITY FALLBACK (For taps in empty margin space or cleared cells immediately adjacent to an arrow)
-    // Strict local threshold: max 0.72 of a cell. This allows comfortable taps just off an arrow's edge
-    // without ever selecting an arrow 2+ cells away in empty space.
-    val maxSearchRadius = cellSize * 0.72f
+    // 3. GUARD: Flying or Cleared Cells Must NEVER Trigger Neighbor Arrows
+    // If the player taps on an arrow that is currently escaping (FLYING_OUT) or has already cleared (with dot),
+    // consume the tap as empty space. This prevents rapid double-taps or cleared cell clicks from stealing adjacent arrows.
+    val isFlyingCell = arrows.any { it.state == ArrowState.FLYING_OUT && it.isPointInside(touchedCoord) }
+    if (isFlyingCell || clearedCells.contains(touchedCoord)) {
+        return null
+    }
+
+    // 4. BOUNDED PROXIMITY FALLBACK (Strictly for outer board margins)
+    // Allows comfortable clicks right on the outer boundary edge of border arrows.
+    val maxSearchRadius = cellSize * 0.55f
 
     val headWidth = headSize
     val headLength = headWidth * 1.05f
