@@ -85,20 +85,19 @@ object ThemePresets {
 
     val WarmSepia = ThemePreset(
         name = "Warm Sepia",
-        background = Color(0xFFFAF1E4), // Authentic Unity Screenshot 3 Cream/Beige
+        background = Color(0xFFFAF2E6), // Authentic New Unity One Linen Paper
         surface = Color(0xFFFFFDF9),
-        gridDot = Color(0xFFC7B299),
+        gridDot = Color(0xFFD6C7B2),
         gridLine = Color(0xFFEFE3D3),
-        arrowDefault = Color(0xFF543A24), // Dark wood sepia
+        arrowDefault = Color(0xFF7A4A28), // Warm Hazelnut Mocha (matches New Unity One)
         arrowColors = listOf(
-            Color(0xFF543A24),
-            Color(0xFF7EA030)
+            Color(0xFF7A4A28)
         ),
         arrowHint = Color(0xFFE09F3E),
         arrowWrong = Color(0xFFD94E34),
-        arrowClear = Color(0xFF7EA030), // Olive green
-        textPrimary = Color(0xFF3D2614),
-        textSecondary = Color(0xFF8C7355),
+        arrowClear = Color(0xFF7A4A28),
+        textPrimary = Color(0xFF6F3F1F),
+        textSecondary = Color(0xFF9E7C62),
         boosterBg = Color(0xFFF3E8D8),
         isDark = false
     )
