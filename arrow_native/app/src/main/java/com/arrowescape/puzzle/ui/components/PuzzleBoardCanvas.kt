@@ -809,15 +809,18 @@ private fun isPointInTriangle(p: Offset, a: Offset, b: Offset, c: Offset): Boole
 }
 
 /**
- * Continuous Geometric Hit Detection matching the reference game's ConfigurableLineFinderStrategy.
+ * Direct-Hit Geometric Touch Detection.
  * Evaluates exact physical proximity to each arrow's visual geometry (arrowhead triangle and stem polyline).
  *
  * Guarantees:
- * 1. Tapping an arrow whose path is clear NEVER selects a nearby blocked arrow, even if the arrowhead
- *    crosses the grid cell boundary.
- * 2. Small 1-cell arrows respond on the first tap with 100% precision.
- * 3. Hit area is perfectly aligned with the visual rendering.
- * 4. Tapping in empty space does not accidentally trigger distant arrows.
+ * 1. Direct Hit Authority: When tapping directly on an arrow (arrowhead or stem), that exact arrow
+ *    is 100% selected. A neighboring arrow can never steal the tap.
+ * 2. If a player intentionally taps a blocked arrow, that specific arrow responds (showing block feedback)
+ *    rather than triggering an unrelated movable arrow.
+ * 3. Small single-cell arrows respond reliably on the first tap across all grid sizes.
+ * 4. Borderline/margin tie-breaking: Movable protection is applied strictly as a tie-breaker when a tap
+ *    lands within ambiguous boundary zones (<= 2.5px difference), preventing accidental life loss.
+ * 5. Taps in empty space do not accidentally trigger distant arrows.
  */
 private fun findClosestArrow(
     touchPoint: Offset,
@@ -837,12 +840,20 @@ private fun findClosestArrow(
     val cellY = kotlin.math.floor(relY / cellSize).toInt()
     val touchedCoord = GridCoordinate(cellX, cellY)
 
-    var bestArrow: Arrow? = null
-    var bestScore = Float.MAX_VALUE
-
-    // Maximum search radius: comfortable touch zone around each arrow,
-    // avoiding accidental triggers on taps far away in empty space.
+    // Direct hit radius: covers the visual stroke and immediate edge of the arrow
+    val directShapeRadius = maxOf(cellSize * 0.32f, 12f)
     val maxSearchRadius = maxOf(cellSize * 0.90f, minTouchTargetPx * 1.10f)
+
+    data class CandidateHit(
+        val arrow: Arrow,
+        val isInsideHeadTriangle: Boolean,
+        val isInsideAllocatedCell: Boolean,
+        val headCenter: Offset,
+        val physicalDist: Float,
+        val isMovable: Boolean
+    )
+
+    val candidates = mutableListOf<CandidateHit>()
 
     for (arrow in activeArrows) {
         val allCoords = arrow.allPoints
@@ -913,33 +924,57 @@ private fun findClosestArrow(
         // Check if the touch is inside this arrow's allocated grid cell
         val isInsideAllocatedCell = arrow.isPointInside(touchedCoord) || (arrow.head == touchedCoord)
 
-        // Movable Protection: Check if this arrow has an unobstructed exit path
+        // Check if this arrow has an unobstructed exit path
         val isMovable = occupancy != null && PuzzleSolver.canMoveOut(arrow, occupancy)
 
-        // Effective distance score:
-        // - Direct hits inside the arrowhead triangle get absolute priority (distance = 0)
-        // - Hits inside the arrow's allocated cell get a territorial ownership bonus (x0.85)
-        // - Movable Protection (x0.50): Clear unobstructed arrows receive strong priority over
-        //   neighboring blocked arrows, completely eliminating accidental life loss from
-        //   edge-of-thumb touches or adjacent placement.
-        val score = when {
-            isInsideHeadTriangle -> if (isMovable) 0f else 0.5f
-            else -> {
-                var s = physicalDist
-                if (isInsideAllocatedCell) s *= 0.85f
-                if (isMovable) s *= 0.50f
-                s
-            }
-        }
-
-        if (score < bestScore) {
-            bestScore = score
-            bestArrow = arrow
-        }
+        candidates.add(
+            CandidateHit(
+                arrow = arrow,
+                isInsideHeadTriangle = isInsideHeadTriangle,
+                isInsideAllocatedCell = isInsideAllocatedCell,
+                headCenter = headCenter,
+                physicalDist = physicalDist,
+                isMovable = isMovable
+            )
+        )
     }
 
-    return bestArrow
+    if (candidates.isEmpty()) return null
+
+    // Tier 1: Direct Arrowhead Triangle Hit
+    // Absolute authority: If touch is inside the triangle of an arrowhead, that arrow is selected.
+    val headHits = candidates.filter { it.isInsideHeadTriangle }
+    if (headHits.isNotEmpty()) {
+        return headHits.minByOrNull { (touchPoint - it.headCenter).getDistance() }?.arrow
+    }
+
+    // Tier 2: Direct Shape Hit (Touch lands on the visual arrow stroke or immediate contour)
+    val shapeHits = candidates.filter { it.physicalDist <= directShapeRadius }
+    if (shapeHits.isNotEmpty()) {
+        val sorted = shapeHits.sortedBy { it.physicalDist }
+        val best = sorted.first()
+        // If two arrows are virtually tied within 2.5px, movable arrow gets the benefit of doubt
+        val tieCandidates = sorted.filter { it.physicalDist <= best.physicalDist + 2.5f }
+        return tieCandidates.firstOrNull { it.isMovable }?.arrow ?: best.arrow
+    }
+
+    // Tier 3: Direct Cell Occupant Hit (Touch is inside the cell allocated to an arrow)
+    val cellHits = candidates.filter { it.isInsideAllocatedCell }
+    if (cellHits.isNotEmpty()) {
+        val sorted = cellHits.sortedBy { it.physicalDist }
+        val best = sorted.first()
+        val tieCandidates = sorted.filter { it.physicalDist <= best.physicalDist + 3.0f }
+        return tieCandidates.firstOrNull { it.isMovable }?.arrow ?: best.arrow
+    }
+
+    // Tier 4: Empty Space / Margin Proximity Fallback
+    // Selects the physically closest arrow. Movable priority is used strictly for ties within 4.0px.
+    val sorted = candidates.sortedBy { it.physicalDist }
+    val best = sorted.first()
+    val tieCandidates = sorted.filter { it.physicalDist <= best.physicalDist + 4.0f }
+    return tieCandidates.firstOrNull { it.isMovable }?.arrow ?: best.arrow
 }
+
 
 private fun distanceToSegment(p: Offset, a: Offset, b: Offset): Float {
     val vx = b.x - a.x
