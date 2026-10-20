@@ -166,4 +166,31 @@ class PuzzleEngineTest {
         val releasedA = highlightedA.copyWithState(ArrowState.FLYING_OUT, highlighted = false)
         assertFalse("Highlight must clear upon release", releasedA.isHighlighted)
     }
+
+    @Test
+    fun testCellOccupancyAuthorityAndNeighborSeparation() {
+        // Arrow 1 at (2, 2) pointing RIGHT towards cell (3, 2)
+        val arrow1 = Arrow(
+            id = "arrow_1",
+            head = GridCoordinate(2, 2),
+            direction = Direction.RIGHT,
+            body = listOf(GridCoordinate(1, 2), GridCoordinate(2, 2))
+        )
+
+        // Arrow 2 at (3, 2) pointing UP
+        val arrow2 = Arrow(
+            id = "arrow_2",
+            head = GridCoordinate(3, 2),
+            direction = Direction.UP,
+            body = listOf(GridCoordinate(3, 3), GridCoordinate(3, 2))
+        )
+
+        // Verify cell (3, 2) strictly belongs to Arrow 2, NOT Arrow 1
+        val touchedCoord = GridCoordinate(3, 2)
+        val activeArrows = listOf(arrow1, arrow2)
+        val owner = activeArrows.firstOrNull { it.isPointInside(touchedCoord) }
+
+        assertEquals("Cell (3, 2) must be owned exclusively by arrow 2", "arrow_2", owner?.id)
+        assertFalse("Arrow 1 must not own cell (3, 2)", arrow1.isPointInside(touchedCoord))
+    }
 }

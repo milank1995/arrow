@@ -90,7 +90,7 @@ private data class TouchRecord(
     var isLongPressTriggered: Boolean = false,
     var longPressJob: Job? = null
 ) {
-    fun hasDragged(threshold: Float): Boolean = maxDisplacement > threshold || totalMotion > threshold * 1.5f
+    fun hasDragged(threshold: Float): Boolean = maxDisplacement > threshold
 }
 
 private data class ConfettiPiece(
@@ -508,21 +508,32 @@ fun PuzzleBoardCanvas(
                                         val isTap = !isPinching && !isPanning && !hadMultiTouch && !isDrag && !rec.isLongPressTriggered && elapsed < 550L
 
                                         if (isTap) {
-                                            // Compute local touch position at tap release
-                                            val tapScreenPos = Offset(
-                                                (rec.downPos.x + upChange.position.x) / 2f,
-                                                (rec.downPos.y + upChange.position.y) / 2f
-                                            )
-                                            val tapLocalPos = screenToLocal(tapScreenPos)
-
-                                            val targetArrow = findClosestArrow(
-                                                tapLocalPos,
+                                            // 1. First check the user's intended touch-down location (unaffected by thumb-roll lift drift)
+                                            val downLocalPos = screenToLocal(rec.downPos)
+                                            val downTarget = findClosestArrow(
+                                                downLocalPos,
                                                 currentBoardOrigin,
                                                 currentArrows,
                                                 currentCellSize,
                                                 currentHeadSize,
                                                 currentMinTouchTargetPx
                                             )
+
+                                            // 2. If downTarget is null (e.g. boundary margin touch), evaluate at tap release centroid
+                                            val targetArrow = downTarget ?: run {
+                                                val tapScreenPos = Offset(
+                                                    (rec.downPos.x + upChange.position.x) / 2f,
+                                                    (rec.downPos.y + upChange.position.y) / 2f
+                                                )
+                                                findClosestArrow(
+                                                    screenToLocal(tapScreenPos),
+                                                    currentBoardOrigin,
+                                                    currentArrows,
+                                                    currentCellSize,
+                                                    currentHeadSize,
+                                                    currentMinTouchTargetPx
+                                                )
+                                            }
 
                                             if (targetArrow != null && targetArrow.state != ArrowState.CLEARED && targetArrow.state != ArrowState.FLYING_OUT) {
                                                 if (introProgress.value < 1f) {
@@ -909,19 +920,32 @@ private fun findClosestArrow(
         }
     }
 
-    // 2. Flying-Arrow Trajectory Absorption (Fix for multi-tap race condition):
-    // If the touch is within the immediate body of an arrow that is currently escaping,
-    // absorb the tap as a no-op so rapid taps NEVER hit an unintended neighbor!
-    for (arrow in flyingArrows) {
-        val (dist, _) = computeArrowDistance(arrow)
-        if (dist <= cellSize * 0.50f) {
-            return null
-        }
+    // 2. Direct Cell Occupancy Authority (Zero Neighbor Stealing):
+    // Every grid cell on the board can belong to at most one active arrow.
+    // If the touch point falls within a cell occupied by an active arrow,
+    // that arrow is 100% authoritative. An adjacent arrow's tip or stem
+    // in a neighboring cell can NEVER steal this tap!
+    val relX = touchPoint.x - origin.x
+    val relY = touchPoint.y - origin.y
+    val cellX = kotlin.math.floor(relX / cellSize).toInt()
+    val cellY = kotlin.math.floor(relY / cellSize).toInt()
+    val touchedCoord = GridCoordinate(cellX, cellY)
+
+    val cellOwner = activeArrows.firstOrNull { it.isPointInside(touchedCoord) }
+    if (cellOwner != null) {
+        return cellOwner
     }
 
-    // 3. True Geometric Proximity Search:
+    // 3. Flying-Arrow Trajectory Absorption (Fix for multi-tap race condition):
+    // If the touched cell belongs to an arrow currently escaping,
+    // absorb the tap as a no-op so rapid taps NEVER hit an unintended neighbor!
+    if (flyingArrows.any { it.isPointInside(touchedCoord) }) {
+        return null
+    }
+
+    // 4. True Geometric Proximity Search for Boundary & Margin Touches:
     // Comfortable touch radius: generous enough for clean single-tap response on mobile screens
-    val maxTouchRadius = maxOf(cellSize * 0.85f, minOf(cellSize * 1.15f, minTouchTargetPx * 1.25f))
+    val maxTouchRadius = maxOf(cellSize * 0.75f, minTouchTargetPx)
 
     var bestArrow: Arrow? = null
     var minDistance = Float.MAX_VALUE
