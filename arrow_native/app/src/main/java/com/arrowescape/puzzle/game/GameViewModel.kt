@@ -101,6 +101,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 arrows = level.arrows,
                 heartsRemaining = level.maxHearts,
                 maxHearts = level.maxHearts,
+                currentLevelNumber = levelNumber,
                 isLevelComplete = false,
                 isGameOver = false,
                 comboCount = 0,

@@ -188,6 +188,8 @@ fun GamePlayScreen(
                 streakDays = uiState.streakDays,
                 theme = theme,
                 isDailyChallenge = uiState.isDailyChallengeMode,
+                heartsRemaining = uiState.heartsRemaining,
+                maxHearts = uiState.maxHearts,
                 onNextLevelClick = onNextLevelClick
             )
         }
