@@ -12,14 +12,11 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -41,7 +38,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -52,6 +48,10 @@ import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 import kotlinx.coroutines.launch
 
+/**
+ * Modern, borderless, airy booster controls.
+ * Replaces hard box/pill containers with clean floating icons and subtle badges.
+ */
 @Composable
 fun BoosterBar(
     hintsCount: Int,
@@ -67,11 +67,11 @@ fun BoosterBar(
     val hintPressScale = remember { Animatable(1f) }
     val gridPressScale = remember { Animatable(1f) }
 
-    // Subtle gentle breathing pulse when stuck
+    // Subtle breathing pulse for Hint icon when stuck
     val idleTransition = rememberInfiniteTransition(label = "idleHintTransition")
     val idlePulseScale by idleTransition.animateFloat(
         initialValue = 1.0f,
-        targetValue = 1.08f,
+        targetValue = 1.10f,
         animationSpec = infiniteRepeatable(
             animation = tween(850, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
@@ -97,16 +97,16 @@ fun BoosterBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp, bottom = 26.dp),
-            horizontalArrangement = Arrangement.spacedBy(if (onRestartClick != null) 32.dp else 44.dp, Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.spacedBy(if (onRestartClick != null) 36.dp else 52.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 1. TACTILE HINT POD (Smart Idle-Reveal with soft warm amber glow when stuck)
+            // 1. HINT ICON (Clean, borderless, floating with delicate badge)
             val combinedHintScale = hintPressScale.value * if (isIdlePromptActive) idlePulseScale else 1f
 
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .size(width = 68.dp, height = 74.dp)
+                    .size(width = 64.dp, height = 72.dp)
                     .alpha(hintGhostAlpha)
                     .scale(combinedHintScale)
                     .clickable(
@@ -121,57 +121,27 @@ fun BoosterBar(
                         onHintClick()
                     }
             ) {
-                // Soft warm breathing bloom glow around pod when stuck (replaces thin giant circle line)
-                if (isIdlePromptActive) {
-                    Box(
-                        modifier = Modifier
-                            .size(64.dp)
-                            .align(Alignment.TopCenter)
-                            .offset(y = (-2).dp)
-                            .clip(RoundedCornerShape(22.dp))
-                            .background(amberBulbColor.copy(alpha = 0.16f))
-                    )
-                }
-
-                // Tactile rounded pod container
-                Surface(
-                    shape = RoundedCornerShape(18.dp),
-                    color = theme.boosterBg,
-                    border = BorderStroke(
-                        width = if (isIdlePromptActive) 2.dp else 1.dp,
-                        color = if (isIdlePromptActive) amberBulbColor.copy(alpha = 0.75f) else theme.gridLine
-                    ),
-                    shadowElevation = if (isIdlePromptActive) 4.dp else 1.5.dp,
+                // High-contrast, vibrant warm amber lightbulb icon
+                Icon(
+                    imageVector = Icons.Default.Lightbulb,
+                    contentDescription = "Hint",
+                    tint = amberBulbColor,
                     modifier = Modifier
-                        .size(56.dp)
+                        .size(38.dp)
                         .align(Alignment.TopCenter)
-                ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        // High-contrast, vibrant warm amber lightbulb icon
-                        Icon(
-                            imageVector = Icons.Default.Lightbulb,
-                            contentDescription = "Hint",
-                            tint = amberBulbColor,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
-                }
+                        .offset(y = 2.dp)
+                )
 
-                // Seamlessly docked badge pill at bottom of pod
+                // Delicate badge pill docked at bottom
                 Surface(
                     shape = RoundedCornerShape(percent = 50),
                     color = theme.surface,
-                    border = BorderStroke(1.2.dp, theme.gridLine),
-                    shadowElevation = 2.dp,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .offset(y = (-2).dp)
+                    border = BorderStroke(1.dp, theme.gridLine),
+                    shadowElevation = 1.dp,
+                    modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
                     Box(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.5.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         if (hintsCount > 0) {
@@ -193,13 +163,13 @@ fun BoosterBar(
                 }
             }
 
-            // 2. TACTILE GRID POD (Matching header styling + intact eye badge)
+            // 2. GRID GUIDE ICON (Clean, borderless, floating with miniature eye badge)
             val gridColor = if (isGridLinesActive) theme.arrowDefault else theme.textSecondary.copy(alpha = 0.75f)
 
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .size(width = 68.dp, height = 74.dp)
+                    .size(width = 64.dp, height = 72.dp)
                     .scale(gridPressScale.value)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
@@ -213,65 +183,50 @@ fun BoosterBar(
                         onGridClick()
                     }
             ) {
-                // Tactile rounded pod container
-                Surface(
-                    shape = RoundedCornerShape(18.dp),
-                    color = if (isGridLinesActive) theme.arrowDefault.copy(alpha = 0.12f) else theme.boosterBg,
-                    border = BorderStroke(
-                        width = if (isGridLinesActive) 1.5.dp else 1.dp,
-                        color = if (isGridLinesActive) theme.arrowDefault else theme.gridLine
-                    ),
-                    shadowElevation = 1.5.dp,
+                // Crisp Grid icon
+                Canvas(
                     modifier = Modifier
-                        .size(56.dp)
-                        .align(Alignment.TopCenter)
+                        .size(36.dp)
+                        .align(Alignment.Center)
                 ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        // Crisp Grid icon
-                        Canvas(modifier = Modifier.size(26.dp)) {
-                            val strokeW = 2.5.dp.toPx()
-                            val pad = 2.dp.toPx()
-                            val w = size.width
-                            val h = size.height
+                    val strokeW = 2.6.dp.toPx()
+                    val pad = 3.dp.toPx()
+                    val w = size.width
+                    val h = size.height
 
-                            // 2 horizontal grid bars
-                            drawLine(
-                                color = gridColor,
-                                start = Offset(pad, h * 0.36f),
-                                end = Offset(w - pad, h * 0.36f),
-                                strokeWidth = strokeW,
-                                cap = StrokeCap.Round
-                            )
-                            drawLine(
-                                color = gridColor,
-                                start = Offset(pad, h * 0.64f),
-                                end = Offset(w - pad, h * 0.64f),
-                                strokeWidth = strokeW,
-                                cap = StrokeCap.Round
-                            )
-                            // 2 vertical grid bars
-                            drawLine(
-                                color = gridColor,
-                                start = Offset(w * 0.36f, pad),
-                                end = Offset(w * 0.36f, h - pad),
-                                strokeWidth = strokeW,
-                                cap = StrokeCap.Round
-                            )
-                            drawLine(
-                                color = gridColor,
-                                start = Offset(w * 0.64f, pad),
-                                end = Offset(w * 0.64f, h - pad),
-                                strokeWidth = strokeW,
-                                cap = StrokeCap.Round
-                            )
-                        }
-                    }
+                    // 2 horizontal grid bars
+                    drawLine(
+                        color = gridColor,
+                        start = Offset(pad, h * 0.36f),
+                        end = Offset(w - pad, h * 0.36f),
+                        strokeWidth = strokeW,
+                        cap = StrokeCap.Round
+                    )
+                    drawLine(
+                        color = gridColor,
+                        start = Offset(pad, h * 0.64f),
+                        end = Offset(w - pad, h * 0.64f),
+                        strokeWidth = strokeW,
+                        cap = StrokeCap.Round
+                    )
+                    // 2 vertical grid bars
+                    drawLine(
+                        color = gridColor,
+                        start = Offset(w * 0.36f, pad),
+                        end = Offset(w * 0.36f, h - pad),
+                        strokeWidth = strokeW,
+                        cap = StrokeCap.Round
+                    )
+                    drawLine(
+                        color = gridColor,
+                        start = Offset(w * 0.64f, pad),
+                        end = Offset(w * 0.64f, h - pad),
+                        strokeWidth = strokeW,
+                        cap = StrokeCap.Round
+                    )
                 }
 
-                // Miniature Eye Badge docked at top-right
+                // Miniature Eye Badge
                 Surface(
                     shape = CircleShape,
                     color = if (isGridLinesActive) theme.arrowDefault else theme.surface,
@@ -279,14 +234,14 @@ fun BoosterBar(
                         1.dp,
                         if (isGridLinesActive) theme.arrowDefault else theme.gridLine
                     ),
-                    shadowElevation = 2.dp,
+                    shadowElevation = 1.dp,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .offset(x = (-2).dp, y = (-2).dp)
+                        .offset(x = 2.dp, y = 4.dp)
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(19.dp)
+                            .size(18.dp)
                             .padding(2.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -296,22 +251,19 @@ fun BoosterBar(
                             tint = if (isGridLinesActive) {
                                 if (theme.isDark) Color.Black else Color.White
                             } else theme.textSecondary,
-                            modifier = Modifier.size(12.dp)
+                            modifier = Modifier.size(11.dp)
                         )
                     }
                 }
             }
 
-            // 3. TACTILE RESTART POD (Shown in test mode)
+            // 3. RESTART ICON (Shown in test mode)
             if (onRestartClick != null) {
                 val restartPressScale = remember { Animatable(1f) }
-                Surface(
-                    shape = RoundedCornerShape(18.dp),
-                    color = theme.boosterBg,
-                    border = BorderStroke(1.dp, theme.gridLine),
-                    shadowElevation = 1.5.dp,
+                Box(
+                    contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .size(56.dp)
+                        .size(width = 64.dp, height = 72.dp)
                         .scale(restartPressScale.value)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
@@ -325,17 +277,14 @@ fun BoosterBar(
                             onRestartClick()
                         }
                 ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = "Restart Level",
-                            tint = theme.textPrimary,
-                            modifier = Modifier.size(26.dp)
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Restart Level",
+                        tint = theme.textPrimary,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .align(Alignment.Center)
+                    )
                 }
             }
         }

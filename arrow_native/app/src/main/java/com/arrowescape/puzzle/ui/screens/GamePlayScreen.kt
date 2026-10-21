@@ -41,6 +41,7 @@ import com.arrowescape.puzzle.ui.components.BoosterBar
 import com.arrowescape.puzzle.ui.components.CheerOverlay
 import com.arrowescape.puzzle.ui.components.GameHeader
 import com.arrowescape.puzzle.ui.components.GameOverDialog
+import com.arrowescape.puzzle.ui.components.PauseDialog
 import com.arrowescape.puzzle.ui.components.PuzzleBoardCanvas
 import com.arrowescape.puzzle.ui.components.SoundSettingsDialog
 import com.arrowescape.puzzle.ui.screens.VictoryScreen
@@ -71,6 +72,7 @@ fun GamePlayScreen(
     modifier: Modifier = Modifier
 ) {
     var showPauseDialog by remember { mutableStateOf(false) }
+    var showSoundDialog by remember { mutableStateOf(false) }
     var hudToastMessage by remember { mutableStateOf<String?>(null) }
     var hudToastTimer by remember { mutableLongStateOf(0L) }
 
@@ -184,7 +186,7 @@ fun GamePlayScreen(
                                 },
                                 onSoundLongPress = {
                                     onPlayClickSound()
-                                    showPauseDialog = true
+                                    showSoundDialog = true
                                 },
                                 isSoundOn = uiState.isSoundEnabled,
                                 modifier = Modifier.widthIn(max = 540.dp)
@@ -283,14 +285,10 @@ fun GamePlayScreen(
                     }
                 }
 
-                // 5. UNIFIED GAME PAUSED / SETTINGS MODAL DIALOG
+                // 5. DEDICATED GAME PAUSED MODAL DIALOG
                 if (showPauseDialog) {
-                    SoundSettingsDialog(
-                        isSoundEnabled = uiState.isSoundEnabled,
-                        isVibrationEnabled = uiState.isVibrationEnabled,
+                    PauseDialog(
                         activeTheme = theme,
-                        onToggleSound = onToggleSound,
-                        onToggleVibration = onToggleVibration,
                         onThemeSelect = onThemeSelect,
                         onRestartClick = {
                             showPauseDialog = false
@@ -302,6 +300,20 @@ fun GamePlayScreen(
                         },
                         onDismiss = {
                             showPauseDialog = false
+                        }
+                    )
+                }
+
+                // 6. DEDICATED SOUND & VIBRATION MODAL DIALOG
+                if (showSoundDialog) {
+                    SoundSettingsDialog(
+                        isSoundEnabled = uiState.isSoundEnabled,
+                        isVibrationEnabled = uiState.isVibrationEnabled,
+                        activeTheme = theme,
+                        onToggleSound = onToggleSound,
+                        onToggleVibration = onToggleVibration,
+                        onDismiss = {
+                            showSoundDialog = false
                         }
                     )
                 }

@@ -293,41 +293,13 @@ fun GameHeader(
                             }
                         }
                     } else {
-                        val (difficultyLabel, difficultyColor) = remember(isDailyChallenge, levelNumber, totalArrowsCount) {
-                            when {
-                                isDailyChallenge -> "Daily" to Color(0xFFEA580C)
-                                levelNumber % 10 == 0 || totalArrowsCount >= 40 -> "Hard" to Color(0xFF7C3AED)
-                                totalArrowsCount >= 25 -> "Medium" to Color(0xFFD97706)
-                                else -> "Normal" to Color(0xFF059669)
-                            }
-                        }
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
+                        Text(
+                            text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = theme.textPrimary,
                             modifier = Modifier.padding(top = 3.dp)
-                        ) {
-                            Text(
-                                text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = theme.textPrimary
-                            )
-                            Surface(
-                                shape = RoundedCornerShape(percent = 50),
-                                color = difficultyColor.copy(alpha = if (theme.isDark) 0.22f else 0.12f),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, difficultyColor.copy(alpha = 0.45f)),
-                                modifier = Modifier.padding(start = 6.dp)
-                            ) {
-                                Text(
-                                    text = difficultyLabel,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = difficultyColor,
-                                    modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp)
-                                )
-                            }
-                        }
+                        )
                     }
                 }
 
