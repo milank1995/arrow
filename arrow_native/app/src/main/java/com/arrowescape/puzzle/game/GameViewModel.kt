@@ -39,6 +39,7 @@ data class GameUiState(
     val previewRayArrowId: String? = null,
     val activeTheme: ThemePreset = ThemePresets.CleanLight,
     val currentLevelNumber: Int = 1,
+    val lastCompletedLevelNumber: Int = 1,
     val coins: Int = 100,
     val streakDays: Int = 1,
     val hintsAvailable: Int = 3,
@@ -418,7 +419,19 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             // When completing a daily level, reload current campaign level so player returns to campaign
             loadLevel(_uiState.value.currentLevelNumber)
         } else {
-            val nextLvl = _uiState.value.currentLevelNumber + 1
+            val nextLvl = _uiState.value.lastCompletedLevelNumber + 1
+            viewModelScope.launch {
+                repository.updateLevel(nextLvl)
+                loadLevel(nextLvl)
+            }
+        }
+    }
+
+    fun onVictoryHomeClick() {
+        if (_uiState.value.isDailyChallengeMode) {
+            loadLevel(_uiState.value.currentLevelNumber)
+        } else {
+            val nextLvl = _uiState.value.lastCompletedLevelNumber + 1
             viewModelScope.launch {
                 repository.updateLevel(nextLvl)
                 loadLevel(nextLvl)
@@ -440,15 +453,20 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     private suspend fun triggerLevelVictory(finalArrows: List<Arrow>) {
+        val completedLvl = _uiState.value.currentLevelNumber
         _uiState.update { state ->
-            state.copy(arrows = finalArrows, isCelebrationBurstActive = true)
+            state.copy(
+                arrows = finalArrows,
+                isCelebrationBurstActive = true,
+                lastCompletedLevelNumber = completedLvl
+            )
         }
         audioHapticManager.playLevelWin()
         delay(950)
         _uiState.update { state ->
             state.copy(isLevelComplete = true, isCelebrationBurstActive = false)
         }
-        handleLevelComplete()
+        handleLevelComplete(completedLvl)
     }
 
     fun claimDoubleCoins(amount: Int) {
@@ -458,12 +476,15 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
-    private fun handleLevelComplete() {
+    private fun handleLevelComplete(completedLevel: Int) {
         viewModelScope.launch {
             val baseCoins = if (_uiState.value.isDailyChallengeMode) 100 else 50 + (_uiState.value.comboCount * 5)
             if (_uiState.value.isDailyChallengeMode) {
                 val dateStr = _uiState.value.activeDailyDate ?: LocalDate.now().toString()
                 repository.recordDailyCompletion(dateStr)
+            } else {
+                val nextLvl = completedLevel + 1
+                repository.updateLevel(nextLvl)
             }
             repository.addCoins(baseCoins)
         }

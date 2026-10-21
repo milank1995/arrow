@@ -85,7 +85,7 @@ fun GamePlayScreen(
     if (uiState.isLevelComplete) {
         val baseCoins = if (uiState.isDailyChallengeMode) 100 else 50 + (uiState.comboCount * 5)
         VictoryScreen(
-            levelNumber = uiState.currentLevelNumber,
+            levelNumber = uiState.lastCompletedLevelNumber,
             coinsEarned = baseCoins,
             streakDays = uiState.streakDays,
             totalCoins = uiState.coins,

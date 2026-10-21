@@ -119,7 +119,9 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.restartLevel()
                                     },
                                     onBackToHomeClick = {
-                                        if (uiState.isDailyChallengeMode) {
+                                        if (uiState.isLevelComplete) {
+                                            gameViewModel.onVictoryHomeClick()
+                                        } else if (uiState.isDailyChallengeMode) {
                                             gameViewModel.loadLevel(uiState.currentLevelNumber)
                                         }
                                         currentScreen = AppScreen.HOME

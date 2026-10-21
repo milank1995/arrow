@@ -89,7 +89,7 @@ fun VictoryScreen(
 ) {
     var hasClaimedDouble by remember { mutableStateOf(false) }
 
-    val contentScale = remember { Animatable(0.85f) }
+    val contentScale = remember { Animatable(0.88f) }
     val contentAlpha = remember { Animatable(0f) }
 
     val star1Scale = remember { Animatable(0f) }
@@ -135,13 +135,13 @@ fun VictoryScreen(
 
     LaunchedEffect(Unit) {
         launch {
-            contentScale.animateTo(1.0f, spring(dampingRatio = 0.70f, stiffness = Spring.StiffnessMediumLow))
+            contentScale.animateTo(1.0f, spring(dampingRatio = 0.72f, stiffness = Spring.StiffnessMediumLow))
         }
         launch {
-            contentAlpha.animateTo(1.0f, tween(200))
+            contentAlpha.animateTo(1.0f, tween(180))
         }
         launch {
-            haloAlpha.animateTo(0.9f, tween(450))
+            haloAlpha.animateTo(0.9f, tween(400))
         }
 
         // Staggered star drops
@@ -150,29 +150,29 @@ fun VictoryScreen(
             star1Rotation.animateTo(-12f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
         }
         launch {
-            star1Scale.animateTo(1.35f, tween(130, easing = FastOutSlowInEasing))
+            star1Scale.animateTo(1.30f, tween(130, easing = FastOutSlowInEasing))
             star1Scale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
         }
 
-        delay(130)
+        delay(120)
         launch {
-            star2Scale.animateTo(1.48f, tween(150, easing = FastOutSlowInEasing))
+            star2Scale.animateTo(1.42f, tween(140, easing = FastOutSlowInEasing))
             star2Scale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
         }
 
-        delay(130)
+        delay(120)
         launch {
             star3Rotation.animateTo(12f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
         }
         launch {
-            star3Scale.animateTo(1.35f, tween(130, easing = FastOutSlowInEasing))
+            star3Scale.animateTo(1.30f, tween(130, easing = FastOutSlowInEasing))
             star3Scale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
         }
 
         delay(80)
         launch {
             val targetCoin = if (hasClaimedDouble) coinsEarned * 2 else coinsEarned
-            animatedCoins.animateTo(targetCoin.toFloat(), tween(450, easing = FastOutSlowInEasing))
+            animatedCoins.animateTo(targetCoin.toFloat(), tween(400, easing = FastOutSlowInEasing))
         }
     }
 
@@ -205,13 +205,13 @@ fun VictoryScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp, vertical = 10.dp)
+                .padding(horizontal = 20.dp, vertical = 6.dp)
         ) {
             // 1. TOP NAV BAR: Home icon (left) & Total Coins balance pill (right)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .widthIn(max = 520.dp)
+                    .widthIn(max = 440.dp)
                     .padding(vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -220,7 +220,7 @@ fun VictoryScreen(
                 IconButton(
                     onClick = onHomeClick,
                     modifier = Modifier
-                        .size(44.dp)
+                        .size(42.dp)
                         .clip(CircleShape)
                         .background(if (theme.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9))
                 ) {
@@ -252,15 +252,15 @@ fun VictoryScreen(
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.MonetizationOn,
                             contentDescription = "Balance",
                             tint = Color(0xFFD97706),
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(17.dp)
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(5.dp))
                         Text(
                             text = "$totalCoins",
                             fontSize = 13.sp,
@@ -271,18 +271,19 @@ fun VictoryScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-            // 2. MAIN SCROLLABLE CONTENT BODY (Adapts seamlessly to phones, foldables, and tablets)
+            // 2. MAIN SCROLLABLE CONTENT BODY (Adapts seamlessly across compact phones, foldables, and tablets)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .weight(1f)
                     .widthIn(max = 440.dp)
                     .verticalScroll(rememberScrollState())
                     .scale(contentScale.value)
             ) {
+                Spacer(modifier = Modifier.height(4.dp))
+
                 // --- HERO CELEBRATION SECTION ---
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -292,13 +293,13 @@ fun VictoryScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(130.dp),
+                            .height(115.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         // Ambient Rotating Sunburst Rays
                         Canvas(
                             modifier = Modifier
-                                .size(230.dp)
+                                .size(210.dp)
                                 .scale(haloAlpha.value)
                         ) {
                             val center = Offset(size.width / 2f, size.height / 2f)
@@ -350,19 +351,19 @@ fun VictoryScreen(
                                 contentDescription = "Star 1",
                                 tint = if (starsEarned >= 1) activeStarColor else inactiveStarColor,
                                 modifier = Modifier
-                                    .size(44.dp)
+                                    .size(38.dp)
                                     .scale(star1Scale.value)
                                     .rotate(star1Rotation.value)
                             )
 
-                            Spacer(modifier = Modifier.width(16.dp))
+                            Spacer(modifier = Modifier.width(14.dp))
 
                             // Star 2 (Center Hero Star)
                             Box(contentAlignment = Alignment.Center) {
                                 if (starsEarned >= 2) {
                                     Box(
                                         modifier = Modifier
-                                            .size(62.dp)
+                                            .size(54.dp)
                                             .background(
                                                 brush = Brush.radialGradient(
                                                     colors = listOf(
@@ -379,12 +380,12 @@ fun VictoryScreen(
                                     contentDescription = "Hero Star",
                                     tint = if (starsEarned >= 2) activeStarColor else inactiveStarColor,
                                     modifier = Modifier
-                                        .size(60.dp)
+                                        .size(54.dp)
                                         .scale(star2Scale.value)
                                 )
                             }
 
-                            Spacer(modifier = Modifier.width(16.dp))
+                            Spacer(modifier = Modifier.width(14.dp))
 
                             // Star 3 (Right)
                             Icon(
@@ -392,45 +393,45 @@ fun VictoryScreen(
                                 contentDescription = "Star 3",
                                 tint = if (starsEarned >= 3) activeStarColor else inactiveStarColor,
                                 modifier = Modifier
-                                    .size(44.dp)
+                                    .size(38.dp)
                                     .scale(star3Scale.value)
                                     .rotate(star3Rotation.value)
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
                         text = headlineText,
-                        fontSize = 26.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Black,
                         color = theme.textPrimary,
                         letterSpacing = 0.5.sp,
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(3.dp))
 
                     Text(
                         text = sublineText,
-                        fontSize = 14.sp,
+                        fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
                         color = theme.textSecondary,
                         textAlign = TextAlign.Center
                     )
                 }
 
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 // --- REWARDS & STATS POD ---
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     // Coins Reward Card
                     Surface(
-                        shape = RoundedCornerShape(18.dp),
+                        shape = RoundedCornerShape(16.dp),
                         color = if (theme.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
                         border = androidx.compose.foundation.BorderStroke(
                             1.dp,
@@ -438,16 +439,16 @@ fun VictoryScreen(
                         ),
                         modifier = Modifier
                             .weight(1f)
-                            .height(68.dp)
+                            .height(62.dp)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.padding(horizontal = 10.dp)
+                            modifier = Modifier.padding(horizontal = 8.dp)
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(34.dp)
+                                    .size(32.dp)
                                     .clip(CircleShape)
                                     .background(Color(0xFFFEF3C7)),
                                 contentAlignment = Alignment.Center
@@ -456,20 +457,20 @@ fun VictoryScreen(
                                     imageVector = Icons.Default.MonetizationOn,
                                     contentDescription = "Coins",
                                     tint = Color(0xFFD97706),
-                                    modifier = Modifier.size(22.dp)
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
-                            Spacer(modifier = Modifier.width(10.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
                             Column {
                                 Text(
                                     text = "+${animatedCoins.value.toInt()}",
-                                    fontSize = 17.sp,
+                                    fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = theme.textPrimary
                                 )
                                 Text(
                                     text = if (hasClaimedDouble) "2× Coins" else "Coins",
-                                    fontSize = 11.sp,
+                                    fontSize = 10.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = theme.textSecondary
                                 )
@@ -479,7 +480,7 @@ fun VictoryScreen(
 
                     // Streak Card
                     Surface(
-                        shape = RoundedCornerShape(18.dp),
+                        shape = RoundedCornerShape(16.dp),
                         color = if (theme.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
                         border = androidx.compose.foundation.BorderStroke(
                             1.dp,
@@ -487,16 +488,16 @@ fun VictoryScreen(
                         ),
                         modifier = Modifier
                             .weight(1f)
-                            .height(68.dp)
+                            .height(62.dp)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.padding(horizontal = 10.dp)
+                            modifier = Modifier.padding(horizontal = 8.dp)
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(34.dp)
+                                    .size(32.dp)
                                     .clip(CircleShape)
                                     .background(Color(0xFFFEE2E2)),
                                 contentAlignment = Alignment.Center
@@ -505,20 +506,20 @@ fun VictoryScreen(
                                     imageVector = Icons.Default.LocalFireDepartment,
                                     contentDescription = "Streak",
                                     tint = Color(0xFFDC2626),
-                                    modifier = Modifier.size(22.dp)
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
-                            Spacer(modifier = Modifier.width(10.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
                             Column {
                                 Text(
                                     text = "$streakDays Day",
-                                    fontSize = 16.sp,
+                                    fontSize = 15.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = theme.textPrimary
                                 )
                                 Text(
                                     text = "Streak",
-                                    fontSize = 11.sp,
+                                    fontSize = 10.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = theme.textSecondary
                                 )
@@ -527,7 +528,7 @@ fun VictoryScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // --- MONETIZATION & ADS SECTION ---
                 Column(
@@ -548,7 +549,7 @@ fun VictoryScreen(
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp)
+                            .height(46.dp)
                             .clip(RoundedCornerShape(16.dp))
                             .clickable(enabled = !hasClaimedDouble) {
                                 hasClaimedDouble = true
@@ -558,19 +559,19 @@ fun VictoryScreen(
                         Row(
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 12.dp)
+                            modifier = Modifier.padding(horizontal = 10.dp)
                         ) {
                             if (hasClaimedDouble) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = "Claimed",
                                     tint = Color(0xFF10B981),
-                                    modifier = Modifier.size(18.dp)
+                                    modifier = Modifier.size(17.dp)
                                 )
-                                Spacer(modifier = Modifier.width(8.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = "2× REWARD CLAIMED!",
-                                    fontSize = 13.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color(0xFF10B981)
                                 )
@@ -579,34 +580,34 @@ fun VictoryScreen(
                                     imageVector = Icons.Default.PlayArrow,
                                     contentDescription = "Watch Ad",
                                     tint = Color(0xFFD97706),
-                                    modifier = Modifier.size(20.dp)
+                                    modifier = Modifier.size(18.dp)
                                 )
-                                Spacer(modifier = Modifier.width(6.dp))
+                                Spacer(modifier = Modifier.width(5.dp))
                                 Text(
                                     text = "CLAIM 2× COINS (+${coinsEarned * 2})",
-                                    fontSize = 13.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
                                     letterSpacing = 0.5.sp,
                                     color = Color(0xFFD97706)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Surface(
-                                    shape = RoundedCornerShape(6.dp),
+                                    shape = RoundedCornerShape(5.dp),
                                     color = Color(0xFFF59E0B)
                                 ) {
                                     Text(
                                         text = "AD",
-                                        fontSize = 10.sp,
+                                        fontSize = 9.sp,
                                         fontWeight = FontWeight.Black,
                                         color = Color.White,
-                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.dp)
+                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
                                     )
                                 }
                             }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     // DEDICATED BANNER AD CONTAINER (Ready for Google AdMob / Unity Ads Banner)
                     Surface(
@@ -618,7 +619,7 @@ fun VictoryScreen(
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(64.dp)
+                            .height(56.dp)
                     ) {
                         Box(
                             contentAlignment = Alignment.Center,
@@ -646,13 +647,13 @@ fun VictoryScreen(
                             ) {
                                 Text(
                                     text = "Banner Ad Placement",
-                                    fontSize = 12.sp,
+                                    fontSize = 11.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = theme.textSecondary
                                 )
                                 Text(
                                     text = "AdMob / Unity Ads (320x50 Banner Slot)",
-                                    fontSize = 10.sp,
+                                    fontSize = 9.sp,
                                     color = theme.textSecondary.copy(alpha = 0.7f)
                                 )
                             }
@@ -660,22 +661,22 @@ fun VictoryScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 // --- PRIMARY CONTINUE CTA BUTTON ---
                 Button(
                     onClick = onNextLevelClick,
-                    shape = RoundedCornerShape(18.dp),
+                    shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = theme.arrowDefault
                     ),
                     elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = 6.dp,
+                        defaultElevation = 5.dp,
                         pressedElevation = 2.dp
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp)
+                        .height(52.dp)
                         .scale(buttonPulse)
                 ) {
                     Row(
@@ -684,7 +685,7 @@ fun VictoryScreen(
                     ) {
                         Text(
                             text = if (isDailyChallenge) "CLAIM & RETURN HOME" else "NEXT LEVEL",
-                            fontSize = 16.sp,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.sp,
                             color = if (theme.isDark) Color(0xFF0F172A) else Color.White
@@ -692,14 +693,14 @@ fun VictoryScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "➔",
-                            fontSize = 16.sp,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (theme.isDark) Color(0xFF0F172A) else Color.White
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(6.dp))
             }
         }
     }
