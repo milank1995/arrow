@@ -198,10 +198,19 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             if (isOver) {
                 audioHapticManager.playLevelFail()
             }
+
+            val dist = PuzzleSolver.getDistanceToBlocker(currentArrow, occupancyMap)
+            val durationMs = (300L + (dist * 40L).toLong()).coerceIn(360L, 640L)
+
             _uiState.update { state ->
                 val flashedArrows = state.arrows.map {
                     if (it.id == currentArrow.id) {
-                        it.copyWithState(ArrowState.WRONG_FLASH, highlighted = true)
+                        it.copyWithState(
+                            newState = ArrowState.WRONG_FLASH,
+                            progress = 0f,
+                            highlighted = true,
+                            collisionDist = dist
+                        )
                     } else it
                 }
                 state.copy(
@@ -215,7 +224,6 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
             // Animate collision spring-bounce and reset to IDLE (keeping highlighted = true)
             viewModelScope.launch {
-                val durationMs = 360L
                 val startTime = System.currentTimeMillis()
                 while (true) {
                     val elapsed = System.currentTimeMillis() - startTime

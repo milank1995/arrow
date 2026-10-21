@@ -671,9 +671,9 @@ fun PuzzleBoardCanvas(
             val flashingArrow = arrows.firstOrNull { it.state == ArrowState.WRONG_FLASH }
             val blockedShakeOffset = if (flashingArrow != null) {
                 val t = flashingArrow.flightProgress
-                // Peak impact occurs at t = 0.38; camera jolts directly upon collision
-                if (t >= 0.32f) {
-                    val impactPhase = ((t - 0.32f) / 0.68f).coerceIn(0f, 1f)
+                // Peak impact occurs at t = 0.42 when arrow reaches the blocker
+                if (t >= 0.38f) {
+                    val impactPhase = ((t - 0.38f) / 0.62f).coerceIn(0f, 1f)
                     val decay = (1f - impactPhase).coerceIn(0f, 1f)
                     val shakeMagnitude = 2.6.dp.toPx() * decay
                     val oscillation = sin(impactPhase * 4f * PI.toFloat())
@@ -1104,26 +1104,28 @@ private fun DrawScope.drawArrowEntity(
     val originalBodyLen = (arrow.body.size - 1).coerceAtLeast(0)
     val maxDisplacement = (maxOf(xSize, ySize) + arrow.body.size + 2).toFloat()
 
-    val stepsToBlocker = if (arrow.state == ArrowState.WRONG_FLASH) {
+    val stepsToBlocker = if (arrow.collisionDistance > 0f) {
+        arrow.collisionDistance
+    } else {
         getStepsToBlocker(arrow, allArrows, xSize, ySize)
-    } else 1f
+    }
 
     val displacement = when (arrow.state) {
         ArrowState.FLYING_OUT -> arrow.flightProgress * maxDisplacement
         ArrowState.WRONG_FLASH -> {
             val t = arrow.flightProgress
-            // Dynamic forward surge towards blocker: stops right at the obstacle boundary
-            val maxSurge = (stepsToBlocker - 0.38f).coerceIn(0.28f, 2.2f)
-            if (t < 0.38f) {
-                // Forward surge toward collision point
-                val forwardRatio = t / 0.38f
-                sin(forwardRatio * (PI.toFloat() / 2f)) * maxSurge
+            // Moves all the way to the position where another arrow or obstacle blocks its path
+            val targetSurge = (stepsToBlocker - 0.12f).coerceAtLeast(0.85f)
+            if (t < 0.42f) {
+                // Forward travel to collision point
+                val u = t / 0.42f
+                sin(u * (PI.toFloat() / 2f)) * targetSurge
             } else {
-                // Elastic bounce-back and damped settling to origin
-                val p = (t - 0.38f) / 0.62f
+                // Smooth elastic recoil and return to original position
+                val p = (t - 0.42f) / 0.58f
                 val recoilDecay = (1f - p)
-                maxSurge * recoilDecay * kotlin.math.cos(p * (PI.toFloat() / 2f)) -
-                    sin(p * 2f * PI.toFloat()) * 0.10f * recoilDecay
+                targetSurge * recoilDecay * kotlin.math.cos(p * (PI.toFloat() / 2f)) -
+                    sin(p * 2f * PI.toFloat()) * 0.08f * recoilDecay
             }
         }
         else -> 0f

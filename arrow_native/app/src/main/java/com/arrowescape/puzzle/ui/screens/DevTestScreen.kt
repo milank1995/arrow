@@ -201,12 +201,21 @@ fun DevTestScreen(
             comboCount = 0
             cheerMessage = null
 
+            val dist = PuzzleSolver.getDistanceToBlocker(currentArrow, occupancyMap)
+            val durationMs = (300L + (dist * 40L).toLong()).coerceIn(360L, 640L)
+
             arrows = arrows.map {
-                if (it.id == currentArrow.id) it.copyWithState(ArrowState.WRONG_FLASH, highlighted = true) else it
+                if (it.id == currentArrow.id) {
+                    it.copyWithState(
+                        newState = ArrowState.WRONG_FLASH,
+                        progress = 0f,
+                        highlighted = true,
+                        collisionDist = dist
+                    )
+                } else it
             }
 
             coroutineScope.launch {
-                val durationMs = 360L
                 val startTime = System.currentTimeMillis()
                 while (true) {
                     val elapsed = System.currentTimeMillis() - startTime
