@@ -93,7 +93,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         completedDailyDates = data.completedDailyDates,
                         levelStars = data.levelStars,
                         hasPlayedBefore = data.hasPlayedBefore,
-                        lastCompletedLevelNumber = maxOf(data.currentLevel, current.lastCompletedLevelNumber),
+                        lastCompletedLevelNumber = if (current.levelData == null) maxOf(1, data.currentLevel - 1) else current.lastCompletedLevelNumber,
                         isSoundEnabled = data.soundEnabled,
                         isVibrationEnabled = data.vibrationEnabled,
                         activeTheme = theme

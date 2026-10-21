@@ -351,14 +351,23 @@ fun PuzzleBoardCanvas(
 
         var hasInteractedWithBoard by remember(restartTrigger, arrows.size, currentLevelNumber) { mutableStateOf(false) }
 
-        val tutorialTargetArrow = remember(arrows, hasInteractedWithBoard) {
-            if (!hasInteractedWithBoard && currentLevelNumber in 1..3 && !isDailyChallengeMode) {
-                arrows.firstOrNull { it.state == ArrowState.IDLE }
+        val occupancyMap = remember(xSize, ySize, currentArrows) {
+            GridOccupancyMap(xSize, ySize).apply { rebuild(currentArrows) }
+        }
+        val currentOccupancyMap by rememberUpdatedState(occupancyMap)
+
+        val hasUnclearedArrows = arrows.any { it.state != ArrowState.CLEARED }
+
+        // Tutorial hand indicator: active strictly during Level 1 until all arrows are cleared
+        val tutorialTargetArrow = remember(arrows, currentLevelNumber, isDailyChallengeMode, occupancyMap) {
+            if (currentLevelNumber == 1 && !isDailyChallengeMode) {
+                arrows.firstOrNull { it.state == ArrowState.IDLE && PuzzleSolver.canMoveOut(it, occupancyMap) }
+                    ?: arrows.firstOrNull { it.state == ArrowState.IDLE }
             } else null
         }
 
-        LaunchedEffect(isCelebrationBurstActive, activeBoosterAnimation, hasInteractedWithBoard) {
-            while (isCelebrationBurstActive || (confettiPieces.isNotEmpty() && confettiStartTime > 0L) || activeBoosterAnimation != null || (!hasInteractedWithBoard && currentLevelNumber in 1..3 && !isDailyChallengeMode)) {
+        LaunchedEffect(isCelebrationBurstActive, activeBoosterAnimation, currentLevelNumber, isDailyChallengeMode, hasUnclearedArrows) {
+            while (isCelebrationBurstActive || (confettiPieces.isNotEmpty() && confettiStartTime > 0L) || activeBoosterAnimation != null || (currentLevelNumber == 1 && !isDailyChallengeMode && hasUnclearedArrows)) {
                 withFrameNanos { frameTimeNanos ->
                     animTick = frameTimeNanos
                 }
@@ -368,11 +377,6 @@ fun PuzzleBoardCanvas(
                 }
             }
         }
-
-        val occupancyMap = remember(xSize, ySize, currentArrows) {
-            GridOccupancyMap(xSize, ySize).apply { rebuild(currentArrows) }
-        }
-        val currentOccupancyMap by rememberUpdatedState(occupancyMap)
 
         // Tactile zoom-in and zoom-out breathing during level intro (0.88x -> 1.045x -> 1.0x)
         val introZoom = if (introProgress.value >= 1f) 1.0f else {
@@ -798,8 +802,8 @@ fun PuzzleBoardCanvas(
                     drawBoosterAnimation(boardOrigin, activeBoosterAnimation, cellSize, theme)
                 }
 
-                // 4C. Interactive First-Time Tutorial Guidance (Levels 1-3)
-                if (tutorialTargetArrow != null && !hasInteractedWithBoard && introProgress.value >= 1f) {
+                // 4C. Interactive Tutorial Guidance Hand (Level 1 only, matching Unity)
+                if (tutorialTargetArrow != null && introProgress.value >= 1f) {
                     drawTutorialGuidance(boardOrigin, tutorialTargetArrow, cellSize, theme)
                 }
             }
@@ -901,8 +905,8 @@ fun PuzzleBoardCanvas(
             }
         }
 
-        // Floating First-Time Tutorial Guidance Banner (Levels 1-3)
-        if (!hasInteractedWithBoard && currentLevelNumber in 1..3 && !isDailyChallengeMode && introProgress.value >= 1f) {
+        // Floating Tutorial Guidance Banner (Level 1 only, matching Unity)
+        if (currentLevelNumber == 1 && !isDailyChallengeMode && hasUnclearedArrows && introProgress.value >= 1f) {
             Surface(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -910,23 +914,17 @@ fun PuzzleBoardCanvas(
                 shape = RoundedCornerShape(20.dp),
                 color = if (theme.isDark) Color(0xEE1E293B) else Color(0xEEFFFFFF),
                 border = androidx.compose.foundation.BorderStroke(1.dp, if (theme.isDark) Color(0xFF475569) else Color(0xFFCBD5E1)),
-                shadowElevation = 5.dp
+                shadowElevation = 4.dp
             ) {
                 Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = when (currentLevelNumber) {
-                            1 -> "👆 Tap an arrow with an open path to exit!"
-                            2 -> "🔄 Arrows follow their bends to exit!"
-                            3 -> "💡 Hold any arrow to preview its flight path!"
-                            else -> ""
-                        },
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = if (theme.isDark) Color.White else Color(0xFF0F172A)
+                        text = "Tap to move",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (theme.isDark) Color.White else Color(0xFF1E293B)
                     )
                 }
             }
@@ -1952,8 +1950,8 @@ private fun DrawScope.drawBoosterAnimation(
  * Draws animated pulsing guidance rings and pointer finger on Level 1-3 for first-time players.
  */
 /**
- * Draws animated pulsing guidance radar and an authentic, high-quality pointing hand vector
- * with lifelike double-tap gesture for tutorial levels (Levels 1-3).
+ * Draws an authentic cartoon white glove hand with a smooth tap gesture for Level 1,
+ * closely matching the original Unity reference without distracting radar circles.
  */
 private fun DrawScope.drawTutorialGuidance(
     origin: Offset,
@@ -1961,101 +1959,131 @@ private fun DrawScope.drawTutorialGuidance(
     cellSize: Float,
     theme: ThemePreset
 ) {
-    val head = targetArrow.head
-    val headCenter = Offset(
-        origin.x + (head.x + 0.5f) * cellSize,
-        origin.y + (head.y + 0.5f) * cellSize
+    // Target the center / stem of the movable arrow (matching Unity)
+    val midCoord = targetArrow.allPoints[targetArrow.allPoints.size / 2]
+    val targetPoint = Offset(
+        origin.x + (midCoord.x.toFloat() + 0.5f) * cellSize,
+        origin.y + (midCoord.y.toFloat() + 0.5f) * cellSize
     )
 
     val now = System.currentTimeMillis()
-    val pulseSec = ((now % 1500L).toFloat()) / 1500f
-    val pulseScale = 0.85f + 0.35f * sin(pulseSec * PI.toFloat())
-    val pulseAlpha = (1f - pulseSec).coerceIn(0f, 1f) * 0.85f
+    val cycleTime = 1200L
+    val cycle = ((now % cycleTime).toFloat()) / cycleTime.toFloat()
 
-    // 1. Concentric Animated Pulsing Target Radar Rings on the movable arrow
-    drawCircle(
-        color = theme.arrowClear.copy(alpha = pulseAlpha * 0.45f),
-        radius = cellSize * 0.65f * pulseScale,
-        center = headCenter,
-        style = Stroke(width = 2.4.dp.toPx(), cap = StrokeCap.Round)
-    )
-    drawCircle(
-        color = theme.arrowClear.copy(alpha = 0.80f),
-        radius = cellSize * 0.34f,
-        center = headCenter,
-        style = Stroke(width = 1.8.dp.toPx(), cap = StrokeCap.Round)
-    )
-    drawCircle(
-        color = theme.arrowClear.copy(alpha = 0.90f),
-        radius = 3.5.dp.toPx(),
-        center = headCenter
-    )
-
-    // 2. Realistic Double-Tap Gesture Animation Rhythm
-    val cycle = ((now % 1400L).toFloat()) / 1400f
-    val tapDisplacement = when {
-        cycle < 0.16f -> sin(cycle / 0.16f * PI.toFloat()) * 8.dp.toPx()
-        cycle in 0.16f..0.28f -> 0f
-        cycle in 0.28f..0.44f -> sin((cycle - 0.28f) / 0.16f * PI.toFloat()) * 8.dp.toPx()
-        else -> 0f
+    // Smooth tap gesture animation rhythm: Press down -> Brief hold -> Spring release -> Rest pause
+    val (tapProgress, scaleFactor) = when {
+        // 1. Press down (0ms to 280ms)
+        cycle < 0.24f -> {
+            val t = cycle / 0.24f
+            val ease = (1f - cos(t * PI.toFloat())) / 2f
+            ease to (1f - 0.12f * ease)
+        }
+        // 2. Brief contact hold (280ms to 320ms)
+        cycle in 0.24f..0.30f -> {
+            1f to 0.88f
+        }
+        // 3. Spring release back (320ms to 540ms)
+        cycle in 0.30f..0.50f -> {
+            val t = (cycle - 0.30f) / 0.20f
+            val ease = (1f + cos(t * PI.toFloat())) / 2f
+            ease to (0.88f + 0.12f * (1f - ease))
+        }
+        // 4. Rest pause (540ms to 1200ms)
+        else -> {
+            0f to 1.0f
+        }
     }
 
-    // Base position for fingertip pointing diagonally at headCenter
-    val handAngle = 135f // points down-left towards arrow tip
-    val handDistance = (cellSize * 0.40f) - tapDisplacement
-    val handRad = (handAngle - 90f) * (PI.toFloat() / 180f)
+    // Hand positioning: points diagonally up-and-left (-38°) towards the arrow stem
+    val handAngle = -38f
+    val handRad = handAngle * (PI.toFloat() / 180f)
+    val dirX = sin(handRad)
+    val dirY = -cos(handRad)
+
+    val restDistance = cellSize * 0.18f
+    val tapDisplacement = tapProgress * restDistance
+    val currentDistance = restDistance - tapDisplacement
+
     val tipPos = Offset(
-        headCenter.x - cos(handRad) * handDistance,
-        headCenter.y - sin(handRad) * handDistance
+        targetPoint.x - dirX * currentDistance,
+        targetPoint.y - dirY * currentDistance
     )
 
-    // Construct high-detail vector pointing hand icon
-    val w = cellSize * 0.13f
-    val h = cellSize * 0.42f
-    val shadowOffsetX = 2.dp.toPx()
-    val shadowOffsetY = 3.dp.toPx()
+    // Hand vector dimensions
+    val w = cellSize * 0.16f
+    val h = cellSize * 0.54f
+    val shadowOffsetX = 2.5.dp.toPx()
+    val shadowOffsetY = 3.5.dp.toPx()
+    val outlineStrokePx = 1.8.dp.toPx()
+    val creaseStrokePx = 1.3.dp.toPx()
 
+    // Stylized cartoon white glove hand with index finger pointing at (0, 0)
     val handPath = Path().apply {
-        moveTo(-w * 0.5f, 0f)
-        cubicTo(-w * 0.5f, -w * 0.5f, w * 0.5f, -w * 0.5f, w * 0.5f, 0f)
-        lineTo(w * 0.5f, h * 0.42f)
-        cubicTo(w * 1.1f, h * 0.44f, w * 1.1f, h * 0.60f, w * 0.5f, h * 0.62f)
-        cubicTo(w * 1.05f, h * 0.64f, w * 1.05f, h * 0.78f, w * 0.45f, h * 0.80f)
-        cubicTo(w * 0.95f, h * 0.82f, w * 0.95f, h * 0.94f, w * 0.35f, h * 0.95f)
-        lineTo(w * 0.2f, h * 1.15f)
-        lineTo(-w * 0.4f, h * 1.15f)
-        lineTo(-w * 0.45f, h * 0.75f)
-        cubicTo(-w * 1.1f, h * 0.65f, -w * 1.05f, h * 0.45f, -w * 0.5f, h * 0.40f)
-        lineTo(-w * 0.5f, 0f)
+        moveTo(-w * 0.45f, w * 0.45f)
+        cubicTo(-w * 0.45f, 0f, w * 0.45f, 0f, w * 0.45f, w * 0.45f)
+        lineTo(w * 0.45f, h * 0.36f)
+        cubicTo(w * 1.35f, h * 0.38f, w * 1.35f, h * 0.54f, w * 0.48f, h * 0.56f)
+        cubicTo(w * 1.25f, h * 0.58f, w * 1.25f, h * 0.72f, w * 0.40f, h * 0.74f)
+        cubicTo(w * 1.10f, h * 0.76f, w * 1.10f, h * 0.88f, w * 0.30f, h * 0.90f)
+        lineTo(w * 0.22f, h * 1.05f)
+        cubicTo(w * 0.10f, h * 1.10f, -w * 0.18f, h * 1.10f, -w * 0.28f, h * 1.05f)
+        lineTo(-w * 0.35f, h * 0.80f)
+        cubicTo(-w * 1.15f, h * 0.74f, -w * 1.20f, h * 0.48f, -w * 0.55f, h * 0.42f)
+        cubicTo(-w * 0.45f, h * 0.40f, -w * 0.45f, h * 0.35f, -w * 0.45f, h * 0.32f)
+        lineTo(-w * 0.45f, w * 0.45f)
         close()
     }
+
+    val crease1 = Path().apply {
+        moveTo(w * 0.48f, h * 0.56f)
+        lineTo(w * 0.14f, h * 0.56f)
+    }
+    val crease2 = Path().apply {
+        moveTo(w * 0.40f, h * 0.74f)
+        lineTo(w * 0.12f, h * 0.74f)
+    }
+    val thumbCrease = Path().apply {
+        moveTo(-w * 0.45f, h * 0.44f)
+        cubicTo(-w * 0.28f, h * 0.52f, -w * 0.25f, h * 0.65f, -w * 0.35f, h * 0.76f)
+    }
+
+    val handBorder = if (theme.isDark) Color(0xFF0F172A) else Color(0xFF2B2D42)
 
     withTransform({
         translate(tipPos.x, tipPos.y)
         rotate(handAngle, pivot = Offset.Zero)
+        scale(scaleFactor, scaleFactor, pivot = Offset.Zero)
     }) {
         // Drop shadow for tactile depth
         withTransform({ translate(shadowOffsetX, shadowOffsetY) }) {
-            drawPath(path = handPath, color = Color(0x38000000))
+            drawPath(path = handPath, color = Color(0x35000000))
         }
-        // Hand body fill (radiant amber/gold)
-        val handFill = if (theme.isDark) Color(0xFFFBBF24) else Color(0xFFF59E0B)
-        drawPath(path = handPath, color = handFill)
-        // Luminous finger highlight
-        val highlightPath = Path().apply {
-            moveTo(-w * 0.25f, 0f)
-            lineTo(-w * 0.25f, h * 0.38f)
-        }
+
+        // Crisp white glove fill
+        drawPath(path = handPath, color = Color.White)
+
+        // Subtle knuckle and thumb crease details
         drawPath(
-            path = highlightPath,
-            color = Color.White.copy(alpha = 0.65f),
-            style = Stroke(width = 1.6.dp.toPx(), cap = StrokeCap.Round)
+            path = crease1,
+            color = handBorder.copy(alpha = 0.80f),
+            style = Stroke(width = creaseStrokePx, cap = StrokeCap.Round)
         )
-        // Crisp outline
+        drawPath(
+            path = crease2,
+            color = handBorder.copy(alpha = 0.80f),
+            style = Stroke(width = creaseStrokePx, cap = StrokeCap.Round)
+        )
+        drawPath(
+            path = thumbCrease,
+            color = handBorder.copy(alpha = 0.80f),
+            style = Stroke(width = creaseStrokePx, cap = StrokeCap.Round)
+        )
+
+        // Clean dark outline
         drawPath(
             path = handPath,
-            color = Color(0xFF78350F),
-            style = Stroke(width = 1.5.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
+            color = handBorder,
+            style = Stroke(width = outlineStrokePx, cap = StrokeCap.Round, join = StrokeJoin.Round)
         )
     }
 }

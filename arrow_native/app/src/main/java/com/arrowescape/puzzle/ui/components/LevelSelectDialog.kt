@@ -72,7 +72,7 @@ fun LevelSelectDialog(
     val initialPage = ((currentLevelNumber - 1) / pageSize).coerceIn(0, totalPages - 1)
 
     var currentPage by remember { mutableIntStateOf(initialPage) }
-    val maxUnlocked = maxOf(currentLevelNumber, lastCompletedLevelNumber)
+    val maxUnlocked = maxOf(currentLevelNumber, (levelStars.keys.maxOrNull() ?: 0) + 1)
     val totalStarsEarned = remember(levelStars) { levelStars.values.sum() }
 
     val infiniteTransition = rememberInfiniteTransition(label = "levelPulse")
