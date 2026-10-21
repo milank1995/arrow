@@ -42,7 +42,9 @@ import androidx.compose.material3.Text
 import java.time.LocalDate
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,6 +55,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.game.GameUiState
+import com.arrowescape.puzzle.ui.components.LevelSelectDialog
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 
 @Composable
@@ -66,8 +69,10 @@ fun HomeScreen(
     onSoundToggle: () -> Unit,
     onSettingsClick: () -> Unit,
     onDevTestClick: () -> Unit = {},
+    onSelectLevel: (Int) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    var showLevelSelectDialog by remember { mutableStateOf(false) }
     val infiniteTransition = rememberInfiniteTransition(label = "playPulse")
     val playScale by infiniteTransition.animateFloat(
         initialValue = 1.0f,
@@ -215,6 +220,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .widthIn(max = 340.dp)
                         .fillMaxWidth(0.85f)
+                        .clickable { showLevelSelectDialog = true }
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -228,34 +234,27 @@ fun HomeScreen(
                                     )
                                 )
                             )
-                            .padding(horizontal = 24.dp, vertical = 34.dp)
+                            .padding(horizontal = 24.dp, vertical = 28.dp)
                     ) {
-                        // 3 Celebratory Mastery Stars
+                        // 3 Celebratory Mastery Stars for Current Level
+                        val currentStars = uiState.levelStars[uiState.currentLevelNumber] ?: 0
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                contentDescription = "Star",
-                                tint = Color(0xFFF59E0B),
-                                modifier = Modifier.size(22.dp)
-                            )
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                contentDescription = "Star",
-                                tint = Color(0xFFF59E0B),
-                                modifier = Modifier.size(30.dp)
-                            )
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                contentDescription = "Star",
-                                tint = Color(0xFFF59E0B),
-                                modifier = Modifier.size(22.dp)
-                            )
+                            val starSizes = listOf(22.dp, 30.dp, 22.dp)
+                            for (s in 1..3) {
+                                val isEarned = (currentStars >= s) || (currentStars == 0 && uiState.currentLevelNumber == 1)
+                                Icon(
+                                    imageVector = Icons.Default.Star,
+                                    contentDescription = "Star $s",
+                                    tint = if (isEarned) Color(0xFFF59E0B) else Color(0xFFE2E8F0),
+                                    modifier = Modifier.size(starSizes[s - 1])
+                                )
+                            }
                         }
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(14.dp))
 
                         // Bold, prominent Level Number
                         Text(
@@ -266,7 +265,7 @@ fun HomeScreen(
                             lineHeight = 90.sp
                         )
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         // Refined "LEVEL" tracking badge
                         Surface(
@@ -283,6 +282,14 @@ fun HomeScreen(
                                 modifier = Modifier.padding(horizontal = 18.dp, vertical = 6.dp)
                             )
                         }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Tap to choose level 🗺️",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF64748B)
+                        )
                     }
                 }
             }
@@ -457,5 +464,18 @@ fun HomeScreen(
                 }
             }
         }
+    }
+
+    if (showLevelSelectDialog) {
+        LevelSelectDialog(
+            currentLevelNumber = uiState.currentLevelNumber,
+            lastCompletedLevelNumber = uiState.lastCompletedLevelNumber,
+            levelStars = uiState.levelStars,
+            theme = theme,
+            onSelectLevel = { selectedLevel ->
+                onSelectLevel(selectedLevel)
+            },
+            onDismiss = { showLevelSelectDialog = false }
+        )
     }
 }

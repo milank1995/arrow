@@ -26,6 +26,7 @@ data class UserGameData(
     val streakDays: Int = 1,
     val lastDailyDate: String = "",
     val completedDailyDates: Set<String> = emptySet(),
+    val levelStars: Map<Int, Int> = emptyMap(),
     val soundEnabled: Boolean = true,
     val vibrationEnabled: Boolean = true,
     val themeIndex: Int = 0
@@ -41,6 +42,7 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_STREAK = intPreferencesKey("streak_days")
     private val KEY_LAST_DAILY = stringPreferencesKey("last_daily_date")
     private val KEY_COMPLETED_DAILY_DATES = stringSetPreferencesKey("completed_daily_dates")
+    private val KEY_LEVEL_STARS_MAP = stringPreferencesKey("level_stars_map")
     private val KEY_SOUND = booleanPreferencesKey("sound_enabled")
     private val KEY_VIBRATION = booleanPreferencesKey("vibration_enabled")
     private val KEY_THEME = intPreferencesKey("selected_theme_index")
@@ -55,10 +57,46 @@ class UserPreferencesRepository(private val context: Context) {
             streakDays = prefs[KEY_STREAK] ?: 1,
             lastDailyDate = prefs[KEY_LAST_DAILY] ?: "",
             completedDailyDates = prefs[KEY_COMPLETED_DAILY_DATES] ?: emptySet(),
+            levelStars = parseLevelStars(prefs[KEY_LEVEL_STARS_MAP] ?: ""),
             soundEnabled = prefs[KEY_SOUND] ?: true,
             vibrationEnabled = prefs[KEY_VIBRATION] ?: true,
             themeIndex = prefs[KEY_THEME] ?: 0
         )
+    }
+
+    private fun parseLevelStars(encoded: String): Map<Int, Int> {
+        if (encoded.isBlank()) return emptyMap()
+        val map = mutableMapOf<Int, Int>()
+        encoded.split(";").forEach { pair ->
+            val parts = pair.split(":")
+            if (parts.size == 2) {
+                val lvl = parts[0].toIntOrNull()
+                val stars = parts[1].toIntOrNull()
+                if (lvl != null && stars != null) {
+                    map[lvl] = stars
+                }
+            }
+        }
+        return map
+    }
+
+    private fun encodeLevelStars(map: Map<Int, Int>): String {
+        return map.entries.joinToString(";") { "${it.key}:${it.value}" }
+    }
+
+    suspend fun recordLevelCompletion(level: Int, starsEarned: Int) {
+        context.dataStore.edit { prefs ->
+            val current = prefs[KEY_LEVEL] ?: 1
+            if (level >= current) {
+                prefs[KEY_LEVEL] = level + 1
+            }
+            val starsMap = parseLevelStars(prefs[KEY_LEVEL_STARS_MAP] ?: "").toMutableMap()
+            val existing = starsMap[level] ?: 0
+            if (starsEarned > existing) {
+                starsMap[level] = starsEarned
+                prefs[KEY_LEVEL_STARS_MAP] = encodeLevelStars(starsMap)
+            }
+        }
     }
 
     suspend fun updateLevel(level: Int) {

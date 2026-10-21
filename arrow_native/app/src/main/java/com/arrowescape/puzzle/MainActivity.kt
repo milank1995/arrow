@@ -87,6 +87,11 @@ class MainActivity : ComponentActivity() {
                                     onDevTestClick = {
                                         gameViewModel.playClick()
                                         currentScreen = AppScreen.DEV_TEST
+                                    },
+                                    onSelectLevel = { level ->
+                                        gameViewModel.playClick()
+                                        gameViewModel.selectLevel(level)
+                                        currentScreen = AppScreen.GAMEPLAY
                                     }
                                 )
                             }

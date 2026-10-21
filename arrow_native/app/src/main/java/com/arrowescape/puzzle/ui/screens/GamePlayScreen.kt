@@ -212,6 +212,9 @@ fun GamePlayScreen(
                                 isCelebrationBurstActive = uiState.isCelebrationBurstActive,
                                 restartTrigger = uiState.restartTrigger,
                                 previewRayArrowIds = uiState.previewRayArrowIds,
+                                activeBoosterAnimation = uiState.activeBoosterAnimation,
+                                currentLevelNumber = uiState.currentLevelNumber,
+                                isDailyChallengeMode = uiState.isDailyChallengeMode,
                                 onArrowClick = { arrow ->
                                     lastInteractionTime = System.currentTimeMillis()
                                     isIdlePromptActive = false

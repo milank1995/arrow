@@ -23,6 +23,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+sealed class BoosterEffectAnimation {
+    data class Hammer(val targetArrow: Arrow, val progress: Float) : BoosterEffectAnimation()
+    data class Wand(val targetArrow: Arrow, val progress: Float) : BoosterEffectAnimation()
+}
+
 data class GameUiState(
     val levelData: LevelData? = null,
     val arrows: List<Arrow> = emptyList(),
@@ -51,6 +56,8 @@ data class GameUiState(
     val activeDailyDate: String? = null,
     val activeDailyIndex: Int = 1,
     val completedDailyDates: Set<String> = emptySet(),
+    val levelStars: Map<Int, Int> = emptyMap(),
+    val activeBoosterAnimation: BoosterEffectAnimation? = null,
     val restartTrigger: Long = 0L
 ) {
     val previewRayArrowId: String? get() = previewRayArrowIds.firstOrNull()
@@ -83,6 +90,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         hammersAvailable = data.freeHammers,
                         wandsAvailable = data.freeWands,
                         completedDailyDates = data.completedDailyDates,
+                        levelStars = data.levelStars,
+                        lastCompletedLevelNumber = maxOf(data.currentLevel, current.lastCompletedLevelNumber),
                         isSoundEnabled = data.soundEnabled,
                         isVibrationEnabled = data.vibrationEnabled,
                         activeTheme = theme
@@ -397,13 +406,28 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             if (repository.useBooster("hammer")) {
                 audioHapticManager.playBoosterUse("hammer")
+                _uiState.update { it.copy(isHammerModeActive = false) }
+
+                // Animate hammer swing and shatter over 520ms
+                val durationMs = 520L
+                val startTime = System.currentTimeMillis()
+                while (true) {
+                    val elapsed = System.currentTimeMillis() - startTime
+                    val progress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
+                    _uiState.update { state ->
+                        state.copy(activeBoosterAnimation = BoosterEffectAnimation.Hammer(target, progress))
+                    }
+                    if (progress >= 1f) break
+                    delay(16)
+                }
+
+                _uiState.update { it.copy(activeBoosterAnimation = null) }
                 occupancyMap.release(target)
 
                 val updated = _uiState.value.arrows.map {
                     if (it.id == target.id) it.copyWithState(ArrowState.CLEARED) else it
                 }
                 val allCleared = updated.all { it.state == ArrowState.CLEARED }
-                _uiState.update { it.copy(isHammerModeActive = false) }
 
                 if (allCleared) {
                     triggerLevelVictory(updated)
@@ -420,16 +444,23 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             if (repository.useBooster("wand")) {
                 audioHapticManager.playBoosterUse("wand")
-                occupancyMap.release(target)
 
-                _uiState.update { state ->
-                    val updated = state.arrows.map {
-                        if (it.id == target.id) it.copyWithState(ArrowState.FLYING_OUT) else it
+                // Animate magical wand sweep & celestial dissolution over 640ms
+                val durationMs = 640L
+                val startTime = System.currentTimeMillis()
+                while (true) {
+                    val elapsed = System.currentTimeMillis() - startTime
+                    val progress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
+                    _uiState.update { state ->
+                        state.copy(activeBoosterAnimation = BoosterEffectAnimation.Wand(target, progress))
                     }
-                    state.copy(arrows = updated)
+                    if (progress >= 1f) break
+                    delay(16)
                 }
 
-                delay(280)
+                _uiState.update { it.copy(activeBoosterAnimation = null) }
+                occupancyMap.release(target)
+
                 val updated = _uiState.value.arrows.map {
                     if (it.id == target.id) it.copyWithState(ArrowState.CLEARED) else it
                 }
@@ -551,15 +582,27 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         audioHapticManager.playStarDrop(starIndex)
     }
 
+    fun selectLevel(levelNumber: Int) {
+        val maxUnlocked = maxOf(_uiState.value.currentLevelNumber, _uiState.value.lastCompletedLevelNumber)
+        if (levelNumber in 1..maxUnlocked) {
+            loadLevel(levelNumber)
+        }
+    }
+
     private fun handleLevelComplete(completedLevel: Int) {
+        val stars = when {
+            _uiState.value.isDailyChallengeMode -> 3
+            _uiState.value.heartsRemaining >= _uiState.value.maxHearts -> 3
+            _uiState.value.heartsRemaining >= _uiState.value.maxHearts - 1 -> 2
+            else -> 1
+        }
         viewModelScope.launch {
             val baseCoins = if (_uiState.value.isDailyChallengeMode) 100 else 50 + (_uiState.value.comboCount * 5)
             if (_uiState.value.isDailyChallengeMode) {
                 val dateStr = _uiState.value.activeDailyDate ?: LocalDate.now().toString()
                 repository.recordDailyCompletion(dateStr)
             } else {
-                val nextLvl = completedLevel + 1
-                repository.updateLevel(nextLvl)
+                repository.recordLevelCompletion(completedLevel, stars)
             }
             repository.addCoins(baseCoins)
         }

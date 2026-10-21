@@ -43,6 +43,7 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import com.arrowescape.puzzle.game.BoosterEffectAnimation
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -74,6 +75,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.PI
+import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
 
@@ -117,6 +119,9 @@ fun PuzzleBoardCanvas(
     isCelebrationBurstActive: Boolean = false,
     restartTrigger: Long = 0L,
     previewRayArrowIds: Set<String> = emptySet(),
+    activeBoosterAnimation: BoosterEffectAnimation? = null,
+    currentLevelNumber: Int = 1,
+    isDailyChallengeMode: Boolean = false,
     onArrowClick: (Arrow) -> Unit,
     onArrowLongPress: (Arrow, isPressed: Boolean) -> Unit,
     onDismissPreviewRays: () -> Unit = {},
@@ -344,8 +349,16 @@ fun PuzzleBoardCanvas(
             }
         }
 
-        LaunchedEffect(isCelebrationBurstActive && confettiPieces.isNotEmpty()) {
-            while (isCelebrationBurstActive && confettiPieces.isNotEmpty()) {
+        var hasInteractedWithBoard by remember(restartTrigger, arrows.size, currentLevelNumber) { mutableStateOf(false) }
+
+        val tutorialTargetArrow = remember(arrows, hasInteractedWithBoard) {
+            if (!hasInteractedWithBoard && currentLevelNumber in 1..3 && !isDailyChallengeMode) {
+                arrows.firstOrNull { it.state == ArrowState.IDLE }
+            } else null
+        }
+
+        LaunchedEffect(isCelebrationBurstActive, activeBoosterAnimation, hasInteractedWithBoard) {
+            while (isCelebrationBurstActive || (confettiPieces.isNotEmpty() && confettiStartTime > 0L) || activeBoosterAnimation != null || (!hasInteractedWithBoard && currentLevelNumber in 1..3 && !isDailyChallengeMode)) {
                 withFrameNanos { frameTimeNanos ->
                     animTick = frameTimeNanos
                 }
@@ -384,6 +397,7 @@ fun PuzzleBoardCanvas(
                 .pointerInput(xSize, ySize, arrows.size, arrows.firstOrNull()?.id) {
                     awaitEachGesture {
                         val down = awaitFirstDown(requireUnconsumed = false)
+                        hasInteractedWithBoard = true
                         settleJob?.cancel() // Stop ongoing inertia or animation immediately on new touch
 
                         val center = Offset(currentViewportWidth / 2f, currentViewportHeight / 2f)
@@ -773,9 +787,20 @@ fun PuzzleBoardCanvas(
                         hintPulseScale = hintPulseScale,
                         hintGlowAlpha = hintGlowAlpha,
                         previewRayArrowIds = previewRayArrowIds,
+                        activeBoosterAnimation = activeBoosterAnimation,
                         drawProgress = easedDraw,
                         introAlpha = introAlpha
                     )
+                }
+
+                // 4B. Active Booster FX Animation (Hammer Smash & Shatter, Magic Wand Stardust Dissolution)
+                if (activeBoosterAnimation != null) {
+                    drawBoosterAnimation(boardOrigin, activeBoosterAnimation, cellSize, theme)
+                }
+
+                // 4C. Interactive First-Time Tutorial Guidance (Levels 1-3)
+                if (tutorialTargetArrow != null && !hasInteractedWithBoard && introProgress.value >= 1f) {
+                    drawTutorialGuidance(boardOrigin, tutorialTargetArrow, cellSize, theme)
                 }
             }
 
@@ -871,6 +896,37 @@ fun PuzzleBoardCanvas(
                         color = Color.White,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+        }
+
+        // Floating First-Time Tutorial Guidance Banner (Levels 1-3)
+        if (!hasInteractedWithBoard && currentLevelNumber in 1..3 && !isDailyChallengeMode && introProgress.value >= 1f) {
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 16.dp),
+                shape = RoundedCornerShape(20.dp),
+                color = if (theme.isDark) Color(0xEE1E293B) else Color(0xEEFFFFFF),
+                border = androidx.compose.foundation.BorderStroke(1.dp, if (theme.isDark) Color(0xFF475569) else Color(0xFFCBD5E1)),
+                shadowElevation = 5.dp
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = when (currentLevelNumber) {
+                            1 -> "👆 Tap an arrow with an open path to exit!"
+                            2 -> "🔄 Arrows follow their bends to exit!"
+                            3 -> "💡 Hold any arrow to preview its flight path!"
+                            else -> ""
+                        },
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (theme.isDark) Color.White else Color(0xFF0F172A)
                     )
                 }
             }
@@ -1053,9 +1109,15 @@ private fun DrawScope.drawArrowEntity(
     hintPulseScale: Float,
     hintGlowAlpha: Float,
     previewRayArrowIds: Set<String>,
+    activeBoosterAnimation: BoosterEffectAnimation? = null,
     drawProgress: Float = 1.0f,
     introAlpha: Float = 1.0f
 ) {
+    // If shattered by hammer, hide standard arrow geometry during explosion
+    if (activeBoosterAnimation is BoosterEffectAnimation.Hammer && activeBoosterAnimation.targetArrow.id == arrow.id && activeBoosterAnimation.progress >= 0.40f) {
+        return
+    }
+
     val isPreviewHold = arrow.id in previewRayArrowIds
     val isFlying = (arrow.state == ArrowState.FLYING_OUT)
 
@@ -1198,7 +1260,11 @@ private fun DrawScope.drawArrowEntity(
         sampledPoints.add(lastPt)
     }
 
-    val renderColor = baseColor.copy(alpha = alpha * introAlpha)
+    val wandFade = if (activeBoosterAnimation is BoosterEffectAnimation.Wand && activeBoosterAnimation.targetArrow.id == arrow.id) {
+        (1f - activeBoosterAnimation.progress).coerceIn(0f, 1f)
+    } else 1.0f
+
+    val renderColor = baseColor.copy(alpha = alpha * introAlpha * wandFade)
 
     // 0. Draw Radiant Multi-Theme Glow Aura when Hinted (supports all themes dynamically)
     if (arrow.state == ArrowState.HINTED && sampledPoints.size > 1) {
@@ -1719,5 +1785,225 @@ private fun DrawScope.drawPreviewRay(
         end = endOffset,
         strokeWidth = 1.5.dp.toPx(),
         cap = StrokeCap.Round
+    )
+}
+
+/**
+ * Renders high-energy visual effects for booster power-ups (Hammer Strike & Shatter, Magic Wand Stardust Dissolution).
+ */
+private fun DrawScope.drawBoosterAnimation(
+    origin: Offset,
+    animation: BoosterEffectAnimation,
+    cellSize: Float,
+    theme: ThemePreset
+) {
+    when (animation) {
+        is BoosterEffectAnimation.Hammer -> {
+            val arrow = animation.targetArrow
+            val progress = animation.progress
+            val head = arrow.head
+            val tail = arrow.body.firstOrNull() ?: head
+            val arrowCenter = Offset(
+                origin.x + ((head.x + tail.x) / 2f + 0.5f) * cellSize,
+                origin.y + ((head.y + tail.y) / 2f + 0.5f) * cellSize
+            )
+
+            if (progress < 0.40f) {
+                // 1. Hammer Swing Down (accelerated dynamic swing curve)
+                val swingP = progress / 0.40f
+                val easedSwing = swingP * swingP
+                val hammerAngle = -55f + easedSwing * 65f
+                val hammerPivot = Offset(arrowCenter.x + cellSize * 0.75f, arrowCenter.y - cellSize * 1.3f)
+
+                rotate(degrees = hammerAngle, pivot = hammerPivot) {
+                    val handleLen = cellSize * 1.5f
+                    val handleWidth = cellSize * 0.16f
+                    // Wooden Handle
+                    drawRoundRect(
+                        color = Color(0xFFB45309),
+                        topLeft = Offset(arrowCenter.x - handleWidth / 2f, arrowCenter.y - handleLen),
+                        size = Size(handleWidth, handleLen),
+                        cornerRadius = CornerRadius(4.dp.toPx())
+                    )
+                    // Metal Mallet Head
+                    val headW = cellSize * 0.9f
+                    val headH = cellSize * 0.52f
+                    drawRoundRect(
+                        color = Color(0xFF64748B),
+                        topLeft = Offset(arrowCenter.x - headW / 2f, arrowCenter.y - cellSize * 0.35f),
+                        size = Size(headW, headH),
+                        cornerRadius = CornerRadius(6.dp.toPx())
+                    )
+                    // Metallic Highlight Bevel
+                    drawRoundRect(
+                        color = Color(0xFF94A3B8),
+                        topLeft = Offset(arrowCenter.x - headW / 2f + 2.dp.toPx(), arrowCenter.y - cellSize * 0.35f + 2.dp.toPx()),
+                        size = Size(headW - 4.dp.toPx(), headH * 0.35f),
+                        cornerRadius = CornerRadius(4.dp.toPx())
+                    )
+                }
+            } else {
+                // 2. Shatter & Fragment Explosion (Impact at t = 0.40)
+                val shatterP = (progress - 0.40f) / 0.60f
+                val decay = 1f - shatterP
+                val maxShardDist = cellSize * 1.4f * shatterP
+
+                // A. Ground Impact Shockwave Ring
+                drawCircle(
+                    color = theme.arrowClear.copy(alpha = (decay * 0.85f).coerceIn(0f, 1f)),
+                    radius = cellSize * 0.2f + cellSize * 1.15f * shatterP,
+                    center = arrowCenter,
+                    style = Stroke(width = 3.dp.toPx() * decay, cap = StrokeCap.Round)
+                )
+
+                // B. Radiating Arrow Shard Fragments (12 angular shards)
+                val shardColors = listOf(
+                    theme.arrowClear,
+                    Color(0xFFF59E0B),
+                    Color(0xFF38BDF8),
+                    Color(0xFFEC4899),
+                    Color(0xFF10B981)
+                )
+                for (i in 0 until 12) {
+                    val angle = (i * 30f + 15f) * (PI.toFloat() / 180f)
+                    val speed = 0.75f + (i % 3) * 0.25f
+                    val shardX = arrowCenter.x + cos(angle) * maxShardDist * speed
+                    val shardY = arrowCenter.y + sin(angle) * maxShardDist * speed + (shatterP * shatterP * cellSize * 0.55f)
+                    val shardSize = cellSize * 0.16f * decay
+                    val shardColor = shardColors[i % shardColors.size].copy(alpha = decay.coerceIn(0f, 1f))
+                    val spinDir = if (i % 2 == 0) 1.0f else -1.0f
+
+                    rotate(degrees = shatterP * 360f * spinDir, pivot = Offset(shardX, shardY)) {
+                        drawRect(
+                            color = shardColor,
+                            topLeft = Offset(shardX - shardSize / 2f, shardY - shardSize / 2f),
+                            size = Size(shardSize, shardSize)
+                        )
+                    }
+                }
+            }
+        }
+
+        is BoosterEffectAnimation.Wand -> {
+            val arrow = animation.targetArrow
+            val progress = animation.progress
+            val head = arrow.head
+            val tail = arrow.body.firstOrNull() ?: head
+            val headPos = Offset(origin.x + (head.x + 0.5f) * cellSize, origin.y + (head.y + 0.5f) * cellSize)
+            val tailPos = Offset(origin.x + (tail.x + 0.5f) * cellSize, origin.y + (tail.y + 0.5f) * cellSize)
+            val wandTip = lerpOffset(headPos, tailPos, progress)
+
+            // Radiant golden stardust halo around wand tip
+            drawCircle(
+                color = Color(0xFFFDE047).copy(alpha = 0.50f * (1f - progress * 0.3f)),
+                radius = cellSize * 0.55f,
+                center = wandTip
+            )
+
+            // Sparkling stardust trail particles (12 spiral sparkles)
+            val sparkColors = listOf(Color(0xFFFEF08A), Color(0xFF38BDF8), Color(0xFFF472B6), Color.White)
+            for (i in 0 until 12) {
+                val sparkPhase = (progress * 3f + i * 0.25f) % 1f
+                val sparkAngle = (i * 30f + progress * 360f) * (PI.toFloat() / 180f)
+                val sparkDist = cellSize * 0.45f * sparkPhase
+                val sparkPos = Offset(
+                    wandTip.x + cos(sparkAngle) * sparkDist,
+                    wandTip.y + sin(sparkAngle) * sparkDist
+                )
+                val sparkAlpha = (1f - sparkPhase).coerceIn(0f, 1f)
+                val sparkRadius = cellSize * 0.08f * (1f - sparkPhase * 0.5f)
+
+                drawCircle(
+                    color = sparkColors[i % sparkColors.size].copy(alpha = sparkAlpha),
+                    radius = sparkRadius,
+                    center = sparkPos
+                )
+            }
+
+            // Elegant Magic Wand Body (silver shaft + golden star tip)
+            val wandAngle = -40f + progress * 20f
+            rotate(degrees = wandAngle, pivot = wandTip) {
+                val shaftLen = cellSize * 1.3f
+                val shaftW = cellSize * 0.12f
+                // Shaft
+                drawRoundRect(
+                    color = Color(0xFFE2E8F0),
+                    topLeft = Offset(wandTip.x - shaftW / 2f, wandTip.y),
+                    size = Size(shaftW, shaftLen),
+                    cornerRadius = CornerRadius(3.dp.toPx())
+                )
+                // Golden Star Head
+                drawCircle(
+                    color = Color(0xFFF59E0B),
+                    radius = cellSize * 0.18f,
+                    center = wandTip
+                )
+                drawCircle(
+                    color = Color(0xFFFEF08A),
+                    radius = cellSize * 0.10f,
+                    center = wandTip
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Draws animated pulsing guidance rings and pointer finger on Level 1-3 for first-time players.
+ */
+private fun DrawScope.drawTutorialGuidance(
+    origin: Offset,
+    targetArrow: Arrow,
+    cellSize: Float,
+    theme: ThemePreset
+) {
+    val head = targetArrow.head
+    val headCenter = Offset(
+        origin.x + (head.x + 0.5f) * cellSize,
+        origin.y + (head.y + 0.5f) * cellSize
+    )
+
+    val now = System.currentTimeMillis()
+    val pulseSec = (now % 1600L) / 1600f
+    val pulseScale = 0.85f + 0.35f * sin(pulseSec * PI.toFloat())
+    val pulseAlpha = (1f - pulseSec).coerceIn(0f, 1f) * 0.80f
+
+    // 1. Concentric Animated Pulsing Target Rings on the movable arrow
+    drawCircle(
+        color = theme.arrowClear.copy(alpha = pulseAlpha * 0.5f),
+        radius = cellSize * 0.65f * pulseScale,
+        center = headCenter,
+        style = Stroke(width = 2.5.dp.toPx(), cap = StrokeCap.Round)
+    )
+    drawCircle(
+        color = theme.arrowClear.copy(alpha = 0.75f),
+        radius = cellSize * 0.38f,
+        center = headCenter,
+        style = Stroke(width = 1.8.dp.toPx(), cap = StrokeCap.Round)
+    )
+
+    // 2. Animated Tapping Pointer Finger
+    val tapAnim = sin((now % 1200L) / 1200f * 2f * PI.toFloat())
+    val fingerOffset = Offset(
+        headCenter.x + cellSize * 0.30f + tapAnim * 4.dp.toPx(),
+        headCenter.y + cellSize * 0.30f + tapAnim * 6.dp.toPx()
+    )
+
+    // Hand icon shadow + body
+    drawCircle(
+        color = Color(0x33000000),
+        radius = cellSize * 0.20f,
+        center = fingerOffset + Offset(2.dp.toPx(), 4.dp.toPx())
+    )
+    drawCircle(
+        color = Color(0xFFFCD34D),
+        radius = cellSize * 0.18f,
+        center = fingerOffset
+    )
+    drawCircle(
+        color = Color(0xFFF59E0B),
+        radius = cellSize * 0.18f,
+        center = fingerOffset,
+        style = Stroke(width = 1.5.dp.toPx())
     )
 }
