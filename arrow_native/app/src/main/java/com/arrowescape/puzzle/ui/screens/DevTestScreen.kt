@@ -135,12 +135,12 @@ fun DevTestScreen(
         }
 
         coroutineScope.launch {
-            val durationMs = 650L
+            val durationMs = 820L
             val startTime = System.currentTimeMillis()
             while (true) {
                 val elapsed = System.currentTimeMillis() - startTime
                 val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
-                val easedProgress = rawProgress * rawProgress * (0.25f + 0.75f * rawProgress)
+                val easedProgress = rawProgress * rawProgress * (0.18f + 0.82f * rawProgress)
                 arrows = arrows.map {
                     if (it.id == arrow.id && it.state == ArrowState.FLYING_OUT) {
                         it.copy(flightProgress = easedProgress)
@@ -180,6 +180,9 @@ fun DevTestScreen(
         if (isLevelComplete) return
         val currentArrow = arrows.firstOrNull { it.id == clickedArrow.id } ?: clickedArrow
         if (currentArrow.state == ArrowState.CLEARED || currentArrow.state == ArrowState.FLYING_OUT) return
+
+        // Always dismiss path preview when user clicks an arrow to move it
+        previewRayArrowId = null
 
         // Automatically hide Grid Guide upon tapping an arrow
         if (isGridLinesActive) {

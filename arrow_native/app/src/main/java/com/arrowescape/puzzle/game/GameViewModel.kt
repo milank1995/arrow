@@ -160,6 +160,11 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         val currentArrow = _uiState.value.arrows.firstOrNull { it.id == clickedArrow.id } ?: clickedArrow
         if (currentArrow.state == ArrowState.CLEARED || currentArrow.state == ArrowState.FLYING_OUT) return
 
+        // Always dismiss path preview when user clicks an arrow to move it
+        if (_uiState.value.previewRayArrowId != null) {
+            _uiState.update { it.copy(previewRayArrowId = null) }
+        }
+
         // Check if Hammer booster mode is active
         if (_uiState.value.isHammerModeActive) {
             executeHammerStrike(currentArrow)
@@ -270,12 +275,12 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
         // Animate flight smoothly at 60fps and transition to CLEARED
         viewModelScope.launch {
-            val durationMs = 650L
+            val durationMs = 820L
             val startTime = System.currentTimeMillis()
             while (true) {
                 val elapsed = System.currentTimeMillis() - startTime
                 val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
-                val easedProgress = rawProgress * rawProgress * (0.25f + 0.75f * rawProgress)
+                val easedProgress = rawProgress * rawProgress * (0.18f + 0.82f * rawProgress)
                 _uiState.update { state ->
                     val updated = state.arrows.map {
                         if (it.id == arrow.id && it.state == ArrowState.FLYING_OUT) {
@@ -334,9 +339,15 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun onArrowLongPress(arrow: Arrow, isPressed: Boolean) {
+    fun onArrowLongPress(arrow: Arrow, isPressed: Boolean = true) {
         _uiState.update {
             it.copy(previewRayArrowId = if (isPressed) arrow.id else null)
+        }
+    }
+
+    fun dismissPreviewRay() {
+        if (_uiState.value.previewRayArrowId != null) {
+            _uiState.update { it.copy(previewRayArrowId = null) }
         }
     }
 

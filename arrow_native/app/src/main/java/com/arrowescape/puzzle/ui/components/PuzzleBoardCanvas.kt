@@ -240,6 +240,56 @@ fun PuzzleBoardCanvas(
         val baseHeadWidth = baseStrokeWidth * 2.0f
         val currentHeadSize by rememberUpdatedState(baseHeadWidth)
 
+        // Smooth Auto-Framing: gently glides zoom and pan to center the hinted arrow if off-screen
+        val hintedArrow = arrows.firstOrNull { it.state == ArrowState.HINTED }
+        LaunchedEffect(hintedArrow?.id) {
+            if (hintedArrow == null) return@LaunchedEffect
+            if (introProgress.value < 1f) return@LaunchedEffect
+
+            val head = hintedArrow.head
+            val tail = hintedArrow.body.firstOrNull() ?: head
+            val arrowBoardX = boardOrigin.x + ((head.x + tail.x) / 2f + 0.5f) * cellSize
+            val arrowBoardY = boardOrigin.y + ((head.y + tail.y) / 2f + 0.5f) * cellSize
+
+            val center = Offset(viewportWidth / 2f, viewportHeight / 2f)
+            val currentScreenX = center.x + (arrowBoardX - center.x) * scale + panX
+            val currentScreenY = center.y + (arrowBoardY - center.y) * scale + panY
+
+            val isVisibleInViewport = currentScreenX in (viewportWidth * 0.18f..viewportWidth * 0.82f) &&
+                    currentScreenY in (viewportHeight * 0.18f..viewportHeight * 0.82f)
+
+            if (!isVisibleInViewport || scale > 1.6f) {
+                settleJob?.cancel()
+                val targetScale = scale.coerceIn(1.0f, 1.40f)
+
+                var targetPanX = -(arrowBoardX - center.x) * targetScale
+                var targetPanY = -(arrowBoardY - center.y) * targetScale
+
+                val maxPanX = (boardWidth * (targetScale - 1f).coerceAtLeast(0f) / 2f) + (viewportWidth * 0.20f)
+                val maxPanY = (boardHeight * (targetScale - 1f).coerceAtLeast(0f) / 2f) + (viewportHeight * 0.20f)
+
+                targetPanX = targetPanX.coerceIn(-maxPanX, maxPanX)
+                targetPanY = targetPanY.coerceIn(-maxPanY, maxPanY)
+
+                val startScale = scale
+                val startPanX = panX
+                val startPanY = panY
+
+                val anim = Animatable(0f)
+                settleJob = coroutineScope.launch {
+                    anim.animateTo(
+                        targetValue = 1f,
+                        animationSpec = tween(durationMillis = 440, easing = FastOutSlowInEasing)
+                    ) {
+                        val p = value
+                        scale = startScale + (targetScale - startScale) * p
+                        panX = startPanX + (targetPanX - startPanX) * p
+                        panY = startPanY + (targetPanY - startPanY) * p
+                    }
+                }
+            }
+        }
+
         val confettiPieces = remember { mutableStateListOf<ConfettiPiece>() }
         var confettiStartTime by remember { mutableLongStateOf(0L) }
         var animTick by remember { mutableLongStateOf(0L) }
@@ -391,15 +441,6 @@ fun PuzzleBoardCanvas(
                                 for (change in event.changes) {
                                     if (change.changedToDown() && !activeTouches.containsKey(change.id.value)) {
                                         hadMultiTouch = true
-                                        // Cancel all preview long-presses when second finger touches
-                                        activeTouches.values.forEach { rec ->
-                                            rec.longPressJob?.cancel()
-                                            if (rec.isLongPressTriggered && downArrow != null) {
-                                                currentOnArrowLongPress(downArrow, false)
-                                                rec.isLongPressTriggered = false
-                                            }
-                                        }
-
                                         val rec = TouchRecord(
                                             downPos = change.position,
                                             downTime = now,
@@ -434,13 +475,9 @@ fun PuzzleBoardCanvas(
                                     if (!isPinching) {
                                         if (zoomMotion > pinchMotionThreshold || panAccum.getDistance() > panGestureThreshold) {
                                             isPinching = true
-                                            // Cancel all preview long-presses when pinching begins
+                                            // Cancel pending preview long-presses when pinching begins
                                             activeTouches.values.forEach { rec ->
                                                 rec.longPressJob?.cancel()
-                                                if (rec.isLongPressTriggered && downArrow != null) {
-                                                    currentOnArrowLongPress(downArrow, false)
-                                                    rec.isLongPressTriggered = false
-                                                }
                                             }
                                         }
                                     }
@@ -476,10 +513,6 @@ fun PuzzleBoardCanvas(
                                         if (!isPanning) {
                                             isPanning = true
                                             rec.longPressJob?.cancel()
-                                            if (rec.isLongPressTriggered && downArrow != null) {
-                                                currentOnArrowLongPress(downArrow, false)
-                                                rec.isLongPressTriggered = false
-                                            }
                                         }
                                     }
 
@@ -505,10 +538,6 @@ fun PuzzleBoardCanvas(
                                     val rec = activeTouches.remove(upChange.id.value)
                                     if (rec != null) {
                                         rec.longPressJob?.cancel()
-                                        if (rec.isLongPressTriggered && downArrow != null) {
-                                            currentOnArrowLongPress(downArrow, false)
-                                            rec.isLongPressTriggered = false
-                                        }
 
                                         val elapsed = now - rec.downTime
                                         val isDrag = rec.hasDragged(dragThreshold)
@@ -552,6 +581,12 @@ fun PuzzleBoardCanvas(
                                                 }
                                                 currentOnArrowClick(targetArrow)
                                                 upChange.consume()
+                                            } else if (targetArrow == null && previewRayArrowId != null) {
+                                                // Tap on empty space: dismiss the active preview ray
+                                                val dummy = currentArrows.firstOrNull()
+                                                if (dummy != null) {
+                                                    currentOnArrowLongPress(dummy, false)
+                                                }
                                             }
                                         }
                                     }
@@ -560,9 +595,6 @@ fun PuzzleBoardCanvas(
                         } finally {
                             activeTouches.values.forEach { rec ->
                                 rec.longPressJob?.cancel()
-                                if (rec.isLongPressTriggered && downArrow != null) {
-                                    currentOnArrowLongPress(downArrow, false)
-                                }
                             }
                             activeTouches.clear()
                         }
@@ -1025,11 +1057,11 @@ private fun DrawScope.drawArrowEntity(
     introAlpha: Float = 1.0f
 ) {
     val isPreviewHold = (arrow.id == previewRayArrowId)
-    val isLaunching = (arrow.state == ArrowState.FLYING_OUT && arrow.flightProgress < 0.35f)
+    val isFlying = (arrow.state == ArrowState.FLYING_OUT)
 
     val baseColor = when {
+        isFlying -> theme.arrowClear
         arrow.state == ArrowState.WRONG_FLASH -> theme.arrowWrong
-        isLaunching -> theme.arrowClear
         arrow.isHighlighted -> theme.arrowWrong
         isPreviewHold -> theme.arrowClear
         arrow.state == ArrowState.HINTED -> theme.arrowHint
@@ -1042,7 +1074,7 @@ private fun DrawScope.drawArrowEntity(
     val maxStroke = 5.0.dp.toPx()
     val scaleMultiplier = when {
         isPreviewHold -> 1.10f * (1f + (hintPulseScale - 1f) * 0.35f)
-        isLaunching -> 1.18f
+        isFlying -> 1.08f
         arrow.state == ArrowState.WRONG_FLASH -> 1.0f + sin(arrow.flightProgress * PI.toFloat()) * 0.16f
         arrow.state == ArrowState.HINTED -> hintPulseScale
         else -> 1.0f
@@ -1050,7 +1082,7 @@ private fun DrawScope.drawArrowEntity(
     val strokeWidth = (cellSize * 0.23f).coerceIn(minStroke, maxStroke) * scaleMultiplier
 
     // Exact Unity One arrowhead proportions (2.0x stroke width, 1.05x aspect ratio)
-    val headWidth = strokeWidth * 2.0f * (if (isPreviewHold) 1.08f else if (isLaunching) 1.12f else 1.0f)
+    val headWidth = strokeWidth * 2.0f * (if (isPreviewHold) 1.08f else if (isFlying) 1.10f else 1.0f)
     val headLength = headWidth * 1.05f
 
     // Build the full motion track: body points + escape extension along arrow.direction

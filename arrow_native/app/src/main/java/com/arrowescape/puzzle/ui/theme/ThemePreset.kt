@@ -32,7 +32,7 @@ object ThemePresets {
         ),
         arrowHint = Color(0xFFF59E0B), // Golden yellow
         arrowWrong = Color(0xFFEF4444), // Crimson red
-        arrowClear = Color(0xFF1E293B), // Dark navy / slate
+        arrowClear = Color(0xFF059669), // Vibrant emerald jade in flight
         textPrimary = Color(0xFF1E293B),
         textSecondary = Color(0xFF64748B),
         boosterBg = Color(0xFFEEF2F6),
@@ -95,7 +95,7 @@ object ThemePresets {
         ),
         arrowHint = Color(0xFFE09F3E),
         arrowWrong = Color(0xFFD94E34),
-        arrowClear = Color(0xFF614627),
+        arrowClear = Color(0xFF1B7A43), // Rich forest jade in flight
         textPrimary = Color(0xFF614627),
         textSecondary = Color(0xFF9E7C62),
         boosterBg = Color(0xFFEADBCA),
@@ -114,7 +114,7 @@ object ThemePresets {
         ),
         arrowHint = Color(0xFFD97706),
         arrowWrong = Color(0xFFE11D48),
-        arrowClear = Color(0xFF10B981),
+        arrowClear = Color(0xFF0284C7), // Sky cyan in flight
         textPrimary = Color(0xFF064E3B),
         textSecondary = Color(0xFF047857),
         boosterBg = Color(0xFFDCFCE7),
