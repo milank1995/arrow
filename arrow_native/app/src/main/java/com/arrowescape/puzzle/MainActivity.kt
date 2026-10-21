@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arrowescape.puzzle.game.GameViewModel
 import com.arrowescape.puzzle.ui.components.DailyCalendarDialog
+import com.arrowescape.puzzle.ui.components.SoundSettingsDialog
 import com.arrowescape.puzzle.ui.screens.DevTestScreen
 import com.arrowescape.puzzle.ui.screens.GamePlayScreen
 import com.arrowescape.puzzle.ui.screens.HomeScreen
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
             val uiState by gameViewModel.uiState.collectAsState()
             var currentScreen by remember { mutableStateOf(AppScreen.HOME) }
             var showDailyCalendarDialog by remember { mutableStateOf(false) }
+            var showSoundSettingsDialog by remember { mutableStateOf(false) }
 
             MaterialTheme {
                 Surface(
@@ -77,6 +79,10 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onSoundToggle = {
                                         gameViewModel.toggleSound()
+                                    },
+                                    onSettingsClick = {
+                                        gameViewModel.playClick()
+                                        showSoundSettingsDialog = true
                                     },
                                     onDevTestClick = {
                                         gameViewModel.playClick()
@@ -137,6 +143,10 @@ class MainActivity : ComponentActivity() {
                                         }
                                         currentScreen = AppScreen.HOME
                                     },
+                                    onSettingsClick = {
+                                        gameViewModel.playClick()
+                                        showSoundSettingsDialog = true
+                                    },
                                     onIdlePromptSound = {
                                         gameViewModel.playHintNudge()
                                     },
@@ -178,6 +188,31 @@ class MainActivity : ComponentActivity() {
                             },
                             onDismiss = {
                                 showDailyCalendarDialog = false
+                            }
+                        )
+                    }
+
+                    // Audio & Sound Settings Menu Modal Dialog
+                    if (showSoundSettingsDialog) {
+                        SoundSettingsDialog(
+                            isSoundEnabled = uiState.isSoundEnabled,
+                            isVibrationEnabled = uiState.isVibrationEnabled,
+                            activeTheme = uiState.activeTheme,
+                            onToggleSound = {
+                                gameViewModel.toggleSound()
+                            },
+                            onToggleVibration = {
+                                gameViewModel.toggleVibration()
+                            },
+                            onThemeClick = {
+                                gameViewModel.playClick()
+                                gameViewModel.cycleTheme()
+                            },
+                            onTestSound = {
+                                gameViewModel.playTap()
+                            },
+                            onDismiss = {
+                                showSoundSettingsDialog = false
                             }
                         )
                     }

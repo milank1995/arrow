@@ -499,6 +499,10 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         audioHapticManager.playClick()
     }
 
+    fun playTap() {
+        audioHapticManager.playTap()
+    }
+
     fun playCoinCollect() {
         audioHapticManager.playCoinCollect()
     }

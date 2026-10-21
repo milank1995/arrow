@@ -49,6 +49,7 @@ fun GamePlayScreen(
     onNextLevelClick: () -> Unit,
     onRestartClick: () -> Unit,
     onBackToHomeClick: () -> Unit,
+    onSettingsClick: (() -> Unit)? = null,
     onClaimDoubleCoins: (Int) -> Unit = {},
     onIdlePromptSound: () -> Unit = {},
     onPlayStarSound: (Int) -> Unit = {},
@@ -138,6 +139,8 @@ fun GamePlayScreen(
                             dailyDateString = uiState.activeDailyDate,
                             onBackClick = onBackToHomeClick,
                             onThemeClick = { showThemeDialog = true },
+                            onSettingsClick = onSettingsClick,
+                            isSoundOn = uiState.isSoundEnabled,
                             modifier = Modifier.widthIn(max = 540.dp)
                         )
                     }

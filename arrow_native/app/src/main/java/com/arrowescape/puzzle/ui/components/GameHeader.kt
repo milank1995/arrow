@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.automirrored.filled.VolumeMute
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Palette
@@ -71,6 +73,8 @@ fun GameHeader(
     onLevelNumberClick: (() -> Unit)? = null,
     onBackClick: () -> Unit,
     onThemeClick: () -> Unit,
+    onSettingsClick: (() -> Unit)? = null,
+    isSoundOn: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val clearedCount = (totalArrowsCount - remainingArrowsCount).coerceAtLeast(0)
@@ -137,6 +141,29 @@ fun GameHeader(
                                 tint = theme.textPrimary,
                                 modifier = Modifier.size(20.dp)
                             )
+                        }
+                    }
+
+                    // Sound / Settings menu button inside rounded tactile pod
+                    if (onSettingsClick != null) {
+                        Surface(
+                            shape = RoundedCornerShape(14.dp),
+                            color = theme.boosterBg,
+                            border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
+                            shadowElevation = 1.dp,
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            IconButton(
+                                onClick = onSettingsClick,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Icon(
+                                    imageVector = if (isSoundOn) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeMute,
+                                    contentDescription = "Sound Settings",
+                                    tint = if (isSoundOn) theme.textPrimary else theme.textSecondary.copy(alpha = 0.5f),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                         }
                     }
                 }
