@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +42,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             val uiState by gameViewModel.uiState.collectAsState()
             var currentScreen by remember { mutableStateOf(AppScreen.HOME) }
+            var hasDecidedInitialScreen by remember { mutableStateOf(false) }
+
+            // FTUE: First-time users are taken directly to Level 1, returning users see the Home Screen
+            LaunchedEffect(uiState.hasPlayedBefore, uiState.levelData) {
+                if (!hasDecidedInitialScreen && uiState.levelData != null) {
+                    hasDecidedInitialScreen = true
+                    if (!uiState.hasPlayedBefore) {
+                        currentScreen = AppScreen.GAMEPLAY
+                    }
+                }
+            }
             var showDailyCalendarDialog by remember { mutableStateOf(false) }
             var showSoundSettingsDialog by remember { mutableStateOf(false) }
 
@@ -129,6 +141,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onNextLevelClick = {
                                         gameViewModel.playClick()
+                                        gameViewModel.markHasPlayedBefore()
                                         val wasDaily = uiState.isDailyChallengeMode
                                         gameViewModel.nextLevel()
                                         if (wasDaily) {
@@ -144,6 +157,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onBackToHomeClick = {
                                         gameViewModel.playClick()
+                                        gameViewModel.markHasPlayedBefore()
                                         if (uiState.isLevelComplete) {
                                             gameViewModel.onVictoryHomeClick()
                                         } else if (uiState.isDailyChallengeMode) {

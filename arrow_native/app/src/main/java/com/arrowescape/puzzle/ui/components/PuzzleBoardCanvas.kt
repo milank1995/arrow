@@ -1951,6 +1951,10 @@ private fun DrawScope.drawBoosterAnimation(
 /**
  * Draws animated pulsing guidance rings and pointer finger on Level 1-3 for first-time players.
  */
+/**
+ * Draws animated pulsing guidance radar and an authentic, high-quality pointing hand vector
+ * with lifelike double-tap gesture for tutorial levels (Levels 1-3).
+ */
 private fun DrawScope.drawTutorialGuidance(
     origin: Offset,
     targetArrow: Arrow,
@@ -1964,46 +1968,94 @@ private fun DrawScope.drawTutorialGuidance(
     )
 
     val now = System.currentTimeMillis()
-    val pulseSec = (now % 1600L) / 1600f
+    val pulseSec = ((now % 1500L).toFloat()) / 1500f
     val pulseScale = 0.85f + 0.35f * sin(pulseSec * PI.toFloat())
-    val pulseAlpha = (1f - pulseSec).coerceIn(0f, 1f) * 0.80f
+    val pulseAlpha = (1f - pulseSec).coerceIn(0f, 1f) * 0.85f
 
-    // 1. Concentric Animated Pulsing Target Rings on the movable arrow
+    // 1. Concentric Animated Pulsing Target Radar Rings on the movable arrow
     drawCircle(
-        color = theme.arrowClear.copy(alpha = pulseAlpha * 0.5f),
+        color = theme.arrowClear.copy(alpha = pulseAlpha * 0.45f),
         radius = cellSize * 0.65f * pulseScale,
         center = headCenter,
-        style = Stroke(width = 2.5.dp.toPx(), cap = StrokeCap.Round)
+        style = Stroke(width = 2.4.dp.toPx(), cap = StrokeCap.Round)
     )
     drawCircle(
-        color = theme.arrowClear.copy(alpha = 0.75f),
-        radius = cellSize * 0.38f,
+        color = theme.arrowClear.copy(alpha = 0.80f),
+        radius = cellSize * 0.34f,
         center = headCenter,
         style = Stroke(width = 1.8.dp.toPx(), cap = StrokeCap.Round)
     )
-
-    // 2. Animated Tapping Pointer Finger
-    val tapAnim = sin((now % 1200L) / 1200f * 2f * PI.toFloat())
-    val fingerOffset = Offset(
-        headCenter.x + cellSize * 0.30f + tapAnim * 4.dp.toPx(),
-        headCenter.y + cellSize * 0.30f + tapAnim * 6.dp.toPx()
+    drawCircle(
+        color = theme.arrowClear.copy(alpha = 0.90f),
+        radius = 3.5.dp.toPx(),
+        center = headCenter
     )
 
-    // Hand icon shadow + body
-    drawCircle(
-        color = Color(0x33000000),
-        radius = cellSize * 0.20f,
-        center = fingerOffset + Offset(2.dp.toPx(), 4.dp.toPx())
+    // 2. Realistic Double-Tap Gesture Animation Rhythm
+    val cycle = ((now % 1400L).toFloat()) / 1400f
+    val tapDisplacement = when {
+        cycle < 0.16f -> sin(cycle / 0.16f * PI.toFloat()) * 8.dp.toPx()
+        cycle in 0.16f..0.28f -> 0f
+        cycle in 0.28f..0.44f -> sin((cycle - 0.28f) / 0.16f * PI.toFloat()) * 8.dp.toPx()
+        else -> 0f
+    }
+
+    // Base position for fingertip pointing diagonally at headCenter
+    val handAngle = 135f // points down-left towards arrow tip
+    val handDistance = (cellSize * 0.40f) - tapDisplacement
+    val handRad = (handAngle - 90f) * (PI.toFloat() / 180f)
+    val tipPos = Offset(
+        headCenter.x - cos(handRad) * handDistance,
+        headCenter.y - sin(handRad) * handDistance
     )
-    drawCircle(
-        color = Color(0xFFFCD34D),
-        radius = cellSize * 0.18f,
-        center = fingerOffset
-    )
-    drawCircle(
-        color = Color(0xFFF59E0B),
-        radius = cellSize * 0.18f,
-        center = fingerOffset,
-        style = Stroke(width = 1.5.dp.toPx())
-    )
+
+    // Construct high-detail vector pointing hand icon
+    val w = cellSize * 0.13f
+    val h = cellSize * 0.42f
+    val shadowOffsetX = 2.dp.toPx()
+    val shadowOffsetY = 3.dp.toPx()
+
+    val handPath = Path().apply {
+        moveTo(-w * 0.5f, 0f)
+        cubicTo(-w * 0.5f, -w * 0.5f, w * 0.5f, -w * 0.5f, w * 0.5f, 0f)
+        lineTo(w * 0.5f, h * 0.42f)
+        cubicTo(w * 1.1f, h * 0.44f, w * 1.1f, h * 0.60f, w * 0.5f, h * 0.62f)
+        cubicTo(w * 1.05f, h * 0.64f, w * 1.05f, h * 0.78f, w * 0.45f, h * 0.80f)
+        cubicTo(w * 0.95f, h * 0.82f, w * 0.95f, h * 0.94f, w * 0.35f, h * 0.95f)
+        lineTo(w * 0.2f, h * 1.15f)
+        lineTo(-w * 0.4f, h * 1.15f)
+        lineTo(-w * 0.45f, h * 0.75f)
+        cubicTo(-w * 1.1f, h * 0.65f, -w * 1.05f, h * 0.45f, -w * 0.5f, h * 0.40f)
+        lineTo(-w * 0.5f, 0f)
+        close()
+    }
+
+    withTransform({
+        translate(tipPos.x, tipPos.y)
+        rotate(handAngle, pivot = Offset.Zero)
+    }) {
+        // Drop shadow for tactile depth
+        withTransform({ translate(shadowOffsetX, shadowOffsetY) }) {
+            drawPath(path = handPath, color = Color(0x38000000))
+        }
+        // Hand body fill (radiant amber/gold)
+        val handFill = if (theme.isDark) Color(0xFFFBBF24) else Color(0xFFF59E0B)
+        drawPath(path = handPath, color = handFill)
+        // Luminous finger highlight
+        val highlightPath = Path().apply {
+            moveTo(-w * 0.25f, 0f)
+            lineTo(-w * 0.25f, h * 0.38f)
+        }
+        drawPath(
+            path = highlightPath,
+            color = Color.White.copy(alpha = 0.65f),
+            style = Stroke(width = 1.6.dp.toPx(), cap = StrokeCap.Round)
+        )
+        // Crisp outline
+        drawPath(
+            path = handPath,
+            color = Color(0xFF78350F),
+            style = Stroke(width = 1.5.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
+        )
+    }
 }

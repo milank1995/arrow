@@ -27,6 +27,7 @@ data class UserGameData(
     val lastDailyDate: String = "",
     val completedDailyDates: Set<String> = emptySet(),
     val levelStars: Map<Int, Int> = emptyMap(),
+    val hasPlayedBefore: Boolean = false,
     val soundEnabled: Boolean = true,
     val vibrationEnabled: Boolean = true,
     val themeIndex: Int = 0
@@ -43,11 +44,13 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_LAST_DAILY = stringPreferencesKey("last_daily_date")
     private val KEY_COMPLETED_DAILY_DATES = stringSetPreferencesKey("completed_daily_dates")
     private val KEY_LEVEL_STARS_MAP = stringPreferencesKey("level_stars_map")
+    private val KEY_HAS_PLAYED_BEFORE = booleanPreferencesKey("has_played_before")
     private val KEY_SOUND = booleanPreferencesKey("sound_enabled")
     private val KEY_VIBRATION = booleanPreferencesKey("vibration_enabled")
     private val KEY_THEME = intPreferencesKey("selected_theme_index")
 
     val userGameData: Flow<UserGameData> = context.dataStore.data.map { prefs ->
+        val hasPlayed = prefs[KEY_HAS_PLAYED_BEFORE] ?: ((prefs[KEY_LEVEL] ?: 1) > 1 || (prefs[KEY_COINS] != null && (prefs[KEY_COINS] ?: 100) != 100))
         UserGameData(
             currentLevel = prefs[KEY_LEVEL] ?: 1,
             coins = prefs[KEY_COINS] ?: 100,
@@ -58,6 +61,7 @@ class UserPreferencesRepository(private val context: Context) {
             lastDailyDate = prefs[KEY_LAST_DAILY] ?: "",
             completedDailyDates = prefs[KEY_COMPLETED_DAILY_DATES] ?: emptySet(),
             levelStars = parseLevelStars(prefs[KEY_LEVEL_STARS_MAP] ?: ""),
+            hasPlayedBefore = hasPlayed,
             soundEnabled = prefs[KEY_SOUND] ?: true,
             vibrationEnabled = prefs[KEY_VIBRATION] ?: true,
             themeIndex = prefs[KEY_THEME] ?: 0
@@ -188,5 +192,9 @@ class UserPreferencesRepository(private val context: Context) {
         } catch (e: Exception) {
             currentStreak + 1
         }
+    }
+
+    suspend fun markHasPlayedBefore() {
+        context.dataStore.edit { it[KEY_HAS_PLAYED_BEFORE] = true }
     }
 }

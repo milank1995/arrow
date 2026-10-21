@@ -57,6 +57,7 @@ data class GameUiState(
     val activeDailyIndex: Int = 1,
     val completedDailyDates: Set<String> = emptySet(),
     val levelStars: Map<Int, Int> = emptyMap(),
+    val hasPlayedBefore: Boolean = false,
     val activeBoosterAnimation: BoosterEffectAnimation? = null,
     val restartTrigger: Long = 0L
 ) {
@@ -83,7 +84,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
                 _uiState.update { current ->
                     current.copy(
-                        currentLevelNumber = data.currentLevel,
+                        currentLevelNumber = if (current.levelData == null) data.currentLevel else current.currentLevelNumber,
                         coins = data.coins,
                         streakDays = data.streakDays,
                         hintsAvailable = data.freeHints,
@@ -91,6 +92,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         wandsAvailable = data.freeWands,
                         completedDailyDates = data.completedDailyDates,
                         levelStars = data.levelStars,
+                        hasPlayedBefore = data.hasPlayedBefore,
                         lastCompletedLevelNumber = maxOf(data.currentLevel, current.lastCompletedLevelNumber),
                         isSoundEnabled = data.soundEnabled,
                         isVibrationEnabled = data.vibrationEnabled,
@@ -170,6 +172,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         if (_uiState.value.isLevelComplete || _uiState.value.isGameOver) return
         val currentArrow = _uiState.value.arrows.firstOrNull { it.id == clickedArrow.id } ?: clickedArrow
         if (currentArrow.state == ArrowState.CLEARED || currentArrow.state == ArrowState.FLYING_OUT) return
+
+        markHasPlayedBefore()
 
         // Always dismiss all path previews when user clicks an arrow to move it
         if (_uiState.value.previewRayArrowIds.isNotEmpty()) {
@@ -497,7 +501,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             // When completing a daily level, reload current campaign level so player returns to campaign
             loadLevel(_uiState.value.currentLevelNumber)
         } else {
-            val nextLvl = _uiState.value.lastCompletedLevelNumber + 1
+            val nextLvl = _uiState.value.currentLevelNumber + 1
             viewModelScope.launch {
                 repository.updateLevel(nextLvl)
                 loadLevel(nextLvl)
@@ -509,11 +513,17 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         if (_uiState.value.isDailyChallengeMode) {
             loadLevel(_uiState.value.currentLevelNumber)
         } else {
-            val nextLvl = _uiState.value.lastCompletedLevelNumber + 1
+            val nextLvl = _uiState.value.currentLevelNumber + 1
             viewModelScope.launch {
                 repository.updateLevel(nextLvl)
                 loadLevel(nextLvl)
             }
+        }
+    }
+
+    fun markHasPlayedBefore() {
+        viewModelScope.launch {
+            repository.markHasPlayedBefore()
         }
     }
 
