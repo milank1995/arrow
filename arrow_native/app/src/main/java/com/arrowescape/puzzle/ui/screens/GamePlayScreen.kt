@@ -51,6 +51,9 @@ fun GamePlayScreen(
     onBackToHomeClick: () -> Unit,
     onClaimDoubleCoins: (Int) -> Unit = {},
     onIdlePromptSound: () -> Unit = {},
+    onPlayStarSound: (Int) -> Unit = {},
+    onPlayCoinSound: () -> Unit = {},
+    onPlayClickSound: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var showThemeDialog by remember { mutableStateOf(false) }
@@ -96,6 +99,9 @@ fun GamePlayScreen(
             onClaimDoubleCoins = onClaimDoubleCoins,
             onNextLevelClick = onNextLevelClick,
             onHomeClick = onBackToHomeClick,
+            onPlayStarSound = onPlayStarSound,
+            onPlayCoinSound = onPlayCoinSound,
+            onPlayClickSound = onPlayClickSound,
             modifier = modifier
         )
     } else {

@@ -12,10 +12,10 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -85,6 +85,9 @@ fun VictoryScreen(
     onClaimDoubleCoins: (Int) -> Unit = {},
     onNextLevelClick: () -> Unit,
     onHomeClick: () -> Unit,
+    onPlayStarSound: (Int) -> Unit = {},
+    onPlayCoinSound: () -> Unit = {},
+    onPlayClickSound: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var hasClaimedDouble by remember { mutableStateOf(false) }
@@ -144,33 +147,37 @@ fun VictoryScreen(
             haloAlpha.animateTo(0.9f, tween(400))
         }
 
-        // Staggered star drops
+        // Staggered star drops with authentic cheer sounds
         delay(120)
         launch {
             star1Rotation.animateTo(-12f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
         }
         launch {
+            onPlayStarSound(1)
             star1Scale.animateTo(1.30f, tween(130, easing = FastOutSlowInEasing))
             star1Scale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
         }
 
-        delay(120)
+        delay(140)
         launch {
+            onPlayStarSound(2)
             star2Scale.animateTo(1.42f, tween(140, easing = FastOutSlowInEasing))
             star2Scale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
         }
 
-        delay(120)
+        delay(140)
         launch {
             star3Rotation.animateTo(12f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
         }
         launch {
+            onPlayStarSound(3)
             star3Scale.animateTo(1.30f, tween(130, easing = FastOutSlowInEasing))
             star3Scale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
         }
 
-        delay(80)
+        delay(100)
         launch {
+            onPlayCoinSound()
             val targetCoin = if (hasClaimedDouble) coinsEarned * 2 else coinsEarned
             animatedCoins.animateTo(targetCoin.toFloat(), tween(400, easing = FastOutSlowInEasing))
         }
@@ -201,105 +208,122 @@ fun VictoryScreen(
             .navigationBarsPadding()
             .displayCutoutPadding()
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp, vertical = 6.dp)
+        BoxWithConstraints(
+            modifier = Modifier.fillMaxSize()
         ) {
-            // 1. TOP NAV BAR: Home icon (left) & Total Coins balance pill (right)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .widthIn(max = 440.dp)
-                    .padding(vertical = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Home Button
-                IconButton(
-                    onClick = onHomeClick,
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                        .background(if (theme.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9))
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Home,
-                        contentDescription = "Home",
-                        tint = theme.textPrimary,
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
+            val availableHeight = maxHeight
+            // Requires vertical scroll only on extreme small-screen heights (e.g. landscape or split screen)
+            val requiresScroll = availableHeight < 520.dp
+            val isCompactHeight = availableHeight < 680.dp
 
-                // Level label in center
-                Text(
-                    text = if (isDailyChallenge) "DAILY CHALLENGE" else "LEVEL $levelNumber",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.sp,
-                    color = theme.textSecondary
-                )
-
-                // Total Coins Balance Pill
-                Surface(
-                    shape = RoundedCornerShape(20.dp),
-                    color = if (theme.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
-                    border = androidx.compose.foundation.BorderStroke(
-                        1.dp,
-                        Color(0x22FBBF24)
-                    )
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MonetizationOn,
-                            contentDescription = "Balance",
-                            tint = Color(0xFFD97706),
-                            modifier = Modifier.size(17.dp)
-                        )
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Text(
-                            text = "$totalCoins",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = theme.textPrimary
-                        )
-                    }
-                }
+            val contentModifier = if (requiresScroll) {
+                Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 22.dp, vertical = 8.dp)
+                    .verticalScroll(rememberScrollState())
+            } else {
+                Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 22.dp, vertical = if (isCompactHeight) 8.dp else 16.dp)
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // 2. MAIN SCROLLABLE CONTENT BODY (Adapts seamlessly across compact phones, foldables, and tablets)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .weight(1f)
-                    .widthIn(max = 440.dp)
-                    .verticalScroll(rememberScrollState())
-                    .scale(contentScale.value)
+                modifier = contentModifier
             ) {
-                Spacer(modifier = Modifier.height(4.dp))
+                // 1. TOP NAV BAR: Home icon (left) & Level (center) & Total Coins balance pill (right)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .widthIn(max = 440.dp)
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Home Button
+                    IconButton(
+                        onClick = {
+                            onPlayClickSound()
+                            onHomeClick()
+                        },
+                        modifier = Modifier
+                            .size(42.dp)
+                            .clip(CircleShape)
+                            .background(if (theme.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Home,
+                            contentDescription = "Home",
+                            tint = theme.textPrimary,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
 
-                // --- HERO CELEBRATION SECTION ---
+                    // Level label in center
+                    Text(
+                        text = if (isDailyChallenge) "DAILY CHALLENGE" else "LEVEL $levelNumber",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp,
+                        color = theme.textSecondary
+                    )
+
+                    // Total Coins Balance Pill
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = if (theme.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
+                        border = androidx.compose.foundation.BorderStroke(
+                            1.dp,
+                            Color(0x22FBBF24)
+                        )
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MonetizationOn,
+                                contentDescription = "Balance",
+                                tint = Color(0xFFD97706),
+                                modifier = Modifier.size(17.dp)
+                            )
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(
+                                text = "$totalCoins",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = theme.textPrimary
+                            )
+                        }
+                    }
+                }
+
+                // Dynamic vertical spacer above hero to center elements
+                if (!requiresScroll) {
+                    Spacer(modifier = Modifier.weight(if (isCompactHeight) 0.6f else 1.0f))
+                } else {
+                    Spacer(modifier = Modifier.height(14.dp))
+                }
+
+                // 2. HERO CELEBRATION SECTION (Sunburst, Tri-Star Arc, Headline, Subtitle)
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .widthIn(max = 440.dp)
+                        .scale(contentScale.value)
                 ) {
-                    // Ambient Rotating Golden Sunburst & Tri-Star Arc
+                    // Ambient Rotating Sunburst & Stars
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(115.dp),
+                            .height(if (isCompactHeight) 115.dp else 135.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        // Ambient Rotating Sunburst Rays
+                        // Sunburst Canvas
                         Canvas(
                             modifier = Modifier
-                                .size(210.dp)
+                                .size(if (isCompactHeight) 200.dp else 230.dp)
                                 .scale(haloAlpha.value)
                         ) {
                             val center = Offset(size.width / 2f, size.height / 2f)
@@ -339,7 +363,7 @@ fun VictoryScreen(
                             }
                         }
 
-                        // Tri-Star Arc (Left, Center Hero, Right)
+                        // Tri-Star Arc
                         Row(
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically,
@@ -351,19 +375,19 @@ fun VictoryScreen(
                                 contentDescription = "Star 1",
                                 tint = if (starsEarned >= 1) activeStarColor else inactiveStarColor,
                                 modifier = Modifier
-                                    .size(38.dp)
+                                    .size(if (isCompactHeight) 36.dp else 40.dp)
                                     .scale(star1Scale.value)
                                     .rotate(star1Rotation.value)
                             )
 
-                            Spacer(modifier = Modifier.width(14.dp))
+                            Spacer(modifier = Modifier.width(if (isCompactHeight) 12.dp else 16.dp))
 
                             // Star 2 (Center Hero Star)
                             Box(contentAlignment = Alignment.Center) {
                                 if (starsEarned >= 2) {
                                     Box(
                                         modifier = Modifier
-                                            .size(54.dp)
+                                            .size(if (isCompactHeight) 52.dp else 60.dp)
                                             .background(
                                                 brush = Brush.radialGradient(
                                                     colors = listOf(
@@ -380,12 +404,12 @@ fun VictoryScreen(
                                     contentDescription = "Hero Star",
                                     tint = if (starsEarned >= 2) activeStarColor else inactiveStarColor,
                                     modifier = Modifier
-                                        .size(54.dp)
+                                        .size(if (isCompactHeight) 50.dp else 56.dp)
                                         .scale(star2Scale.value)
                                 )
                             }
 
-                            Spacer(modifier = Modifier.width(14.dp))
+                            Spacer(modifier = Modifier.width(if (isCompactHeight) 12.dp else 16.dp))
 
                             // Star 3 (Right)
                             Icon(
@@ -393,41 +417,48 @@ fun VictoryScreen(
                                 contentDescription = "Star 3",
                                 tint = if (starsEarned >= 3) activeStarColor else inactiveStarColor,
                                 modifier = Modifier
-                                    .size(38.dp)
+                                    .size(if (isCompactHeight) 36.dp else 40.dp)
                                     .scale(star3Scale.value)
                                     .rotate(star3Rotation.value)
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(if (isCompactHeight) 6.dp else 10.dp))
 
                     Text(
                         text = headlineText,
-                        fontSize = 24.sp,
+                        fontSize = if (isCompactHeight) 24.sp else 28.sp,
                         fontWeight = FontWeight.Black,
                         color = theme.textPrimary,
                         letterSpacing = 0.5.sp,
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(3.dp))
+                    Spacer(modifier = Modifier.height(if (isCompactHeight) 3.dp else 5.dp))
 
                     Text(
                         text = sublineText,
-                        fontSize = 13.sp,
+                        fontSize = if (isCompactHeight) 13.sp else 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = theme.textSecondary,
                         textAlign = TextAlign.Center
                     )
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                // Dynamic vertical spacer between Hero and Stats
+                if (!requiresScroll) {
+                    Spacer(modifier = Modifier.weight(if (isCompactHeight) 0.6f else 1.0f))
+                } else {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
 
-                // --- REWARDS & STATS POD ---
+                // 3. REWARDS & STATS POD
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .widthIn(max = 440.dp)
                 ) {
                     // Coins Reward Card
                     Surface(
@@ -439,7 +470,7 @@ fun VictoryScreen(
                         ),
                         modifier = Modifier
                             .weight(1f)
-                            .height(62.dp)
+                            .height(64.dp)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -448,7 +479,7 @@ fun VictoryScreen(
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(32.dp)
+                                    .size(34.dp)
                                     .clip(CircleShape)
                                     .background(Color(0xFFFEF3C7)),
                                 contentAlignment = Alignment.Center
@@ -470,7 +501,7 @@ fun VictoryScreen(
                                 )
                                 Text(
                                     text = if (hasClaimedDouble) "2× Coins" else "Coins",
-                                    fontSize = 10.sp,
+                                    fontSize = 11.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = theme.textSecondary
                                 )
@@ -488,7 +519,7 @@ fun VictoryScreen(
                         ),
                         modifier = Modifier
                             .weight(1f)
-                            .height(62.dp)
+                            .height(64.dp)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -497,7 +528,7 @@ fun VictoryScreen(
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(32.dp)
+                                    .size(34.dp)
                                     .clip(CircleShape)
                                     .background(Color(0xFFFEE2E2)),
                                 contentAlignment = Alignment.Center
@@ -513,13 +544,13 @@ fun VictoryScreen(
                             Column {
                                 Text(
                                     text = "$streakDays Day",
-                                    fontSize = 15.sp,
+                                    fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = theme.textPrimary
                                 )
                                 Text(
                                     text = "Streak",
-                                    fontSize = 10.sp,
+                                    fontSize = 11.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = theme.textSecondary
                                 )
@@ -528,12 +559,19 @@ fun VictoryScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                // Dynamic vertical spacer between Stats and Actions
+                if (!requiresScroll) {
+                    Spacer(modifier = Modifier.weight(if (isCompactHeight) 0.6f else 1.0f))
+                } else {
+                    Spacer(modifier = Modifier.height(14.dp))
+                }
 
-                // --- MONETIZATION & ADS SECTION ---
+                // 4. MONETIZATION & ADS POD
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .widthIn(max = 440.dp)
                 ) {
                     // Rewarded Video: "Watch Ad to 2x Coins" Button
                     Surface(
@@ -549,24 +587,25 @@ fun VictoryScreen(
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(46.dp)
+                            .height(48.dp)
                             .clip(RoundedCornerShape(16.dp))
                             .clickable(enabled = !hasClaimedDouble) {
                                 hasClaimedDouble = true
+                                onPlayCoinSound()
                                 onClaimDoubleCoins(coinsEarned)
                             }
                     ) {
                         Row(
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 10.dp)
+                            modifier = Modifier.padding(horizontal = 12.dp)
                         ) {
                             if (hasClaimedDouble) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = "Claimed",
                                     tint = Color(0xFF10B981),
-                                    modifier = Modifier.size(17.dp)
+                                    modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
@@ -609,7 +648,7 @@ fun VictoryScreen(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    // DEDICATED BANNER AD CONTAINER (Ready for Google AdMob / Unity Ads Banner)
+                    // DEDICATED BANNER AD CONTAINER (320x50 Standard Mobile Banner Slot)
                     Surface(
                         shape = RoundedCornerShape(14.dp),
                         color = if (theme.isDark) Color(0xFF1E293B).copy(alpha = 0.6f) else Color(0xFFF8FAFC),
@@ -661,11 +700,19 @@ fun VictoryScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                // Dynamic vertical spacer between Ads and Primary CTA
+                if (!requiresScroll) {
+                    Spacer(modifier = Modifier.weight(if (isCompactHeight) 0.8f else 1.2f))
+                } else {
+                    Spacer(modifier = Modifier.height(18.dp))
+                }
 
-                // --- PRIMARY CONTINUE CTA BUTTON ---
+                // 5. PRIMARY CONTINUE CTA BUTTON (NEXT LEVEL)
                 Button(
-                    onClick = onNextLevelClick,
+                    onClick = {
+                        onPlayClickSound()
+                        onNextLevelClick()
+                    },
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = theme.arrowDefault
@@ -676,7 +723,8 @@ fun VictoryScreen(
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp)
+                        .widthIn(max = 440.dp)
+                        .height(54.dp)
                         .scale(buttonPulse)
                 ) {
                     Row(
@@ -700,7 +748,12 @@ fun VictoryScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(6.dp))
+                // Bottom dynamic vertical spacer
+                if (!requiresScroll) {
+                    Spacer(modifier = Modifier.weight(if (isCompactHeight) 0.4f else 0.8f))
+                } else {
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
             }
         }
     }

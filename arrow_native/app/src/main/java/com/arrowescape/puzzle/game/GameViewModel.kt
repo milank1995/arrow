@@ -36,6 +36,8 @@ data class GameUiState(
     val cheerFromLeft: Boolean = true,
     val isGridLinesActive: Boolean = false,
     val isHammerModeActive: Boolean = false,
+    val isSoundEnabled: Boolean = true,
+    val isVibrationEnabled: Boolean = true,
     val previewRayArrowId: String? = null,
     val activeTheme: ThemePreset = ThemePresets.CleanLight,
     val currentLevelNumber: Int = 1,
@@ -78,6 +80,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         hammersAvailable = data.freeHammers,
                         wandsAvailable = data.freeWands,
                         completedDailyDates = data.completedDailyDates,
+                        isSoundEnabled = data.soundEnabled,
+                        isVibrationEnabled = data.vibrationEnabled,
                         activeTheme = theme
                     )
                 }
@@ -178,6 +182,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             }
             val isOver = newHearts <= 0
 
+            if (isOver) {
+                audioHapticManager.playLevelFail()
+            }
             _uiState.update { state ->
                 val flashedArrows = state.arrows.map {
                     if (it.id == currentArrow.id) {
@@ -329,7 +336,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap) ?: return
         viewModelScope.launch {
             if (repository.useBooster("hint")) {
-                audioHapticManager.playBoosterUse()
+                audioHapticManager.playBoosterUse("hint")
                 _uiState.update { state ->
                     val updated = state.arrows.map {
                         if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
@@ -349,7 +356,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     private fun executeHammerStrike(target: Arrow) {
         viewModelScope.launch {
             if (repository.useBooster("hammer")) {
-                audioHapticManager.playBoosterUse()
+                audioHapticManager.playBoosterUse("hammer")
                 occupancyMap.release(target)
 
                 val updated = _uiState.value.arrows.map {
@@ -372,7 +379,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         val target = PuzzleSolver.getMagicWandTarget(_uiState.value.arrows, occupancyMap) ?: return
         viewModelScope.launch {
             if (repository.useBooster("wand")) {
-                audioHapticManager.playBoosterUse()
+                audioHapticManager.playBoosterUse("wand")
                 occupancyMap.release(target)
 
                 _uiState.update { state ->
@@ -472,8 +479,32 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     fun claimDoubleCoins(amount: Int) {
         viewModelScope.launch {
             repository.addCoins(amount)
-            audioHapticManager.playBoosterUse()
+            audioHapticManager.playCoinCollect()
         }
+    }
+
+    fun toggleSound() {
+        viewModelScope.launch {
+            repository.toggleSound()
+        }
+    }
+
+    fun toggleVibration() {
+        viewModelScope.launch {
+            repository.toggleVibration()
+        }
+    }
+
+    fun playClick() {
+        audioHapticManager.playClick()
+    }
+
+    fun playCoinCollect() {
+        audioHapticManager.playCoinCollect()
+    }
+
+    fun playStarDrop(starIndex: Int) {
+        audioHapticManager.playStarDrop(starIndex)
     }
 
     private fun handleLevelComplete(completedLevel: Int) {

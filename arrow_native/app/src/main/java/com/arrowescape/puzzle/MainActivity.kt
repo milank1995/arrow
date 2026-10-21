@@ -53,11 +53,13 @@ class MainActivity : ComponentActivity() {
                                 HomeScreen(
                                     uiState = uiState,
                                     theme = uiState.activeTheme,
-                                    isSoundOn = gameViewModel.audioHapticManager.isSoundEnabled,
+                                    isSoundOn = uiState.isSoundEnabled,
                                     onPlayClick = {
+                                        gameViewModel.playClick()
                                         currentScreen = AppScreen.GAMEPLAY
                                     },
                                     onDailyChallengeClick = {
+                                        gameViewModel.playClick()
                                         if (uiState.currentLevelNumber >= 5) {
                                             showDailyCalendarDialog = true
                                         } else {
@@ -70,13 +72,14 @@ class MainActivity : ComponentActivity() {
                                         }
                                     },
                                     onThemeClick = {
+                                        gameViewModel.playClick()
                                         gameViewModel.cycleTheme()
                                     },
                                     onSoundToggle = {
-                                        gameViewModel.audioHapticManager.isSoundEnabled =
-                                            !gameViewModel.audioHapticManager.isSoundEnabled
+                                        gameViewModel.toggleSound()
                                     },
                                     onDevTestClick = {
+                                        gameViewModel.playClick()
                                         currentScreen = AppScreen.DEV_TEST
                                     }
                                 )
@@ -91,21 +94,27 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.onArrowLongPress(arrow, isPressed)
                                     },
                                     onHintClick = {
+                                        gameViewModel.playClick()
                                         gameViewModel.useHint()
                                     },
                                     onHammerClick = {
+                                        gameViewModel.playClick()
                                         gameViewModel.toggleHammerMode()
                                     },
                                     onWandClick = {
+                                        gameViewModel.playClick()
                                         gameViewModel.useMagicWand()
                                     },
                                     onGridClick = {
+                                        gameViewModel.playClick()
                                         gameViewModel.toggleGridLines()
                                     },
                                     onThemeSelect = { selectedTheme ->
+                                        gameViewModel.playClick()
                                         gameViewModel.setTheme(selectedTheme)
                                     },
                                     onNextLevelClick = {
+                                        gameViewModel.playClick()
                                         val wasDaily = uiState.isDailyChallengeMode
                                         gameViewModel.nextLevel()
                                         if (wasDaily) {
@@ -116,9 +125,11 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.claimDoubleCoins(amount)
                                     },
                                     onRestartClick = {
+                                        gameViewModel.playClick()
                                         gameViewModel.restartLevel()
                                     },
                                     onBackToHomeClick = {
+                                        gameViewModel.playClick()
                                         if (uiState.isLevelComplete) {
                                             gameViewModel.onVictoryHomeClick()
                                         } else if (uiState.isDailyChallengeMode) {
@@ -128,6 +139,15 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onIdlePromptSound = {
                                         gameViewModel.playHintNudge()
+                                    },
+                                    onPlayStarSound = { starIdx ->
+                                        gameViewModel.playStarDrop(starIdx)
+                                    },
+                                    onPlayCoinSound = {
+                                        gameViewModel.playCoinCollect()
+                                    },
+                                    onPlayClickSound = {
+                                        gameViewModel.playClick()
                                     }
                                 )
                             }

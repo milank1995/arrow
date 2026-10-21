@@ -2,11 +2,8 @@ package com.arrowescape.puzzle.audio
 
 import android.content.Context
 import android.media.AudioAttributes
-import android.media.AudioFormat
-import android.media.AudioTrack
 import android.media.SoundPool
 import android.os.Build
-import android.os.CombinedVibration
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -14,8 +11,12 @@ import com.arrowescape.puzzle.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlin.math.sin
 
+/**
+ * Authentic Sound & Haptics Manager for Arrow Escape.
+ * Manages all gameplay audio clips extracted directly from the Unity reference,
+ * providing microsecond low-latency playback via SoundPool with vibration synthesis.
+ */
 class AudioHapticManager(private val context: Context) {
 
     private val vibrator: Vibrator? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -27,12 +28,19 @@ class AudioHapticManager(private val context: Context) {
     }
 
     var isSoundEnabled: Boolean = true
+        set(value) {
+            field = value
+            if (!value) {
+                stopAll()
+            }
+        }
+
     var isVibrationEnabled: Boolean = true
 
     private val audioScope = CoroutineScope(Dispatchers.Default)
 
     private val soundPool: SoundPool = SoundPool.Builder()
-        .setMaxStreams(8)
+        .setMaxStreams(14)
         .setAudioAttributes(
             AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_GAME)
@@ -41,99 +49,111 @@ class AudioHapticManager(private val context: Context) {
         )
         .build()
 
-    private var winSoundId: Int = 0
+    // Authentic sound IDs
+    private var sfxTapId: Int = 0
+    private var sfxClickId: Int = 0
+    private var sfxSlideId: Int = 0
+    private var sfxWrongId: Int = 0
+    private var sfxCoinId: Int = 0
+    private var sfxStarId: Int = 0
+    private var sfxWinId: Int = 0
+    private var sfxHintId: Int = 0
+    private var sfxFailId: Int = 0
+    private var sfxHammerId: Int = 0
+    private var sfxBoosterId: Int = 0
+    private var sfxDotId: Int = 0
+
+    // Combo push sounds
     private val pushSoundIds = mutableListOf<Int>()
+    private val loadedSounds = mutableSetOf<Int>()
 
     init {
+        soundPool.setOnLoadCompleteListener { _, sampleId, status ->
+            if (status == 0) {
+                loadedSounds.add(sampleId)
+            }
+        }
+
         try {
-            winSoundId = soundPool.load(context, R.raw.rank_medal_popup, 1)
+            sfxTapId = loadSound(R.raw.sfx_tap)
+            sfxClickId = loadSound(R.raw.sfx_click)
+            sfxSlideId = loadSound(R.raw.sfx_slide)
+            sfxWrongId = loadSound(R.raw.sfx_wrong)
+            sfxCoinId = loadSound(R.raw.sfx_coin)
+            sfxStarId = loadSound(R.raw.sfx_star)
+            sfxWinId = loadSound(R.raw.sfx_win)
+            sfxHintId = loadSound(R.raw.sfx_hint)
+            sfxFailId = loadSound(R.raw.sfx_fail)
+            sfxHammerId = loadSound(R.raw.sfx_hammer)
+            sfxBoosterId = loadSound(R.raw.sfx_booster)
+            sfxDotId = loadSound(R.raw.sfx_dot)
+
             val pushRaws = intArrayOf(
                 R.raw.push1_1, R.raw.push1_2, R.raw.push1_3, R.raw.push1_4,
                 R.raw.push2_1, R.raw.push2_2, R.raw.push2_3,
                 R.raw.push3_1, R.raw.push3_2
             )
             for (raw in pushRaws) {
-                pushSoundIds.add(soundPool.load(context, raw, 1))
+                pushSoundIds.add(loadSound(raw))
             }
         } catch (_: Exception) {
-            // Audio loading fallback handled automatically
+            // Audio loading fallback handled safely
+        }
+    }
+
+    private fun loadSound(resId: Int): Int {
+        return try {
+            soundPool.load(context, resId, 1)
+        } catch (_: Exception) {
+            0
+        }
+    }
+
+    private fun playSfx(soundId: Int, volume: Float = 0.9f, rate: Float = 1.0f): Int {
+        if (!isSoundEnabled || soundId == 0) return 0
+        return try {
+            soundPool.play(soundId, volume, volume, 1, 0, rate)
+        } catch (_: Exception) {
+            0
+        }
+    }
+
+    fun stopAll() {
+        try {
+            soundPool.autoPause()
+        } catch (_: Exception) {}
+    }
+
+    /**
+     * UI button click sound with crisp, lightweight haptic.
+     */
+    fun playClick() {
+        playSfx(sfxClickId, volume = 0.75f)
+        if (isVibrationEnabled) {
+            vibrate(VibrationEffect.createOneShot(10, 50))
         }
     }
 
     /**
-     * Synthesizes and plays a short sine-wave tone with smooth exponential decay.
+     * Arrow tap sound when an arrow is selected.
      */
-    private fun playTone(startFreq: Float, endFreq: Float, durationMs: Int, volume: Float = 0.6f) {
-        if (!isSoundEnabled) return
-
-        audioScope.launch {
-            try {
-                val sampleRate = 44100
-                val numSamples = (sampleRate * (durationMs / 1000f)).toInt()
-                val buffer = ShortArray(numSamples)
-
-                for (i in 0 until numSamples) {
-                    val t = i.toFloat() / numSamples
-                    val currentFreq = startFreq + (endFreq - startFreq) * t
-                    val envelope = (1.0 - t) * (1.0 - t) // Quadratic decay
-                    val angle = 2.0 * Math.PI * currentFreq * (i.toFloat() / sampleRate)
-                    val sample = (sin(angle) * envelope * volume * Short.MAX_VALUE).toInt()
-                    buffer[i] = sample.coerceIn(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort()
-                }
-
-                val track = AudioTrack.Builder()
-                    .setAudioAttributes(
-                        AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_GAME)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                            .build()
-                    )
-                    .setAudioFormat(
-                        AudioFormat.Builder()
-                            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                            .setSampleRate(sampleRate)
-                            .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
-                            .build()
-                    )
-                    .setBufferSizeInBytes(buffer.size * 2)
-                    .setTransferMode(AudioTrack.MODE_STATIC)
-                    .build()
-
-                track.write(buffer, 0, buffer.size)
-                track.play()
-                // Auto-release track after playback
-                track.setNotificationMarkerPosition(numSamples)
-                track.setPlaybackPositionUpdateListener(object : AudioTrack.OnPlaybackPositionUpdateListener {
-                    override fun onMarkerReached(t: AudioTrack?) {
-                        t?.release()
-                    }
-                    override fun onPeriodicNotification(t: AudioTrack?) {}
-                })
-            } catch (_: Exception) {
-                // Ignore audio synthesis exceptions safely
-            }
-        }
-    }
-
     fun playTap() {
-        playTone(startFreq = 480f, endFreq = 620f, durationMs = 45, volume = 0.35f)
+        playSfx(sfxTapId, volume = 0.85f)
         if (isVibrationEnabled) {
             vibrate(VibrationEffect.createOneShot(12, 60))
         }
     }
 
+    /**
+     * Arrow escape / slide whoosh with combo escalation.
+     */
     fun playArrowFly(comboCount: Int = 0) {
         if (isSoundEnabled) {
             if (pushSoundIds.isNotEmpty()) {
                 val idx = (comboCount.coerceAtLeast(1) - 1) % pushSoundIds.size
-                soundPool.play(pushSoundIds[idx], 0.85f, 0.85f, 1, 0, 1.0f)
+                playSfx(pushSoundIds[idx], volume = 0.90f)
             } else {
-                val scaleSteps = floatArrayOf(1.0f, 1.122f, 1.260f, 1.498f, 1.682f, 2.0f, 2.245f, 2.52f)
-                val step = (comboCount.coerceAtLeast(1) - 1) % scaleSteps.size
-                val pitchFactor = scaleSteps[step]
-                val startFreq = 340f * pitchFactor
-                val endFreq = (880f * pitchFactor).coerceAtMost(3600f)
-                playTone(startFreq = startFreq, endFreq = endFreq, durationMs = 120, volume = 0.5f)
+                playSfx(sfxSlideId, volume = 0.85f)
             }
         }
         if (isVibrationEnabled) {
@@ -142,8 +162,11 @@ class AudioHapticManager(private val context: Context) {
         }
     }
 
+    /**
+     * Blocked arrow move / collision sound with double error vibration.
+     */
     fun playWrongMove() {
-        playTone(startFreq = 220f, endFreq = 140f, durationMs = 180, volume = 0.7f)
+        playSfx(sfxWrongId, volume = 0.85f)
         if (isVibrationEnabled) {
             val timings = longArrayOf(0, 40, 50, 60)
             val amplitudes = intArrayOf(0, 200, 0, 255)
@@ -151,29 +174,50 @@ class AudioHapticManager(private val context: Context) {
         }
     }
 
-    fun playBoosterUse() {
-        playTone(startFreq = 520f, endFreq = 1200f, durationMs = 200, volume = 0.6f)
+    /**
+     * Star drop cheer sound for victory screen with pitch step per star.
+     */
+    fun playStarDrop(starIndex: Int = 1) {
+        val pitch = when (starIndex) {
+            1 -> 1.0f
+            2 -> 1.12f
+            else -> 1.25f
+        }
+        playSfx(sfxStarId, volume = 0.95f, rate = pitch)
+        if (isVibrationEnabled) {
+            vibrate(VibrationEffect.createOneShot(20, 90))
+        }
+    }
+
+    /**
+     * Coin collection / reward counter sound.
+     */
+    fun playCoinCollect() {
+        playSfx(sfxCoinId, volume = 0.85f)
+        if (isVibrationEnabled) {
+            vibrate(VibrationEffect.createOneShot(14, 60))
+        }
+    }
+
+    /**
+     * Booster activation sound (Hammer, Magic Wand, Hint).
+     */
+    fun playBoosterUse(boosterType: String = "wand") {
+        when (boosterType) {
+            "hammer" -> playSfx(sfxHammerId, volume = 0.95f)
+            "hint" -> playSfx(sfxHintId, volume = 0.85f)
+            else -> playSfx(sfxBoosterId, volume = 0.90f)
+        }
         if (isVibrationEnabled) {
             vibrate(VibrationEffect.createOneShot(35, 160))
         }
     }
 
+    /**
+     * Level Complete victory fanfare.
+     */
     fun playLevelWin() {
-        if (isSoundEnabled) {
-            if (winSoundId != 0) {
-                soundPool.play(winSoundId, 0.95f, 0.95f, 2, 0, 1.0f)
-            } else {
-                audioScope.launch {
-                    playTone(523.25f, 523.25f, 100, 0.5f) // C5
-                    kotlinx.coroutines.delay(100)
-                    playTone(659.25f, 659.25f, 100, 0.6f) // E5
-                    kotlinx.coroutines.delay(100)
-                    playTone(783.99f, 783.99f, 120, 0.7f) // G5
-                    kotlinx.coroutines.delay(120)
-                    playTone(1046.50f, 1046.50f, 300, 0.8f) // C6
-                }
-            }
-        }
+        playSfx(sfxWinId, volume = 1.0f)
         if (isVibrationEnabled) {
             val timings = longArrayOf(0, 50, 80, 50, 80, 120)
             val amplitudes = intArrayOf(0, 140, 0, 190, 0, 255)
@@ -181,11 +225,33 @@ class AudioHapticManager(private val context: Context) {
         }
     }
 
+    /**
+     * Out of lives / Level Fail sound.
+     */
+    fun playLevelFail() {
+        playSfx(sfxFailId, volume = 0.95f)
+        if (isVibrationEnabled) {
+            val timings = longArrayOf(0, 80, 100, 140)
+            val amplitudes = intArrayOf(0, 180, 0, 240)
+            vibrate(VibrationEffect.createWaveform(timings, amplitudes, -1))
+        }
+    }
+
+    /**
+     * Idle hint nudge sound.
+     */
     fun playHintNudge() {
-        playTone(startFreq = 580f, endFreq = 780f, durationMs = 130, volume = 0.35f)
+        playSfx(sfxHintId, volume = 0.70f)
         if (isVibrationEnabled) {
             vibrate(VibrationEffect.createOneShot(15, 50))
         }
+    }
+
+    /**
+     * Dot animation appearance sound.
+     */
+    fun playDotAnim() {
+        playSfx(sfxDotId, volume = 0.65f)
     }
 
     private fun vibrate(effect: VibrationEffect) {
