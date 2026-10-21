@@ -209,6 +209,7 @@ fun GamePlayScreen(
                                 theme = theme,
                                 isGridLinesActive = uiState.isGridLinesActive,
                                 isCelebrationBurstActive = uiState.isCelebrationBurstActive,
+                                restartTrigger = uiState.restartTrigger,
                                 previewRayArrowId = uiState.previewRayArrowId,
                                 onArrowClick = { arrow ->
                                     lastInteractionTime = System.currentTimeMillis()

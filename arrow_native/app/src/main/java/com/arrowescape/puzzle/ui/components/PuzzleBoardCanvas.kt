@@ -115,6 +115,7 @@ fun PuzzleBoardCanvas(
     theme: ThemePreset,
     isGridLinesActive: Boolean,
     isCelebrationBurstActive: Boolean = false,
+    restartTrigger: Long = 0L,
     previewRayArrowId: String?,
     onArrowClick: (Arrow) -> Unit,
     onArrowLongPress: (Arrow, isPressed: Boolean) -> Unit,
@@ -129,10 +130,10 @@ fun PuzzleBoardCanvas(
     var settleJob by remember { mutableStateOf<Job?>(null) }
 
     // Remember the initial level silhouette cells to render subtle cell dots for cleared areas
-    val initialLevelCells = remember(xSize, ySize, arrows.size, arrows.firstOrNull()?.id) {
+    val initialLevelCells = remember(xSize, ySize, arrows.size, arrows.firstOrNull()?.id, restartTrigger) {
         arrows.flatMap { it.allPoints }.toSet()
     }
-    val clearedCellTimestamps = remember(xSize, ySize, arrows.firstOrNull()?.id) { mutableMapOf<GridCoordinate, Long>() }
+    val clearedCellTimestamps = remember(xSize, ySize, arrows.firstOrNull()?.id, restartTrigger) { mutableMapOf<GridCoordinate, Long>() }
     val clearedCells = remember(arrows, initialLevelCells) {
         val activeCoords = arrows.filter { it.state != ArrowState.CLEARED }.flatMap { it.allPoints }.toSet()
         val cleared = initialLevelCells.filter { it !in activeCoords }.toSet()
@@ -146,9 +147,9 @@ fun PuzzleBoardCanvas(
     }
     val currentClearedCells by rememberUpdatedState(clearedCells)
 
-    // Reset zoom and pan, and launch cascading write-on path assembly animation whenever a new level is loaded
+    // Reset zoom and pan, and launch cascading write-on path assembly animation whenever a new level is loaded or restarted
     val introProgress = remember { Animatable(0f) }
-    LaunchedEffect(xSize, ySize, arrows.size, arrows.firstOrNull()?.id) {
+    LaunchedEffect(xSize, ySize, arrows.size, arrows.firstOrNull()?.id, restartTrigger) {
         settleJob?.cancel()
         scale = 1f
         panX = 0f
@@ -160,16 +161,25 @@ fun PuzzleBoardCanvas(
         )
     }
 
-    // Hint pulse animation
+    // Hint pulse and radiant glow animation
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
     val hintPulseScale by infiniteTransition.animateFloat(
-        initialValue = 0.95f,
+        initialValue = 0.98f,
         targetValue = 1.15f,
         animationSpec = infiniteRepeatable(
-            animation = tween(450),
+            animation = tween(520, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
         label = "hintPulse"
+    )
+    val hintGlowAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.28f,
+        targetValue = 0.82f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(520, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "hintGlowAlpha"
     )
 
 
@@ -625,18 +635,22 @@ fun PuzzleBoardCanvas(
         ) {
             if (animTick > 0L) { /* Redraw subscription for dynamic particle animations */ }
             val center = Offset(size.width / 2f, size.height / 2f)
-            // Subtle directional micro-jolt camera shake on blocked obstacle collision
+            // Directional micro-jolt camera shake on blocked obstacle collision impact
             val flashingArrow = arrows.firstOrNull { it.state == ArrowState.WRONG_FLASH }
             val blockedShakeOffset = if (flashingArrow != null) {
                 val t = flashingArrow.flightProgress
-                val decay = (1f - t).coerceIn(0f, 1f)
-                val shakeMagnitude = 2.4.dp.toPx() * decay
-                val oscillation = sin(t * 3f * PI.toFloat())
-                val dir = flashingArrow.direction
-                Offset(
-                    x = dir.dx * oscillation * shakeMagnitude,
-                    y = dir.dy * oscillation * shakeMagnitude
-                )
+                // Peak impact occurs at t = 0.38; camera jolts directly upon collision
+                if (t >= 0.32f) {
+                    val impactPhase = ((t - 0.32f) / 0.68f).coerceIn(0f, 1f)
+                    val decay = (1f - impactPhase).coerceIn(0f, 1f)
+                    val shakeMagnitude = 2.6.dp.toPx() * decay
+                    val oscillation = sin(impactPhase * 4f * PI.toFloat())
+                    val dir = flashingArrow.direction
+                    Offset(
+                        x = dir.dx * oscillation * shakeMagnitude,
+                        y = dir.dy * oscillation * shakeMagnitude
+                    )
+                } else Offset.Zero
             } else Offset.Zero
 
             withTransform({
@@ -719,11 +733,13 @@ fun PuzzleBoardCanvas(
                     drawArrowEntity(
                         origin = boardOrigin,
                         arrow = arrow,
+                        allArrows = arrows,
                         xSize = xSize,
                         ySize = ySize,
                         cellSize = cellSize,
                         theme = theme,
                         hintPulseScale = hintPulseScale,
+                        hintGlowAlpha = hintGlowAlpha,
                         previewRayArrowId = previewRayArrowId,
                         drawProgress = easedDraw,
                         introAlpha = introAlpha
@@ -813,7 +829,7 @@ fun PuzzleBoardCanvas(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
-                        text = "↺",
+                        text = "â†º",
                         color = Color.White,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
@@ -975,14 +991,35 @@ private fun distanceToSegment(p: Offset, a: Offset, b: Offset): Float {
     return hypot(p.x - projX, p.y - projY)
 }
 
+private fun getStepsToBlocker(arrow: Arrow, arrows: List<Arrow>, xSize: Int, ySize: Int): Float {
+    val occupiedCoords = mutableSetOf<GridCoordinate>()
+    for (a in arrows) {
+        if (a.id != arrow.id && a.state != ArrowState.CLEARED && a.state != ArrowState.FLYING_OUT) {
+            occupiedCoords.addAll(a.allPoints)
+        }
+    }
+    var steps = 1
+    var rayCoord = arrow.head.step(arrow.direction)
+    while (rayCoord.x in 0 until xSize && rayCoord.y in 0 until ySize) {
+        if (occupiedCoords.contains(rayCoord)) {
+            return steps.toFloat()
+        }
+        steps++
+        rayCoord = rayCoord.step(arrow.direction)
+    }
+    return steps.toFloat().coerceAtLeast(1f)
+}
+
 private fun DrawScope.drawArrowEntity(
     origin: Offset,
     arrow: Arrow,
+    allArrows: List<Arrow>,
     xSize: Int,
     ySize: Int,
     cellSize: Float,
     theme: ThemePreset,
     hintPulseScale: Float,
+    hintGlowAlpha: Float,
     previewRayArrowId: String?,
     drawProgress: Float = 1.0f,
     introAlpha: Float = 1.0f
@@ -1035,11 +1072,27 @@ private fun DrawScope.drawArrowEntity(
     val originalBodyLen = (arrow.body.size - 1).coerceAtLeast(0)
     val maxDisplacement = (maxOf(xSize, ySize) + arrow.body.size + 2).toFloat()
 
+    val stepsToBlocker = if (arrow.state == ArrowState.WRONG_FLASH) {
+        getStepsToBlocker(arrow, allArrows, xSize, ySize)
+    } else 1f
+
     val displacement = when (arrow.state) {
         ArrowState.FLYING_OUT -> arrow.flightProgress * maxDisplacement
         ArrowState.WRONG_FLASH -> {
             val t = arrow.flightProgress
-            (sin(t * PI.toFloat()) * 0.30f - sin(t * 2.5f * PI.toFloat()) * 0.08f * (1f - t)).coerceAtLeast(-0.15f)
+            // Dynamic forward surge towards blocker: stops right at the obstacle boundary
+            val maxSurge = (stepsToBlocker - 0.38f).coerceIn(0.28f, 2.2f)
+            if (t < 0.38f) {
+                // Forward surge toward collision point
+                val forwardRatio = t / 0.38f
+                sin(forwardRatio * (PI.toFloat() / 2f)) * maxSurge
+            } else {
+                // Elastic bounce-back and damped settling to origin
+                val p = (t - 0.38f) / 0.62f
+                val recoilDecay = (1f - p)
+                maxSurge * recoilDecay * kotlin.math.cos(p * (PI.toFloat() / 2f)) -
+                    sin(p * 2f * PI.toFloat()) * 0.10f * recoilDecay
+            }
         }
         else -> 0f
     }
@@ -1106,6 +1159,31 @@ private fun DrawScope.drawArrowEntity(
 
     val renderColor = baseColor.copy(alpha = alpha * introAlpha)
 
+    // 0. Draw Radiant Multi-Theme Glow Aura when Hinted (supports all themes dynamically)
+    if (arrow.state == ArrowState.HINTED && sampledPoints.size > 1) {
+        val haloPath = buildRoundedCornerPath(sampledPoints, radius = cellSize * 0.16f)
+        // Outer soft radiant aura
+        drawPath(
+            path = haloPath,
+            color = theme.arrowHint.copy(alpha = hintGlowAlpha * 0.35f * introAlpha),
+            style = Stroke(
+                width = strokeWidth * 2.8f,
+                cap = StrokeCap.Round,
+                join = StrokeJoin.Round
+            )
+        )
+        // Inner luminous core halo
+        drawPath(
+            path = haloPath,
+            color = theme.arrowHint.copy(alpha = hintGlowAlpha * 0.70f * introAlpha),
+            style = Stroke(
+                width = strokeWidth * 1.8f,
+                cap = StrokeCap.Round,
+                join = StrokeJoin.Round
+            )
+        )
+    }
+
     // 1. Draw body stroke along the polyline with crisp, architectural corner fillets (16% of cell)
     // Seamlessly bridges right into the interior of the arrowhead
     if (sampledPoints.size > 1) {
@@ -1142,6 +1220,22 @@ private fun DrawScope.drawArrowEntity(
             degrees = arrow.direction.angleDegrees,
             pivot = currentHead
         ) {
+            // Radiant glow for arrowhead when Hinted
+            if (arrow.state == ArrowState.HINTED) {
+                val glowHeadWidth = effectiveHeadWidth * 1.45f
+                val glowHeadLength = effectiveHeadLength * 1.40f
+                val glowHeadPath = Path().apply {
+                    moveTo(currentHead.x, currentHead.y - tipForward - (glowHeadLength - effectiveHeadLength) * 0.35f)
+                    lineTo(currentHead.x + glowHeadWidth * 0.50f, currentHead.y - tipForward + glowHeadLength)
+                    lineTo(currentHead.x - glowHeadWidth * 0.50f, currentHead.y - tipForward + glowHeadLength)
+                    close()
+                }
+                drawPath(
+                    path = glowHeadPath,
+                    color = theme.arrowHint.copy(alpha = hintGlowAlpha * 0.40f * introAlpha)
+                )
+            }
+
             val arrowHeadPath = Path().apply {
                 // Forward sharp tip
                 moveTo(currentHead.x, currentHead.y - tipForward)
@@ -1190,7 +1284,7 @@ private fun DrawScope.drawArrowEntity(
     }
 }
 /**
- * Builds a smooth path with circular fillet arcs on every 90° turn using quadratic beziers.
+ * Builds a smooth path with circular fillet arcs on every 90-degree turn using quadratic beziers.
  * Replicates Unity's GenerateRoundedPath for smooth, polished arcade visuals.
  */
 private fun buildRoundedCornerPath(points: List<Offset>, radius: Float): Path {

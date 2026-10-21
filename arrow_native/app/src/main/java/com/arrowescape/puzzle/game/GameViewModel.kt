@@ -50,7 +50,8 @@ data class GameUiState(
     val isDailyChallengeMode: Boolean = false,
     val activeDailyDate: String? = null,
     val activeDailyIndex: Int = 1,
-    val completedDailyDates: Set<String> = emptySet()
+    val completedDailyDates: Set<String> = emptySet(),
+    val restartTrigger: Long = 0L
 )
 
 class GameViewModel(private val app: Application) : AndroidViewModel(app) {
@@ -115,7 +116,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 previewRayArrowId = null,
                 isDailyChallengeMode = false,
                 activeDailyDate = null,
-                activeDailyIndex = 1
+                activeDailyIndex = 1,
+                restartTrigger = System.currentTimeMillis()
             )
         }
     }
@@ -147,7 +149,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 previewRayArrowId = null,
                 isDailyChallengeMode = true,
                 activeDailyDate = date.toString(),
-                activeDailyIndex = dailyIndex
+                activeDailyIndex = dailyIndex,
+                restartTrigger = System.currentTimeMillis()
             )
         }
     }
@@ -207,7 +210,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
             // Animate collision spring-bounce and reset to IDLE (keeping highlighted = true)
             viewModelScope.launch {
-                val durationMs = 280L
+                val durationMs = 360L
                 val startTime = System.currentTimeMillis()
                 while (true) {
                     val elapsed = System.currentTimeMillis() - startTime
@@ -267,12 +270,12 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
         // Animate flight smoothly at 60fps and transition to CLEARED
         viewModelScope.launch {
-            val durationMs = 520L
+            val durationMs = 650L
             val startTime = System.currentTimeMillis()
             while (true) {
                 val elapsed = System.currentTimeMillis() - startTime
                 val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
-                val easedProgress = rawProgress * (0.35f + 0.65f * rawProgress)
+                val easedProgress = rawProgress * rawProgress * (0.25f + 0.75f * rawProgress)
                 _uiState.update { state ->
                     val updated = state.arrows.map {
                         if (it.id == arrow.id && it.state == ArrowState.FLYING_OUT) {

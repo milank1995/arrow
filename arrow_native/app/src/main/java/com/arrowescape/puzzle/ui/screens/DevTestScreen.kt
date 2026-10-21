@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -85,6 +86,7 @@ fun DevTestScreen(
     var cheerFromLeft by remember { mutableStateOf(true) }
     var comboCount by remember { mutableIntStateOf(0) }
     var isLevelComplete by remember { mutableStateOf(false) }
+    var restartTrigger by remember { mutableLongStateOf(0L) }
 
     var showLevelSelectDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
@@ -103,6 +105,7 @@ fun DevTestScreen(
         comboCount = 0
         cheerMessage = null
         previewRayArrowId = null
+        restartTrigger = System.currentTimeMillis()
     }
 
     LaunchedEffect(Unit) {
@@ -132,12 +135,12 @@ fun DevTestScreen(
         }
 
         coroutineScope.launch {
-            val durationMs = 520L
+            val durationMs = 650L
             val startTime = System.currentTimeMillis()
             while (true) {
                 val elapsed = System.currentTimeMillis() - startTime
                 val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
-                val easedProgress = rawProgress * (0.35f + 0.65f * rawProgress)
+                val easedProgress = rawProgress * rawProgress * (0.25f + 0.75f * rawProgress)
                 arrows = arrows.map {
                     if (it.id == arrow.id && it.state == ArrowState.FLYING_OUT) {
                         it.copy(flightProgress = easedProgress)
@@ -200,7 +203,7 @@ fun DevTestScreen(
             }
 
             coroutineScope.launch {
-                val durationMs = 280L
+                val durationMs = 360L
                 val startTime = System.currentTimeMillis()
                 while (true) {
                     val elapsed = System.currentTimeMillis() - startTime
@@ -291,6 +294,7 @@ fun DevTestScreen(
                         theme = theme,
                         isGridLinesActive = isGridLinesActive,
                         isCelebrationBurstActive = isCelebrationBurstActive,
+                        restartTrigger = restartTrigger,
                         previewRayArrowId = previewRayArrowId,
                         onArrowClick = { arrow ->
                             onArrowClicked(arrow)

@@ -46,6 +46,26 @@ object PuzzleSolver {
     }
 
     /**
+     * Calculates the grid step distance from the arrow's head to the first blocking arrow,
+     * or to the grid boundary if unimpeded.
+     */
+    fun getDistanceToBlocker(arrow: Arrow, occupancy: GridOccupancyMap): Float {
+        var steps = 1
+        var rayCoord = arrow.head.step(arrow.direction)
+        while (occupancy.isInside(rayCoord)) {
+            val blocker = occupancy.get(rayCoord)
+            if (blocker != null && blocker.id != arrow.id &&
+                blocker.state != ArrowState.CLEARED &&
+                blocker.state != ArrowState.FLYING_OUT) {
+                return steps.toFloat()
+            }
+            steps++
+            rayCoord = rayCoord.step(arrow.direction)
+        }
+        return steps.toFloat().coerceAtLeast(1f)
+    }
+
+    /**
      * Finds all arrows that can currently fly out without collisions.
      */
     fun findAllMovableArrows(arrows: List<Arrow>, occupancy: GridOccupancyMap): List<Arrow> {
