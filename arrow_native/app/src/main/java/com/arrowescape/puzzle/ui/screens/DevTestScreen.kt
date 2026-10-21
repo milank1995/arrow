@@ -178,6 +178,11 @@ fun DevTestScreen(
         val currentArrow = arrows.firstOrNull { it.id == clickedArrow.id } ?: clickedArrow
         if (currentArrow.state == ArrowState.CLEARED || currentArrow.state == ArrowState.FLYING_OUT) return
 
+        // Automatically hide Grid Guide upon tapping an arrow
+        if (isGridLinesActive) {
+            isGridLinesActive = false
+        }
+
         audioHapticManager.playTap()
 
         val canEscape = PuzzleSolver.canMoveOut(currentArrow, occupancyMap)

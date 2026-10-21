@@ -163,6 +163,11 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             return
         }
 
+        // Automatically hide Grid Guide upon tapping an arrow
+        if (_uiState.value.isGridLinesActive) {
+            _uiState.update { it.copy(isGridLinesActive = false) }
+        }
+
         audioHapticManager.playTap()
 
         val canEscape = PuzzleSolver.canMoveOut(currentArrow, occupancyMap)
