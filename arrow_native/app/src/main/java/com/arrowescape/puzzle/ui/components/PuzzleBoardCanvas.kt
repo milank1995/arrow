@@ -649,7 +649,7 @@ fun PuzzleBoardCanvas(
 
                 // 1. Full Grid Lines (background) only if user activated via '#' Booster button
                 if (isGridLinesActive) {
-                    drawCorridorGuideLines(boardOrigin, xSize, ySize, cellSize, arrows, occupancyMap, theme)
+                    drawCorridorGuideLines(boardOrigin, xSize, ySize, cellSize, arrows, theme)
 
                 }
 
@@ -1295,161 +1295,96 @@ private fun DrawScope.drawCorridorGuideLines(
     ySize: Int,
     cellSize: Float,
     arrows: List<Arrow>,
-    occupancy: GridOccupancyMap,
     theme: ThemePreset
 ) {
-    // Dynamically find arrows that can currently escape without hitting obstacles
-    val movableArrows = arrows.filter { arrow ->
-        arrow.state != ArrowState.CLEARED &&
-        arrow.state != ArrowState.FLYING_OUT &&
-        PuzzleSolver.canMoveOut(arrow, occupancy)
+    // Only consider arrows currently in play
+    val activeArrows = arrows.filter {
+        it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT
     }
-    if (movableArrows.isEmpty()) return
+    if (activeArrows.isEmpty()) return
 
-    // Boundary fade margin: 2 cells extending past the grid boundary
+    // Directional corridor extraction matching Unity reference:
+    // - Arrows moving UP or DOWN project vertical corridor lines along their column
+    // - Arrows moving LEFT or RIGHT project horizontal corridor lines along their row
+    // Both movable and blocked arrows project their trajectory lines, helping players
+    // visually trace collision corridors WITHOUT revealing which arrows can move.
+    val verticalCols = activeArrows
+        .filter { it.direction == Direction.UP || it.direction == Direction.DOWN }
+        .map { it.head.x }
+        .toSet()
+
+    val horizontalRows = activeArrows
+        .filter { it.direction == Direction.LEFT || it.direction == Direction.RIGHT }
+        .map { it.head.y }
+        .toSet()
+
+    // Smooth boundary fade margin: 2 cells extending past the grid boundary
     val fadeMargin = cellSize * 2.0f
     val boardLeft = origin.x
     val boardRight = origin.x + xSize * cellSize
     val boardTop = origin.y
     val boardBottom = origin.y + ySize * cellSize
 
+    val startX = boardLeft - fadeMargin
+    val endX = boardRight + fadeMargin
+    val totalSpanX = (endX - startX).coerceAtLeast(1f)
+    val fadeRatioX = (fadeMargin / totalSpanX).coerceIn(0.01f, 0.45f)
+
+    val startY = boardTop - fadeMargin
+    val endY = boardBottom + fadeMargin
+    val totalSpanY = (endY - startY).coerceAtLeast(1f)
+    val fadeRatioY = (fadeMargin / totalSpanY).coerceIn(0.01f, 0.45f)
+
+    // Dynamic theme-adaptive guide colors
+    val guideColor = theme.arrowDefault.copy(alpha = if (theme.isDark) 0.30f else 0.22f)
+
+    val hGradient = Brush.horizontalGradient(
+        colorStops = arrayOf(
+            0.0f to Color.Transparent,
+            fadeRatioX to guideColor,
+            (1.0f - fadeRatioX) to guideColor,
+            1.0f to Color.Transparent
+        ),
+        startX = startX,
+        endX = endX
+    )
+
+    val vGradient = Brush.verticalGradient(
+        colorStops = arrayOf(
+            0.0f to Color.Transparent,
+            fadeRatioY to guideColor,
+            (1.0f - fadeRatioY) to guideColor,
+            1.0f to Color.Transparent
+        ),
+        startY = startY,
+        endY = endY
+    )
+
     // Responsive stroke width adapting to screen density and cell size
-    val strokeW = (cellSize * 0.038f).coerceIn(1.2.dp.toPx(), 2.2.dp.toPx())
+    val strokeW = (cellSize * 0.035f).coerceIn(1.0.dp.toPx(), 2.0.dp.toPx())
 
-    // Dynamic theme-adaptive colors (clear, elegant guide ray tint)
-    val guideColor = theme.arrowDefault.copy(alpha = if (theme.isDark) 0.35f else 0.28f)
+    // 1. Draw vertical corridor lines for active vertical arrows
+    for (col in verticalCols) {
+        val posX = origin.x + (col + 0.5f) * cellSize
+        drawLine(
+            brush = vGradient,
+            start = Offset(posX, startY),
+            end = Offset(posX, endY),
+            strokeWidth = strokeW,
+            cap = StrokeCap.Round
+        )
+    }
 
-    for (arrow in movableArrows) {
-        val headCol = arrow.head.x
-        val headRow = arrow.head.y
-
-        when (arrow.direction) {
-            Direction.UP -> {
-                var tailY = headRow
-                while (arrow.allPoints.contains(GridCoordinate(headCol, tailY + 1))) {
-                    tailY++
-                }
-
-                val posX = origin.x + (headCol + 0.5f) * cellSize
-                val startY = boardTop - fadeMargin
-                val endY = origin.y + (tailY + 0.5f) * cellSize
-                val totalLength = (endY - startY).coerceAtLeast(1f)
-                val fadeRatio = (fadeMargin / totalLength).coerceIn(0.01f, 0.45f)
-
-                val brush = Brush.verticalGradient(
-                    colorStops = arrayOf(
-                        0.0f to Color.Transparent,
-                        fadeRatio to guideColor,
-                        1.0f to guideColor
-                    ),
-                    startY = startY,
-                    endY = endY
-                )
-
-                drawLine(
-                    brush = brush,
-                    start = Offset(posX, startY),
-                    end = Offset(posX, endY),
-                    strokeWidth = strokeW,
-                    cap = StrokeCap.Round
-                )
-            }
-
-            Direction.DOWN -> {
-                var tailY = headRow
-                while (arrow.allPoints.contains(GridCoordinate(headCol, tailY - 1))) {
-                    tailY--
-                }
-
-                val posX = origin.x + (headCol + 0.5f) * cellSize
-                val startY = origin.y + (tailY + 0.5f) * cellSize
-                val endY = boardBottom + fadeMargin
-                val totalLength = (endY - startY).coerceAtLeast(1f)
-                val solidLength = (boardBottom - startY).coerceAtLeast(0f)
-                val solidRatio = (solidLength / totalLength).coerceIn(0.55f, 0.99f)
-
-                val brush = Brush.verticalGradient(
-                    colorStops = arrayOf(
-                        0.0f to guideColor,
-                        solidRatio to guideColor,
-                        1.0f to Color.Transparent
-                    ),
-                    startY = startY,
-                    endY = endY
-                )
-
-                drawLine(
-                    brush = brush,
-                    start = Offset(posX, startY),
-                    end = Offset(posX, endY),
-                    strokeWidth = strokeW,
-                    cap = StrokeCap.Round
-                )
-            }
-
-            Direction.LEFT -> {
-                var tailX = headCol
-                while (arrow.allPoints.contains(GridCoordinate(tailX + 1, headRow))) {
-                    tailX++
-                }
-
-                val posY = origin.y + (headRow + 0.5f) * cellSize
-                val startX = boardLeft - fadeMargin
-                val endX = origin.x + (tailX + 0.5f) * cellSize
-                val totalLength = (endX - startX).coerceAtLeast(1f)
-                val fadeRatio = (fadeMargin / totalLength).coerceIn(0.01f, 0.45f)
-
-                val brush = Brush.horizontalGradient(
-                    colorStops = arrayOf(
-                        0.0f to Color.Transparent,
-                        fadeRatio to guideColor,
-                        1.0f to guideColor
-                    ),
-                    startX = startX,
-                    endX = endX
-                )
-
-                drawLine(
-                    brush = brush,
-                    start = Offset(startX, posY),
-                    end = Offset(endX, posY),
-                    strokeWidth = strokeW,
-                    cap = StrokeCap.Round
-                )
-            }
-
-            Direction.RIGHT -> {
-                var tailX = headCol
-                while (arrow.allPoints.contains(GridCoordinate(tailX - 1, headRow))) {
-                    tailX--
-                }
-
-                val posY = origin.y + (headRow + 0.5f) * cellSize
-                val startX = origin.x + (tailX + 0.5f) * cellSize
-                val endX = boardRight + fadeMargin
-                val totalLength = (endX - startX).coerceAtLeast(1f)
-                val solidLength = (boardRight - startX).coerceAtLeast(0f)
-                val solidRatio = (solidLength / totalLength).coerceIn(0.55f, 0.99f)
-
-                val brush = Brush.horizontalGradient(
-                    colorStops = arrayOf(
-                        0.0f to guideColor,
-                        solidRatio to guideColor,
-                        1.0f to Color.Transparent
-                    ),
-                    startX = startX,
-                    endX = endX
-                )
-
-                drawLine(
-                    brush = brush,
-                    start = Offset(startX, posY),
-                    end = Offset(endX, posY),
-                    strokeWidth = strokeW,
-                    cap = StrokeCap.Round
-                )
-            }
-        }
+    // 2. Draw horizontal corridor lines for active horizontal arrows
+    for (row in horizontalRows) {
+        val posY = origin.y + (row + 0.5f) * cellSize
+        drawLine(
+            brush = hGradient,
+            start = Offset(startX, posY),
+            end = Offset(endX, posY),
+            strokeWidth = strokeW,
+            cap = StrokeCap.Round
+        )
     }
 }
 
