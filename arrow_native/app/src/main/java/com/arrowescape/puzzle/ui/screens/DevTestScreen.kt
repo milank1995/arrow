@@ -81,7 +81,7 @@ fun DevTestScreen(
 
     var isGridLinesActive by remember { mutableStateOf(false) }
     var isCelebrationBurstActive by remember { mutableStateOf(false) }
-    var previewRayArrowId by remember { mutableStateOf<String?>(null) }
+    var previewRayArrowIds by remember { mutableStateOf<Set<String>>(emptySet()) }
     var cheerMessage by remember { mutableStateOf<String?>(null) }
     var cheerFromLeft by remember { mutableStateOf(true) }
     var comboCount by remember { mutableIntStateOf(0) }
@@ -104,7 +104,7 @@ fun DevTestScreen(
         isCelebrationBurstActive = false
         comboCount = 0
         cheerMessage = null
-        previewRayArrowId = null
+        previewRayArrowIds = emptySet()
         restartTrigger = System.currentTimeMillis()
     }
 
@@ -140,7 +140,7 @@ fun DevTestScreen(
             while (true) {
                 val elapsed = System.currentTimeMillis() - startTime
                 val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
-                val easedProgress = rawProgress * rawProgress * (0.18f + 0.82f * rawProgress)
+                val easedProgress = rawProgress * rawProgress * (3f - 2f * rawProgress)
                 arrows = arrows.map {
                     if (it.id == arrow.id && it.state == ArrowState.FLYING_OUT) {
                         it.copy(flightProgress = easedProgress)
@@ -181,8 +181,8 @@ fun DevTestScreen(
         val currentArrow = arrows.firstOrNull { it.id == clickedArrow.id } ?: clickedArrow
         if (currentArrow.state == ArrowState.CLEARED || currentArrow.state == ArrowState.FLYING_OUT) return
 
-        // Always dismiss path preview when user clicks an arrow to move it
-        previewRayArrowId = null
+        // Always dismiss all path previews when user clicks an arrow to move it
+        previewRayArrowIds = emptySet()
 
         // Automatically hide Grid Guide upon tapping an arrow
         if (isGridLinesActive) {
@@ -307,12 +307,19 @@ fun DevTestScreen(
                         isGridLinesActive = isGridLinesActive,
                         isCelebrationBurstActive = isCelebrationBurstActive,
                         restartTrigger = restartTrigger,
-                        previewRayArrowId = previewRayArrowId,
+                        previewRayArrowIds = previewRayArrowIds,
                         onArrowClick = { arrow ->
                             onArrowClicked(arrow)
                         },
-                        onArrowLongPress = { arrow, isPressed ->
-                            previewRayArrowId = if (isPressed) arrow.id else null
+                        onArrowLongPress = { arrow, _ ->
+                            previewRayArrowIds = if (arrow.id in previewRayArrowIds) {
+                                previewRayArrowIds - arrow.id
+                            } else {
+                                previewRayArrowIds + arrow.id
+                            }
+                        },
+                        onDismissPreviewRays = {
+                            previewRayArrowIds = emptySet()
                         }
                     )
                 }

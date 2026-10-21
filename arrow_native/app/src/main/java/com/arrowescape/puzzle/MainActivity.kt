@@ -99,6 +99,9 @@ class MainActivity : ComponentActivity() {
                                     onArrowLongPress = { arrow, isPressed ->
                                         gameViewModel.onArrowLongPress(arrow, isPressed)
                                     },
+                                    onDismissPreviewRays = {
+                                        gameViewModel.dismissAllPreviewRays()
+                                    },
                                     onHintClick = {
                                         gameViewModel.playClick()
                                         gameViewModel.useHint()

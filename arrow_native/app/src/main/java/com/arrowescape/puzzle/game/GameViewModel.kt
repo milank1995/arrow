@@ -38,7 +38,7 @@ data class GameUiState(
     val isHammerModeActive: Boolean = false,
     val isSoundEnabled: Boolean = true,
     val isVibrationEnabled: Boolean = true,
-    val previewRayArrowId: String? = null,
+    val previewRayArrowIds: Set<String> = emptySet(),
     val activeTheme: ThemePreset = ThemePresets.CleanLight,
     val currentLevelNumber: Int = 1,
     val lastCompletedLevelNumber: Int = 1,
@@ -52,7 +52,9 @@ data class GameUiState(
     val activeDailyIndex: Int = 1,
     val completedDailyDates: Set<String> = emptySet(),
     val restartTrigger: Long = 0L
-)
+) {
+    val previewRayArrowId: String? get() = previewRayArrowIds.firstOrNull()
+}
 
 class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
@@ -113,7 +115,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 comboCount = 0,
                 cheerMessage = null,
                 isHammerModeActive = false,
-                previewRayArrowId = null,
+                previewRayArrowIds = emptySet(),
                 isDailyChallengeMode = false,
                 activeDailyDate = null,
                 activeDailyIndex = 1,
@@ -146,7 +148,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 comboCount = 0,
                 cheerMessage = null,
                 isHammerModeActive = false,
-                previewRayArrowId = null,
+                previewRayArrowIds = emptySet(),
                 isDailyChallengeMode = true,
                 activeDailyDate = date.toString(),
                 activeDailyIndex = dailyIndex,
@@ -160,9 +162,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         val currentArrow = _uiState.value.arrows.firstOrNull { it.id == clickedArrow.id } ?: clickedArrow
         if (currentArrow.state == ArrowState.CLEARED || currentArrow.state == ArrowState.FLYING_OUT) return
 
-        // Always dismiss path preview when user clicks an arrow to move it
-        if (_uiState.value.previewRayArrowId != null) {
-            _uiState.update { it.copy(previewRayArrowId = null) }
+        // Always dismiss all path previews when user clicks an arrow to move it
+        if (_uiState.value.previewRayArrowIds.isNotEmpty()) {
+            _uiState.update { it.copy(previewRayArrowIds = emptySet()) }
         }
 
         // Check if Hammer booster mode is active
@@ -288,7 +290,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             while (true) {
                 val elapsed = System.currentTimeMillis() - startTime
                 val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
-                val easedProgress = rawProgress * rawProgress * (0.18f + 0.82f * rawProgress)
+                // Smooth continuous unified flight easing (whole arrow moves together smoothly)
+                val easedProgress = rawProgress * rawProgress * (3f - 2f * rawProgress)
                 _uiState.update { state ->
                     val updated = state.arrows.map {
                         if (it.id == arrow.id && it.state == ArrowState.FLYING_OUT) {
@@ -348,15 +351,25 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun onArrowLongPress(arrow: Arrow, isPressed: Boolean = true) {
-        _uiState.update {
-            it.copy(previewRayArrowId = if (isPressed) arrow.id else null)
+        _uiState.update { state ->
+            val current = state.previewRayArrowIds
+            val updated = if (arrow.id in current) {
+                current - arrow.id
+            } else {
+                current + arrow.id
+            }
+            state.copy(previewRayArrowIds = updated)
+        }
+    }
+
+    fun dismissAllPreviewRays() {
+        if (_uiState.value.previewRayArrowIds.isNotEmpty()) {
+            _uiState.update { it.copy(previewRayArrowIds = emptySet()) }
         }
     }
 
     fun dismissPreviewRay() {
-        if (_uiState.value.previewRayArrowId != null) {
-            _uiState.update { it.copy(previewRayArrowId = null) }
-        }
+        dismissAllPreviewRays()
     }
 
     fun useHint() {

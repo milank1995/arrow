@@ -69,6 +69,7 @@ fun GamePlayScreen(
     onPlayStarSound: (Int) -> Unit = {},
     onPlayCoinSound: () -> Unit = {},
     onPlayClickSound: () -> Unit = {},
+    onDismissPreviewRays: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var showPauseDialog by remember { mutableStateOf(false) }
@@ -210,7 +211,7 @@ fun GamePlayScreen(
                                 isGridLinesActive = uiState.isGridLinesActive,
                                 isCelebrationBurstActive = uiState.isCelebrationBurstActive,
                                 restartTrigger = uiState.restartTrigger,
-                                previewRayArrowId = uiState.previewRayArrowId,
+                                previewRayArrowIds = uiState.previewRayArrowIds,
                                 onArrowClick = { arrow ->
                                     lastInteractionTime = System.currentTimeMillis()
                                     isIdlePromptActive = false
@@ -220,7 +221,8 @@ fun GamePlayScreen(
                                     lastInteractionTime = System.currentTimeMillis()
                                     isIdlePromptActive = false
                                     onArrowLongPress(arrow, isPressed)
-                                }
+                                },
+                                onDismissPreviewRays = onDismissPreviewRays
                             )
                         }
 

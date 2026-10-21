@@ -116,9 +116,10 @@ fun PuzzleBoardCanvas(
     isGridLinesActive: Boolean,
     isCelebrationBurstActive: Boolean = false,
     restartTrigger: Long = 0L,
-    previewRayArrowId: String?,
+    previewRayArrowIds: Set<String> = emptySet(),
     onArrowClick: (Arrow) -> Unit,
     onArrowLongPress: (Arrow, isPressed: Boolean) -> Unit,
+    onDismissPreviewRays: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -183,18 +184,17 @@ fun PuzzleBoardCanvas(
     )
 
 
+    // Filter active arrows selected for simultaneous path preview
+    val activePreviewArrows = remember(arrows, previewRayArrowIds) {
+        arrows.filter { it.id in previewRayArrowIds && it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
+    }
+
     // Smooth animated preview beam alpha matching Unity's CanvasGroup fade (lineCg.DOFade)
     val previewAlpha by animateFloatAsState(
-        targetValue = if (previewRayArrowId != null) 1.0f else 0.0f,
+        targetValue = if (activePreviewArrows.isNotEmpty()) 1.0f else 0.0f,
         animationSpec = tween(durationMillis = 160, easing = FastOutSlowInEasing),
         label = "previewAlpha"
     )
-    var lastPreviewArrow by remember { mutableStateOf<Arrow?>(null) }
-    val activePreviewArrow = arrows.firstOrNull { it.id == previewRayArrowId }
-    if (activePreviewArrow != null) {
-        lastPreviewArrow = activePreviewArrow
-    }
-    val previewArrowToRender = if (previewAlpha > 0.01f) (activePreviewArrow ?: lastPreviewArrow) else null
 
     // Viewport-wide canvas: adapts flexibly to full available gameplay height and width
     BoxWithConstraints(
@@ -232,6 +232,7 @@ fun PuzzleBoardCanvas(
         val currentMaxScale by rememberUpdatedState(maxScale)
         val currentOnArrowClick by rememberUpdatedState(onArrowClick)
         val currentOnArrowLongPress by rememberUpdatedState(onArrowLongPress)
+        val currentOnDismissPreviewRays by rememberUpdatedState(onDismissPreviewRays)
         val minTouchTargetPx = with(LocalDensity.current) { 15.dp.toPx() }
         val currentMinTouchTargetPx by rememberUpdatedState(minTouchTargetPx)
         val minStrokePx = with(LocalDensity.current) { 2.0.dp.toPx() }
@@ -581,12 +582,9 @@ fun PuzzleBoardCanvas(
                                                 }
                                                 currentOnArrowClick(targetArrow)
                                                 upChange.consume()
-                                            } else if (targetArrow == null && previewRayArrowId != null) {
-                                                // Tap on empty space: dismiss the active preview ray
-                                                val dummy = currentArrows.firstOrNull()
-                                                if (dummy != null) {
-                                                    currentOnArrowLongPress(dummy, false)
-                                                }
+                                            } else if (targetArrow == null && previewRayArrowIds.isNotEmpty()) {
+                                                // Tap on empty space: dismiss all active preview rays
+                                                currentOnDismissPreviewRays()
                                             }
                                         }
                                     }
@@ -732,9 +730,11 @@ fun PuzzleBoardCanvas(
                     }
                 }
 
-                // 3. Draw Preview Ray if an arrow is long-pressed (smooth animated fade matching Unity lineCg.DOFade)
-                if (previewArrowToRender != null && previewAlpha > 0.01f) {
-                    drawPreviewRay(boardOrigin, previewArrowToRender, xSize, ySize, cellSize, previewAlpha, theme.arrowClear)
+                // 3. Draw Preview Rays for all active preview arrows simultaneously (smooth animated fade matching Unity lineCg.DOFade)
+                if (activePreviewArrows.isNotEmpty() && previewAlpha > 0.01f) {
+                    for (previewArrow in activePreviewArrows) {
+                        drawPreviewRay(boardOrigin, previewArrow, xSize, ySize, cellSize, previewAlpha, theme.arrowClear)
+                    }
                 }
 
                 // 4. Draw All Arrows (Progressive Path Drawing, drawn ON TOP of the background dots)
@@ -772,7 +772,7 @@ fun PuzzleBoardCanvas(
                         theme = theme,
                         hintPulseScale = hintPulseScale,
                         hintGlowAlpha = hintGlowAlpha,
-                        previewRayArrowId = previewRayArrowId,
+                        previewRayArrowIds = previewRayArrowIds,
                         drawProgress = easedDraw,
                         introAlpha = introAlpha
                     )
@@ -1052,11 +1052,11 @@ private fun DrawScope.drawArrowEntity(
     theme: ThemePreset,
     hintPulseScale: Float,
     hintGlowAlpha: Float,
-    previewRayArrowId: String?,
+    previewRayArrowIds: Set<String>,
     drawProgress: Float = 1.0f,
     introAlpha: Float = 1.0f
 ) {
-    val isPreviewHold = (arrow.id == previewRayArrowId)
+    val isPreviewHold = arrow.id in previewRayArrowIds
     val isFlying = (arrow.state == ArrowState.FLYING_OUT)
 
     val baseColor = when {
@@ -1091,7 +1091,7 @@ private fun DrawScope.drawArrowEntity(
         track.add(Offset(origin.x + (coord.x + 0.5f) * cellSize, origin.y + (coord.y + 0.5f) * cellSize))
     }
     val headPt = track.last()
-    val extSteps = maxOf(xSize, ySize) + arrow.body.size + 4
+    val extSteps = maxOf(xSize, ySize) * 2 + arrow.body.size + 12
     for (s in 1..extSteps) {
         track.add(
             Offset(
@@ -1102,7 +1102,7 @@ private fun DrawScope.drawArrowEntity(
     }
 
     val originalBodyLen = (arrow.body.size - 1).coerceAtLeast(0)
-    val maxDisplacement = (maxOf(xSize, ySize) + arrow.body.size + 2).toFloat()
+    val maxDisplacement = (maxOf(xSize, ySize) + arrow.body.size + 6).toFloat()
 
     val stepsToBlocker = if (arrow.collisionDistance > 0f) {
         arrow.collisionDistance
@@ -1115,14 +1115,14 @@ private fun DrawScope.drawArrowEntity(
         ArrowState.WRONG_FLASH -> {
             val t = arrow.flightProgress
             // Moves all the way to the position where another arrow or obstacle blocks its path
-            val targetSurge = (stepsToBlocker - 0.12f).coerceAtLeast(0.85f)
-            if (t < 0.42f) {
+            val targetSurge = (stepsToBlocker - 0.32f).coerceAtLeast(0.65f)
+            if (t < 0.40f) {
                 // Forward travel to collision point
-                val u = t / 0.42f
+                val u = t / 0.40f
                 sin(u * (PI.toFloat() / 2f)) * targetSurge
             } else {
                 // Smooth elastic recoil and return to original position
-                val p = (t - 0.42f) / 0.58f
+                val p = (t - 0.40f) / 0.60f
                 val recoilDecay = (1f - p)
                 targetSurge * recoilDecay * kotlin.math.cos(p * (PI.toFloat() / 2f)) -
                     sin(p * 2f * PI.toFloat()) * 0.08f * recoilDecay
@@ -1131,8 +1131,9 @@ private fun DrawScope.drawArrowEntity(
         else -> 0f
     }
 
-    val alpha = if (arrow.state == ArrowState.FLYING_OUT && arrow.flightProgress > 0.85f) {
-        ((1f - arrow.flightProgress) / 0.15f).coerceIn(0f, 1f)
+    // Keep arrow solid during flight across grid; only subtle fade-out at very end when off-board
+    val alpha = if (arrow.state == ArrowState.FLYING_OUT && arrow.flightProgress > 0.96f) {
+        ((1f - arrow.flightProgress) / 0.04f).coerceIn(0f, 1f)
     } else {
         1.0f
     }
@@ -1143,41 +1144,51 @@ private fun DrawScope.drawArrowEntity(
         originalBodyLen.toFloat()
     }
 
-    val headDirX = arrow.direction.dx.toFloat()
-    val headDirY = arrow.direction.dy.toFloat()
-    val headDir = Offset(headDirX, headDirY)
-
-    val tailDir = if (arrow.body.size >= 2) {
-        val b0 = arrow.body[0]
-        val b1 = arrow.body[1]
-        val tdx = (b0.x - b1.x).toFloat()
-        val tdy = (b0.y - b1.y).toFloat()
-        val len = maxOf(0.001f, kotlin.math.sqrt(tdx * tdx + tdy * tdy))
-        Offset(tdx / len, tdy / len)
-    } else {
-        Offset(-headDirX, -headDirY)
-    }
-
     // Symmetrical head tip and tail reach: both extend by exactly 0.32 * cellSize from cell center
     val tipForward = (cellSize * 0.32f).coerceAtLeast(headLength * 0.55f)
     val tailOffset = (tipForward - strokeWidth * 0.50f).coerceAtLeast(0f)
     // Stem enters slightly past the base into the widest part of the triangle (no gap, no notch, no tip bulb)
     val stemHeadOffset = tipForward - headLength + (strokeWidth * 0.25f)
 
+    val startDist = displacement
+    val endDist = visibleBodyLen + displacement
+
     val sampledTrackPoints = sampleTrackSegment(
         track = track,
-        startDist = displacement,
-        endDist = visibleBodyLen + displacement
+        startDist = startDist,
+        endDist = endDist
     )
 
-    if (sampledTrackPoints.isEmpty() && originalBodyLen > 0) return
+    if (sampledTrackPoints.isEmpty()) return
 
-    // Clean, continuous polyline without backtracking or tip bulb artifacts:
+    // Dynamically compute the tangent vector along track at the sampled tail position:
+    // Guarantees the tail slides smoothly along the path and bends around turns without anchoring to old starting point
+    val sIdx = startDist.toInt().coerceIn(0, track.size - 2)
+    val sVec = track[sIdx + 1] - track[sIdx]
+    val sLen = hypot(sVec.x, sVec.y).coerceAtLeast(0.001f)
+    val forwardAtTail = Offset(sVec.x / sLen, sVec.y / sLen)
+    val dynamicTailDir = Offset(-forwardAtTail.x, -forwardAtTail.y)
+
+    // Dynamically compute the tangent vector along track at the sampled head position
+    val eIdx = endDist.toInt().coerceIn(0, track.size - 2)
+    val eVec = track[eIdx + 1] - track[eIdx]
+    val eLen = hypot(eVec.x, eVec.y).coerceAtLeast(0.001f)
+    val forwardAtHead = Offset(eVec.x / eLen, eVec.y / eLen)
+
+    // Clean, continuous polyline without backtracking, tail blending or tip bulb artifacts:
     // First point starts at extended tail; last point terminates inside the wide arrowhead base
     val sampledPoints = mutableListOf<Offset>()
-    if (sampledTrackPoints.isNotEmpty()) {
-        val firstPt = sampledTrackPoints.first() + tailDir * tailOffset
-        val lastPt = sampledTrackPoints.last() + headDir * stemHeadOffset
+    if (originalBodyLen == 0) {
+        // Single cell arrow: solid unified line from extended tail to arrowhead stem base
+        val centerPt = sampledTrackPoints.first()
+        val firstPt = centerPt + dynamicTailDir * tailOffset
+        val lastPt = centerPt + forwardAtHead * stemHeadOffset
+        sampledPoints.add(firstPt)
+        sampledPoints.add(lastPt)
+    } else {
+        // Multi-cell arrow: clean continuous polyline through all sampled track points
+        val firstPt = sampledTrackPoints.first() + dynamicTailDir * tailOffset
+        val lastPt = sampledTrackPoints.last() + forwardAtHead * stemHeadOffset
         sampledPoints.add(firstPt)
         if (sampledTrackPoints.size > 2) {
             for (i in 1 until sampledTrackPoints.size - 1) {
@@ -1185,10 +1196,6 @@ private fun DrawScope.drawArrowEntity(
             }
         }
         sampledPoints.add(lastPt)
-    } else {
-        // Single cell arrow: clean line from extended tail to arrowhead base
-        sampledPoints.add(headPt + tailDir * tailOffset)
-        sampledPoints.add(headPt + headDir * stemHeadOffset)
     }
 
     val renderColor = baseColor.copy(alpha = alpha * introAlpha)
@@ -1244,12 +1251,25 @@ private fun DrawScope.drawArrowEntity(
         drawProgress < 0.85f -> ((drawProgress - 0.62f) / 0.23f) * 1.12f
         else -> 1.0f + sin(((drawProgress - 0.85f) / 0.15f) * PI.toFloat()) * 0.12f
     }
-    val effectiveHeadWidth = headWidth * headPopScale
-    val effectiveHeadLength = headLength * headPopScale
+
+    // Physical squash-and-stretch on blocked obstacle collision impact:
+    // Slight compression along movement axis upon striking blocker, springing back elastically
+    val squashFactor = if (arrow.state == ArrowState.WRONG_FLASH) {
+        val t = arrow.flightProgress
+        if (t in 0.36f..0.52f) {
+            val p = sin(((t - 0.36f) / 0.16f) * PI.toFloat())
+            1.0f - 0.12f * p
+        } else 1.0f
+    } else 1.0f
+
+    val effectiveHeadLength = headLength * headPopScale * squashFactor
+    val effectiveHeadWidth = headWidth * headPopScale * (2.0f - squashFactor)
+
+    // Current Head Position
+    val currentHead = if (originalBodyLen == 0) sampledTrackPoints.first() else sampledTrackPoints.last()
 
     // 2. Draw clean, crisp Unity One triangular spearhead seamlessly covering the stem extension
     if (effectiveHeadWidth > 0.5f) {
-        val currentHead = if (displacement > 0.001f && sampledTrackPoints.isNotEmpty()) sampledTrackPoints.last() else headPt
         rotate(
             degrees = arrow.direction.angleDegrees,
             pivot = currentHead
@@ -1287,11 +1307,62 @@ private fun DrawScope.drawArrowEntity(
         }
     }
 
-    // 3. Draw Aerodynamic Flight Trail Speed Lines when escaping
+    // 3. Collision Impact Shockwave & Spark Burst when striking a blocking obstacle
+    if (arrow.state == ArrowState.WRONG_FLASH && arrow.flightProgress >= 0.38f) {
+        val t = arrow.flightProgress
+        val impactPhase = ((t - 0.38f) / 0.45f).coerceIn(0f, 1f)
+        val impactDecay = (1f - impactPhase).coerceIn(0f, 1f)
+        val headDir = Offset(arrow.direction.dx.toFloat(), arrow.direction.dy.toFloat())
+        val impactPoint = Offset(currentHead.x + headDir.x * tipForward, currentHead.y + headDir.y * tipForward)
+        val shockRadius = cellSize * (0.08f + 0.38f * impactPhase)
+        val shockAlpha = (impactDecay * 0.90f).coerceIn(0f, 1f)
+
+        // A. Expanding dynamic impact shockwave ring
+        drawCircle(
+            color = theme.arrowWrong.copy(alpha = shockAlpha),
+            radius = shockRadius,
+            center = impactPoint,
+            style = Stroke(
+                width = 2.4.dp.toPx() * impactDecay,
+                cap = StrokeCap.Round
+            )
+        )
+
+        // B. High-energy impact spark flares splashing away from obstacle
+        val sparkDist = cellSize * (0.10f + 0.28f * impactPhase)
+        val sparkLen = cellSize * 0.09f * impactDecay
+        val baseAngle = arrow.direction.angleDegrees + 180f
+        val sparkAngles = listOf(-60f, -25f, 25f, 60f)
+        for (angleDeg in sparkAngles) {
+            val rad = (baseAngle + angleDeg) * (PI.toFloat() / 180f)
+            val dirVec = Offset(sin(rad), -kotlin.math.cos(rad))
+            val sparkStart = impactPoint + dirVec * sparkDist
+            val sparkEnd = sparkStart + dirVec * sparkLen
+            drawLine(
+                color = theme.arrowWrong.copy(alpha = shockAlpha),
+                start = sparkStart,
+                end = sparkEnd,
+                strokeWidth = 1.6.dp.toPx() * impactDecay,
+                cap = StrokeCap.Round
+            )
+        }
+
+        // C. Crisp luminous flash at instant of impact
+        if (impactPhase < 0.28f) {
+            val flashAlpha = ((0.28f - impactPhase) / 0.28f) * 0.75f
+            drawCircle(
+                color = Color.White.copy(alpha = flashAlpha),
+                radius = cellSize * 0.14f * (1f - impactPhase),
+                center = impactPoint
+            )
+        }
+    }
+
+    // 4. Draw Aerodynamic Flight Trail Speed Lines when escaping
     if (arrow.state == ArrowState.FLYING_OUT && sampledPoints.isNotEmpty() && arrow.flightProgress in 0.04f..0.96f) {
         val tailPt = sampledPoints.first()
-        val dirX = arrow.direction.dx.toFloat()
-        val dirY = arrow.direction.dy.toFloat()
+        val dirX = forwardAtTail.x
+        val dirY = forwardAtTail.y
         val perpX = -dirY
         val perpY = dirX
 
@@ -1382,29 +1453,37 @@ private fun sampleTrackSegment(
     startDist: Float,
     endDist: Float
 ): List<Offset> {
-    if (track.isEmpty() || startDist >= track.size - 1) return emptyList()
+    if (track.size < 2) return track.toList()
+    val maxIdx = track.size - 1
+    val s = startDist.coerceIn(0f, maxIdx.toFloat())
+    val e = endDist.coerceIn(0f, maxIdx.toFloat())
+    if (s > e) return emptyList()
 
     val pts = mutableListOf<Offset>()
 
-    // Start point interpolation
-    val sIdx = startDist.toInt().coerceIn(0, track.size - 1)
-    val sFrac = (startDist - sIdx).coerceIn(0f, 1f)
-    val p0 = track[sIdx]
-    val p1 = track.getOrElse(sIdx + 1) { p0 }
-    pts.add(lerpOffset(p0, p1, sFrac))
+    // Start point
+    val sIdx = s.toInt().coerceIn(0, maxIdx - 1)
+    val sFrac = s - sIdx
+    val startPt = lerpOffset(track[sIdx], track[sIdx + 1], sFrac)
+    pts.add(startPt)
 
-    // Intermediate whole track points
-    val eIdx = minOf(endDist.toInt(), track.size - 2)
-    for (i in (sIdx + 1)..eIdx) {
-        pts.add(track[i])
+    // Intermediate whole integer track points strictly between s and e
+    val firstInt = sIdx + 1
+    val lastInt = kotlin.math.floor(e).toInt()
+    for (i in firstInt..minOf(lastInt, maxIdx - 1)) {
+        if (i.toFloat() > s + 0.0001f && i.toFloat() < e - 0.0001f) {
+            pts.add(track[i])
+        }
     }
 
-    // End point (head) interpolation
-    if (endDist > eIdx && eIdx < track.size - 1) {
-        val eFrac = (endDist - eIdx).coerceIn(0f, 1f)
-        val q0 = track[eIdx]
-        val q1 = track.getOrElse(eIdx + 1) { q0 }
-        pts.add(lerpOffset(q0, q1, eFrac))
+    // End point (if e > s and not virtually identical)
+    if (e > s) {
+        val eIdx = e.toInt().coerceIn(0, maxIdx - 1)
+        val eFrac = e - eIdx
+        val endPt = lerpOffset(track[eIdx], track[eIdx + 1], eFrac)
+        if ((endPt - startPt).getDistance() > 0.01f) {
+            pts.add(endPt)
+        }
     }
 
     return pts
