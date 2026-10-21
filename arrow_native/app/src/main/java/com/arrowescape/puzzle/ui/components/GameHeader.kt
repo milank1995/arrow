@@ -107,10 +107,9 @@ fun GameHeader(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 // LEFT: Clean, minimal HUD pods (Pause || + Dual-Action Sound 🔊/🔇)
-                // Permanent theme palette removed to keep gameplay HUD pristine and uncluttered
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -139,7 +138,7 @@ fun GameHeader(
                         }
                     }
 
-                    // 2. Dual-action Sound button: Quick tap to mute/unmute, Long-press for settings dialog
+                    // 2. Dual-action Sound button: Quick tap toggles audio, Hold for settings
                     Surface(
                         shape = RoundedCornerShape(14.dp),
                         color = theme.boosterBg,
@@ -345,16 +344,18 @@ fun GameHeader(
                 }
 
                 Surface(
-                    shape = RoundedCornerShape(percent = 50),
+                    shape = RoundedCornerShape(14.dp),
                     color = theme.boosterBg,
                     border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
                     shadowElevation = 1.dp,
-                    modifier = Modifier.scale(badgeScale.value)
+                    modifier = Modifier
+                        .height(40.dp)
+                        .scale(badgeScale.value)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
                     ) {
                         // Bold solid directional arrow icon matching Screenshot 1
                         androidx.compose.foundation.Canvas(modifier = Modifier.size(15.dp)) {
