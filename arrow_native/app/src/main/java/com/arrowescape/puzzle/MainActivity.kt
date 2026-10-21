@@ -143,6 +143,12 @@ class MainActivity : ComponentActivity() {
                                         }
                                         currentScreen = AppScreen.HOME
                                     },
+                                    onToggleSound = {
+                                        gameViewModel.toggleSound()
+                                    },
+                                    onToggleVibration = {
+                                        gameViewModel.toggleVibration()
+                                    },
                                     onSettingsClick = {
                                         gameViewModel.playClick()
                                         showSoundSettingsDialog = true
@@ -203,6 +209,10 @@ class MainActivity : ComponentActivity() {
                             },
                             onToggleVibration = {
                                 gameViewModel.toggleVibration()
+                            },
+                            onThemeSelect = { selectedTheme ->
+                                gameViewModel.playClick()
+                                gameViewModel.setTheme(selectedTheme)
                             },
                             onThemeClick = {
                                 gameViewModel.playClick()

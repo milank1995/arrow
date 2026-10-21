@@ -6,8 +6,12 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,6 +61,7 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GameHeader(
     levelNumber: Int,
@@ -71,8 +76,11 @@ fun GameHeader(
     onPrevLevelClick: (() -> Unit)? = null,
     onNextLevelClick: (() -> Unit)? = null,
     onLevelNumberClick: (() -> Unit)? = null,
-    onBackClick: () -> Unit,
-    onThemeClick: () -> Unit,
+    onPauseClick: (() -> Unit)? = null,
+    onBackClick: (() -> Unit)? = null,
+    onSoundToggle: (() -> Unit)? = null,
+    onSoundLongPress: (() -> Unit)? = null,
+    onThemeClick: (() -> Unit)? = null,
     onSettingsClick: (() -> Unit)? = null,
     isSoundOn: Boolean = true,
     modifier: Modifier = Modifier
@@ -84,6 +92,10 @@ fun GameHeader(
         animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
         label = "headerProgress"
     )
+
+    val effectivePause = onPauseClick ?: onBackClick ?: {}
+    val effectiveSoundToggle = onSoundToggle ?: onSettingsClick ?: {}
+    val effectiveSoundLongPress = onSoundLongPress ?: onSettingsClick
 
     Surface(
         color = Color.Transparent,
@@ -97,70 +109,83 @@ fun GameHeader(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                // LEFT: Pause icon + Theme palette pod
+                // LEFT: Clean, minimal HUD pods (Pause || + Dual-Action Sound 🔊/🔇)
+                // Permanent theme palette removed to keep gameplay HUD pristine and uncluttered
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Pause button inside rounded tactile pod
+                    // 1. Pause button inside rounded tactile pod
                     Surface(
                         shape = RoundedCornerShape(14.dp),
                         color = theme.boosterBg,
                         border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
                         shadowElevation = 1.dp,
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .clickable(onClick = effectivePause)
                     ) {
-                        IconButton(
-                            onClick = onBackClick,
+                        Box(
+                            contentAlignment = Alignment.Center,
                             modifier = Modifier.fillMaxSize()
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Pause,
-                                contentDescription = "Pause",
+                                contentDescription = "Pause Game",
                                 tint = theme.textPrimary,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
                     }
 
-                    // Theme palette button inside rounded tactile pod
+                    // 2. Dual-action Sound button: Quick tap to mute/unmute, Long-press for settings dialog
                     Surface(
                         shape = RoundedCornerShape(14.dp),
                         color = theme.boosterBg,
                         border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
                         shadowElevation = 1.dp,
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .combinedClickable(
+                                onClick = effectiveSoundToggle,
+                                onLongClick = effectiveSoundLongPress
+                            )
                     ) {
-                        IconButton(
-                            onClick = onThemeClick,
+                        Box(
+                            contentAlignment = Alignment.Center,
                             modifier = Modifier.fillMaxSize()
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Palette,
-                                contentDescription = "Themes",
-                                tint = theme.textPrimary,
+                                imageVector = if (isSoundOn) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeMute,
+                                contentDescription = if (isSoundOn) "Mute Sound (Hold for Settings)" else "Unmute Sound (Hold for Settings)",
+                                tint = if (isSoundOn) theme.textPrimary else theme.textSecondary.copy(alpha = 0.5f),
                                 modifier = Modifier.size(20.dp)
                             )
                         }
                     }
 
-                    // Sound / Settings menu button inside rounded tactile pod
-                    if (onSettingsClick != null) {
+                    // Optional Dev Theme button (shown only in test mode)
+                    if (isTestMode && onThemeClick != null) {
                         Surface(
                             shape = RoundedCornerShape(14.dp),
                             color = theme.boosterBg,
                             border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
                             shadowElevation = 1.dp,
-                            modifier = Modifier.size(40.dp)
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .clickable(onClick = onThemeClick)
                         ) {
-                            IconButton(
-                                onClick = onSettingsClick,
+                            Box(
+                                contentAlignment = Alignment.Center,
                                 modifier = Modifier.fillMaxSize()
                             ) {
                                 Icon(
-                                    imageVector = if (isSoundOn) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeMute,
-                                    contentDescription = "Sound Settings",
-                                    tint = if (isSoundOn) theme.textPrimary else theme.textSecondary.copy(alpha = 0.5f),
+                                    imageVector = Icons.Default.Palette,
+                                    contentDescription = "Themes",
+                                    tint = theme.textPrimary,
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
@@ -269,13 +294,41 @@ fun GameHeader(
                             }
                         }
                     } else {
-                        Text(
-                            text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = theme.textPrimary,
+                        val (difficultyLabel, difficultyColor) = remember(isDailyChallenge, levelNumber, totalArrowsCount) {
+                            when {
+                                isDailyChallenge -> "Daily" to Color(0xFFEA580C)
+                                levelNumber % 10 == 0 || totalArrowsCount >= 40 -> "Hard" to Color(0xFF7C3AED)
+                                totalArrowsCount >= 25 -> "Medium" to Color(0xFFD97706)
+                                else -> "Normal" to Color(0xFF059669)
+                            }
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
                             modifier = Modifier.padding(top = 3.dp)
-                        )
+                        ) {
+                            Text(
+                                text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = theme.textPrimary
+                            )
+                            Surface(
+                                shape = RoundedCornerShape(percent = 50),
+                                color = difficultyColor.copy(alpha = if (theme.isDark) 0.22f else 0.12f),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, difficultyColor.copy(alpha = 0.45f)),
+                                modifier = Modifier.padding(start = 6.dp)
+                            ) {
+                                Text(
+                                    text = difficultyLabel,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = difficultyColor,
+                                    modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp)
+                                )
+                            }
+                        }
                     }
                 }
 

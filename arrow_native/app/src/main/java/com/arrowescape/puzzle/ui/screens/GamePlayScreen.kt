@@ -1,5 +1,12 @@
 package com.arrowescape.puzzle.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,10 +17,13 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,7 +31,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.core.model.Arrow
 import com.arrowescape.puzzle.core.model.ArrowState
 import com.arrowescape.puzzle.game.GameUiState
@@ -29,9 +41,8 @@ import com.arrowescape.puzzle.ui.components.BoosterBar
 import com.arrowescape.puzzle.ui.components.CheerOverlay
 import com.arrowescape.puzzle.ui.components.GameHeader
 import com.arrowescape.puzzle.ui.components.GameOverDialog
-import com.arrowescape.puzzle.ui.components.LevelVictoryDialog
 import com.arrowescape.puzzle.ui.components.PuzzleBoardCanvas
-import com.arrowescape.puzzle.ui.components.ThemeCustomizationDialog
+import com.arrowescape.puzzle.ui.components.SoundSettingsDialog
 import com.arrowescape.puzzle.ui.screens.VictoryScreen
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 import kotlinx.coroutines.delay
@@ -49,6 +60,8 @@ fun GamePlayScreen(
     onNextLevelClick: () -> Unit,
     onRestartClick: () -> Unit,
     onBackToHomeClick: () -> Unit,
+    onToggleSound: () -> Unit = {},
+    onToggleVibration: () -> Unit = {},
     onSettingsClick: (() -> Unit)? = null,
     onClaimDoubleCoins: (Int) -> Unit = {},
     onIdlePromptSound: () -> Unit = {},
@@ -57,7 +70,10 @@ fun GamePlayScreen(
     onPlayClickSound: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    var showThemeDialog by remember { mutableStateOf(false) }
+    var showPauseDialog by remember { mutableStateOf(false) }
+    var hudToastMessage by remember { mutableStateOf<String?>(null) }
+    var hudToastTimer by remember { mutableLongStateOf(0L) }
+
     val level = uiState.levelData
     val theme = uiState.activeTheme
     val remainingArrowsCount = uiState.arrows.count { 
@@ -67,7 +83,17 @@ fun GamePlayScreen(
     var lastInteractionTime by remember { mutableLongStateOf(System.currentTimeMillis()) }
     var isIdlePromptActive by remember { mutableStateOf(false) }
     var hasPlayedIdleSoundForPeriod by remember { mutableStateOf(false) }
+    var prevHeartsRemaining by remember { mutableIntStateOf(uiState.heartsRemaining) }
 
+    // Heart loss / mistake triggers stuck assistance immediately
+    LaunchedEffect(uiState.heartsRemaining) {
+        if (uiState.heartsRemaining < prevHeartsRemaining) {
+            isIdlePromptActive = true
+        }
+        prevHeartsRemaining = uiState.heartsRemaining
+    }
+
+    // 8-second idle timer triggers stuck assistance
     LaunchedEffect(lastInteractionTime, remainingArrowsCount, uiState.isLevelComplete, uiState.isGameOver) {
         if (uiState.isLevelComplete || uiState.isGameOver || remainingArrowsCount == 0) {
             isIdlePromptActive = false
@@ -83,6 +109,14 @@ fun GamePlayScreen(
         if (isIdlePromptActive && !hasPlayedIdleSoundForPeriod) {
             hasPlayedIdleSoundForPeriod = true
             onIdlePromptSound()
+        }
+    }
+
+    // Quick HUD toast auto-dismiss timer
+    LaunchedEffect(hudToastTimer) {
+        if (hudToastTimer > 0L) {
+            delay(1200L)
+            hudToastMessage = null
         }
     }
 
@@ -110,124 +144,176 @@ fun GamePlayScreen(
             color = theme.background,
             modifier = modifier.fillMaxSize()
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .displayCutoutPadding()
-            ) {
-                // 1. TOP GAMEPLAY HEADER (Matches Screenshot 2 & 3)
-                if (level != null) {
-                    val totalArrowsCount = uiState.levelData?.arrows?.size ?: uiState.arrows.size
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding()
+                        .navigationBarsPadding()
+                        .displayCutoutPadding()
+                ) {
+                    // 1. TOP GAMEPLAY HEADER (Clean Pause || + Dual-Action Sound 🔊/🔇 + Hearts + Level Chip + Goal)
+                    if (level != null) {
+                        val totalArrowsCount = uiState.levelData?.arrows?.size ?: uiState.arrows.size
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            GameHeader(
+                                levelNumber = uiState.currentLevelNumber,
+                                heartsRemaining = uiState.heartsRemaining,
+                                maxHearts = uiState.maxHearts,
+                                remainingArrowsCount = remainingArrowsCount,
+                                totalArrowsCount = totalArrowsCount,
+                                theme = theme,
+                                isDailyChallenge = uiState.isDailyChallengeMode,
+                                dailyDateString = uiState.activeDailyDate,
+                                onPauseClick = {
+                                    onPlayClickSound()
+                                    showPauseDialog = true
+                                },
+                                onSoundToggle = {
+                                    val nextSound = !uiState.isSoundEnabled
+                                    onToggleSound()
+                                    hudToastMessage = if (nextSound) "Sound On 🔊" else "Sound Muted 🔇"
+                                    hudToastTimer = System.currentTimeMillis()
+                                },
+                                onSoundLongPress = {
+                                    onPlayClickSound()
+                                    showPauseDialog = true
+                                },
+                                isSoundOn = uiState.isSoundEnabled,
+                                modifier = Modifier.widthIn(max = 540.dp)
+                            )
+                        }
+                    }
+
+                    // 2. MAIN PUZZLE BOARD CANVAS & CHEER OVERLAY
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                    ) {
+                        if (level != null) {
+                            PuzzleBoardCanvas(
+                                xSize = level.xSize,
+                                ySize = level.ySize,
+                                arrows = uiState.arrows,
+                                theme = theme,
+                                isGridLinesActive = uiState.isGridLinesActive,
+                                isCelebrationBurstActive = uiState.isCelebrationBurstActive,
+                                previewRayArrowId = uiState.previewRayArrowId,
+                                onArrowClick = { arrow ->
+                                    lastInteractionTime = System.currentTimeMillis()
+                                    isIdlePromptActive = false
+                                    onArrowClick(arrow)
+                                },
+                                onArrowLongPress = { arrow, isPressed ->
+                                    lastInteractionTime = System.currentTimeMillis()
+                                    isIdlePromptActive = false
+                                    onArrowLongPress(arrow, isPressed)
+                                }
+                            )
+                        }
+
+                        // Running-style combo praise notification banner positioned below header
+                        CheerOverlay(
+                            message = uiState.cheerMessage,
+                            fromLeft = uiState.cheerFromLeft,
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(top = 8.dp)
+                        )
+                    }
+
+                    // 3. BOTTOM BOOSTER CONTROLS (Smart Idle-Reveal: Ghost state while solving, waking when stuck)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 4.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        GameHeader(
-                            levelNumber = uiState.currentLevelNumber,
-                            heartsRemaining = uiState.heartsRemaining,
-                            maxHearts = uiState.maxHearts,
-                            remainingArrowsCount = remainingArrowsCount,
-                            totalArrowsCount = totalArrowsCount,
+                        BoosterBar(
+                            hintsCount = uiState.hintsAvailable,
+                            isGridLinesActive = uiState.isGridLinesActive,
+                            isIdlePromptActive = isIdlePromptActive,
                             theme = theme,
-                            isDailyChallenge = uiState.isDailyChallengeMode,
-                            dailyDateString = uiState.activeDailyDate,
-                            onBackClick = onBackToHomeClick,
-                            onThemeClick = { showThemeDialog = true },
-                            onSettingsClick = onSettingsClick,
-                            isSoundOn = uiState.isSoundEnabled,
+                            onHintClick = {
+                                lastInteractionTime = System.currentTimeMillis()
+                                isIdlePromptActive = false
+                                onHintClick()
+                            },
+                            onGridClick = {
+                                lastInteractionTime = System.currentTimeMillis()
+                                isIdlePromptActive = false
+                                onGridClick()
+                            },
                             modifier = Modifier.widthIn(max = 540.dp)
                         )
                     }
                 }
 
-                // 2. MAIN PUZZLE BOARD CANVAS & CHEER OVERLAY
-                Box(
-                    contentAlignment = Alignment.Center,
+                // 4. SUBTLE HUD FLOATING TOAST (Shown on quick Sound toggle without modal interruption)
+                AnimatedVisibility(
+                    visible = hudToastMessage != null,
+                    enter = fadeIn(tween(180)) + slideInVertically(tween(180)) { -it / 2 },
+                    exit = fadeOut(tween(250)) + slideOutVertically(tween(250)) { -it / 2 },
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                        .padding(top = 70.dp)
                 ) {
-                    if (level != null) {
-                        PuzzleBoardCanvas(
-                            xSize = level.xSize,
-                            ySize = level.ySize,
-                            arrows = uiState.arrows,
-                            theme = theme,
-                            isGridLinesActive = uiState.isGridLinesActive,
-                            isCelebrationBurstActive = uiState.isCelebrationBurstActive,
-                            previewRayArrowId = uiState.previewRayArrowId,
-                            onArrowClick = { arrow ->
-                                lastInteractionTime = System.currentTimeMillis()
-                                onArrowClick(arrow)
-                            },
-                            onArrowLongPress = { arrow, isPressed ->
-                                lastInteractionTime = System.currentTimeMillis()
-                                onArrowLongPress(arrow, isPressed)
-                            }
+                    Surface(
+                        shape = RoundedCornerShape(percent = 50),
+                        color = if (theme.isDark) Color(0xFF1E293B).copy(alpha = 0.95f) else Color(0xFF0F172A).copy(alpha = 0.90f),
+                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.15f)),
+                        shadowElevation = 8.dp
+                    ) {
+                        Text(
+                            text = hudToastMessage ?: "",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 7.dp)
                         )
                     }
+                }
 
-                    // Running-style combo praise notification banner positioned below header and above gameplay
-                    CheerOverlay(
-                        message = uiState.cheerMessage,
-                        fromLeft = uiState.cheerFromLeft,
-                        modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .padding(top = 8.dp)
+                // 5. UNIFIED GAME PAUSED / SETTINGS MODAL DIALOG
+                if (showPauseDialog) {
+                    SoundSettingsDialog(
+                        isSoundEnabled = uiState.isSoundEnabled,
+                        isVibrationEnabled = uiState.isVibrationEnabled,
+                        activeTheme = theme,
+                        onToggleSound = onToggleSound,
+                        onToggleVibration = onToggleVibration,
+                        onThemeSelect = onThemeSelect,
+                        onRestartClick = {
+                            showPauseDialog = false
+                            onRestartClick()
+                        },
+                        onHomeClick = {
+                            showPauseDialog = false
+                            onBackToHomeClick()
+                        },
+                        onDismiss = {
+                            showPauseDialog = false
+                        }
                     )
                 }
 
-                // 3. BOTTOM BOOSTER CONTROLS (Matches Screenshot 2 & 3: Hint & Grid pods)
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 4.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    BoosterBar(
-                        hintsCount = uiState.hintsAvailable,
-                        isGridLinesActive = uiState.isGridLinesActive,
-                        isIdlePromptActive = isIdlePromptActive,
+                // 6. GAME OVER DIALOG
+                if (uiState.isGameOver) {
+                    GameOverDialog(
                         theme = theme,
-                        onHintClick = {
-                            lastInteractionTime = System.currentTimeMillis()
-                            onHintClick()
-                        },
-                        onGridClick = {
-                            lastInteractionTime = System.currentTimeMillis()
-                            onGridClick()
-                        },
-                        modifier = Modifier.widthIn(max = 540.dp)
+                        onRestartClick = onRestartClick,
+                        onHomeClick = onBackToHomeClick
                     )
                 }
-            }
-
-            // GAME OVER DIALOG
-            if (uiState.isGameOver) {
-                GameOverDialog(
-                    theme = theme,
-                    onRestartClick = onRestartClick,
-                    onHomeClick = onBackToHomeClick
-                )
-            }
-
-            // THEME CUSTOMIZATION DIALOG
-            if (showThemeDialog) {
-                ThemeCustomizationDialog(
-                    activeTheme = theme,
-                    onThemeSelect = { selectedTheme ->
-                        onThemeSelect(selectedTheme)
-                    },
-                    onDismiss = {
-                        showThemeDialog = false
-                    }
-                )
             }
         }
     }

@@ -37,6 +37,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
@@ -93,7 +95,14 @@ fun BoosterBar(
         label = "idleHaloAlpha"
     )
 
-    // Clean, transparent, unclipped bottom bar with ample bottom padding
+    // Smart Idle-Reveal: Ghost state (alpha 0.45) during active solving, smooth wake up (alpha 1.0) when stuck
+    val hintGhostAlpha by animateFloatAsState(
+        targetValue = if (isIdlePromptActive) 1.0f else 0.45f,
+        animationSpec = tween(400, easing = FastOutSlowInEasing),
+        label = "hintGhostAlpha"
+    )
+
+    // Clean, transparent, unclipped bottom bar with adaptive responsive padding
     Surface(
         color = Color.Transparent,
         modifier = modifier.fillMaxWidth()
@@ -101,17 +110,18 @@ fun BoosterBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp, bottom = 44.dp), // Generous bottom padding to clear navigation bar
-            horizontalArrangement = Arrangement.spacedBy(if (onRestartClick != null) 38.dp else 56.dp, Alignment.CenterHorizontally),
+                .padding(top = 8.dp, bottom = 26.dp),
+            horizontalArrangement = Arrangement.spacedBy(if (onRestartClick != null) 36.dp else 52.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 1. HINT ICON (Unclipped container, larger icon, badge securely positioned)
+            // 1. HINT ICON (Smart Idle-Reveal: Ghost state when solving, pulses awake when stuck)
             val combinedHintScale = hintPressScale.value * if (isIdlePromptActive) idlePulseScale else 1f
 
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .size(width = 68.dp, height = 76.dp)
+                    .alpha(hintGhostAlpha)
                     .scale(combinedHintScale)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
