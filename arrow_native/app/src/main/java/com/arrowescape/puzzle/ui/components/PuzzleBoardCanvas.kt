@@ -224,9 +224,9 @@ fun PuzzleBoardCanvas(
         val currentOnArrowLongPress by rememberUpdatedState(onArrowLongPress)
         val minTouchTargetPx = with(LocalDensity.current) { 15.dp.toPx() }
         val currentMinTouchTargetPx by rememberUpdatedState(minTouchTargetPx)
-        val minStrokePx = with(LocalDensity.current) { 1.6.dp.toPx() }
-        val maxStrokePx = with(LocalDensity.current) { 4.5.dp.toPx() }
-        val baseStrokeWidth = (cellSize * 0.20f).coerceIn(minStrokePx, maxStrokePx)
+        val minStrokePx = with(LocalDensity.current) { 2.0.dp.toPx() }
+        val maxStrokePx = with(LocalDensity.current) { 5.0.dp.toPx() }
+        val baseStrokeWidth = (cellSize * 0.23f).coerceIn(minStrokePx, maxStrokePx)
         val baseHeadWidth = baseStrokeWidth * 2.0f
         val currentHeadSize by rememberUpdatedState(baseHeadWidth)
 
@@ -1001,8 +1001,8 @@ private fun DrawScope.drawArrowEntity(
 
     // Exact Unity One stroke: slender, crisp lines (20% of cell size, 1.6dp .. 4.5dp)
     // Guarantees generous 3x-4x gap between parallel channels matching Image 2 perfectly
-    val minStroke = 1.6.dp.toPx()
-    val maxStroke = 4.5.dp.toPx()
+    val minStroke = 2.0.dp.toPx()
+    val maxStroke = 5.0.dp.toPx()
     val scaleMultiplier = when {
         isPreviewHold -> 1.10f * (1f + (hintPulseScale - 1f) * 0.35f)
         isLaunching -> 1.18f
@@ -1010,7 +1010,7 @@ private fun DrawScope.drawArrowEntity(
         arrow.state == ArrowState.HINTED -> hintPulseScale
         else -> 1.0f
     }
-    val strokeWidth = (cellSize * 0.20f).coerceIn(minStroke, maxStroke) * scaleMultiplier
+    val strokeWidth = (cellSize * 0.23f).coerceIn(minStroke, maxStroke) * scaleMultiplier
 
     // Exact Unity One arrowhead proportions (2.0x stroke width, 1.05x aspect ratio)
     val headWidth = strokeWidth * 2.0f * (if (isPreviewHold) 1.08f else if (isLaunching) 1.12f else 1.0f)
@@ -1304,8 +1304,7 @@ private fun DrawScope.drawCorridorGuideLines(
 
     // Directional corridor extraction:
     // Group active arrows by direction so lines ONLY extend forward in the direction
-    // each arrow is pointing (with directional arrow indicator chevrons), without
-    // displaying the opposite backwards line.
+    // each arrow is pointing, without displaying the opposite backwards line.
     val upCorridors = mutableMapOf<Int, Float>() // col -> maxTailY
     val downCorridors = mutableMapOf<Int, Float>() // col -> minTailY
     val leftCorridors = mutableMapOf<Int, Float>() // row -> maxTailX
@@ -1357,11 +1356,11 @@ private fun DrawScope.drawCorridorGuideLines(
     val boardTop = origin.y
     val boardBottom = origin.y + ySize * cellSize
 
-    val strokeW = (cellSize * 0.035f).coerceIn(1.0.dp.toPx(), 2.0.dp.toPx())
-    val guideColor = theme.arrowDefault.copy(alpha = if (theme.isDark) 0.32f else 0.24f)
-    val chevronSize = (cellSize * 0.15f).coerceIn(3.5.dp.toPx(), 6.5.dp.toPx())
+    // Slightly increased thickness for clear visibility while remaining subtle
+    val strokeW = (cellSize * 0.046f).coerceIn(1.5.dp.toPx(), 2.4.dp.toPx())
+    val guideColor = theme.arrowDefault.copy(alpha = if (theme.isDark) 0.38f else 0.28f)
 
-    // 1. UP Corridors: line extends upwards from arrow body with UP chevron
+    // 1. UP Corridors: line extends upwards from arrow body to top margin
     for ((col, maxTailY) in upCorridors) {
         val posX = origin.x + (col + 0.5f) * cellSize
         val startY = boardTop - fadeMargin
@@ -1385,22 +1384,9 @@ private fun DrawScope.drawCorridorGuideLines(
             strokeWidth = strokeW,
             cap = StrokeCap.Round
         )
-
-        // Directional arrow chevron indicator pointing UP
-        val chevronY = boardTop - fadeMargin * 0.35f
-        val chevronPath = Path().apply {
-            moveTo(posX - chevronSize, chevronY + chevronSize * 0.8f)
-            lineTo(posX, chevronY)
-            lineTo(posX + chevronSize, chevronY + chevronSize * 0.8f)
-        }
-        drawPath(
-            path = chevronPath,
-            color = guideColor.copy(alpha = guideColor.alpha * 0.85f),
-            style = Stroke(width = strokeW * 1.15f, cap = StrokeCap.Round, join = StrokeJoin.Round)
-        )
     }
 
-    // 2. DOWN Corridors: line extends downwards from arrow body with DOWN chevron
+    // 2. DOWN Corridors: line extends downwards from arrow body to bottom margin
     for ((col, minTailY) in downCorridors) {
         val posX = origin.x + (col + 0.5f) * cellSize
         val startY = origin.y + (minTailY + 0.5f) * cellSize
@@ -1425,22 +1411,9 @@ private fun DrawScope.drawCorridorGuideLines(
             strokeWidth = strokeW,
             cap = StrokeCap.Round
         )
-
-        // Directional arrow chevron indicator pointing DOWN
-        val chevronY = boardBottom + fadeMargin * 0.35f
-        val chevronPath = Path().apply {
-            moveTo(posX - chevronSize, chevronY - chevronSize * 0.8f)
-            lineTo(posX, chevronY)
-            lineTo(posX + chevronSize, chevronY - chevronSize * 0.8f)
-        }
-        drawPath(
-            path = chevronPath,
-            color = guideColor.copy(alpha = guideColor.alpha * 0.85f),
-            style = Stroke(width = strokeW * 1.15f, cap = StrokeCap.Round, join = StrokeJoin.Round)
-        )
     }
 
-    // 3. LEFT Corridors: line extends leftwards from arrow body with LEFT chevron
+    // 3. LEFT Corridors: line extends leftwards from arrow body to left margin
     for ((row, maxTailX) in leftCorridors) {
         val posY = origin.y + (row + 0.5f) * cellSize
         val startX = boardLeft - fadeMargin
@@ -1464,22 +1437,9 @@ private fun DrawScope.drawCorridorGuideLines(
             strokeWidth = strokeW,
             cap = StrokeCap.Round
         )
-
-        // Directional arrow chevron indicator pointing LEFT
-        val chevronX = boardLeft - fadeMargin * 0.35f
-        val chevronPath = Path().apply {
-            moveTo(chevronX + chevronSize * 0.8f, posY - chevronSize)
-            lineTo(chevronX, posY)
-            lineTo(chevronX + chevronSize * 0.8f, posY + chevronSize)
-        }
-        drawPath(
-            path = chevronPath,
-            color = guideColor.copy(alpha = guideColor.alpha * 0.85f),
-            style = Stroke(width = strokeW * 1.15f, cap = StrokeCap.Round, join = StrokeJoin.Round)
-        )
     }
 
-    // 4. RIGHT Corridors: line extends rightwards from arrow body with RIGHT chevron
+    // 4. RIGHT Corridors: line extends rightwards from arrow body to right margin
     for ((row, minTailX) in rightCorridors) {
         val posY = origin.y + (row + 0.5f) * cellSize
         val startX = origin.x + (minTailX + 0.5f) * cellSize
@@ -1503,19 +1463,6 @@ private fun DrawScope.drawCorridorGuideLines(
             end = Offset(endX, posY),
             strokeWidth = strokeW,
             cap = StrokeCap.Round
-        )
-
-        // Directional arrow chevron indicator pointing RIGHT
-        val chevronX = boardRight + fadeMargin * 0.35f
-        val chevronPath = Path().apply {
-            moveTo(chevronX - chevronSize * 0.8f, posY - chevronSize)
-            lineTo(chevronX, posY)
-            lineTo(chevronX - chevronSize * 0.8f, posY + chevronSize)
-        }
-        drawPath(
-            path = chevronPath,
-            color = guideColor.copy(alpha = guideColor.alpha * 0.85f),
-            style = Stroke(width = strokeW * 1.15f, cap = StrokeCap.Round, join = StrokeJoin.Round)
         )
     }
 }
