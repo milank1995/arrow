@@ -32,6 +32,7 @@ import com.arrowescape.puzzle.ui.components.GameOverDialog
 import com.arrowescape.puzzle.ui.components.LevelVictoryDialog
 import com.arrowescape.puzzle.ui.components.PuzzleBoardCanvas
 import com.arrowescape.puzzle.ui.components.ThemeCustomizationDialog
+import com.arrowescape.puzzle.ui.screens.VictoryScreen
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 import kotlinx.coroutines.delay
 
@@ -48,6 +49,7 @@ fun GamePlayScreen(
     onNextLevelClick: () -> Unit,
     onRestartClick: () -> Unit,
     onBackToHomeClick: () -> Unit,
+    onClaimDoubleCoins: (Int) -> Unit = {},
     onIdlePromptSound: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -80,140 +82,144 @@ fun GamePlayScreen(
         }
     }
 
-    Surface(
-        color = theme.background,
-        modifier = modifier.fillMaxSize()
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
-                .displayCutoutPadding()
+    if (uiState.isLevelComplete) {
+        val baseCoins = if (uiState.isDailyChallengeMode) 100 else 50 + (uiState.comboCount * 5)
+        VictoryScreen(
+            levelNumber = uiState.currentLevelNumber,
+            coinsEarned = baseCoins,
+            streakDays = uiState.streakDays,
+            totalCoins = uiState.coins,
+            theme = theme,
+            heartsRemaining = uiState.heartsRemaining,
+            maxHearts = uiState.maxHearts,
+            isDailyChallenge = uiState.isDailyChallengeMode,
+            onClaimDoubleCoins = onClaimDoubleCoins,
+            onNextLevelClick = onNextLevelClick,
+            onHomeClick = onBackToHomeClick,
+            modifier = modifier
+        )
+    } else {
+        Surface(
+            color = theme.background,
+            modifier = modifier.fillMaxSize()
         ) {
-            // 1. TOP GAMEPLAY HEADER (Matches Screenshot 2 & 3)
-            if (level != null) {
-                val totalArrowsCount = uiState.levelData?.arrows?.size ?: uiState.arrows.size
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .displayCutoutPadding()
+            ) {
+                // 1. TOP GAMEPLAY HEADER (Matches Screenshot 2 & 3)
+                if (level != null) {
+                    val totalArrowsCount = uiState.levelData?.arrows?.size ?: uiState.arrows.size
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        GameHeader(
+                            levelNumber = uiState.currentLevelNumber,
+                            heartsRemaining = uiState.heartsRemaining,
+                            maxHearts = uiState.maxHearts,
+                            remainingArrowsCount = remainingArrowsCount,
+                            totalArrowsCount = totalArrowsCount,
+                            theme = theme,
+                            isDailyChallenge = uiState.isDailyChallengeMode,
+                            dailyDateString = uiState.activeDailyDate,
+                            onBackClick = onBackToHomeClick,
+                            onThemeClick = { showThemeDialog = true },
+                            modifier = Modifier.widthIn(max = 540.dp)
+                        )
+                    }
+                }
+
+                // 2. MAIN PUZZLE BOARD CANVAS & CHEER OVERLAY
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                ) {
+                    if (level != null) {
+                        PuzzleBoardCanvas(
+                            xSize = level.xSize,
+                            ySize = level.ySize,
+                            arrows = uiState.arrows,
+                            theme = theme,
+                            isGridLinesActive = uiState.isGridLinesActive,
+                            isCelebrationBurstActive = uiState.isCelebrationBurstActive,
+                            previewRayArrowId = uiState.previewRayArrowId,
+                            onArrowClick = { arrow ->
+                                lastInteractionTime = System.currentTimeMillis()
+                                onArrowClick(arrow)
+                            },
+                            onArrowLongPress = { arrow, isPressed ->
+                                lastInteractionTime = System.currentTimeMillis()
+                                onArrowLongPress(arrow, isPressed)
+                            }
+                        )
+                    }
+
+                    // Running-style combo praise notification banner positioned below header and above gameplay
+                    CheerOverlay(
+                        message = uiState.cheerMessage,
+                        fromLeft = uiState.cheerFromLeft,
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(top = 8.dp)
+                    )
+                }
+
+                // 3. BOTTOM BOOSTER CONTROLS (Matches Screenshot 2 & 3: Hint & Grid pods)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 4.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    GameHeader(
-                        levelNumber = uiState.currentLevelNumber,
-                        heartsRemaining = uiState.heartsRemaining,
-                        maxHearts = uiState.maxHearts,
-                        remainingArrowsCount = remainingArrowsCount,
-                        totalArrowsCount = totalArrowsCount,
+                    BoosterBar(
+                        hintsCount = uiState.hintsAvailable,
+                        isGridLinesActive = uiState.isGridLinesActive,
+                        isIdlePromptActive = isIdlePromptActive,
                         theme = theme,
-                        isDailyChallenge = uiState.isDailyChallengeMode,
-                        dailyDateString = uiState.activeDailyDate,
-                        onBackClick = onBackToHomeClick,
-                        onThemeClick = { showThemeDialog = true },
+                        onHintClick = {
+                            lastInteractionTime = System.currentTimeMillis()
+                            onHintClick()
+                        },
+                        onGridClick = {
+                            lastInteractionTime = System.currentTimeMillis()
+                            onGridClick()
+                        },
                         modifier = Modifier.widthIn(max = 540.dp)
                     )
                 }
             }
 
-            // 2. MAIN PUZZLE BOARD CANVAS & CHEER OVERLAY
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-            ) {
-                if (level != null) {
-                    PuzzleBoardCanvas(
-                        xSize = level.xSize,
-                        ySize = level.ySize,
-                        arrows = uiState.arrows,
-                        theme = theme,
-                        isGridLinesActive = uiState.isGridLinesActive,
-                        isCelebrationBurstActive = uiState.isCelebrationBurstActive,
-                        previewRayArrowId = uiState.previewRayArrowId,
-                        onArrowClick = { arrow ->
-                            lastInteractionTime = System.currentTimeMillis()
-                            onArrowClick(arrow)
-                        },
-                        onArrowLongPress = { arrow, isPressed ->
-                            lastInteractionTime = System.currentTimeMillis()
-                            onArrowLongPress(arrow, isPressed)
-                        }
-                    )
-                }
-
-                // Running-style combo praise notification banner positioned below header and above gameplay
-                CheerOverlay(
-                    message = uiState.cheerMessage,
-                    fromLeft = uiState.cheerFromLeft,
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = 8.dp)
-                )
-            }
-
-            // 3. BOTTOM BOOSTER CONTROLS (Matches Screenshot 2 & 3: Hint & Grid pods)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                BoosterBar(
-                    hintsCount = uiState.hintsAvailable,
-                    isGridLinesActive = uiState.isGridLinesActive,
-                    isIdlePromptActive = isIdlePromptActive,
+            // GAME OVER DIALOG
+            if (uiState.isGameOver) {
+                GameOverDialog(
                     theme = theme,
-                    onHintClick = {
-                        lastInteractionTime = System.currentTimeMillis()
-                        onHintClick()
-                    },
-                    onGridClick = {
-                        lastInteractionTime = System.currentTimeMillis()
-                        onGridClick()
-                    },
-                    modifier = Modifier.widthIn(max = 540.dp)
+                    onRestartClick = onRestartClick,
+                    onHomeClick = onBackToHomeClick
                 )
             }
-        }
 
-        // VICTORY DIALOG
-        if (uiState.isLevelComplete) {
-            LevelVictoryDialog(
-                levelNumber = uiState.currentLevelNumber,
-                coinsEarned = if (uiState.isDailyChallengeMode) 100 else 50 + (uiState.comboCount * 5),
-                streakDays = uiState.streakDays,
-                theme = theme,
-                isDailyChallenge = uiState.isDailyChallengeMode,
-                heartsRemaining = uiState.heartsRemaining,
-                maxHearts = uiState.maxHearts,
-                onNextLevelClick = onNextLevelClick
-            )
-        }
-
-        // GAME OVER DIALOG
-        if (uiState.isGameOver) {
-            GameOverDialog(
-                theme = theme,
-                onRestartClick = onRestartClick,
-                onHomeClick = onBackToHomeClick
-            )
-        }
-
-        // THEME CUSTOMIZATION DIALOG
-        if (showThemeDialog) {
-            ThemeCustomizationDialog(
-                activeTheme = theme,
-                onThemeSelect = { selectedTheme ->
-                    onThemeSelect(selectedTheme)
-                },
-                onDismiss = {
-                    showThemeDialog = false
-                }
-            )
+            // THEME CUSTOMIZATION DIALOG
+            if (showThemeDialog) {
+                ThemeCustomizationDialog(
+                    activeTheme = theme,
+                    onThemeSelect = { selectedTheme ->
+                        onThemeSelect(selectedTheme)
+                    },
+                    onDismiss = {
+                        showThemeDialog = false
+                    }
+                )
+            }
         }
     }
 }

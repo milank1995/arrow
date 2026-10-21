@@ -55,9 +55,9 @@ import com.arrowescape.puzzle.core.model.LevelData
 import com.arrowescape.puzzle.ui.components.BoosterBar
 import com.arrowescape.puzzle.ui.components.CheerOverlay
 import com.arrowescape.puzzle.ui.components.GameHeader
-import com.arrowescape.puzzle.ui.components.LevelVictoryDialog
 import com.arrowescape.puzzle.ui.components.PuzzleBoardCanvas
 import com.arrowescape.puzzle.ui.components.ThemeCustomizationDialog
+import com.arrowescape.puzzle.ui.screens.VictoryScreen
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -337,17 +337,22 @@ fun DevTestScreen(
             }
         }
 
-        // VICTORY DIALOG (Exact same authentic victory popup)
+        // VICTORY SCREEN (Dedicated screen with Ad integration placeholders)
         if (isLevelComplete) {
-            LevelVictoryDialog(
+            VictoryScreen(
                 levelNumber = currentLevelNumber,
                 coinsEarned = 50 + (comboCount * 5),
                 streakDays = 1,
+                totalCoins = 250,
                 theme = theme,
+                heartsRemaining = 3,
+                maxHearts = 3,
                 isDailyChallenge = false,
+                onClaimDoubleCoins = {},
                 onNextLevelClick = {
                     loadLevel(currentLevelNumber + 1)
-                }
+                },
+                onHomeClick = onBackToHomeClick
             )
         }
 

@@ -112,6 +112,9 @@ class MainActivity : ComponentActivity() {
                                             currentScreen = AppScreen.HOME
                                         }
                                     },
+                                    onClaimDoubleCoins = { amount ->
+                                        gameViewModel.claimDoubleCoins(amount)
+                                    },
                                     onRestartClick = {
                                         gameViewModel.restartLevel()
                                     },

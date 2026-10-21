@@ -451,14 +451,21 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         handleLevelComplete()
     }
 
+    fun claimDoubleCoins(amount: Int) {
+        viewModelScope.launch {
+            repository.addCoins(amount)
+            audioHapticManager.playBoosterUse()
+        }
+    }
+
     private fun handleLevelComplete() {
         viewModelScope.launch {
+            val baseCoins = if (_uiState.value.isDailyChallengeMode) 100 else 50 + (_uiState.value.comboCount * 5)
             if (_uiState.value.isDailyChallengeMode) {
                 val dateStr = _uiState.value.activeDailyDate ?: LocalDate.now().toString()
                 repository.recordDailyCompletion(dateStr)
-            } else {
-                repository.addCoins(25)
             }
+            repository.addCoins(baseCoins)
         }
     }
 
