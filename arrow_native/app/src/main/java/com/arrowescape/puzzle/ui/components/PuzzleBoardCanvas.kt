@@ -46,6 +46,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -648,8 +649,8 @@ fun PuzzleBoardCanvas(
 
                 // 1. Full Grid Lines (background) only if user activated via '#' Booster button
                 if (isGridLinesActive) {
-                    drawGridLines(boardOrigin, xSize, ySize, cellSize, theme.gridLine)
-                    drawGridDots(boardOrigin, xSize, ySize, cellSize, theme.gridDot)
+                    drawCorridorGuideLines(boardOrigin, xSize, ySize, cellSize, arrows, theme)
+
                 }
 
                 // 2. Cleared Area Silhouette Dots:
@@ -1288,32 +1289,103 @@ private fun lerpOffset(p0: Offset, p1: Offset, t: Float): Offset {
     )
 }
 
-private fun DrawScope.drawGridLines(origin: Offset, xSize: Int, ySize: Int, cellSize: Float, color: Color) {
-    for (x in 0..xSize) {
-        drawLine(
-            color = color,
-            start = Offset(origin.x + x * cellSize, origin.y),
-            end = Offset(origin.x + x * cellSize, origin.y + ySize * cellSize),
-            strokeWidth = 1.2f
-        )
+private fun DrawScope.drawCorridorGuideLines(
+    origin: Offset,
+    xSize: Int,
+    ySize: Int,
+    cellSize: Float,
+    arrows: List<Arrow>,
+    theme: ThemePreset
+) {
+    // Only project along active corridors (arrows currently in play)
+    val activeArrows = arrows.filter {
+        it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT
     }
-    for (y in 0..ySize) {
-        drawLine(
-            color = color,
-            start = Offset(origin.x, origin.y + y * cellSize),
-            end = Offset(origin.x + xSize * cellSize, origin.y + y * cellSize),
-            strokeWidth = 1.2f
-        )
-    }
-}
+    if (activeArrows.isEmpty()) return
 
-private fun DrawScope.drawGridDots(origin: Offset, xSize: Int, ySize: Int, cellSize: Float, color: Color) {
-    for (x in 0..xSize) {
-        for (y in 0..ySize) {
+    val activeCols = activeArrows.flatMap { it.allPoints.map { pt -> pt.x } }.toSet()
+    val activeRows = activeArrows.flatMap { it.allPoints.map { pt -> pt.y } }.toSet()
+
+    // Boundary fade margin: 1.8 cells extending past the board edge for smooth fade-out
+    val fadeMargin = cellSize * 1.8f
+    val boardLeft = origin.x
+    val boardRight = origin.x + xSize * cellSize
+    val boardTop = origin.y
+    val boardBottom = origin.y + ySize * cellSize
+
+    val startX = boardLeft - fadeMargin
+    val endX = boardRight + fadeMargin
+    val totalSpanX = (endX - startX).coerceAtLeast(1f)
+    val fadeRatioX = (fadeMargin / totalSpanX).coerceIn(0.01f, 0.45f)
+
+    val startY = boardTop - fadeMargin
+    val endY = boardBottom + fadeMargin
+    val totalSpanY = (endY - startY).coerceAtLeast(1f)
+    val fadeRatioY = (fadeMargin / totalSpanY).coerceIn(0.01f, 0.45f)
+
+    // Dynamic theme-adaptive colors matching the selected theme
+    val guideColor = theme.arrowDefault.copy(alpha = if (theme.isDark) 0.32f else 0.22f)
+    val dotColor = theme.arrowDefault.copy(alpha = if (theme.isDark) 0.42f else 0.30f)
+
+    val hGradient = Brush.horizontalGradient(
+        colorStops = arrayOf(
+            0.0f to Color.Transparent,
+            fadeRatioX to guideColor,
+            (1.0f - fadeRatioX) to guideColor,
+            1.0f to Color.Transparent
+        ),
+        startX = startX,
+        endX = endX
+    )
+
+    val vGradient = Brush.verticalGradient(
+        colorStops = arrayOf(
+            0.0f to Color.Transparent,
+            fadeRatioY to guideColor,
+            (1.0f - fadeRatioY) to guideColor,
+            1.0f to Color.Transparent
+        ),
+        startY = startY,
+        endY = endY
+    )
+
+    // Responsive stroke width adapting to screen density and cell size
+    val strokeW = (cellSize * 0.035f).coerceIn(1.0.dp.toPx(), 2.2.dp.toPx())
+
+    // 1. Draw horizontal corridor lines across active arrow rows
+    for (row in activeRows) {
+        val posY = origin.y + (row + 0.5f) * cellSize
+        drawLine(
+            brush = hGradient,
+            start = Offset(startX, posY),
+            end = Offset(endX, posY),
+            strokeWidth = strokeW,
+            cap = StrokeCap.Round
+        )
+    }
+
+    // 2. Draw vertical corridor lines across active arrow columns
+    for (col in activeCols) {
+        val posX = origin.x + (col + 0.5f) * cellSize
+        drawLine(
+            brush = vGradient,
+            start = Offset(posX, startY),
+            end = Offset(posX, endY),
+            strokeWidth = strokeW,
+            cap = StrokeCap.Round
+        )
+    }
+
+    // 3. Draw subtle pinpoint intersection dots where corridors cross
+    val dotRadius = (cellSize * 0.038f).coerceIn(1.2.dp.toPx(), 2.2.dp.toPx())
+    for (col in activeCols) {
+        val posX = origin.x + (col + 0.5f) * cellSize
+        for (row in activeRows) {
+            val posY = origin.y + (row + 0.5f) * cellSize
             drawCircle(
-                color = color,
-                radius = 3.0f,
-                center = Offset(origin.x + x * cellSize, origin.y + y * cellSize)
+                color = dotColor,
+                radius = dotRadius,
+                center = Offset(posX, posY)
             )
         }
     }
