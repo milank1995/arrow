@@ -2,9 +2,12 @@ package com.arrowescape.puzzle.ui.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -106,43 +109,63 @@ fun DailyChallengeScreen(
         color = theme.background,
         modifier = modifier.fillMaxSize()
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
-                .displayCutoutPadding()
-                .padding(horizontal = 20.dp, vertical = 12.dp)
-        ) {
-            // 1. TOP APP BAR: Back Button + Title + Streak Pill
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 6.dp, bottom = 12.dp)
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val availableHeight = maxHeight
+            val requiresScroll = availableHeight < 670.dp
+            val isCompact = availableHeight < 740.dp
+            val scrollState = rememberScrollState()
+
+            val contentModifier = if (requiresScroll) {
+                Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .displayCutoutPadding()
+                    .padding(horizontal = 20.dp, vertical = 10.dp)
+                    .verticalScroll(scrollState)
+            } else {
+                Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .displayCutoutPadding()
+                    .padding(horizontal = 20.dp, vertical = if (isCompact) 10.dp else 16.dp)
+            }
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = if (requiresScroll) Arrangement.Top else Arrangement.SpaceBetween,
+                modifier = contentModifier
             ) {
-                // Back Button
-                Surface(
-                    shape = CircleShape,
-                    color = theme.surface,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
-                    shadowElevation = 1.dp,
-                    modifier = Modifier.size(42.dp)
+                // 1. TOP APP BAR: Back Button + Title + Streak Pill
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .widthIn(max = 440.dp)
+                        .padding(top = 4.dp, bottom = 10.dp)
                 ) {
-                    IconButton(
-                        onClick = onBackClick,
-                        modifier = Modifier.fillMaxSize()
+                    // Back Button
+                    Surface(
+                        shape = CircleShape,
+                        color = theme.surface,
+                        border = androidx.compose.foundation.BorderStroke(1.2.dp, theme.gridLine),
+                        shadowElevation = 2.dp,
+                        modifier = Modifier.size(42.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back to Home",
-                            tint = theme.textPrimary,
-                            modifier = Modifier.size(22.dp)
-                        )
+                        IconButton(
+                            onClick = onBackClick,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back to Home",
+                                tint = theme.textPrimary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
                     }
-                }
 
                 // Screen Title
                 Text(
@@ -350,41 +373,52 @@ fun DailyChallengeScreen(
                                             val isCompleted = completedDates.contains(thisDate.toString())
                                             val isFuture = thisDate.isAfter(today)
 
+                                            val cellBackground = when {
+                                                isSelected -> Brush.verticalGradient(listOf(ctaGrad1, ctaGrad2))
+                                                isCompleted -> Brush.verticalGradient(listOf(theme.arrowClear.copy(alpha = 0.16f), theme.arrowClear.copy(alpha = 0.10f)))
+                                                isToday -> Brush.verticalGradient(listOf(ctaGrad1.copy(alpha = 0.18f), ctaGrad1.copy(alpha = 0.10f)))
+                                                else -> Brush.verticalGradient(listOf(theme.background.copy(alpha = 0.5f), theme.background.copy(alpha = 0.35f)))
+                                            }
+
+                                            val cellBorder = when {
+                                                isSelected -> androidx.compose.foundation.BorderStroke(1.5.dp, Color.White.copy(alpha = 0.40f))
+                                                isCompleted -> androidx.compose.foundation.BorderStroke(1.dp, theme.arrowClear.copy(alpha = 0.40f))
+                                                isToday -> androidx.compose.foundation.BorderStroke(1.5.dp, ctaGrad1)
+                                                else -> null
+                                            }
+
                                             Box(
                                                 modifier = Modifier
                                                     .weight(1f)
                                                     .aspectRatio(1f)
                                                     .clip(RoundedCornerShape(10.dp))
-                                                    .background(
-                                                        when {
-                                                            isSelected -> theme.arrowDefault
-                                                            isCompleted -> theme.arrowClear.copy(alpha = 0.16f)
-                                                            isToday -> theme.arrowHint.copy(alpha = 0.20f)
-                                                            else -> theme.background.copy(alpha = 0.5f)
-                                                        }
-                                                    )
+                                                    .then(if (cellBorder != null) Modifier.border(cellBorder, RoundedCornerShape(10.dp)) else Modifier)
+                                                    .background(cellBackground)
                                                     .clickable(enabled = !isFuture) {
                                                         selectedDate = thisDate
                                                     },
                                                 contentAlignment = Alignment.Center
                                             ) {
-                                                if (isCompleted && !isSelected) {
+                                                Text(
+                                                    text = "$dayNumber",
+                                                    fontSize = 13.sp,
+                                                    fontWeight = if (isSelected || isToday) FontWeight.Black else FontWeight.SemiBold,
+                                                    color = when {
+                                                        isSelected -> Color.White
+                                                        isFuture -> theme.textSecondary.copy(alpha = 0.35f)
+                                                        isCompleted -> theme.arrowClear
+                                                        else -> theme.textPrimary
+                                                    }
+                                                )
+                                                if (isCompleted) {
                                                     Icon(
                                                         imageVector = Icons.Default.Check,
                                                         contentDescription = "Completed",
-                                                        tint = theme.arrowClear,
-                                                        modifier = Modifier.size(16.dp)
-                                                    )
-                                                } else {
-                                                    Text(
-                                                        text = "$dayNumber",
-                                                        fontSize = 13.sp,
-                                                        fontWeight = if (isSelected || isToday) FontWeight.Black else FontWeight.SemiBold,
-                                                        color = when {
-                                                            isSelected -> if (theme.isDark) Color.Black else Color.White
-                                                            isFuture -> theme.textSecondary.copy(alpha = 0.40f)
-                                                            else -> theme.textPrimary
-                                                        }
+                                                        tint = if (isSelected) Color.White.copy(alpha = 0.90f) else theme.arrowClear,
+                                                        modifier = Modifier
+                                                            .size(11.dp)
+                                                            .align(Alignment.BottomEnd)
+                                                            .padding(end = 2.dp, bottom = 2.dp)
                                                     )
                                                 }
                                             }
@@ -548,4 +582,5 @@ fun DailyChallengeScreen(
             }
         }
     }
+}
 }

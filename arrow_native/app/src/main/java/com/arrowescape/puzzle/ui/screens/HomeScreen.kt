@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -52,6 +53,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.game.GameUiState
+import com.arrowescape.puzzle.ui.components.SculptedStar3D
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 
 /**
@@ -145,8 +147,8 @@ fun HomeScreen(
                 Surface(
                     shape = CircleShape,
                     color = theme.surface,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
-                    shadowElevation = 1.dp,
+                    border = androidx.compose.foundation.BorderStroke(1.2.dp, theme.gridLine),
+                    shadowElevation = 2.dp,
                     modifier = Modifier.size(42.dp)
                 ) {
                     IconButton(
@@ -172,20 +174,29 @@ fun HomeScreen(
                 // Minimalist Brand Title
                 Text(
                     text = "ARROW DECODE",
-                    fontSize = 18.sp,
+                    fontSize = 19.sp,
                     fontWeight = FontWeight.Black,
                     letterSpacing = 6.sp,
-                    color = theme.textPrimary.copy(alpha = 0.85f),
+                    color = theme.textPrimary.copy(alpha = 0.90f),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "MINDFUL PUZZLE",
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 3.sp,
+                    color = theme.textSecondary.copy(alpha = 0.65f),
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(22.dp))
 
                 // Hero Stage Card (Strictly Current Level Only)
                 Surface(
                     shape = RoundedCornerShape(32.dp),
                     color = theme.surface,
-                    shadowElevation = if (theme.isDark) 4.dp else 8.dp,
+                    shadowElevation = if (theme.isDark) 5.dp else 9.dp,
                     border = androidx.compose.foundation.BorderStroke(1.5.dp, theme.gridLine),
                     modifier = Modifier
                         .widthIn(max = 330.dp)
@@ -203,27 +214,38 @@ fun HomeScreen(
                                     )
                                 )
                             )
-                            .padding(horizontal = 24.dp, vertical = 28.dp)
+                            .padding(horizontal = 24.dp, vertical = 26.dp)
                     ) {
                         // 3 Celebratory Mastery Stars for Current Level
                         val currentStars = uiState.levelStars[uiState.currentLevelNumber] ?: 0
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.Bottom,
+                            modifier = Modifier.height(38.dp)
                         ) {
-                            val starSizes = listOf(22.dp, 30.dp, 22.dp)
-                            for (s in 1..3) {
-                                val isEarned = (currentStars >= s) || (currentStars == 0 && uiState.currentLevelNumber == 1)
-                                Icon(
-                                    imageVector = Icons.Default.Star,
-                                    contentDescription = "Star $s",
-                                    tint = if (isEarned) theme.arrowHint else theme.gridDot,
-                                    modifier = Modifier.size(starSizes[s - 1])
-                                )
-                            }
+                            SculptedStar3D(
+                                isEarned = (currentStars >= 1) || (uiState.currentLevelNumber > 1 && currentStars == 0),
+                                size = 24.dp,
+                                rotation = -8f,
+                                modifier = Modifier.offset(y = 3.dp)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            SculptedStar3D(
+                                isEarned = (currentStars >= 2) || (uiState.currentLevelNumber > 1 && currentStars == 0),
+                                size = 32.dp,
+                                haloAura = (currentStars >= 2),
+                                modifier = Modifier.offset(y = (-2).dp)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            SculptedStar3D(
+                                isEarned = (currentStars >= 3) || (uiState.currentLevelNumber > 1 && currentStars == 0),
+                                size = 24.dp,
+                                rotation = 8f,
+                                modifier = Modifier.offset(y = 3.dp)
+                            )
                         }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         // Bold, prominent Level Number in theme color
                         Text(
