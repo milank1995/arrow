@@ -160,30 +160,8 @@ fun GamePlayScreen(
                         .navigationBarsPadding()
                         .displayCutoutPadding()
                 ) {
-                    // 1. TOP SECTION: Large "Tap to move" for Level 1 FTUE; Standard GameHeader for all other levels
-                    if (isInitialLevel1) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 40.dp, bottom = 16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Surface(
-                                shape = RoundedCornerShape(32.dp),
-                                color = if (theme.isDark) Color(0xFF334155).copy(alpha = 0.88f) else Color(0xFFDCE4F0).copy(alpha = 0.88f),
-                                shadowElevation = 0.dp
-                            ) {
-                                Text(
-                                    text = "Tap to move",
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (theme.isDark) Color.White else Color(0xFF1E293B),
-                                    modifier = Modifier.padding(horizontal = 44.dp, vertical = 14.dp),
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                        }
-                    } else if (level != null) {
+                    // 1. TOP GAMEPLAY HEADER (Hidden on Level 1 FTUE; Shown on all regular levels)
+                    if (!isInitialLevel1 && level != null) {
                         val totalArrowsCount = uiState.levelData?.arrows?.size ?: uiState.arrows.size
                         Box(
                             modifier = Modifier
