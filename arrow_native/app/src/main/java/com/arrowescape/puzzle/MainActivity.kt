@@ -20,16 +20,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arrowescape.puzzle.game.GameViewModel
 import com.arrowescape.puzzle.ui.components.DailyCalendarDialog
-import com.arrowescape.puzzle.ui.components.SettingsDialog
 import com.arrowescape.puzzle.ui.components.SoundSettingsDialog
 import com.arrowescape.puzzle.ui.screens.DevTestScreen
 import com.arrowescape.puzzle.ui.screens.GamePlayScreen
 import com.arrowescape.puzzle.ui.screens.HomeScreen
+import com.arrowescape.puzzle.ui.screens.SettingsScreen
 
 enum class AppScreen {
     HOME,
     GAMEPLAY,
-    DEV_TEST
+    DEV_TEST,
+    SETTINGS
 }
 
 class MainActivity : ComponentActivity() {
@@ -48,7 +49,6 @@ class MainActivity : ComponentActivity() {
             var currentScreen by remember { mutableStateOf(initialScreen) }
             var showDailyCalendarDialog by remember { mutableStateOf(false) }
             var showSoundSettingsDialog by remember { mutableStateOf(false) }
-            var showSettingsDialog by remember { mutableStateOf(false) }
 
             MaterialTheme {
                 Surface(
@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onSettingsClick = {
                                         gameViewModel.playClick()
-                                        showSettingsDialog = true
+                                        currentScreen = AppScreen.SETTINGS
                                     },
                                     onDevTestClick = {
                                         gameViewModel.playClick()
@@ -170,7 +170,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onSettingsClick = {
                                         gameViewModel.playClick()
-                                        showSettingsDialog = true
+                                        currentScreen = AppScreen.SETTINGS
                                     },
                                     onIdlePromptSound = {
                                         gameViewModel.playHintNudge()
@@ -195,6 +195,27 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onThemeSelect = { selectedTheme ->
                                         gameViewModel.setTheme(selectedTheme)
+                                    }
+                                )
+                            }
+                            AppScreen.SETTINGS -> {
+                                SettingsScreen(
+                                    isSoundEnabled = uiState.isSoundEnabled,
+                                    isVibrationEnabled = uiState.isVibrationEnabled,
+                                    activeTheme = uiState.activeTheme,
+                                    onToggleSound = {
+                                        gameViewModel.toggleSound()
+                                    },
+                                    onToggleVibration = {
+                                        gameViewModel.toggleVibration()
+                                    },
+                                    onThemeSelect = { selectedTheme ->
+                                        gameViewModel.playClick()
+                                        gameViewModel.setTheme(selectedTheme)
+                                    },
+                                    onBackClick = {
+                                        gameViewModel.playClick()
+                                        currentScreen = AppScreen.HOME
                                     }
                                 )
                             }
@@ -242,24 +263,6 @@ class MainActivity : ComponentActivity() {
                             },
                             onDismiss = {
                                 showSoundSettingsDialog = false
-                            }
-                        )
-                    }
-
-                    // Main App Settings Dialog
-                    if (showSettingsDialog) {
-                        SettingsDialog(
-                            isSoundEnabled = uiState.isSoundEnabled,
-                            isVibrationEnabled = uiState.isVibrationEnabled,
-                            activeTheme = uiState.activeTheme,
-                            onToggleSound = {
-                                gameViewModel.toggleSound()
-                            },
-                            onToggleVibration = {
-                                gameViewModel.toggleVibration()
-                            },
-                            onDismiss = {
-                                showSettingsDialog = false
                             }
                         )
                     }
