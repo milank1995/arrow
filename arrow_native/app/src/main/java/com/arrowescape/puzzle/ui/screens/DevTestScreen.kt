@@ -1,5 +1,6 @@
 package com.arrowescape.puzzle.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -73,6 +74,7 @@ fun DevTestScreen(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    BackHandler(onBack = onBackToHomeClick)
 
     var currentLevelNumber by remember { mutableIntStateOf(50) } // Default to a dense, challenging level
     var levelData by remember { mutableStateOf<LevelData?>(null) }

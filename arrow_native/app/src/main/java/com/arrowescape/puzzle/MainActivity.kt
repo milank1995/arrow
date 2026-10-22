@@ -3,6 +3,7 @@ package com.arrowescape.puzzle
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -156,6 +157,8 @@ class MainActivity : ComponentActivity() {
                                             gameViewModel.onVictoryHomeClick()
                                         } else if (uiState.isDailyChallengeMode) {
                                             gameViewModel.loadLevel(uiState.currentLevelNumber)
+                                        } else if (uiState.isGameOver) {
+                                            gameViewModel.loadLevel(uiState.currentLevelNumber)
                                         }
                                         currentScreen = AppScreen.HOME
                                     },
@@ -224,6 +227,7 @@ class MainActivity : ComponentActivity() {
 
                     // Daily Calendar Modal Dialog
                     if (showDailyCalendarDialog) {
+                        BackHandler { showDailyCalendarDialog = false }
                         DailyCalendarDialog(
                             completedDates = uiState.completedDailyDates,
                             streakDays = uiState.streakDays,

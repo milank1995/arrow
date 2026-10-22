@@ -1,5 +1,6 @@
 package com.arrowescape.puzzle.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -78,6 +79,16 @@ fun GamePlayScreen(
     var showSoundDialog by remember { mutableStateOf(false) }
     var hudToastMessage by remember { mutableStateOf<String?>(null) }
     var hudToastTimer by remember { mutableLongStateOf(0L) }
+
+    // Intercept Android back gesture / button during gameplay
+    BackHandler(enabled = true) {
+        when {
+            showSoundDialog -> showSoundDialog = false
+            showPauseDialog -> showPauseDialog = false
+            uiState.isGameOver -> onRestartClick()
+            else -> showPauseDialog = true
+        }
+    }
 
     val level = uiState.levelData
     val theme = uiState.activeTheme
@@ -334,9 +345,9 @@ fun GamePlayScreen(
                 if (uiState.isGameOver) {
                     GameOverDialog(
                         theme = theme,
-                        onClaimFreeLives = onClaimFreeLives,
-                        onRestartClick = onRestartClick,
-                        onHomeClick = onBackToHomeClick
+                        hasGlobalLives = (uiState.globalLivesAvailable >= 3),
+                        onClaimLives = onClaimFreeLives,
+                        onRestartClick = onRestartClick
                     )
                 }
             }

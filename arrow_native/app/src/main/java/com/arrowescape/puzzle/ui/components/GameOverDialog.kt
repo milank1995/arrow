@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.HeartBroken
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,9 +25,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,9 +43,9 @@ import com.arrowescape.puzzle.ui.theme.ThemePreset
 @Composable
 fun GameOverDialog(
     theme: ThemePreset,
-    onClaimFreeLives: () -> Unit,
-    onRestartClick: () -> Unit,
-    onHomeClick: () -> Unit
+    hasGlobalLives: Boolean,
+    onClaimLives: () -> Unit,
+    onRestartClick: () -> Unit
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -72,7 +71,7 @@ fun GameOverDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 22.dp, vertical = 24.dp)
+                    .padding(horizontal = 22.dp, vertical = 26.dp)
             ) {
                 // Heart Broken Icon with ambient soft glow
                 Box(
@@ -90,32 +89,32 @@ fun GameOverDialog(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "OUT OF HEARTS!",
+                    text = "OUT OF LIVES",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Black,
                     color = theme.textPrimary
                 )
 
                 Text(
-                    text = "Don't give up! Claim free hearts to continue your puzzle right here, or restart the level.",
+                    text = "Get extra lives to keep solving or restart the level.",
                     fontSize = 13.sp,
                     color = theme.textSecondary,
                     textAlign = TextAlign.Center,
                     lineHeight = 18.sp,
-                    modifier = Modifier.padding(top = 6.dp, start = 8.dp, end = 8.dp)
+                    modifier = Modifier.padding(top = 6.dp, start = 6.dp, end = 6.dp)
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-                // Primary Action: CLAIM 3 FREE LIVES
+                // Primary Action: CLAIM 3 LIVES or WATCH AD FOR +3 LIVES
                 Button(
-                    onClick = onClaimFreeLives,
+                    onClick = onClaimLives,
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFE11D48) // Warm vibrant rose/coral matching hearts
+                        containerColor = if (hasGlobalLives) Color(0xFFE11D48) else activeThemePrimary(theme)
                     ),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
                     modifier = Modifier
@@ -127,14 +126,14 @@ fun GameOverDialog(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Favorite,
+                            imageVector = if (hasGlobalLives) Icons.Default.Favorite else Icons.Default.PlayArrow,
                             contentDescription = null,
                             tint = Color.White,
                             modifier = Modifier.size(19.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "CLAIM 3 FREE LIVES",
+                            text = if (hasGlobalLives) "CLAIM 3 LIVES" else "WATCH AD FOR +3 LIVES",
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp,
                             color = Color.White
@@ -142,22 +141,7 @@ fun GameOverDialog(
                     }
                 }
 
-                // Passive Regen Countdown Pill
-                Surface(
-                    shape = RoundedCornerShape(percent = 50),
-                    color = if (theme.isDark) Color(0xFF334155).copy(alpha = 0.5f) else Color(0xFFF1F5F9),
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Text(
-                        text = "⏱ Passive refill in 15:00",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = theme.textSecondary,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // Secondary Action: RESTART LEVEL
                 OutlinedButton(
@@ -166,7 +150,7 @@ fun GameOverDialog(
                     border = BorderStroke(1.dp, if (theme.isDark) Color(0xFF475569) else Color(0xFFCBD5E1)),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
+                        .height(50.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -176,32 +160,22 @@ fun GameOverDialog(
                             imageVector = Icons.Default.Refresh,
                             contentDescription = null,
                             tint = theme.textPrimary,
-                            modifier = Modifier.size(17.dp)
+                            modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "RESTART LEVEL",
                             fontWeight = FontWeight.SemiBold,
-                            fontSize = 13.sp,
+                            fontSize = 14.sp,
                             color = theme.textPrimary
                         )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(6.dp))
-
-                // Tertiary Action: Back to Home
-                TextButton(
-                    onClick = onHomeClick,
-                    modifier = Modifier.height(38.dp)
-                ) {
-                    Text(
-                        text = "Back to Menu",
-                        fontSize = 13.sp,
-                        color = theme.textSecondary
-                    )
-                }
             }
         }
     }
+}
+
+private fun activeThemePrimary(theme: ThemePreset): Color {
+    return if (theme.isDark) Color(0xFF38BDF8) else theme.arrowDefault
 }

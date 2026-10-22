@@ -58,6 +58,7 @@ data class GameUiState(
     val completedDailyDates: Set<String> = emptySet(),
     val levelStars: Map<Int, Int> = emptyMap(),
     val hasPlayedBefore: Boolean = false,
+    val globalLivesAvailable: Int = 6,
     val activeBoosterAnimation: BoosterEffectAnimation? = null,
     val restartTrigger: Long = 0L
 ) {
@@ -93,6 +94,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         completedDailyDates = data.completedDailyDates,
                         levelStars = data.levelStars,
                         hasPlayedBefore = data.hasPlayedBefore,
+                        globalLivesAvailable = data.globalLives,
                         lastCompletedLevelNumber = if (current.levelData == null) maxOf(1, data.currentLevel - 1) else current.lastCompletedLevelNumber,
                         isSoundEnabled = data.soundEnabled,
                         isVibrationEnabled = data.vibrationEnabled,
@@ -541,13 +543,16 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun claimFreeLives(count: Int = 3) {
-        val restoredHearts = minOf(_uiState.value.maxHearts, count).coerceAtLeast(1)
-        audioHapticManager.playClick()
-        _uiState.update {
-            it.copy(
-                heartsRemaining = restoredHearts,
-                isGameOver = false
-            )
+        viewModelScope.launch {
+            repository.useGlobalLives(count)
+            audioHapticManager.playClick()
+            val restoredHearts = minOf(_uiState.value.maxHearts, count).coerceAtLeast(1)
+            _uiState.update {
+                it.copy(
+                    heartsRemaining = restoredHearts,
+                    isGameOver = false
+                )
+            }
         }
     }
 

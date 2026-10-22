@@ -30,7 +30,8 @@ data class UserGameData(
     val hasPlayedBefore: Boolean = false,
     val soundEnabled: Boolean = true,
     val vibrationEnabled: Boolean = true,
-    val themeIndex: Int = 0
+    val themeIndex: Int = 0,
+    val globalLives: Int = 6
 )
 
 class UserPreferencesRepository(private val context: Context) {
@@ -48,6 +49,7 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_SOUND = booleanPreferencesKey("sound_enabled")
     private val KEY_VIBRATION = booleanPreferencesKey("vibration_enabled")
     private val KEY_THEME = intPreferencesKey("selected_theme_index")
+    private val KEY_GLOBAL_LIVES = intPreferencesKey("global_lives_bank")
 
     private val SYNC_PREFS = "arrow_sync_prefs"
     private val KEY_SYNC_HAS_PLAYED = "has_played_before"
@@ -77,7 +79,8 @@ class UserPreferencesRepository(private val context: Context) {
             hasPlayedBefore = hasPlayed,
             soundEnabled = prefs[KEY_SOUND] ?: true,
             vibrationEnabled = prefs[KEY_VIBRATION] ?: true,
-            themeIndex = prefs[KEY_THEME] ?: 0
+            themeIndex = prefs[KEY_THEME] ?: 0,
+            globalLives = prefs[KEY_GLOBAL_LIVES] ?: 6
         )
     }
 
@@ -211,5 +214,19 @@ class UserPreferencesRepository(private val context: Context) {
         context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
             .edit().putBoolean(KEY_SYNC_HAS_PLAYED, true).apply()
         context.dataStore.edit { it[KEY_HAS_PLAYED_BEFORE] = true }
+    }
+
+    suspend fun useGlobalLives(amount: Int = 3): Boolean {
+        var used = false
+        context.dataStore.edit { prefs ->
+            val current = prefs[KEY_GLOBAL_LIVES] ?: 6
+            if (current >= amount) {
+                prefs[KEY_GLOBAL_LIVES] = current - amount
+                used = true
+            } else {
+                used = false
+            }
+        }
+        return used
     }
 }
