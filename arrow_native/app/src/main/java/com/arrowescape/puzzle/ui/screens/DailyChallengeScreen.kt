@@ -508,12 +508,12 @@ fun DailyChallengeScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Primary Play / Replay 3D Tactile CTA Button
+                    // Primary Play / Replay 3D Tactile CTA Button (Matching Unity Benchmark)
                     if (!isSelectedFuture) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(56.dp)
+                                .height(60.dp)
                                 .clickable {
                                     onPlayDate(selectedDate.toString())
                                 },
@@ -523,58 +523,32 @@ fun DailyChallengeScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(52.dp)
+                                    .height(54.dp)
                                     .align(Alignment.BottomCenter)
-                                    .clip(RoundedCornerShape(percent = 50))
+                                    .clip(RoundedCornerShape(20.dp))
                                     .background(ctaBevel)
                             )
 
-                            // Top face layer with perfect mathematical centering
+                            // Top face layer with centered text
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(52.dp)
+                                    .height(54.dp)
                                     .align(Alignment.TopCenter)
-                                    .clip(RoundedCornerShape(percent = 50))
+                                    .clip(RoundedCornerShape(20.dp))
                                     .background(Brush.verticalGradient(listOf(ctaGrad1, ctaGrad2))),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(horizontal = 14.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(34.dp)
-                                            .clip(CircleShape)
-                                            .background(Color.White.copy(alpha = 0.25f)),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.PlayArrow,
-                                            contentDescription = "Play Icon",
-                                            tint = Color.White,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                    }
-
-                                    Box(
-                                        modifier = Modifier.weight(1f),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = if (selectedDateCompleted) "REPLAY LEVEL" else "PLAY DAILY PUZZLE",
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.Black,
-                                            letterSpacing = 1.5.sp,
-                                            color = Color.White
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.size(34.dp))
-                                }
+                                Text(
+                                    text = if (selectedDateCompleted) "REPLAY LEVEL" else "PLAY DAILY PUZZLE",
+                                    fontSize = 17.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 1.sp,
+                                    color = Color.White,
+                                    style = androidx.compose.ui.text.TextStyle(
+                                        platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
+                                    )
+                                )
                             }
                         }
                     }

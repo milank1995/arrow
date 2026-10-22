@@ -62,6 +62,11 @@ data class GameUiState(
     val globalLivesAvailable: Int = 6,
     val showHintAdPrompt: Boolean = false,
     val activeBoosterAnimation: BoosterEffectAnimation? = null,
+    val levelCompletionTimeSeconds: Int = 0,
+    val levelMovesCount: Int = 0,
+    val levelFinalScore: Int = 0,
+    val levelAccuracyPercent: Int = 100,
+    val levelStarsEarned: Int = 3,
     val restartTrigger: Long = 0L
 ) {
     val previewRayArrowId: String? get() = previewRayArrowIds.firstOrNull()
@@ -77,6 +82,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private var occupancyMap = GridOccupancyMap(4, 4)
     private var cheerDismissJob: Job? = null
+    private var levelStartTime: Long = System.currentTimeMillis()
+    private var levelMovesAttempted: Int = 0
+    private var levelMistakesCount: Int = 0
 
     init {
         viewModelScope.launch {
@@ -113,6 +121,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun loadLevel(levelNumber: Int) {
+        levelStartTime = System.currentTimeMillis()
+        levelMovesAttempted = 0
+        levelMistakesCount = 0
         val level = LevelLoader.loadLevel(app, levelNumber)
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)
@@ -141,6 +152,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun startDailyChallenge(dateString: String = LocalDate.now().toString()) {
+        levelStartTime = System.currentTimeMillis()
+        levelMovesAttempted = 0
+        levelMistakesCount = 0
         val date = try {
             LocalDate.parse(dateString)
         } catch (e: Exception) {
@@ -198,12 +212,14 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
         audioHapticManager.playTap()
 
+        levelMovesAttempted++
         val canEscape = PuzzleSolver.canMoveOut(currentArrow, occupancyMap)
 
         if (canEscape) {
             launchArrowFlight(currentArrow)
         } else {
             // WRONG MOVE: Collision
+            levelMistakesCount++
             audioHapticManager.playWrongMove()
 
             val isAlreadyHighlighted = currentArrow.isHighlighted
@@ -608,11 +624,32 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private suspend fun triggerLevelVictory(finalArrows: List<Arrow>) {
         val completedLvl = _uiState.value.currentLevelNumber
+        val elapsedSec = ((System.currentTimeMillis() - levelStartTime) / 1000L).toInt().coerceAtLeast(1)
+        val totalMoves = levelMovesAttempted.coerceAtLeast(1)
+        val mistakes = levelMistakesCount
+        val accuracy = (((totalMoves - mistakes).toFloat() / totalMoves.toFloat()) * 100).toInt().coerceIn(10, 100)
+
+        val stars = when {
+            _uiState.value.isDailyChallengeMode -> 3
+            _uiState.value.heartsRemaining >= _uiState.value.maxHearts -> 3
+            _uiState.value.heartsRemaining >= _uiState.value.maxHearts - 1 -> 2
+            else -> 1
+        }
+        val timeBonus = ((240 - elapsedSec).coerceAtLeast(0) * 4)
+        val healthBonus = _uiState.value.heartsRemaining * 120
+        val stageBonus = completedLvl * 60
+        val finalScore = 1000 + stageBonus + timeBonus + healthBonus
+
         _uiState.update { state ->
             state.copy(
                 arrows = finalArrows,
                 isCelebrationBurstActive = true,
-                lastCompletedLevelNumber = completedLvl
+                lastCompletedLevelNumber = completedLvl,
+                levelCompletionTimeSeconds = elapsedSec,
+                levelMovesCount = totalMoves,
+                levelFinalScore = finalScore,
+                levelAccuracyPercent = accuracy,
+                levelStarsEarned = stars
             )
         }
         audioHapticManager.playLevelWin()

@@ -160,14 +160,7 @@ fun SculptedStar3D(
                 style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.2f)
             )
 
-            // 5. Specular highlight glint near top apex
-            if (isEarned) {
-                drawCircle(
-                    color = Color.White.copy(alpha = 0.70f),
-                    radius = outerRadius * 0.12f,
-                    center = Offset(center.x, center.y - outerRadius * 0.65f)
-                )
-            }
+
         }
     }
 }

@@ -161,33 +161,17 @@ fun SettingsScreen(
                     }
                 }
 
-                // Centered Title with Badge
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .size(34.dp)
-                            .clip(CircleShape)
-                            .background(activeTheme.arrowDefault.copy(alpha = 0.12f))
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = null,
-                            tint = activeTheme.arrowDefault,
-                            modifier = Modifier.size(19.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(
-                        text = "Settings",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = activeTheme.textPrimary
+                // Centered Clean Title (Matching overall UI design)
+                Text(
+                    text = "SETTINGS",
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 2.sp,
+                    color = activeTheme.textPrimary,
+                    style = androidx.compose.ui.text.TextStyle(
+                        platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
                     )
-                }
+                )
 
                 // Dummy Spacer for symmetry
                 Spacer(modifier = Modifier.size(42.dp))

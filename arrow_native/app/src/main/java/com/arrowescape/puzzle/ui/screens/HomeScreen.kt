@@ -380,12 +380,12 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // Primary Play 3D Pill Button with mathematically centered typography & theme palette
+                // Primary Play 3D Button (Matching Unity Benchmark)
                 Box(
                     modifier = Modifier
                         .widthIn(max = 380.dp)
                         .fillMaxWidth(0.88f)
-                        .height(64.dp)
+                        .height(62.dp)
                         .scale(playScale)
                         .clickable(onClick = onPlayClick),
                     contentAlignment = Alignment.Center
@@ -394,61 +394,29 @@ fun HomeScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(58.dp)
+                            .height(56.dp)
                             .align(Alignment.BottomCenter)
-                            .clip(RoundedCornerShape(percent = 50))
+                            .clip(RoundedCornerShape(20.dp))
                             .background(ctaBevel)
                     )
-                    // Top Surface Gradient Layer with mathematically centered content
+                    // Top Surface Gradient Layer with centered text
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(58.dp)
+                            .height(56.dp)
                             .align(Alignment.TopCenter)
-                            .clip(RoundedCornerShape(percent = 50))
+                            .clip(RoundedCornerShape(20.dp))
                             .background(Brush.verticalGradient(listOf(ctaGrad1, ctaGrad2))),
                         contentAlignment = Alignment.Center
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 14.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // Circular pod with play icon
-                            Box(
-                                modifier = Modifier
-                                    .size(38.dp)
-                                    .clip(CircleShape)
-                                    .background(Color.White.copy(alpha = 0.25f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.PlayArrow,
-                                    contentDescription = "Play Icon",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
-
-                            // Centered "PLAY LEVEL X" text
-                            Box(
-                                modifier = Modifier.weight(1f),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "PLAY LEVEL ${uiState.currentLevelNumber}",
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Black,
-                                    letterSpacing = 1.5.sp,
-                                    color = Color.White,
-                                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
-                                )
-                            }
-
-                            // Balancer spacer
-                            Spacer(modifier = Modifier.size(38.dp))
-                        }
+                        Text(
+                            text = "PLAY LEVEL ${uiState.currentLevelNumber}",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp,
+                            color = Color.White,
+                            style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                        )
                     }
                 }
             }

@@ -88,6 +88,11 @@ fun VictoryScreen(
     heartsRemaining: Int = 3,
     maxHearts: Int = 3,
     isDailyChallenge: Boolean = false,
+    completionTimeSeconds: Int = 0,
+    movesCount: Int = 0,
+    score: Int = 0,
+    accuracyPercent: Int = 100,
+    starsEarned: Int = 3,
     onClaimDoubleCoins: (Int) -> Unit = {},
     onNextLevelClick: () -> Unit,
     onHomeClick: () -> Unit,
@@ -104,17 +109,6 @@ fun VictoryScreen(
         "Mint Fresh" -> Triple(Color(0xFF059669), Color(0xFF047857), Color(0xFF064E3B))
         "Sunset Rose" -> Triple(Color(0xFFE11D48), Color(0xFFBE123C), Color(0xFF9F1239))
         else -> Triple(Color(0xFF10B981), Color(0xFF059669), Color(0xFF047857)) // Clean Light
-    }
-
-    // Star rating:
-    // 3 Stars: 0 mistakes (heartsRemaining >= maxHearts)
-    // 2 Stars: 1 mistake (heartsRemaining >= maxHearts - 1)
-    // 1 Star: 2+ mistakes
-    val starsEarned = when {
-        isDailyChallenge -> 3
-        heartsRemaining >= maxHearts -> 3
-        heartsRemaining >= maxHearts - 1 -> 2
-        else -> 1
     }
 
     // Entrance Animations
@@ -177,18 +171,14 @@ fun VictoryScreen(
         else -> "Level Complete!"
     }
 
-    // Dynamic stats derived from stage and performance
+    // Dynamic stats derived from authentic gameplay results
     val difficultyText = when {
         isDailyChallenge -> "Hard"
         levelNumber % 5 == 0 -> "Hard"
         levelNumber > 10 -> "Medium"
         else -> "Normal"
     }
-    val estimatedSeconds = (30 + (levelNumber * 6) % 90)
-    val timeFormatted = String.format("%02d:%02d", estimatedSeconds / 60, estimatedSeconds % 60)
-    val calculatedScore = 1000 + (levelNumber * 35) + (heartsRemaining * 50)
-    val accuracyPercent = if (heartsRemaining >= maxHearts) "100%" else "${(heartsRemaining.toFloat() / maxHearts * 100).toInt()}%"
-    val movesCount = (12 + (levelNumber * 3) % 25)
+    val timeFormatted = String.format("%02d:%02d", completionTimeSeconds / 60, completionTimeSeconds % 60)
 
     Surface(
         color = theme.background,
@@ -395,7 +385,7 @@ fun VictoryScreen(
                                 )
                                 PerformanceMetricRow(
                                     label = "Score",
-                                    value = "$calculatedScore",
+                                    value = "$score",
                                     theme = theme
                                 )
                                 PerformanceMetricRow(
@@ -422,7 +412,7 @@ fun VictoryScreen(
                             ) {
                                 SecondaryStatItem(
                                     icon = "🎯",
-                                    value = accuracyPercent,
+                                    value = "$accuracyPercent%",
                                     theme = theme
                                 )
                                 Text("•", color = theme.textSecondary.copy(alpha = 0.4f))
@@ -496,11 +486,11 @@ fun VictoryScreen(
                         .fillMaxWidth()
                         .widthIn(max = 380.dp)
                 ) {
-                    // Primary 3D Tactile CTA
+                    // Primary 3D Tactile CTA (Matching Unity Benchmark)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(64.dp)
+                            .height(62.dp)
                             .clickable {
                                 onPlayClickSound()
                                 onNextLevelClick()
@@ -511,73 +501,41 @@ fun VictoryScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(58.dp)
+                                .height(56.dp)
                                 .align(Alignment.BottomCenter)
-                                .clip(RoundedCornerShape(percent = 50))
+                                .clip(RoundedCornerShape(20.dp))
                                 .background(ctaBevel)
                         )
                         // Top Surface Gradient Layer
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(58.dp)
+                                .height(56.dp)
                                 .align(Alignment.TopCenter)
-                                .clip(RoundedCornerShape(percent = 50))
+                                .clip(RoundedCornerShape(20.dp))
                                 .background(Brush.verticalGradient(listOf(ctaGrad1, ctaGrad2))),
                             contentAlignment = Alignment.Center
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 14.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                // Left Icon Pod
-                                Box(
-                                    modifier = Modifier
-                                        .size(38.dp)
-                                        .clip(CircleShape)
-                                        .background(Color.White.copy(alpha = 0.25f)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.PlayArrow,
-                                        contentDescription = "Next Level",
-                                        tint = Color.White,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                }
-
-                                // Centered Text
-                                Box(
-                                    modifier = Modifier.weight(1f),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = if (isDailyChallenge) "CLAIM & RETURN HOME" else "NEXT LEVEL",
-                                        fontSize = 17.sp,
-                                        fontWeight = FontWeight.Black,
-                                        letterSpacing = 1.2.sp,
-                                        color = Color.White,
-                                        style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
-                                    )
-                                }
-
-                                // Balancer spacer
-                                Spacer(modifier = Modifier.size(38.dp))
-                            }
+                            Text(
+                                text = if (isDailyChallenge) "Claim & Return Home" else "Next Level",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 0.5.sp,
+                                color = Color.White,
+                                style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                            )
                         }
                     }
 
                     // Secondary Home Button
                     Surface(
-                        shape = RoundedCornerShape(percent = 50),
+                        shape = RoundedCornerShape(20.dp),
                         color = theme.surface,
                         border = androidx.compose.foundation.BorderStroke(1.2.dp, theme.gridLine),
                         shadowElevation = 2.dp,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp)
+                            .height(52.dp)
                             .clickable {
                                 onPlayClickSound()
                                 onHomeClick()
@@ -589,7 +547,7 @@ fun VictoryScreen(
                         ) {
                             Text(
                                 text = "Home",
-                                fontSize = 15.sp,
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = theme.textPrimary,
                                 style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
