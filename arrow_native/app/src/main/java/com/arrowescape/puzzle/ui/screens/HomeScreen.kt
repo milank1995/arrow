@@ -129,7 +129,7 @@ fun HomeScreen(
                     }
                 }
 
-                // Right Group: Dev Test Lab Pill + Quick Sound Toggle + Settings Menu Pod
+                // Right Group: Dev Test Lab Pill + Settings Menu Pod
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -159,31 +159,7 @@ fun HomeScreen(
                         }
                     }
 
-                    // Quick Sound Toggle Button (Speaker Icon)
-                    Surface(
-                        shape = CircleShape,
-                        color = if (isSoundOn) Color(0xFFFEF3C7) else Color(0xFFF1F5F9),
-                        border = androidx.compose.foundation.BorderStroke(
-                            1.dp,
-                            if (isSoundOn) Color(0xFFFDE68A) else Color(0xFFE2E8F0)
-                        ),
-                        shadowElevation = 1.dp,
-                        modifier = Modifier.size(42.dp)
-                    ) {
-                        IconButton(
-                            onClick = onSoundToggle,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Icon(
-                                imageVector = if (isSoundOn) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeMute,
-                                contentDescription = if (isSoundOn) "Mute Sound" else "Enable Sound",
-                                tint = if (isSoundOn) Color(0xFFD97706) else Color(0xFF94A3B8),
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
-
-                    // Settings / Audio Menu Gear Button
+                    // Settings Gear Button
                     Surface(
                         shape = CircleShape,
                         color = Color.White,
@@ -197,7 +173,7 @@ fun HomeScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
-                                contentDescription = "Audio & Settings Menu",
+                                contentDescription = "Settings Menu",
                                 tint = Color(0xFF334155),
                                 modifier = Modifier.size(22.dp)
                             )

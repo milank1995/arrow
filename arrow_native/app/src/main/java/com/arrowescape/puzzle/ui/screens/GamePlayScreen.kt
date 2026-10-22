@@ -62,6 +62,7 @@ fun GamePlayScreen(
     onNextLevelClick: () -> Unit,
     onRestartClick: () -> Unit,
     onBackToHomeClick: () -> Unit,
+    onClaimFreeLives: () -> Unit = {},
     onToggleSound: () -> Unit = {},
     onToggleVibration: () -> Unit = {},
     onSettingsClick: (() -> Unit)? = null,
@@ -333,6 +334,7 @@ fun GamePlayScreen(
                 if (uiState.isGameOver) {
                     GameOverDialog(
                         theme = theme,
+                        onClaimFreeLives = onClaimFreeLives,
                         onRestartClick = onRestartClick,
                         onHomeClick = onBackToHomeClick
                     )

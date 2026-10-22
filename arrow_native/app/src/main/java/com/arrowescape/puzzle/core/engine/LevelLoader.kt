@@ -62,7 +62,7 @@ object LevelLoader {
             val root = JSONObject(jsonStr)
             val xSize = root.getInt("XSize")
             val ySize = root.getInt("YSize")
-            val maxHearts = root.optInt("MaxHearts", 3).coerceAtLeast(3)
+            val maxHearts = root.optInt("MaxHearts", 3).coerceIn(1, 5)
             val arrowsArray = root.getJSONArray("Arrows")
 
             val arrowList = mutableListOf<Arrow>()

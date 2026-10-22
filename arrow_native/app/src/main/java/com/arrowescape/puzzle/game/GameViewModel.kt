@@ -540,6 +540,17 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun claimFreeLives(count: Int = 3) {
+        val restoredHearts = minOf(_uiState.value.maxHearts, count).coerceAtLeast(1)
+        audioHapticManager.playClick()
+        _uiState.update {
+            it.copy(
+                heartsRemaining = restoredHearts,
+                isGameOver = false
+            )
+        }
+    }
+
     fun playHintNudge() {
         audioHapticManager.playHintNudge()
     }
