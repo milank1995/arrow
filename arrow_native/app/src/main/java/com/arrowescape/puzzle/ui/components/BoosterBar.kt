@@ -329,7 +329,7 @@ fun BoosterBar(
 /**
  * Modern, polished lightbulb art rendered directly via Canvas vector geometry:
  * - Inactive state (activeProgress = 0):
- *   Clean white glass fill with well-defined dark outline, matching the arrows & grid style.
+ *   Soft slate rounded outline perfectly matched in color and stroke weight to the # grid guide icon.
  * - Active state (activeProgress = 1):
  *   Vibrant warm yellow with incandescent filament glow and radiant aura breathing.
  */
@@ -340,12 +340,21 @@ private fun ModernLightbulbArt(
     theme: ThemePreset,
     modifier: Modifier = Modifier
 ) {
+    // Exact same color token used for the inactive grid # icon
+    val inactiveBaseColor = if (theme.isDark) {
+        theme.textSecondary.copy(alpha = 0.85f)
+    } else {
+        theme.textSecondary.copy(alpha = 0.75f)
+    }
+    val activeStrokeColor = Color(0xFFB45309)
+    val currentStrokeColor = lerp(inactiveBaseColor, activeStrokeColor, activeProgress)
+
     Canvas(modifier = modifier) {
         val w = size.width
         val h = size.height
         val centerX = w * 0.5f
         val domeCenterY = h * 0.35f
-        val domeRadius = w * 0.34f
+        val domeRadius = w * 0.33f
 
         // 1. Ambient Radiant Aura (Only visible when active / highlighted)
         if (activeProgress > 0.01f) {
@@ -367,42 +376,40 @@ private fun ModernLightbulbArt(
             )
         }
 
-        // 2. Modern Glass Envelope Geometry (Circular dome with elegant conical neck taper)
+        // 2. Modern Glass Envelope Geometry
         val bulbPath = Path().apply {
             // Start at left neck junction
-            moveTo(w * 0.36f, h * 0.70f)
+            moveTo(w * 0.36f, h * 0.67f)
             // Left taper outwards to dome equator
             cubicTo(
-                w * 0.32f, h * 0.62f,
-                w * 0.16f, h * 0.48f,
-                w * 0.16f, domeCenterY
+                w * 0.31f, h * 0.59f,
+                w * 0.17f, h * 0.46f,
+                w * 0.17f, domeCenterY
             )
             // Top circular dome
             cubicTo(
-                w * 0.16f, domeCenterY - domeRadius * 1.02f,
-                w * 0.84f, domeCenterY - domeRadius * 1.02f,
-                w * 0.84f, domeCenterY
+                w * 0.17f, domeCenterY - domeRadius * 1.02f,
+                w * 0.83f, domeCenterY - domeRadius * 1.02f,
+                w * 0.83f, domeCenterY
             )
             // Right taper inwards to neck junction
             cubicTo(
-                w * 0.84f, h * 0.48f,
-                w * 0.68f, h * 0.62f,
-                w * 0.64f, h * 0.70f
+                w * 0.83f, h * 0.46f,
+                w * 0.69f, h * 0.59f,
+                w * 0.64f, h * 0.67f
             )
             close()
         }
 
-        // Inactive vs Active Glass Fill
-        val inactiveFill = if (theme.isDark) Color(0xFF1E293B) else Color.White
-
-        // Draw Inactive base fill
+        // Glass background fill (pure clean white when inactive, glowing radiant golden amber when active)
+        val inactiveFill = if (theme.isDark) theme.surface else Color.White
         drawPath(
             path = bulbPath,
             color = inactiveFill,
             style = Fill
         )
 
-        // If transitioning or active, overlay radiant golden gradient
+        // Overlay radiant golden gradient when active / transitioning
         if (activeProgress > 0.01f) {
             drawPath(
                 path = bulbPath,
@@ -419,37 +426,30 @@ private fun ModernLightbulbArt(
             )
         }
 
-        // Well-defined glass outline stroke
-        val inactiveStrokeColor = if (theme.isDark) theme.textPrimary.copy(alpha = 0.9f) else Color(0xFF334155)
-        val activeStrokeColor = Color(0xFFB45309)
-        val currentStrokeColor = lerp(inactiveStrokeColor, activeStrokeColor, activeProgress)
-
+        // Harmonized glass outline stroke (matching stroke width 2.4dp & round join/cap of the grid icon)
         drawPath(
             path = bulbPath,
             color = currentStrokeColor,
             style = Stroke(
-                width = 1.8.dp.toPx(),
-                join = StrokeJoin.Round
+                width = 2.4.dp.toPx(),
+                join = StrokeJoin.Round,
+                cap = StrokeCap.Round
             )
         )
 
-        // 3. Tungsten Filament Wire
+        // 3. Filament Wire (Harmonized with grid line style)
         val filamentPath = Path().apply {
-            // Left lead
-            moveTo(w * 0.42f, h * 0.68f)
-            lineTo(w * 0.42f, domeCenterY + h * 0.06f)
-            // Center loop
+            moveTo(w * 0.43f, h * 0.65f)
+            lineTo(w * 0.43f, domeCenterY + h * 0.06f)
             cubicTo(
-                w * 0.42f, domeCenterY - h * 0.06f,
-                w * 0.58f, domeCenterY - h * 0.06f,
-                w * 0.58f, domeCenterY + h * 0.06f
+                w * 0.43f, domeCenterY - h * 0.05f,
+                w * 0.57f, domeCenterY - h * 0.05f,
+                w * 0.57f, domeCenterY + h * 0.06f
             )
-            // Right lead
-            lineTo(w * 0.58f, h * 0.68f)
+            lineTo(w * 0.57f, h * 0.65f)
         }
 
-        // Inactive filament: clean subtle wire
-        val inactiveFilamentColor = if (theme.isDark) Color(0xFF64748B) else Color(0xFF94A3B8)
+        val inactiveFilamentColor = inactiveBaseColor.copy(alpha = 0.70f)
         val activeFilamentHalo = Color(0xFFFBBF24).copy(alpha = activeProgress * 0.75f)
         val activeFilamentCore = lerp(inactiveFilamentColor, Color(0xFFFFFBEB), activeProgress)
 
@@ -459,87 +459,50 @@ private fun ModernLightbulbArt(
                 path = filamentPath,
                 color = activeFilamentHalo,
                 style = Stroke(
-                    width = 3.0.dp.toPx(),
+                    width = 3.2.dp.toPx(),
                     cap = StrokeCap.Round,
                     join = StrokeJoin.Round
                 )
             )
         }
 
-        // Crisp inner wire
+        // Crisp inner filament wire
         drawPath(
             path = filamentPath,
             color = activeFilamentCore,
             style = Stroke(
-                width = 1.3.dp.toPx(),
+                width = 1.5.dp.toPx(),
                 cap = StrokeCap.Round,
                 join = StrokeJoin.Round
             )
         )
 
-        // 5. Metallic Ribbed Screw Base (Connecting neck to contact foot)
-        val inactiveMetalBase = if (theme.isDark) Color(0xFF334155) else Color(0xFFE2E8F0)
-        val activeMetalBase = Color(0xFFFEF08A)
-        val currentMetalColor = lerp(inactiveMetalBase, activeMetalBase, activeProgress)
+        // 4. Metallic Rounded Screw Base (Drawn with soft rounded strokes matching # icon)
+        val baseStrokeWidth = 2.3.dp.toPx()
 
-        val strokeBase = Stroke(width = 1.0.dp.toPx())
-
-        // Thread 1
-        val thread1Rect = RoundRect(
-            left = w * 0.38f,
-            top = h * 0.70f,
-            right = w * 0.62f,
-            bottom = h * 0.755f,
-            cornerRadius = CornerRadius(2.dp.toPx(), 2.dp.toPx())
-        )
-        drawRoundRect(
-            color = currentMetalColor,
-            topLeft = Offset(thread1Rect.left, thread1Rect.top),
-            size = Size(thread1Rect.width, thread1Rect.height),
-            cornerRadius = CornerRadius(2.dp.toPx(), 2.dp.toPx())
-        )
-        drawRoundRect(
+        // Rib 1
+        drawLine(
             color = currentStrokeColor,
-            topLeft = Offset(thread1Rect.left, thread1Rect.top),
-            size = Size(thread1Rect.width, thread1Rect.height),
-            cornerRadius = CornerRadius(2.dp.toPx(), 2.dp.toPx()),
-            style = strokeBase
+            start = Offset(w * 0.38f, h * 0.72f),
+            end = Offset(w * 0.62f, h * 0.72f),
+            strokeWidth = baseStrokeWidth,
+            cap = StrokeCap.Round
         )
 
-        // Thread 2 (slightly narrower)
-        val thread2Rect = RoundRect(
-            left = w * 0.40f,
-            top = h * 0.76f,
-            right = w * 0.60f,
-            bottom = h * 0.81f,
-            cornerRadius = CornerRadius(2.dp.toPx(), 2.dp.toPx())
-        )
-        drawRoundRect(
-            color = currentMetalColor,
-            topLeft = Offset(thread2Rect.left, thread2Rect.top),
-            size = Size(thread2Rect.width, thread2Rect.height),
-            cornerRadius = CornerRadius(2.dp.toPx(), 2.dp.toPx())
-        )
-        drawRoundRect(
+        // Rib 2 (slightly narrower)
+        drawLine(
             color = currentStrokeColor,
-            topLeft = Offset(thread2Rect.left, thread2Rect.top),
-            size = Size(thread2Rect.width, thread2Rect.height),
-            cornerRadius = CornerRadius(2.dp.toPx(), 2.dp.toPx()),
-            style = strokeBase
+            start = Offset(w * 0.41f, h * 0.78f),
+            end = Offset(w * 0.59f, h * 0.78f),
+            strokeWidth = baseStrokeWidth,
+            cap = StrokeCap.Round
         )
 
-        // Bottom Contact Terminal Point
-        val contactPath = Path().apply {
-            moveTo(w * 0.43f, h * 0.815f)
-            lineTo(w * 0.57f, h * 0.815f)
-            quadraticTo(w * 0.50f, h * 0.865f, w * 0.43f, h * 0.815f)
-            close()
-        }
-        val contactColor = if (theme.isDark) Color(0xFF0F172A) else Color(0xFF475569)
-        drawPath(
-            path = contactPath,
-            color = contactColor,
-            style = Fill
+        // Bottom Contact Terminal Dot
+        drawCircle(
+            color = currentStrokeColor,
+            radius = 1.8.dp.toPx(),
+            center = Offset(centerX, h * 0.835f)
         )
     }
 }
