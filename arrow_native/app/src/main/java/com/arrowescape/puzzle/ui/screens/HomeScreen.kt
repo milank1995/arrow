@@ -45,7 +45,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.game.GameUiState
@@ -54,9 +57,10 @@ import com.arrowescape.puzzle.ui.theme.ThemePreset
 /**
  * Modern, minimal, theme-adaptive homepage.
  * Pure linear progression:
+ * - Current level only (no past or future levels).
  * - No level selection / jumping.
  * - No redundant coin counter.
- * - 100% reactive to the active ThemePreset (Sepia, Dark, Clean Light, Pastel, etc.).
+ * - 100% reactive to ThemePreset across all elements with mathematically centered typography.
  */
 @Composable
 fun HomeScreen(
@@ -82,6 +86,16 @@ fun HomeScreen(
         label = "playScale"
     )
 
+    // Dynamic theme-based CTA button palette
+    val (ctaGrad1, ctaGrad2, ctaBevel) = when (theme.name) {
+        "Warm Sepia" -> Triple(Color(0xFFE09F3E), Color(0xFFC57B22), Color(0xFF8C5314))
+        "Midnight Dark" -> Triple(Color(0xFF38BDF8), Color(0xFF0284C7), Color(0xFF0369A1))
+        "Calm Pastel" -> Triple(Color(0xFF8B5CF6), Color(0xFF7C3AED), Color(0xFF6D28D9))
+        "Mint Fresh" -> Triple(Color(0xFF059669), Color(0xFF047857), Color(0xFF064E3B))
+        "Sunset Rose" -> Triple(Color(0xFFE11D48), Color(0xFFBE123C), Color(0xFF9F1239))
+        else -> Triple(Color(0xFF10B981), Color(0xFF059669), Color(0xFF047857)) // Clean Light
+    }
+
     Surface(
         color = theme.background,
         modifier = modifier.fillMaxSize()
@@ -96,7 +110,7 @@ fun HomeScreen(
                 .displayCutoutPadding()
                 .padding(horizontal = 24.dp, vertical = 12.dp)
         ) {
-            // 1. TOP STATUS BAR: Streak Pill (left) & Settings Gear (right) - Zero Clutter
+            // 1. TOP STATUS BAR: Streak Pill (left) & Settings Gear (right)
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
@@ -149,19 +163,32 @@ fun HomeScreen(
                 }
             }
 
-            // 2. CENTER HERO: Current Stage Showcase (Celebratory Stars, Large Level Number, Stage Badge)
+            // 2. CENTER HERO: Minimalist Title + Current Stage Card
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.weight(1f)
             ) {
+                // Minimalist Brand Title
+                Text(
+                    text = "ARROW DECODE",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 6.sp,
+                    color = theme.textPrimary.copy(alpha = 0.85f),
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Hero Stage Card (Strictly Current Level Only)
                 Surface(
                     shape = RoundedCornerShape(32.dp),
                     color = theme.surface,
-                    shadowElevation = if (theme.isDark) 4.dp else 6.dp,
+                    shadowElevation = if (theme.isDark) 4.dp else 8.dp,
                     border = androidx.compose.foundation.BorderStroke(1.5.dp, theme.gridLine),
                     modifier = Modifier
-                        .widthIn(max = 340.dp)
+                        .widthIn(max = 330.dp)
                         .fillMaxWidth(0.85f)
                 ) {
                     Column(
@@ -172,11 +199,11 @@ fun HomeScreen(
                                 Brush.verticalGradient(
                                     colors = listOf(
                                         theme.surface,
-                                        theme.background.copy(alpha = 0.5f)
+                                        theme.background.copy(alpha = 0.45f)
                                     )
                                 )
                             )
-                            .padding(horizontal = 24.dp, vertical = 32.dp)
+                            .padding(horizontal = 24.dp, vertical = 28.dp)
                     ) {
                         // 3 Celebratory Mastery Stars for Current Level
                         val currentStars = uiState.levelStars[uiState.currentLevelNumber] ?: 0
@@ -196,18 +223,19 @@ fun HomeScreen(
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(14.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
                         // Bold, prominent Level Number in theme color
                         Text(
                             text = "${uiState.currentLevelNumber}",
-                            fontSize = 88.sp,
+                            fontSize = 84.sp,
                             fontWeight = FontWeight.Black,
                             color = theme.textPrimary,
-                            lineHeight = 90.sp
+                            lineHeight = 84.sp,
+                            style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
                         )
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(14.dp))
 
                         // Refined "LEVEL" tracking badge
                         Surface(
@@ -235,7 +263,7 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .padding(bottom = 24.dp)
             ) {
-                // Daily Challenge Capsule: Theme-adaptive (Locked below Level 5)
+                // Daily Challenge Capsule: 100% Theme Adaptive (Locked below Level 5)
                 val isUnlocked = uiState.currentLevelNumber >= 5
                 val todayStr = remember { LocalDate.now().toString() }
                 val isCompletedToday = uiState.completedDailyDates.contains(todayStr)
@@ -247,7 +275,7 @@ fun HomeScreen(
                         width = 1.2.dp,
                         color = when {
                             !isUnlocked -> theme.gridLine
-                            isCompletedToday -> theme.arrowClear
+                            isCompletedToday -> if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
                             else -> theme.arrowHint
                         }
                     ),
@@ -262,17 +290,17 @@ fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = 12.dp)
+                            .padding(horizontal = 14.dp)
                     ) {
-                        // Dynamic Icon Pod
+                        // Dynamic Theme-Harmonized Icon Pod
                         Box(
                             modifier = Modifier
-                                .size(42.dp)
+                                .size(40.dp)
                                 .clip(CircleShape)
                                 .background(
                                     when {
                                         !isUnlocked -> theme.gridLine
-                                        isCompletedToday -> theme.arrowClear.copy(alpha = 0.18f)
+                                        isCompletedToday -> if (theme.name == "Warm Sepia") Color(0xFFB45309).copy(alpha = 0.18f) else theme.arrowClear.copy(alpha = 0.18f)
                                         else -> theme.arrowHint.copy(alpha = 0.18f)
                                     }
                                 ),
@@ -287,7 +315,7 @@ fun HomeScreen(
                                 contentDescription = if (isUnlocked) "Daily Challenge" else "Locked",
                                 tint = when {
                                     !isUnlocked -> theme.textSecondary
-                                    isCompletedToday -> theme.arrowClear
+                                    isCompletedToday -> if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
                                     else -> theme.arrowHint
                                 },
                                 modifier = Modifier.size(20.dp)
@@ -296,14 +324,19 @@ fun HomeScreen(
 
                         Spacer(modifier = Modifier.width(14.dp))
 
-                        // Text column
-                        Column {
+                        // Text column with precise vertical centering
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.weight(1f)
+                        ) {
                             Text(
                                 text = "Daily Challenge",
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = theme.textPrimary
+                                color = theme.textPrimary,
+                                style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
                             )
+                            Spacer(modifier = Modifier.height(2.dp))
                             Text(
                                 text = when {
                                     !isUnlocked -> "Unlocks at Level 5"
@@ -313,10 +346,11 @@ fun HomeScreen(
                                 fontSize = 12.sp,
                                 color = when {
                                     !isUnlocked -> theme.textSecondary
-                                    isCompletedToday -> theme.arrowClear
+                                    isCompletedToday -> if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
                                     else -> theme.textSecondary
                                 },
-                                fontWeight = if (isUnlocked && !isCompletedToday) FontWeight.SemiBold else FontWeight.Medium
+                                fontWeight = if (isUnlocked && !isCompletedToday) FontWeight.SemiBold else FontWeight.Medium,
+                                style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
                             )
                         }
                     }
@@ -324,15 +358,12 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // Primary Play 3D Pill Button with physical bevel shadow & theme styling
-                val ctaBaseColor = if (theme.isDark) theme.arrowDefault else theme.arrowClear
-                val ctaBevelColor = if (theme.isDark) Color(0xFF0284C7) else Color(0xFF047857)
-
+                // Primary Play 3D Pill Button with mathematically centered typography & theme palette
                 Box(
                     modifier = Modifier
                         .widthIn(max = 380.dp)
                         .fillMaxWidth(0.88f)
-                        .height(68.dp)
+                        .height(64.dp)
                         .scale(playScale)
                         .clickable(onClick = onPlayClick),
                     contentAlignment = Alignment.Center
@@ -341,37 +372,31 @@ fun HomeScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(62.dp)
+                            .height(58.dp)
                             .align(Alignment.BottomCenter)
                             .clip(RoundedCornerShape(percent = 50))
-                            .background(ctaBevelColor)
+                            .background(ctaBevel)
                     )
-                    // Top Surface Gradient Layer
+                    // Top Surface Gradient Layer with mathematically centered content
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(62.dp)
+                            .height(58.dp)
                             .align(Alignment.TopCenter)
                             .clip(RoundedCornerShape(percent = 50))
-                            .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(
-                                        ctaBaseColor,
-                                        ctaBevelColor
-                                    )
-                                )
-                            )
-                            .padding(horizontal = 12.dp),
+                            .background(Brush.verticalGradient(listOf(ctaGrad1, ctaGrad2))),
                         contentAlignment = Alignment.Center
                     ) {
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 14.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             // Circular pod with play icon
                             Box(
                                 modifier = Modifier
-                                    .size(44.dp)
+                                    .size(38.dp)
                                     .clip(CircleShape)
                                     .background(Color.White.copy(alpha = 0.25f)),
                                 contentAlignment = Alignment.Center
@@ -380,11 +405,11 @@ fun HomeScreen(
                                     imageVector = Icons.Default.PlayArrow,
                                     contentDescription = "Play Icon",
                                     tint = Color.White,
-                                    modifier = Modifier.size(28.dp)
+                                    modifier = Modifier.size(24.dp)
                                 )
                             }
 
-                            // Centered bold "PLAY LEVEL X" text
+                            // Centered "PLAY LEVEL X" text
                             Box(
                                 modifier = Modifier.weight(1f),
                                 contentAlignment = Alignment.Center
@@ -394,12 +419,13 @@ fun HomeScreen(
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Black,
                                     letterSpacing = 1.5.sp,
-                                    color = Color.White
+                                    color = Color.White,
+                                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
                                 )
                             }
 
                             // Balancer spacer
-                            Spacer(modifier = Modifier.size(44.dp))
+                            Spacer(modifier = Modifier.size(38.dp))
                         }
                     }
                 }

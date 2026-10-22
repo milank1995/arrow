@@ -269,7 +269,7 @@ fun GamePlayScreen(
                             BoosterBar(
                                 hintsCount = uiState.hintsAvailable,
                                 isGridLinesActive = uiState.isGridLinesActive,
-                                isFreeHintLevel = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode),
+                                isFreeHintLevel = (uiState.currentLevelNumber <= 10 || uiState.isDailyChallengeMode),
                                 isIdlePromptActive = isIdlePromptActive,
                                 theme = theme,
                                 onHintClick = {

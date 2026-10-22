@@ -14,6 +14,7 @@ import com.arrowescape.puzzle.core.model.LevelData
 import com.arrowescape.puzzle.data.UserPreferencesRepository
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 import com.arrowescape.puzzle.ui.theme.ThemePresets
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -389,13 +390,13 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         dismissAllPreviewRays()
     }
 
-    val isFreeHintLevel: Boolean get() = (_uiState.value.currentLevelNumber <= 10 && !_uiState.value.isDailyChallengeMode)
+    val isFreeHintLevel: Boolean get() = (_uiState.value.currentLevelNumber <= 10 || _uiState.value.isDailyChallengeMode)
 
     fun useHint() {
-        val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap) ?: return
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
+            val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap) ?: return@launch
             if (isFreeHintLevel) {
-                // Unlimited free hints for first 10 levels (no inventory deduction)
+                // Unlimited free hints for starting levels (1-10) and Daily Challenge puzzles
                 audioHapticManager.playBoosterUse("hint")
                 _uiState.update { state ->
                     val updated = state.arrows.map {

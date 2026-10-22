@@ -193,4 +193,19 @@ class PuzzleEngineTest {
         assertEquals("Cell (3, 2) must be owned exclusively by arrow 2", "arrow_2", owner?.id)
         assertFalse("Arrow 1 must not own cell (3, 2)", arrow1.isPointInside(touchedCoord))
     }
+
+    @Test
+    fun testDailyLevelHintCalculation() {
+        val file = java.io.File("src/main/assets/levels/DailyLevels_97.json")
+        assertTrue("DailyLevels_97.json must exist", file.exists())
+        val json = file.readText()
+        val level = com.arrowescape.puzzle.core.engine.LevelLoader.parseLevelJson(97, json)
+        assertNotNull("Level should parse", level)
+        val occupancy = GridOccupancyMap(level!!.xSize, level.ySize).apply {
+            rebuild(level.arrows)
+        }
+        val hint = PuzzleSolver.getBestHint(level.arrows, occupancy)
+        println("Best hint for daily 97: ${hint?.id} at head ${hint?.head}")
+        assertNotNull("Daily challenge must have a valid movable hint", hint)
+    }
 }
