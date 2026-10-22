@@ -145,12 +145,12 @@ class UserPreferencesRepository(private val context: Context) {
                 else -> null
             }
             if (key != null) {
-                val count = prefs[key] ?: 2
+                val count = prefs[key] ?: if (booster == "hint") 0 else 2
                 if (count > 0) {
                     prefs[key] = count - 1
                     success = true
-                } else {
-                    // Try to spend coins if booster is 0
+                } else if (booster != "hint") {
+                    // Try to spend coins if hammer/wand booster is 0
                     val coins = prefs[KEY_COINS] ?: 100
                     if (coins >= 50) {
                         prefs[KEY_COINS] = coins - 50
@@ -160,6 +160,13 @@ class UserPreferencesRepository(private val context: Context) {
             }
         }
         return success
+    }
+
+    suspend fun addHints(amount: Int) {
+        context.dataStore.edit { prefs ->
+            val current = prefs[KEY_HINTS] ?: 0
+            prefs[KEY_HINTS] = current + amount
+        }
     }
 
     suspend fun setTheme(index: Int) {

@@ -43,6 +43,7 @@ import com.arrowescape.puzzle.ui.components.BoosterBar
 import com.arrowescape.puzzle.ui.components.CheerOverlay
 import com.arrowescape.puzzle.ui.components.GameHeader
 import com.arrowescape.puzzle.ui.components.GameOverDialog
+import com.arrowescape.puzzle.ui.components.HintRefillDialog
 import com.arrowescape.puzzle.ui.components.PauseDialog
 import com.arrowescape.puzzle.ui.components.PuzzleBoardCanvas
 import com.arrowescape.puzzle.ui.components.SoundSettingsDialog
@@ -64,6 +65,8 @@ fun GamePlayScreen(
     onRestartClick: () -> Unit,
     onBackToHomeClick: () -> Unit,
     onClaimFreeLives: () -> Unit = {},
+    onClaimAdHints: () -> Unit = {},
+    onDismissHintAdPrompt: () -> Unit = {},
     onToggleSound: () -> Unit = {},
     onToggleVibration: () -> Unit = {},
     onSettingsClick: (() -> Unit)? = null,
@@ -85,6 +88,7 @@ fun GamePlayScreen(
         when {
             showSoundDialog -> showSoundDialog = false
             showPauseDialog -> showPauseDialog = false
+            uiState.showHintAdPrompt -> onDismissHintAdPrompt()
             uiState.isGameOver -> onRestartClick()
             else -> showPauseDialog = true
         }
@@ -265,6 +269,7 @@ fun GamePlayScreen(
                             BoosterBar(
                                 hintsCount = uiState.hintsAvailable,
                                 isGridLinesActive = uiState.isGridLinesActive,
+                                isFreeHintLevel = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode),
                                 isIdlePromptActive = isIdlePromptActive,
                                 theme = theme,
                                 onHintClick = {
@@ -348,6 +353,15 @@ fun GamePlayScreen(
                         hasGlobalLives = (uiState.globalLivesAvailable >= 3),
                         onClaimLives = onClaimFreeLives,
                         onRestartClick = onRestartClick
+                    )
+                }
+
+                // 7. HINT REFILL REWARDED AD DIALOG (Level 11+)
+                if (uiState.showHintAdPrompt) {
+                    HintRefillDialog(
+                        theme = theme,
+                        onWatchAdClick = onClaimAdHints,
+                        onDismiss = onDismissHintAdPrompt
                     )
                 }
             }

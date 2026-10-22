@@ -59,6 +59,7 @@ data class GameUiState(
     val levelStars: Map<Int, Int> = emptyMap(),
     val hasPlayedBefore: Boolean = false,
     val globalLivesAvailable: Int = 6,
+    val showHintAdPrompt: Boolean = false,
     val activeBoosterAnimation: BoosterEffectAnimation? = null,
     val restartTrigger: Long = 0L
 ) {
@@ -132,6 +133,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 isDailyChallengeMode = false,
                 activeDailyDate = null,
                 activeDailyIndex = 1,
+                showHintAdPrompt = false,
                 restartTrigger = System.currentTimeMillis()
             )
         }
@@ -387,16 +389,59 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         dismissAllPreviewRays()
     }
 
+    val isFreeHintLevel: Boolean get() = (_uiState.value.currentLevelNumber <= 10 && !_uiState.value.isDailyChallengeMode)
+
     fun useHint() {
         val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap) ?: return
         viewModelScope.launch {
-            if (repository.useBooster("hint")) {
+            if (isFreeHintLevel) {
+                // Unlimited free hints for first 10 levels (no inventory deduction)
                 audioHapticManager.playBoosterUse("hint")
                 _uiState.update { state ->
                     val updated = state.arrows.map {
                         if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
                     }
                     state.copy(arrows = updated)
+                }
+            } else {
+                if (_uiState.value.hintsAvailable > 0) {
+                    if (repository.useBooster("hint")) {
+                        audioHapticManager.playBoosterUse("hint")
+                        _uiState.update { state ->
+                            val updated = state.arrows.map {
+                                if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
+                            }
+                            state.copy(arrows = updated)
+                        }
+                    }
+                } else {
+                    // Out of hints on Level 11+ -> prompt rewarded ad dialog
+                    _uiState.update { it.copy(showHintAdPrompt = true) }
+                }
+            }
+        }
+    }
+
+    fun dismissHintAdPrompt() {
+        _uiState.update { it.copy(showHintAdPrompt = false) }
+    }
+
+    fun claimAdHints(amount: Int = 3) {
+        viewModelScope.launch {
+            repository.addHints(amount)
+            _uiState.update { it.copy(showHintAdPrompt = false) }
+
+            // Immediately auto-execute 1 hint on the board for instant relief
+            val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap)
+            if (hintTarget != null) {
+                if (repository.useBooster("hint")) {
+                    audioHapticManager.playBoosterUse("hint")
+                    _uiState.update { state ->
+                        val updated = state.arrows.map {
+                            if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
+                        }
+                        state.copy(arrows = updated)
+                    }
                 }
             }
         }

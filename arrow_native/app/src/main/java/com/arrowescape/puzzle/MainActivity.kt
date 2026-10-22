@@ -165,6 +165,12 @@ class MainActivity : ComponentActivity() {
                                     onClaimFreeLives = {
                                         gameViewModel.claimFreeLives(3)
                                     },
+                                    onClaimAdHints = {
+                                        gameViewModel.claimAdHints(3)
+                                    },
+                                    onDismissHintAdPrompt = {
+                                        gameViewModel.dismissHintAdPrompt()
+                                    },
                                     onToggleSound = {
                                         gameViewModel.toggleSound()
                                     },
