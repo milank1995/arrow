@@ -128,7 +128,7 @@ fun BoosterBar(
             val combinedHintScale = hintPressScale.value * idlePulseScale
 
             Box(
-                contentAlignment = Alignment.TopCenter,
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .size(width = 64.dp, height = 70.dp)
                     .scale(combinedHintScale)
@@ -144,92 +144,48 @@ fun BoosterBar(
                         onHintClick()
                     }
             ) {
-                // Layer 1: Refined Modern Lightbulb Art (Canvas with smooth activeProgress transition)
+                // Layer 1: Refined Modern Lightbulb Art (Centered for starting levels, slightly raised when badge is present)
                 ModernLightbulbArt(
                     activeProgress = activeProgress,
                     auraGlow = auraGlow,
                     theme = theme,
                     modifier = Modifier
                         .size(width = 46.dp, height = 52.dp)
-                        .align(Alignment.TopCenter)
+                        .align(Alignment.Center)
+                        .offset(y = if (isFreeHintLevel) 0.dp else (-6).dp)
                 )
 
-                // Layer 2: Jewel Badge Docked Flush with Base (No awkward gap)
-                val badgeBgColor = when {
-                    isFreeHintLevel -> {
-                        if (theme.isDark) {
-                            lerp(theme.surface, Color(0xFF451A03), activeProgress)
-                        } else {
-                            lerp(Color.White, Color(0xFFFEF3C7), activeProgress)
-                        }
-                    }
-                    hintsCount > 0 -> theme.surface
-                    else -> Color(0xFFD97706) // Vibrant amber for video ad CTA
-                }
+                // Layer 2: Badge (ONLY shown when NOT on free hint starting levels)
+                if (!isFreeHintLevel) {
+                    val badgeBgColor = if (hintsCount > 0) theme.surface else Color(0xFFD97706)
+                    val badgeBorderColor = if (hintsCount > 0) theme.gridLine else Color(0xFFFBBF24)
 
-                val badgeBorderColor = when {
-                    isFreeHintLevel -> {
-                        if (theme.isDark) {
-                            lerp(theme.gridLine, Color(0xFF78350F), activeProgress)
-                        } else {
-                            lerp(Color(0xFFCBD5E1), Color(0xFFFDE68A), activeProgress)
-                        }
-                    }
-                    hintsCount > 0 -> theme.gridLine
-                    else -> Color(0xFFFBBF24)
-                }
-
-                val badgeTextColor = when {
-                    isFreeHintLevel -> {
-                        if (theme.isDark) {
-                            lerp(theme.textPrimary, Color(0xFFFDE047), activeProgress)
-                        } else {
-                            lerp(Color(0xFF334155), Color(0xFFB45309), activeProgress)
-                        }
-                    }
-                    hintsCount > 0 -> theme.textPrimary
-                    else -> Color.White
-                }
-
-                Surface(
-                    shape = RoundedCornerShape(percent = 50),
-                    color = badgeBgColor,
-                    border = BorderStroke(1.2.dp, badgeBorderColor),
-                    shadowElevation = if (activeProgress > 0.5f) 3.dp else 1.dp,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .offset(y = (-4).dp)
-                ) {
-                    Box(
+                    Surface(
+                        shape = RoundedCornerShape(percent = 50),
+                        color = badgeBgColor,
+                        border = BorderStroke(1.2.dp, badgeBorderColor),
+                        shadowElevation = if (hintsCount > 0) 1.dp else 3.dp,
                         modifier = Modifier
-                            .height(19.dp)
-                            .widthIn(min = 28.dp)
-                            .padding(horizontal = 7.dp),
-                        contentAlignment = Alignment.Center
+                            .align(Alignment.BottomCenter)
+                            .offset(y = (-4).dp)
                     ) {
-                        when {
-                            // State A: Unlimited Hints -> Professional Infinity Symbol (∞)
-                            isFreeHintLevel -> {
-                                Text(
-                                    text = "∞",
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = badgeTextColor,
-                                    lineHeight = 14.sp,
-                                    modifier = Modifier.offset(y = (-1).dp)
-                                )
-                            }
-                            // State B: Limited Hints -> 1, 2, 3
-                            hintsCount > 0 -> {
+                        Box(
+                            modifier = Modifier
+                                .height(19.dp)
+                                .widthIn(min = 28.dp)
+                                .padding(horizontal = 7.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (hintsCount > 0) {
+                                // Limited Hints: 1, 2, or 3
                                 Text(
                                     text = "$hintsCount",
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = theme.textPrimary
                                 )
-                            }
-                            // State C: Exhausted Hints -> Sleek Video Camera Icon for Ad Reward
-                            else -> {
+                            } else {
+                                // Exhausted Hints: Watch Video Ad Icon
                                 Icon(
                                     imageVector = Icons.Default.Videocam,
                                     contentDescription = "Watch Video Ad for 3 Hints",
@@ -477,30 +433,7 @@ private fun ModernLightbulbArt(
             )
         )
 
-        // 3. Specular Curved Glass Reflection
-        val specPath = Path().apply {
-            moveTo(w * 0.27f, domeCenterY + h * 0.04f)
-            cubicTo(
-                w * 0.25f, domeCenterY - h * 0.08f,
-                w * 0.35f, domeCenterY - domeRadius * 0.72f,
-                w * 0.44f, domeCenterY - domeRadius * 0.78f
-            )
-        }
-        val specColor = if (activeProgress > 0.5f) {
-            Color.White.copy(alpha = 0.85f)
-        } else {
-            if (theme.isDark) Color.White.copy(alpha = 0.25f) else Color(0xFFE2E8F0)
-        }
-        drawPath(
-            path = specPath,
-            color = specColor,
-            style = Stroke(
-                width = 1.8.dp.toPx(),
-                cap = StrokeCap.Round
-            )
-        )
-
-        // 4. Tungsten Filament Wire
+        // 3. Tungsten Filament Wire
         val filamentPath = Path().apply {
             // Left lead
             moveTo(w * 0.42f, h * 0.68f)
