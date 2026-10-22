@@ -521,6 +521,10 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun hasPlayedBeforeSynchronous(): Boolean {
+        return repository.hasPlayedBeforeSynchronous()
+    }
+
     fun markHasPlayedBefore() {
         viewModelScope.launch {
             repository.markHasPlayedBefore()

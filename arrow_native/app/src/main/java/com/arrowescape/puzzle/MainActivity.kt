@@ -41,18 +41,10 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val uiState by gameViewModel.uiState.collectAsState()
-            var currentScreen by remember { mutableStateOf(AppScreen.HOME) }
-            var hasDecidedInitialScreen by remember { mutableStateOf(false) }
-
-            // FTUE: First-time users are taken directly to Level 1, returning users see the Home Screen
-            LaunchedEffect(uiState.hasPlayedBefore, uiState.levelData) {
-                if (!hasDecidedInitialScreen && uiState.levelData != null) {
-                    hasDecidedInitialScreen = true
-                    if (!uiState.hasPlayedBefore) {
-                        currentScreen = AppScreen.GAMEPLAY
-                    }
-                }
+            val initialScreen = remember {
+                if (gameViewModel.hasPlayedBeforeSynchronous()) AppScreen.HOME else AppScreen.GAMEPLAY
             }
+            var currentScreen by remember { mutableStateOf(initialScreen) }
             var showDailyCalendarDialog by remember { mutableStateOf(false) }
             var showSoundSettingsDialog by remember { mutableStateOf(false) }
 

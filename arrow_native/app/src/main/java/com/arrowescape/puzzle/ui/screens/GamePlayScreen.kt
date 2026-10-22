@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.core.model.Arrow
@@ -143,6 +144,8 @@ fun GamePlayScreen(
             modifier = modifier
         )
     } else {
+        val isInitialLevel1 = uiState.currentLevelNumber == 1 && !uiState.isDailyChallengeMode
+
         Surface(
             color = theme.background,
             modifier = modifier.fillMaxSize()
@@ -157,8 +160,30 @@ fun GamePlayScreen(
                         .navigationBarsPadding()
                         .displayCutoutPadding()
                 ) {
-                    // 1. TOP GAMEPLAY HEADER (Clean Pause || + Dual-Action Sound 🔊/🔇 + Hearts + Level Chip + Goal)
-                    if (level != null) {
+                    // 1. TOP SECTION: Large "Tap to move" for Level 1 FTUE; Standard GameHeader for all other levels
+                    if (isInitialLevel1) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 40.dp, bottom = 16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Surface(
+                                shape = RoundedCornerShape(32.dp),
+                                color = if (theme.isDark) Color(0xFF334155).copy(alpha = 0.88f) else Color(0xFFDCE4F0).copy(alpha = 0.88f),
+                                shadowElevation = 0.dp
+                            ) {
+                                Text(
+                                    text = "Tap to move",
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (theme.isDark) Color.White else Color(0xFF1E293B),
+                                    modifier = Modifier.padding(horizontal = 44.dp, vertical = 14.dp),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    } else if (level != null) {
                         val totalArrowsCount = uiState.levelData?.arrows?.size ?: uiState.arrows.size
                         Box(
                             modifier = Modifier
@@ -239,30 +264,32 @@ fun GamePlayScreen(
                         )
                     }
 
-                    // 3. BOTTOM BOOSTER CONTROLS (Smart Idle-Reveal: Ghost state while solving, waking when stuck)
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 4.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        BoosterBar(
-                            hintsCount = uiState.hintsAvailable,
-                            isGridLinesActive = uiState.isGridLinesActive,
-                            isIdlePromptActive = isIdlePromptActive,
-                            theme = theme,
-                            onHintClick = {
-                                lastInteractionTime = System.currentTimeMillis()
-                                isIdlePromptActive = false
-                                onHintClick()
-                            },
-                            onGridClick = {
-                                lastInteractionTime = System.currentTimeMillis()
-                                isIdlePromptActive = false
-                                onGridClick()
-                            },
-                            modifier = Modifier.widthIn(max = 540.dp)
-                        )
+                    // 3. BOTTOM BOOSTER CONTROLS (Hidden on initial Level 1 to keep gameplay focused & clean)
+                    if (!isInitialLevel1) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            BoosterBar(
+                                hintsCount = uiState.hintsAvailable,
+                                isGridLinesActive = uiState.isGridLinesActive,
+                                isIdlePromptActive = isIdlePromptActive,
+                                theme = theme,
+                                onHintClick = {
+                                    lastInteractionTime = System.currentTimeMillis()
+                                    isIdlePromptActive = false
+                                    onHintClick()
+                                },
+                                onGridClick = {
+                                    lastInteractionTime = System.currentTimeMillis()
+                                    isIdlePromptActive = false
+                                    onGridClick()
+                                },
+                                modifier = Modifier.widthIn(max = 540.dp)
+                            )
+                        }
                     }
                 }
 

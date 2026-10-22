@@ -49,8 +49,21 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_VIBRATION = booleanPreferencesKey("vibration_enabled")
     private val KEY_THEME = intPreferencesKey("selected_theme_index")
 
+    private val SYNC_PREFS = "arrow_sync_prefs"
+    private val KEY_SYNC_HAS_PLAYED = "has_played_before"
+
+    fun hasPlayedBeforeSynchronous(): Boolean {
+        val sp = context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
+        return sp.getBoolean(KEY_SYNC_HAS_PLAYED, false)
+    }
+
     val userGameData: Flow<UserGameData> = context.dataStore.data.map { prefs ->
-        val hasPlayed = prefs[KEY_HAS_PLAYED_BEFORE] ?: ((prefs[KEY_LEVEL] ?: 1) > 1 || (prefs[KEY_COINS] != null && (prefs[KEY_COINS] ?: 100) != 100))
+        val syncPlayed = hasPlayedBeforeSynchronous()
+        val hasPlayed = syncPlayed || (prefs[KEY_HAS_PLAYED_BEFORE] ?: ((prefs[KEY_LEVEL] ?: 1) > 1 || (prefs[KEY_COINS] != null && (prefs[KEY_COINS] ?: 100) != 100)))
+        if (hasPlayed && !syncPlayed) {
+            context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
+                .edit().putBoolean(KEY_SYNC_HAS_PLAYED, true).apply()
+        }
         UserGameData(
             currentLevel = prefs[KEY_LEVEL] ?: 1,
             coins = prefs[KEY_COINS] ?: 100,
@@ -195,6 +208,8 @@ class UserPreferencesRepository(private val context: Context) {
     }
 
     suspend fun markHasPlayedBefore() {
+        context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
+            .edit().putBoolean(KEY_SYNC_HAS_PLAYED, true).apply()
         context.dataStore.edit { it[KEY_HAS_PLAYED_BEFORE] = true }
     }
 }

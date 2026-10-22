@@ -904,31 +904,6 @@ fun PuzzleBoardCanvas(
                 }
             }
         }
-
-        // Floating Tutorial Guidance Banner (Level 1 only, matching Unity)
-        if (currentLevelNumber == 1 && !isDailyChallengeMode && hasUnclearedArrows && introProgress.value >= 1f) {
-            Surface(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 16.dp),
-                shape = RoundedCornerShape(20.dp),
-                color = if (theme.isDark) Color(0xEE1E293B) else Color(0xEEFFFFFF),
-                border = androidx.compose.foundation.BorderStroke(1.dp, if (theme.isDark) Color(0xFF475569) else Color(0xFFCBD5E1)),
-                shadowElevation = 4.dp
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Tap to move",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = if (theme.isDark) Color.White else Color(0xFF1E293B)
-                    )
-                }
-            }
-        }
     }
 }
 
@@ -1950,8 +1925,8 @@ private fun DrawScope.drawBoosterAnimation(
  * Draws animated pulsing guidance rings and pointer finger on Level 1-3 for first-time players.
  */
 /**
- * Draws an authentic cartoon white glove hand with a smooth tap gesture for Level 1,
- * closely matching the original Unity reference without distracting radar circles.
+ * Draws an authentic, large cartoon white glove hand with a smooth tap gesture for Level 1.
+ * Dynamically adapts to ANY arrow design, orientation, or layout on Level 1 without code changes.
  */
 private fun DrawScope.drawTutorialGuidance(
     origin: Offset,
@@ -1959,48 +1934,69 @@ private fun DrawScope.drawTutorialGuidance(
     cellSize: Float,
     theme: ThemePreset
 ) {
-    // Target the center / stem of the movable arrow (matching Unity)
-    val midCoord = targetArrow.allPoints[targetArrow.allPoints.size / 2]
+    // 1. Dynamically target the visual center / stem of ANY arrow design
+    val allCoords = targetArrow.allPoints
+    val midCoord = allCoords[allCoords.size / 2]
     val targetPoint = Offset(
         origin.x + (midCoord.x.toFloat() + 0.5f) * cellSize,
         origin.y + (midCoord.y.toFloat() + 0.5f) * cellSize
     )
 
+    // 2. Large, prominent hand dimensions clearly visible across all device screen sizes
+    val handWidth = maxOf(cellSize * 0.72f, 68.dp.toPx()).coerceAtMost(90.dp.toPx())
+    val handHeight = maxOf(cellSize * 0.95f, 82.dp.toPx()).coerceAtMost(110.dp.toPx())
+    val fw = handWidth * 0.28f // Index finger width
+
+    // 3. Dynamically determine optimal approach angle based on arrow exit path and screen clearance
+    // Ensures the hand never obstructs the arrow's exit trajectory and stays cleanly inside screen bounds
+    val candidateAngles = when (targetArrow.direction) {
+        Direction.UP -> listOf(-38f, 38f)
+        Direction.DOWN -> listOf(142f, -142f)
+        Direction.RIGHT -> listOf(38f, 142f)
+        Direction.LEFT -> listOf(-38f, -142f)
+    }
+
+    val chosenAngle = candidateAngles.firstOrNull { angle ->
+        val rad = angle * (PI.toFloat() / 180f)
+        val bodyCenterX = targetPoint.x - sin(rad) * handHeight * 0.55f
+        val bodyCenterY = targetPoint.y + cos(rad) * handHeight * 0.55f
+        bodyCenterX in (handWidth * 0.55f)..(size.width - handWidth * 0.55f) &&
+        bodyCenterY in (handHeight * 0.55f)..(size.height - handHeight * 0.55f)
+    } ?: candidateAngles.first()
+
     val now = System.currentTimeMillis()
     val cycleTime = 1200L
     val cycle = ((now % cycleTime).toFloat()) / cycleTime.toFloat()
 
-    // Smooth tap gesture animation rhythm: Press down -> Brief hold -> Spring release -> Rest pause
+    // 4. Smooth 3D tap gesture animation rhythm: Press down -> Brief hold -> Spring release -> Rest pause
     val (tapProgress, scaleFactor) = when {
-        // 1. Press down (0ms to 280ms)
+        // Press down with physical depth (0ms to 280ms)
         cycle < 0.24f -> {
             val t = cycle / 0.24f
             val ease = (1f - cos(t * PI.toFloat())) / 2f
             ease to (1f - 0.12f * ease)
         }
-        // 2. Brief contact hold (280ms to 320ms)
+        // Brief contact hold (280ms to 320ms)
         cycle in 0.24f..0.30f -> {
             1f to 0.88f
         }
-        // 3. Spring release back (320ms to 540ms)
+        // Spring release back (320ms to 520ms)
         cycle in 0.30f..0.50f -> {
             val t = (cycle - 0.30f) / 0.20f
             val ease = (1f + cos(t * PI.toFloat())) / 2f
             ease to (0.88f + 0.12f * (1f - ease))
         }
-        // 4. Rest pause (540ms to 1200ms)
+        // Rest pause (520ms to 1200ms)
         else -> {
             0f to 1.0f
         }
     }
 
-    // Hand positioning: points diagonally up-and-left (-38°) towards the arrow stem
-    val handAngle = -38f
-    val handRad = handAngle * (PI.toFloat() / 180f)
+    val handRad = chosenAngle * (PI.toFloat() / 180f)
     val dirX = sin(handRad)
     val dirY = -cos(handRad)
 
-    val restDistance = cellSize * 0.18f
+    val restDistance = 16.dp.toPx()
     val tapDisplacement = tapProgress * restDistance
     val currentDistance = restDistance - tapDisplacement
 
@@ -2009,52 +2005,61 @@ private fun DrawScope.drawTutorialGuidance(
         targetPoint.y - dirY * currentDistance
     )
 
-    // Hand vector dimensions
-    val w = cellSize * 0.16f
-    val h = cellSize * 0.54f
-    val shadowOffsetX = 2.5.dp.toPx()
-    val shadowOffsetY = 3.5.dp.toPx()
-    val outlineStrokePx = 1.8.dp.toPx()
-    val creaseStrokePx = 1.3.dp.toPx()
+    val shadowOffsetX = 3.dp.toPx()
+    val shadowOffsetY = 4.dp.toPx()
+    val outlineStrokePx = 2.4.dp.toPx()
+    val creaseStrokePx = 1.6.dp.toPx()
 
-    // Stylized cartoon white glove hand with index finger pointing at (0, 0)
+    // 5. Authentic Cartoon White Glove Vector Hand with fingertip at (0, 0)
     val handPath = Path().apply {
-        moveTo(-w * 0.45f, w * 0.45f)
-        cubicTo(-w * 0.45f, 0f, w * 0.45f, 0f, w * 0.45f, w * 0.45f)
-        lineTo(w * 0.45f, h * 0.36f)
-        cubicTo(w * 1.35f, h * 0.38f, w * 1.35f, h * 0.54f, w * 0.48f, h * 0.56f)
-        cubicTo(w * 1.25f, h * 0.58f, w * 1.25f, h * 0.72f, w * 0.40f, h * 0.74f)
-        cubicTo(w * 1.10f, h * 0.76f, w * 1.10f, h * 0.88f, w * 0.30f, h * 0.90f)
-        lineTo(w * 0.22f, h * 1.05f)
-        cubicTo(w * 0.10f, h * 1.10f, -w * 0.18f, h * 1.10f, -w * 0.28f, h * 1.05f)
-        lineTo(-w * 0.35f, h * 0.80f)
-        cubicTo(-w * 1.15f, h * 0.74f, -w * 1.20f, h * 0.48f, -w * 0.55f, h * 0.42f)
-        cubicTo(-w * 0.45f, h * 0.40f, -w * 0.45f, h * 0.35f, -w * 0.45f, h * 0.32f)
-        lineTo(-w * 0.45f, w * 0.45f)
+        moveTo(-fw * 0.5f, fw * 0.5f)
+        cubicTo(-fw * 0.5f, 0f, fw * 0.5f, 0f, fw * 0.5f, fw * 0.5f)
+        lineTo(fw * 0.5f, handHeight * 0.36f)
+        // Middle finger knuckle curl
+        cubicTo(handWidth * 0.52f, handHeight * 0.38f, handWidth * 0.52f, handHeight * 0.54f, handWidth * 0.18f, handHeight * 0.56f)
+        // Ring finger knuckle curl
+        cubicTo(handWidth * 0.48f, handHeight * 0.58f, handWidth * 0.48f, handHeight * 0.72f, handWidth * 0.14f, handHeight * 0.74f)
+        // Pinky knuckle curl
+        cubicTo(handWidth * 0.42f, handHeight * 0.76f, handWidth * 0.42f, handHeight * 0.88f, handWidth * 0.10f, handHeight * 0.90f)
+        // Wrist cuff right side
+        lineTo(handWidth * 0.08f, handHeight * 1.02f)
+        // Wrist cuff bottom edge
+        cubicTo(-handWidth * 0.04f, handHeight * 1.08f, -handWidth * 0.22f, handHeight * 1.08f, -handWidth * 0.30f, handHeight * 1.02f)
+        // Palm left side / base of thumb
+        lineTo(-handWidth * 0.34f, handHeight * 0.82f)
+        // Thumb curving outwards and up
+        cubicTo(-handWidth * 0.56f, handHeight * 0.72f, -handWidth * 0.58f, handHeight * 0.48f, -handWidth * 0.32f, handHeight * 0.40f)
+        // Webbing between thumb and index finger
+        cubicTo(-handWidth * 0.20f, handHeight * 0.38f, -fw * 0.5f, handHeight * 0.36f, -fw * 0.5f, handHeight * 0.32f)
+        lineTo(-fw * 0.5f, fw * 0.5f)
         close()
     }
 
-    val crease1 = Path().apply {
-        moveTo(w * 0.48f, h * 0.56f)
-        lineTo(w * 0.14f, h * 0.56f)
+    val creaseMiddle = Path().apply {
+        moveTo(handWidth * 0.46f, handHeight * 0.55f)
+        lineTo(handWidth * 0.18f, handHeight * 0.55f)
     }
-    val crease2 = Path().apply {
-        moveTo(w * 0.40f, h * 0.74f)
-        lineTo(w * 0.12f, h * 0.74f)
+    val creaseRing = Path().apply {
+        moveTo(handWidth * 0.42f, handHeight * 0.73f)
+        lineTo(handWidth * 0.14f, handHeight * 0.73f)
     }
-    val thumbCrease = Path().apply {
-        moveTo(-w * 0.45f, h * 0.44f)
-        cubicTo(-w * 0.28f, h * 0.52f, -w * 0.25f, h * 0.65f, -w * 0.35f, h * 0.76f)
+    val creaseThumb = Path().apply {
+        moveTo(-handWidth * 0.22f, handHeight * 0.44f)
+        cubicTo(-handWidth * 0.12f, handHeight * 0.56f, -handWidth * 0.10f, handHeight * 0.70f, -handWidth * 0.20f, handHeight * 0.80f)
+    }
+    val cuffLine = Path().apply {
+        moveTo(-handWidth * 0.26f, handHeight * 0.94f)
+        cubicTo(-handWidth * 0.10f, handHeight * 0.96f, handWidth * 0.02f, handHeight * 0.96f, handWidth * 0.08f, handHeight * 0.94f)
     }
 
-    val handBorder = if (theme.isDark) Color(0xFF0F172A) else Color(0xFF2B2D42)
+    val handBorder = if (theme.isDark) Color(0xFF0F172A) else Color(0xFF1E293B)
 
     withTransform({
         translate(tipPos.x, tipPos.y)
-        rotate(handAngle, pivot = Offset.Zero)
+        rotate(chosenAngle, pivot = Offset.Zero)
         scale(scaleFactor, scaleFactor, pivot = Offset.Zero)
     }) {
-        // Drop shadow for tactile depth
+        // Tactile drop shadow
         withTransform({ translate(shadowOffsetX, shadowOffsetY) }) {
             drawPath(path = handPath, color = Color(0x35000000))
         }
@@ -2062,24 +2067,29 @@ private fun DrawScope.drawTutorialGuidance(
         // Crisp white glove fill
         drawPath(path = handPath, color = Color.White)
 
-        // Subtle knuckle and thumb crease details
+        // Hand knuckle, thumb, and cuff crease details
         drawPath(
-            path = crease1,
-            color = handBorder.copy(alpha = 0.80f),
+            path = creaseMiddle,
+            color = handBorder.copy(alpha = 0.85f),
             style = Stroke(width = creaseStrokePx, cap = StrokeCap.Round)
         )
         drawPath(
-            path = crease2,
-            color = handBorder.copy(alpha = 0.80f),
+            path = creaseRing,
+            color = handBorder.copy(alpha = 0.85f),
             style = Stroke(width = creaseStrokePx, cap = StrokeCap.Round)
         )
         drawPath(
-            path = thumbCrease,
-            color = handBorder.copy(alpha = 0.80f),
+            path = creaseThumb,
+            color = handBorder.copy(alpha = 0.85f),
+            style = Stroke(width = creaseStrokePx, cap = StrokeCap.Round)
+        )
+        drawPath(
+            path = cuffLine,
+            color = handBorder.copy(alpha = 0.85f),
             style = Stroke(width = creaseStrokePx, cap = StrokeCap.Round)
         )
 
-        // Clean dark outline
+        // Bold, crisp dark outline
         drawPath(
             path = handPath,
             color = handBorder,
