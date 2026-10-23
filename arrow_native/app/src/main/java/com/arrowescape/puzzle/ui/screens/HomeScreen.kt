@@ -385,7 +385,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .widthIn(max = 380.dp)
                         .fillMaxWidth(0.88f)
-                        .height(62.dp)
+                        .height(58.dp)
                         .scale(playScale)
                         .clickable(onClick = onPlayClick),
                     contentAlignment = Alignment.Center
@@ -394,7 +394,7 @@ fun HomeScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp)
+                            .height(52.dp)
                             .align(Alignment.BottomCenter)
                             .clip(RoundedCornerShape(20.dp))
                             .background(ctaBevel)
@@ -403,17 +403,17 @@ fun HomeScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp)
+                            .height(52.dp)
                             .align(Alignment.TopCenter)
                             .clip(RoundedCornerShape(20.dp))
                             .background(Brush.verticalGradient(listOf(ctaGrad1, ctaGrad2))),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "PLAY LEVEL ${uiState.currentLevelNumber}",
+                            text = "Play Level ${uiState.currentLevelNumber}",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp,
+                            letterSpacing = 0.5.sp,
                             color = Color.White,
                             style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
                         )

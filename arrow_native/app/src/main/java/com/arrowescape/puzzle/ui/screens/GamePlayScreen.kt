@@ -76,8 +76,12 @@ fun GamePlayScreen(
     onPlayCoinSound: () -> Unit = {},
     onPlayClickSound: () -> Unit = {},
     onDismissPreviewRays: () -> Unit = {},
+    onGameplayStarted: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(uiState.currentLevelNumber, uiState.activeDailyDate) {
+        onGameplayStarted()
+    }
     var showPauseDialog by remember { mutableStateOf(false) }
     var showSoundDialog by remember { mutableStateOf(false) }
     var hudToastMessage by remember { mutableStateOf<String?>(null) }
@@ -271,10 +275,15 @@ fun GamePlayScreen(
                                 .padding(horizontal = 4.dp),
                             contentAlignment = Alignment.Center
                         ) {
+                            val effectiveHints = if (uiState.isDailyChallengeMode) {
+                                uiState.dailyComplimentaryHintsRemaining + uiState.hintsAvailable
+                            } else {
+                                uiState.hintsAvailable
+                            }
                             BoosterBar(
-                                hintsCount = uiState.hintsAvailable,
+                                hintsCount = effectiveHints,
                                 isGridLinesActive = uiState.isGridLinesActive,
-                                isFreeHintLevel = (uiState.currentLevelNumber <= 10 || uiState.isDailyChallengeMode),
+                                isFreeHintLevel = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode),
                                 isIdlePromptActive = isIdlePromptActive,
                                 theme = theme,
                                 onHintClick = {

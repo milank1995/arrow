@@ -262,11 +262,12 @@ fun DailyChallengeScreen(
                             color = theme.background,
                             border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine)
                         ) {
+                            val badgeText = if (completedThisMonth == daysInMonth && daysInMonth > 0) "✓ $completedThisMonth/$daysInMonth" else "$completedThisMonth/$daysInMonth"
                             Text(
-                                text = "✓ $completedThisMonth/$daysInMonth",
+                                text = badgeText,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.ExtraBold,
-                                color = theme.arrowClear,
+                                color = if (completedThisMonth > 0) theme.arrowClear else theme.textSecondary,
                                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
                             )
                         }
@@ -513,7 +514,7 @@ fun DailyChallengeScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(60.dp)
+                                .height(58.dp)
                                 .clickable {
                                     onPlayDate(selectedDate.toString())
                                 },
@@ -523,7 +524,7 @@ fun DailyChallengeScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(54.dp)
+                                    .height(52.dp)
                                     .align(Alignment.BottomCenter)
                                     .clip(RoundedCornerShape(20.dp))
                                     .background(ctaBevel)
@@ -533,17 +534,17 @@ fun DailyChallengeScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(54.dp)
+                                    .height(52.dp)
                                     .align(Alignment.TopCenter)
                                     .clip(RoundedCornerShape(20.dp))
                                     .background(Brush.verticalGradient(listOf(ctaGrad1, ctaGrad2))),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = if (selectedDateCompleted) "REPLAY LEVEL" else "PLAY DAILY PUZZLE",
-                                    fontSize = 17.sp,
+                                    text = if (selectedDateCompleted) "Replay Level" else "Play Daily Puzzle",
+                                    fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
-                                    letterSpacing = 1.sp,
+                                    letterSpacing = 0.5.sp,
                                     color = Color.White,
                                     style = androidx.compose.ui.text.TextStyle(
                                         platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)

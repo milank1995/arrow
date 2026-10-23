@@ -364,7 +364,7 @@ fun VictoryScreen(
 
                             Spacer(modifier = Modifier.height(18.dp))
 
-                            // Performance Metrics Table
+                            // Performance Metrics 2x2 Clean Grid
                             Column(
                                 verticalArrangement = Arrangement.spacedBy(10.dp),
                                 modifier = Modifier
@@ -373,60 +373,90 @@ fun VictoryScreen(
                                     .background(theme.background.copy(alpha = 0.35f))
                                     .padding(horizontal = 16.dp, vertical = 14.dp)
                             ) {
-                                PerformanceMetricRow(
-                                    label = "Difficulty",
-                                    value = difficultyText,
-                                    theme = theme
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    PerformanceMetricCell(
+                                        label = "Time",
+                                        value = timeFormatted,
+                                        theme = theme,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    PerformanceMetricCell(
+                                        label = "Score",
+                                        value = "$score",
+                                        theme = theme,
+                                        alignEnd = true,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+
+                                HorizontalDivider(
+                                    color = theme.gridLine.copy(alpha = 0.45f),
+                                    thickness = 1.dp
                                 )
-                                PerformanceMetricRow(
-                                    label = "Time",
-                                    value = timeFormatted,
-                                    theme = theme
-                                )
-                                PerformanceMetricRow(
-                                    label = "Score",
-                                    value = "$score",
-                                    theme = theme
-                                )
-                                PerformanceMetricRow(
-                                    label = "Today's Stage",
-                                    value = if (isDailyChallenge) "Daily Cleared" else "Level $levelNumber",
-                                    theme = theme
-                                )
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    PerformanceMetricCell(
+                                        label = "Accuracy",
+                                        value = "$accuracyPercent%",
+                                        theme = theme,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    PerformanceMetricCell(
+                                        label = "Moves",
+                                        value = "$movesCount",
+                                        theme = theme,
+                                        alignEnd = true,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
                             }
 
-                            Spacer(modifier = Modifier.height(14.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                            HorizontalDivider(
-                                color = theme.gridLine.copy(alpha = 0.6f),
-                                thickness = 1.dp
-                            )
-
-                            Spacer(modifier = Modifier.height(14.dp))
-
-                            // Secondary Stats Ticker (Accuracy, Moves, Hints/Streak)
+                            // Secondary Streak & Difficulty Ribbon
                             Row(
-                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 6.dp)
                             ) {
-                                SecondaryStatItem(
-                                    icon = "🎯",
-                                    value = "$accuracyPercent%",
-                                    theme = theme
-                                )
-                                Text("•", color = theme.textSecondary.copy(alpha = 0.4f))
-                                SecondaryStatItem(
-                                    icon = "✕",
-                                    value = "$movesCount Moves",
-                                    theme = theme
-                                )
-                                Text("•", color = theme.textSecondary.copy(alpha = 0.4f))
-                                SecondaryStatItem(
-                                    icon = "🔥",
-                                    value = "${streakDays}D Streak",
-                                    theme = theme
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                                ) {
+                                    Text(
+                                        text = "Difficulty:",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = theme.textSecondary
+                                    )
+                                    Text(
+                                        text = difficultyText,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = theme.textPrimary
+                                    )
+                                }
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Text(text = "🔥", fontSize = 12.sp)
+                                    Text(
+                                        text = "${streakDays} Day Streak",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (theme.isDark) Color(0xFFFDE047) else Color(0xFFD97706)
+                                    )
+                                }
                             }
                         }
                     }
@@ -478,7 +508,7 @@ fun VictoryScreen(
                     Spacer(modifier = Modifier.height(20.dp))
                 }
 
-                // 3. ACTION BUTTONS: Tactile "Next Level" Primary CTA + "Home" Secondary
+                // 3. ACTION BUTTONS: Tactile CTA Buttons Matching Unity Benchmark
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -486,11 +516,11 @@ fun VictoryScreen(
                         .fillMaxWidth()
                         .widthIn(max = 380.dp)
                 ) {
-                    // Primary 3D Tactile CTA (Matching Unity Benchmark)
+                    // Primary 3D Tactile CTA
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(62.dp)
+                            .height(58.dp)
                             .clickable {
                                 onPlayClickSound()
                                 onNextLevelClick()
@@ -501,7 +531,7 @@ fun VictoryScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(56.dp)
+                                .height(52.dp)
                                 .align(Alignment.BottomCenter)
                                 .clip(RoundedCornerShape(20.dp))
                                 .background(ctaBevel)
@@ -510,14 +540,14 @@ fun VictoryScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(56.dp)
+                                .height(52.dp)
                                 .align(Alignment.TopCenter)
                                 .clip(RoundedCornerShape(20.dp))
                                 .background(Brush.verticalGradient(listOf(ctaGrad1, ctaGrad2))),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = if (isDailyChallenge) "Claim & Return Home" else "Next Level",
+                                text = if (isDailyChallenge) "Continue" else "Next Level",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 0.5.sp,
@@ -527,36 +557,66 @@ fun VictoryScreen(
                         }
                     }
 
-                    // Secondary Home Button
-                    Surface(
-                        shape = RoundedCornerShape(20.dp),
-                        color = theme.surface,
-                        border = androidx.compose.foundation.BorderStroke(1.2.dp, theme.gridLine),
-                        shadowElevation = 2.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .clickable {
-                                onPlayClickSound()
-                                onHomeClick()
-                            }
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
+                    // Secondary Home Button (Shown only in Campaign Mode to eliminate redundant Daily Challenge duplicate)
+                    if (!isDailyChallenge) {
+                        Surface(
+                            shape = RoundedCornerShape(20.dp),
+                            color = theme.surface,
+                            border = androidx.compose.foundation.BorderStroke(1.2.dp, theme.gridLine),
+                            shadowElevation = 2.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp)
+                                .clickable {
+                                    onPlayClickSound()
+                                    onHomeClick()
+                                }
                         ) {
-                            Text(
-                                text = "Home",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = theme.textPrimary,
-                                style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
-                            )
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Text(
+                                    text = "Home",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = theme.textPrimary,
+                                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                                )
+                            }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun PerformanceMetricCell(
+    label: String,
+    value: String,
+    theme: ThemePreset,
+    alignEnd: Boolean = false,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = if (alignEnd) Alignment.End else Alignment.Start,
+        modifier = modifier
+    ) {
+        Text(
+            text = label,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+            color = theme.textSecondary
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = value,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = theme.textPrimary
+        )
     }
 }
 

@@ -163,10 +163,10 @@ fun SettingsScreen(
 
                 // Centered Clean Title (Matching overall UI design)
                 Text(
-                    text = "SETTINGS",
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Black,
-                    letterSpacing = 2.sp,
+                    text = "Settings",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 0.5.sp,
                     color = activeTheme.textPrimary,
                     style = androidx.compose.ui.text.TextStyle(
                         platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
@@ -223,7 +223,7 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     // =========================================================
-                    // SECTION 2: AUDIO & HAPTICS (Standardized Parity)
+                    // SECTION 2: AUDIO & HAPTICS (Grouped Card)
                     // =========================================================
                     SectionHeader(
                         title = "AUDIO & HAPTICS",
@@ -233,38 +233,48 @@ fun SettingsScreen(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    // Sound Effects Row
-                    SettingsToggleCard(
-                        title = "Sound Effects",
-                        icon = if (isSoundEnabled) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeMute,
-                        iconBg = if (isSoundEnabled) Color(0xFFFEF3C7) else Color(0xFFE2E8F0),
-                        iconTint = if (isSoundEnabled) Color(0xFFD97706) else Color(0xFF64748B),
-                        isChecked = isSoundEnabled,
-                        onCheckedChange = { onToggleSound() },
-                        cardBg = cardBg,
-                        cardBorder = cardBorder,
-                        activeTheme = activeTheme
-                    )
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = cardBg,
+                        border = BorderStroke(1.dp, cardBorder),
+                        shadowElevation = 1.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            // Sound Effects Row
+                            SettingsToggleRow(
+                                title = "Sound Effects",
+                                icon = if (isSoundEnabled) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeMute,
+                                iconBg = if (isSoundEnabled) activeTheme.arrowHint.copy(alpha = 0.16f) else activeTheme.gridLine.copy(alpha = 0.35f),
+                                iconTint = if (isSoundEnabled) activeTheme.arrowHint else activeTheme.textSecondary,
+                                isChecked = isSoundEnabled,
+                                onCheckedChange = { onToggleSound() },
+                                activeTheme = activeTheme
+                            )
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                            androidx.compose.material3.HorizontalDivider(
+                                color = cardBorder.copy(alpha = 0.6f),
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
 
-                    // Haptic Vibration Row
-                    SettingsToggleCard(
-                        title = "Haptic Vibration",
-                        icon = Icons.Default.Vibration,
-                        iconBg = if (isVibrationEnabled) Color(0xFFE0E7FF) else Color(0xFFE2E8F0),
-                        iconTint = if (isVibrationEnabled) Color(0xFF4F46E5) else Color(0xFF64748B),
-                        isChecked = isVibrationEnabled,
-                        onCheckedChange = { onToggleVibration() },
-                        cardBg = cardBg,
-                        cardBorder = cardBorder,
-                        activeTheme = activeTheme
-                    )
+                            // Haptic Vibration Row
+                            SettingsToggleRow(
+                                title = "Haptic Vibration",
+                                icon = Icons.Default.Vibration,
+                                iconBg = if (isVibrationEnabled) activeTheme.arrowDefault.copy(alpha = 0.16f) else activeTheme.gridLine.copy(alpha = 0.35f),
+                                iconTint = if (isVibrationEnabled) activeTheme.arrowDefault else activeTheme.textSecondary,
+                                isChecked = isVibrationEnabled,
+                                onCheckedChange = { onToggleVibration() },
+                                activeTheme = activeTheme
+                            )
+                        }
+                    }
 
                     Spacer(modifier = Modifier.height(24.dp))
 
                     // =========================================================
-                    // SECTION 3: SUPPORT & COMMUNITY
+                    // SECTION 3: SUPPORT & COMMUNITY (Grouped Card)
                     // =========================================================
                     SectionHeader(
                         title = "SUPPORT & COMMUNITY",
@@ -274,36 +284,46 @@ fun SettingsScreen(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    SettingsLinkCard(
-                        title = "Rate Us",
-                        subtitle = "Support us with 5 stars on Play Store",
-                        icon = Icons.Default.Star,
-                        iconBg = Color(0xFFFFFBEB),
-                        iconTint = Color(0xFFF59E0B),
-                        onClick = openRateUs,
-                        cardBg = cardBg,
-                        cardBorder = cardBorder,
-                        activeTheme = activeTheme
-                    )
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = cardBg,
+                        border = BorderStroke(1.dp, cardBorder),
+                        shadowElevation = 1.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            SettingsLinkRow(
+                                title = "Rate Us",
+                                subtitle = "Support us with 5 stars on Play Store",
+                                icon = Icons.Default.Star,
+                                iconBg = activeTheme.arrowHint.copy(alpha = 0.16f),
+                                iconTint = activeTheme.arrowHint,
+                                onClick = openRateUs,
+                                activeTheme = activeTheme
+                            )
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                            androidx.compose.material3.HorizontalDivider(
+                                color = cardBorder.copy(alpha = 0.6f),
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
 
-                    SettingsLinkCard(
-                        title = "Feedback & Support",
-                        subtitle = "Contact the development team",
-                        icon = Icons.Default.Email,
-                        iconBg = Color(0xFFECFDF5),
-                        iconTint = Color(0xFF10B981),
-                        onClick = openEmail,
-                        cardBg = cardBg,
-                        cardBorder = cardBorder,
-                        activeTheme = activeTheme
-                    )
+                            SettingsLinkRow(
+                                title = "Feedback & Support",
+                                subtitle = "Contact the development team",
+                                icon = Icons.Default.Email,
+                                iconBg = activeTheme.arrowClear.copy(alpha = 0.16f),
+                                iconTint = activeTheme.arrowClear,
+                                onClick = openEmail,
+                                activeTheme = activeTheme
+                            )
+                        }
+                    }
 
                     Spacer(modifier = Modifier.height(24.dp))
 
                     // =========================================================
-                    // SECTION 4: LEGAL & PRIVACY
+                    // SECTION 4: LEGAL & PRIVACY (Grouped Card)
                     // =========================================================
                     SectionHeader(
                         title = "LEGAL & PRIVACY",
@@ -313,39 +333,49 @@ fun SettingsScreen(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    SettingsLinkCard(
-                        title = "Privacy Policy",
-                        subtitle = "How we protect your data",
-                        icon = Icons.Default.Lock,
-                        iconBg = Color(0xFFF3F4F6),
-                        iconTint = Color(0xFF6B7280),
-                        onClick = { openUrl("https://arrowescape.com/privacy") },
-                        cardBg = cardBg,
-                        cardBorder = cardBorder,
-                        activeTheme = activeTheme
-                    )
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = cardBg,
+                        border = BorderStroke(1.dp, cardBorder),
+                        shadowElevation = 1.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            SettingsLinkRow(
+                                title = "Privacy Policy",
+                                subtitle = "How we protect your data",
+                                icon = Icons.Default.Lock,
+                                iconBg = activeTheme.gridLine.copy(alpha = 0.4f),
+                                iconTint = activeTheme.textSecondary,
+                                onClick = { openUrl("https://arrowescape.com/privacy") },
+                                activeTheme = activeTheme
+                            )
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                            androidx.compose.material3.HorizontalDivider(
+                                color = cardBorder.copy(alpha = 0.6f),
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
 
-                    SettingsLinkCard(
-                        title = "Terms of Service",
-                        subtitle = "Terms and conditions of use",
-                        icon = Icons.Default.Policy,
-                        iconBg = Color(0xFFF3F4F6),
-                        iconTint = Color(0xFF6B7280),
-                        onClick = { openUrl("https://arrowescape.com/terms") },
-                        cardBg = cardBg,
-                        cardBorder = cardBorder,
-                        activeTheme = activeTheme
-                    )
+                            SettingsLinkRow(
+                                title = "Terms of Service",
+                                subtitle = "Terms and conditions of use",
+                                icon = Icons.Default.Policy,
+                                iconBg = activeTheme.gridLine.copy(alpha = 0.4f),
+                                iconTint = activeTheme.textSecondary,
+                                onClick = { openUrl("https://arrowescape.com/terms") },
+                                activeTheme = activeTheme
+                            )
+                        }
+                    }
 
                     Spacer(modifier = Modifier.height(30.dp))
 
                     // =========================================================
-                    // SECTION 5: DYNAMIC VERSION FOOTER (NO "Build 1")
+                    // SECTION 5: BRANDING & VERSION FOOTER
                     // =========================================================
                     Text(
-                        text = "Arrow Escape • Version $versionName",
+                        text = "Arrow Decode • Version $versionName",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium,
                         color = activeTheme.textSecondary.copy(alpha = 0.7f),
@@ -463,143 +493,121 @@ private fun ThemeCard(
 }
 
 @Composable
-private fun SettingsToggleCard(
+private fun SettingsToggleRow(
     title: String,
     icon: ImageVector,
     iconBg: Color,
     iconTint: Color,
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    cardBg: Color,
-    cardBorder: Color,
     activeTheme: ThemePreset
 ) {
-    Surface(
-        shape = RoundedCornerShape(18.dp),
-        color = cardBg,
-        border = BorderStroke(1.dp, cardBorder),
-        shadowElevation = 1.dp,
-        modifier = Modifier.fillMaxWidth()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(42.dp)
+                    .clip(CircleShape)
+                    .background(iconBg)
             ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                        .background(iconBg)
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = title,
-                        tint = iconTint,
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
-
-                Text(
-                    text = title,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = activeTheme.textPrimary
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = iconTint,
+                    modifier = Modifier.size(22.dp)
                 )
             }
 
-            Switch(
-                checked = isChecked,
-                onCheckedChange = onCheckedChange,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color.White,
-                    checkedTrackColor = activeTheme.arrowDefault,
-                    uncheckedThumbColor = Color(0xFF94A3B8),
-                    uncheckedTrackColor = if (activeTheme.isDark) Color(0xFF475569) else Color(0xFFE2E8F0),
-                    uncheckedBorderColor = Color.Transparent
-                )
+            Text(
+                text = title,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = activeTheme.textPrimary
             )
         }
+
+        Switch(
+            checked = isChecked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = activeTheme.arrowDefault,
+                uncheckedThumbColor = Color(0xFF94A3B8),
+                uncheckedTrackColor = if (activeTheme.isDark) Color(0xFF475569) else Color(0xFFE2E8F0),
+                uncheckedBorderColor = Color.Transparent
+            )
+        )
     }
 }
 
 @Composable
-private fun SettingsLinkCard(
+private fun SettingsLinkRow(
     title: String,
     subtitle: String,
     icon: ImageVector,
     iconBg: Color,
     iconTint: Color,
     onClick: () -> Unit,
-    cardBg: Color,
-    cardBorder: Color,
     activeTheme: ThemePreset
 ) {
-    Surface(
-        shape = RoundedCornerShape(18.dp),
-        color = cardBg,
-        border = BorderStroke(1.dp, cardBorder),
-        shadowElevation = 1.dp,
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
             .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 13.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 13.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            modifier = Modifier.weight(1f)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp),
-                modifier = Modifier.weight(1f)
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(42.dp)
+                    .clip(CircleShape)
+                    .background(iconBg)
             ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                        .background(iconBg)
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = title,
-                        tint = iconTint,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-
-                Column {
-                    Text(
-                        text = title,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = activeTheme.textPrimary
-                    )
-                    Text(
-                        text = subtitle,
-                        fontSize = 12.sp,
-                        color = activeTheme.textSecondary
-                    )
-                }
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = iconTint,
+                    modifier = Modifier.size(20.dp)
+                )
             }
 
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                contentDescription = null,
-                tint = activeTheme.textSecondary.copy(alpha = 0.5f),
-                modifier = Modifier.size(14.dp)
-            )
+            Column {
+                Text(
+                    text = title,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = activeTheme.textPrimary
+                )
+                Text(
+                    text = subtitle,
+                    fontSize = 12.sp,
+                    color = activeTheme.textSecondary
+                )
+            }
         }
+
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+            contentDescription = null,
+            tint = activeTheme.textSecondary.copy(alpha = 0.5f),
+            modifier = Modifier.size(14.dp)
+        )
     }
 }

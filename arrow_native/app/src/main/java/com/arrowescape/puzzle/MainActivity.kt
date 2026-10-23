@@ -188,6 +188,9 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onPlayClickSound = {
                                         gameViewModel.playClick()
+                                    },
+                                    onGameplayStarted = {
+                                        gameViewModel.onGameplayStarted()
                                     }
                                 )
                             }

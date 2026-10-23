@@ -51,6 +51,7 @@ data class GameUiState(
     val coins: Int = 100,
     val streakDays: Int = 1,
     val hintsAvailable: Int = 3,
+    val dailyComplimentaryHintsRemaining: Int = 1,
     val hammersAvailable: Int = 2,
     val wandsAvailable: Int = 2,
     val isDailyChallengeMode: Boolean = false,
@@ -82,7 +83,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private var occupancyMap = GridOccupancyMap(4, 4)
     private var cheerDismissJob: Job? = null
-    private var levelStartTime: Long = System.currentTimeMillis()
+    private var levelStartTime: Long = 0L
+    private var hasGameplayStarted: Boolean = false
     private var levelMovesAttempted: Int = 0
     private var levelMistakesCount: Int = 0
 
@@ -120,8 +122,16 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun loadLevel(levelNumber: Int) {
+    fun onGameplayStarted() {
         levelStartTime = System.currentTimeMillis()
+        hasGameplayStarted = true
+        levelMovesAttempted = 0
+        levelMistakesCount = 0
+    }
+
+    fun loadLevel(levelNumber: Int) {
+        levelStartTime = 0L
+        hasGameplayStarted = false
         levelMovesAttempted = 0
         levelMistakesCount = 0
         val level = LevelLoader.loadLevel(app, levelNumber)
@@ -145,6 +155,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 isDailyChallengeMode = false,
                 activeDailyDate = null,
                 activeDailyIndex = 1,
+                dailyComplimentaryHintsRemaining = 1,
                 showHintAdPrompt = false,
                 restartTrigger = System.currentTimeMillis()
             )
@@ -152,7 +163,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun startDailyChallenge(dateString: String = LocalDate.now().toString()) {
-        levelStartTime = System.currentTimeMillis()
+        levelStartTime = 0L
+        hasGameplayStarted = false
         levelMovesAttempted = 0
         levelMistakesCount = 0
         val date = try {
@@ -182,6 +194,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 isDailyChallengeMode = true,
                 activeDailyDate = date.toString(),
                 activeDailyIndex = dailyIndex,
+                dailyComplimentaryHintsRemaining = 1,
                 restartTrigger = System.currentTimeMillis()
             )
         }
@@ -191,6 +204,11 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         if (_uiState.value.isLevelComplete || _uiState.value.isGameOver) return
         val currentArrow = _uiState.value.arrows.firstOrNull { it.id == clickedArrow.id } ?: clickedArrow
         if (currentArrow.state == ArrowState.CLEARED || currentArrow.state == ArrowState.FLYING_OUT) return
+
+        if (!hasGameplayStarted || levelStartTime == 0L) {
+            levelStartTime = System.currentTimeMillis()
+            hasGameplayStarted = true
+        }
 
         markHasPlayedBefore()
 
@@ -406,19 +424,31 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         dismissAllPreviewRays()
     }
 
-    val isFreeHintLevel: Boolean get() = (_uiState.value.currentLevelNumber <= 10 || _uiState.value.isDailyChallengeMode)
+    val isFreeHintLevel: Boolean get() = (_uiState.value.currentLevelNumber <= 10 && !_uiState.value.isDailyChallengeMode)
 
     fun useHint() {
         viewModelScope.launch(Dispatchers.Default) {
             val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap) ?: return@launch
             if (isFreeHintLevel) {
-                // Unlimited free hints for starting levels (1-10) and Daily Challenge puzzles
+                // Unlimited free hints for starting levels (1-10) in campaign mode
                 audioHapticManager.playBoosterUse("hint")
                 _uiState.update { state ->
                     val updated = state.arrows.map {
                         if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
                     }
                     state.copy(arrows = updated)
+                }
+            } else if (_uiState.value.isDailyChallengeMode && _uiState.value.dailyComplimentaryHintsRemaining > 0) {
+                // 1 complimentary daily hint lifeline per daily challenge puzzle
+                audioHapticManager.playBoosterUse("hint")
+                _uiState.update { state ->
+                    val updated = state.arrows.map {
+                        if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
+                    }
+                    state.copy(
+                        arrows = updated,
+                        dailyComplimentaryHintsRemaining = state.dailyComplimentaryHintsRemaining - 1
+                    )
                 }
             } else {
                 if (_uiState.value.hintsAvailable > 0) {
@@ -432,7 +462,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         }
                     }
                 } else {
-                    // Out of hints on Level 11+ -> prompt rewarded ad dialog
+                    // Out of hints on Level 11+ or daily -> prompt rewarded ad dialog
                     _uiState.update { it.copy(showHintAdPrompt = true) }
                 }
             }
@@ -624,7 +654,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private suspend fun triggerLevelVictory(finalArrows: List<Arrow>) {
         val completedLvl = _uiState.value.currentLevelNumber
-        val elapsedSec = ((System.currentTimeMillis() - levelStartTime) / 1000L).toInt().coerceAtLeast(1)
+        val now = System.currentTimeMillis()
+        val actualStartTime = if (levelStartTime > 0L) levelStartTime else now - 4000L
+        val elapsedSec = ((now - actualStartTime) / 1000L).toInt().coerceAtLeast(1)
         val totalMoves = levelMovesAttempted.coerceAtLeast(1)
         val mistakes = levelMistakesCount
         val accuracy = (((totalMoves - mistakes).toFloat() / totalMoves.toFloat()) * 100).toInt().coerceIn(10, 100)
@@ -635,10 +667,16 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             _uiState.value.heartsRemaining >= _uiState.value.maxHearts - 1 -> 2
             else -> 1
         }
-        val timeBonus = ((240 - elapsedSec).coerceAtLeast(0) * 4)
+
+        // Scale-proportional score rewarding board size, pace, health, and streak
+        val totalArrows = finalArrows.size
+        val arrowPoints = totalArrows * 40
+        val targetPaceSeconds = maxOf(45, totalArrows * 4)
+        val timeBonus = ((targetPaceSeconds - elapsedSec).coerceAtLeast(0) * 5)
         val healthBonus = _uiState.value.heartsRemaining * 120
-        val stageBonus = completedLvl * 60
-        val finalScore = 1000 + stageBonus + timeBonus + healthBonus
+        val streakBonus = _uiState.value.streakDays * 50
+        val completionBonus = if (_uiState.value.isDailyChallengeMode) 1500 else (500 + completedLvl * 25)
+        val finalScore = completionBonus + arrowPoints + timeBonus + healthBonus + streakBonus
 
         _uiState.update { state ->
             state.copy(
