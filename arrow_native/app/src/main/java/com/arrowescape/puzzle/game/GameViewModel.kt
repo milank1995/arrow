@@ -71,6 +71,7 @@ data class GameUiState(
     val levelStarsEarned: Int = 3,
     val hasSeenDailyUnlockCelebration: Boolean = false,
     val dailyRemindersEnabled: Boolean = true,
+    val hasRequestedNotificationPermission: Boolean = false,
     val showDailyLaunchPrompt: Boolean = false,
     val restartTrigger: Long = 0L
 ) {
@@ -123,6 +124,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         activeTheme = theme,
                         hasSeenDailyUnlockCelebration = data.hasSeenDailyUnlockCelebration,
                         dailyRemindersEnabled = data.dailyRemindersEnabled,
+                        hasRequestedNotificationPermission = data.hasRequestedNotificationPermission,
                         showDailyLaunchPrompt = shouldShowDailyPrompt
                     )
                 }
@@ -132,6 +134,13 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     loadLevel(data.currentLevel)
                 }
             }
+        }
+    }
+
+    fun markNotificationPermissionRequested() {
+        viewModelScope.launch {
+            repository.markNotificationPermissionRequested()
+            _uiState.update { it.copy(hasRequestedNotificationPermission = true) }
         }
     }
 

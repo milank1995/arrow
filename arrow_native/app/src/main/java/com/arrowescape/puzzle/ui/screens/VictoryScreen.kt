@@ -103,6 +103,7 @@ fun VictoryScreen(
     starsEarned: Int = 3,
     isDailyUnlockMilestone: Boolean = false,
     onStartDailyChallengeClick: () -> Unit = {},
+    onRequestNotificationPermission: () -> Unit = {},
     onClaimDoubleCoins: (Int) -> Unit = {},
     onNextLevelClick: () -> Unit,
     onHomeClick: () -> Unit,
@@ -167,13 +168,19 @@ fun VictoryScreen(
             flameAlpha.animateTo(0f, tween(120))
 
             dockPulseScale.snapTo(0.82f)
-            dockPulseScale.animateTo(
-                targetValue = 1.0f,
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessMedium
+            launch {
+                dockPulseScale.animateTo(
+                    targetValue = 1.0f,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessMedium
+                    )
                 )
-            )
+            }
+
+            // Automatically prompt the native Android notification permission dialog at celebration moment
+            delay(150)
+            onRequestNotificationPermission()
         }
     }
 
@@ -328,21 +335,18 @@ fun VictoryScreen(
                 verticalArrangement = if (requiresScroll) Arrangement.Top else Arrangement.SpaceBetween,
                 modifier = contentModifier
             ) {
-                // 1. TOP BAR: Home Navigation Button / Docked Streak & Level Pill
-                Row(
+                // 1. TOP BAR: Home Navigation Button / Docked Streak & 100% Centered Level Badge
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .widthIn(max = 420.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .widthIn(max = 420.dp)
+                        .height(44.dp)
                 ) {
-                    if (isDailyUnlockMilestone) {
-                        Box(
-                            modifier = Modifier
-                                .widthIn(min = 120.dp)
-                                .height(42.dp),
-                            contentAlignment = Alignment.CenterStart
-                        ) {
+                    // Left Slot: Home Button or Docked Streak Chip
+                    Box(
+                        modifier = Modifier.align(Alignment.CenterStart)
+                    ) {
+                        if (isDailyUnlockMilestone) {
                             if (isStreakDocked) {
                                 StreakChip(
                                     streakDays = streakDays,
@@ -350,39 +354,39 @@ fun VictoryScreen(
                                     modifier = Modifier.scale(dockPulseScale.value)
                                 )
                             }
-                        }
-                    } else {
-                        Surface(
-                            shape = CircleShape,
-                            color = theme.surface,
-                            border = androidx.compose.foundation.BorderStroke(1.2.dp, theme.gridLine),
-                            shadowElevation = 2.dp,
-                            modifier = Modifier.size(42.dp)
-                        ) {
-                            IconButton(
-                                onClick = {
-                                    onPlayClickSound()
-                                    onHomeClick()
-                                },
-                                modifier = Modifier.fillMaxSize()
+                        } else {
+                            Surface(
+                                shape = CircleShape,
+                                color = theme.surface,
+                                border = androidx.compose.foundation.BorderStroke(1.2.dp, theme.gridLine),
+                                shadowElevation = 2.dp,
+                                modifier = Modifier.size(42.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Home,
-                                    contentDescription = "Home",
-                                    tint = theme.textPrimary,
-                                    modifier = Modifier.size(22.dp)
-                                )
+                                IconButton(
+                                    onClick = {
+                                        onPlayClickSound()
+                                        onHomeClick()
+                                    },
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Home,
+                                        contentDescription = "Home",
+                                        tint = theme.textPrimary,
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                }
                             }
                         }
                     }
 
-                    // Level Badge
+                    // Level Badge (Guaranteed 100% Mathematically Centered across all devices)
                     Surface(
                         shape = RoundedCornerShape(percent = 50),
                         color = theme.surface,
                         border = androidx.compose.foundation.BorderStroke(1.2.dp, theme.gridLine),
                         shadowElevation = 2.dp,
-                        modifier = Modifier.padding(vertical = 4.dp)
+                        modifier = Modifier.align(Alignment.Center)
                     ) {
                         Text(
                             text = if (isDailyChallenge) "DAILY CHALLENGE" else "LEVEL $levelNumber",
@@ -394,9 +398,6 @@ fun VictoryScreen(
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp)
                         )
                     }
-
-                    // Spacer for visual symmetry
-                    Spacer(modifier = Modifier.size(if (isDailyUnlockMilestone) 120.dp else 42.dp))
                 }
 
                 if (!requiresScroll) {
@@ -722,84 +723,37 @@ private fun DailyChallengeUnlockHero(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
         modifier = modifier
             .fillMaxWidth()
             .widthIn(max = 380.dp)
             .offset(y = slideOffsetY.value.dp)
             .alpha(heroAlpha.value)
     ) {
-        // Milestone Card
+        // Sleek Minimalist Unlocked Badge Pill (Clean, unobtrusive milestone indicator)
         Surface(
-            shape = RoundedCornerShape(22.dp),
-            color = theme.surface,
-            border = androidx.compose.foundation.BorderStroke(
-                width = 1.8.dp,
-                color = Color(0xFFF59E0B).copy(alpha = pulseAlpha)
-            ),
-            shadowElevation = 8.dp,
-            modifier = Modifier.fillMaxWidth()
+            shape = RoundedCornerShape(percent = 50),
+            color = Color(0xFFF59E0B).copy(alpha = 0.12f),
+            border = androidx.compose.foundation.BorderStroke(1.2.dp, Color(0xFFF59E0B).copy(alpha = pulseAlpha)),
+            modifier = Modifier.padding(bottom = 2.dp)
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0xFFF59E0B).copy(alpha = 0.12f),
-                                theme.surface
-                            )
-                        )
-                    )
-                    .padding(horizontal = 20.dp, vertical = 18.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
             ) {
-                // Top Pill Badge
-                Surface(
-                    shape = RoundedCornerShape(percent = 50),
-                    color = Color(0xFFF59E0B).copy(alpha = 0.18f),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF59E0B).copy(alpha = 0.6f)),
-                    modifier = Modifier.padding(bottom = 12.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.EmojiEvents,
-                            contentDescription = null,
-                            tint = Color(0xFFD97706),
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "NEW FEATURE UNLOCKED",
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            letterSpacing = 1.4.sp,
-                            color = Color(0xFFD97706)
-                        )
-                    }
-                }
-
-                // Title
-                Text(
-                    text = "Daily Challenge Unlocked!",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = theme.textPrimary,
-                    textAlign = TextAlign.Center
+                Icon(
+                    imageVector = Icons.Default.EmojiEvents,
+                    contentDescription = null,
+                    tint = Color(0xFFD97706),
+                    modifier = Modifier.size(14.dp)
                 )
-
-                Spacer(modifier = Modifier.height(6.dp))
-
-                // Subtitle
+                Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "A fresh, handcrafted puzzle awaits you every day. Test your skills and build your daily streak!",
-                    fontSize = 13.sp,
-                    color = theme.textSecondary,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 18.sp
+                    text = "DAILY CHALLENGE UNLOCKED",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = 1.4.sp,
+                    color = Color(0xFFD97706)
                 )
             }
         }

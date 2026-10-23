@@ -33,7 +33,8 @@ data class UserGameData(
     val themeIndex: Int = 0,
     val globalLives: Int = 6,
     val hasSeenDailyUnlockCelebration: Boolean = false,
-    val dailyRemindersEnabled: Boolean = true
+    val dailyRemindersEnabled: Boolean = true,
+    val hasRequestedNotificationPermission: Boolean = false
 )
 
 class UserPreferencesRepository(private val context: Context) {
@@ -54,6 +55,7 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_GLOBAL_LIVES = intPreferencesKey("global_lives_bank")
     private val KEY_DAILY_UNLOCK_SEEN = booleanPreferencesKey("daily_unlock_celebration_seen")
     private val KEY_DAILY_REMINDERS_ENABLED = booleanPreferencesKey("daily_reminders_enabled")
+    private val KEY_NOTIFICATION_PERMISSION_REQUESTED = booleanPreferencesKey("has_requested_notification_permission")
 
     private val SYNC_PREFS = "arrow_sync_prefs"
     private val KEY_SYNC_HAS_PLAYED = "has_played_before"
@@ -107,7 +109,8 @@ class UserPreferencesRepository(private val context: Context) {
             themeIndex = prefs[KEY_THEME] ?: 0,
             globalLives = prefs[KEY_GLOBAL_LIVES] ?: 6,
             hasSeenDailyUnlockCelebration = prefs[KEY_DAILY_UNLOCK_SEEN] ?: false,
-            dailyRemindersEnabled = prefs[KEY_DAILY_REMINDERS_ENABLED] ?: true
+            dailyRemindersEnabled = prefs[KEY_DAILY_REMINDERS_ENABLED] ?: true,
+            hasRequestedNotificationPermission = prefs[KEY_NOTIFICATION_PERMISSION_REQUESTED] ?: false
         )
     }
 
@@ -243,6 +246,12 @@ class UserPreferencesRepository(private val context: Context) {
     suspend fun markDailyUnlockCelebrationSeen() {
         context.dataStore.edit { prefs ->
             prefs[KEY_DAILY_UNLOCK_SEEN] = true
+        }
+    }
+
+    suspend fun markNotificationPermissionRequested() {
+        context.dataStore.edit { prefs ->
+            prefs[KEY_NOTIFICATION_PERMISSION_REQUESTED] = true
         }
     }
 
