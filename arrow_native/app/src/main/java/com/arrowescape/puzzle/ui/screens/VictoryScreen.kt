@@ -35,6 +35,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.HorizontalDivider
@@ -95,6 +96,8 @@ fun VictoryScreen(
     score: Int = 0,
     accuracyPercent: Int = 100,
     starsEarned: Int = 3,
+    isDailyUnlockMilestone: Boolean = false,
+    onStartDailyChallengeClick: () -> Unit = {},
     onClaimDoubleCoins: (Int) -> Unit = {},
     onNextLevelClick: () -> Unit,
     onHomeClick: () -> Unit,
@@ -510,40 +513,186 @@ fun VictoryScreen(
                     Spacer(modifier = Modifier.height(20.dp))
                 }
 
-                // 3. ACTION BUTTONS: Modern Flat CTA Buttons
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .widthIn(max = 380.dp)
-                ) {
-                    // Primary Modern Flat CTA
-                    AppPrimaryButton(
-                        text = if (isDailyChallenge) "Continue" else "Next Level",
-                        onClick = {
+                // 3. ACTION BUTTONS: Level 5 Daily Challenge Unlock Experience vs Standard CTAs
+                if (isDailyUnlockMilestone) {
+                    DailyChallengeUnlockHero(
+                        theme = theme,
+                        onStartDailyChallengeClick = {
+                            onPlayClickSound()
+                            onStartDailyChallengeClick()
+                        },
+                        onNextLevelClick = {
                             onPlayClickSound()
                             onNextLevelClick()
-                        },
-                        theme = theme,
-                        modifier = Modifier.fillMaxWidth()
+                        }
                     )
-
-                    // Secondary Home Button (Shown only in Campaign Mode to eliminate redundant Daily Challenge duplicate)
-                    if (!isDailyChallenge) {
-                        AppSecondaryButton(
-                            text = "Home",
+                } else {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .widthIn(max = 380.dp)
+                    ) {
+                        // Primary Modern Flat CTA
+                        AppPrimaryButton(
+                            text = if (isDailyChallenge) "Continue" else "Next Level",
                             onClick = {
                                 onPlayClickSound()
-                                onHomeClick()
+                                onNextLevelClick()
                             },
                             theme = theme,
                             modifier = Modifier.fillMaxWidth()
                         )
+
+                        // Secondary Home Button (Shown only in Campaign Mode to eliminate redundant Daily Challenge duplicate)
+                        if (!isDailyChallenge) {
+                            AppSecondaryButton(
+                                text = "Home",
+                                onClick = {
+                                    onPlayClickSound()
+                                    onHomeClick()
+                                },
+                                theme = theme,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun DailyChallengeUnlockHero(
+    theme: ThemePreset,
+    onStartDailyChallengeClick: () -> Unit,
+    onNextLevelClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "dailyUnlockPulse")
+    val pulseAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.45f,
+        targetValue = 0.95f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulseAlpha"
+    )
+
+    val scaleAnim = remember { Animatable(0.85f) }
+
+    LaunchedEffect(Unit) {
+        delay(350)
+        scaleAnim.animateTo(
+            targetValue = 1f,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessLow
+            )
+        )
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .widthIn(max = 380.dp)
+            .scale(scaleAnim.value)
+    ) {
+        // Milestone Card
+        Surface(
+            shape = RoundedCornerShape(22.dp),
+            color = theme.surface,
+            border = androidx.compose.foundation.BorderStroke(
+                width = 1.8.dp,
+                color = Color(0xFFF59E0B).copy(alpha = pulseAlpha)
+            ),
+            shadowElevation = 8.dp,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0xFFF59E0B).copy(alpha = 0.12f),
+                                theme.surface
+                            )
+                        )
+                    )
+                    .padding(horizontal = 20.dp, vertical = 18.dp)
+            ) {
+                // Top Pill Badge
+                Surface(
+                    shape = RoundedCornerShape(percent = 50),
+                    color = Color(0xFFF59E0B).copy(alpha = 0.18f),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF59E0B).copy(alpha = 0.6f)),
+                    modifier = Modifier.padding(bottom = 12.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.EmojiEvents,
+                            contentDescription = null,
+                            tint = Color(0xFFD97706),
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "NEW FEATURE UNLOCKED",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = 1.4.sp,
+                            color = Color(0xFFD97706)
+                        )
+                    }
+                }
+
+                // Title
+                Text(
+                    text = "Daily Challenge Unlocked!",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = theme.textPrimary,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                // Subtitle
+                Text(
+                    text = "A fresh, handcrafted puzzle awaits you every day. Test your skills and build your daily streak!",
+                    fontSize = 13.sp,
+                    color = theme.textSecondary,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 18.sp
+                )
+            }
+        }
+
+        // Primary Button: "Start Daily Challenge"
+        AppPrimaryButton(
+            text = "Start Daily Challenge",
+            onClick = onStartDailyChallengeClick,
+            theme = theme,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        // Secondary Button: "Next Level"
+        AppSecondaryButton(
+            text = "Next Level",
+            onClick = onNextLevelClick,
+            theme = theme,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 

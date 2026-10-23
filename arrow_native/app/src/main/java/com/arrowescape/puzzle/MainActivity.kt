@@ -1,11 +1,16 @@
 package com.arrowescape.puzzle
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,14 +24,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat
 import com.arrowescape.puzzle.game.GameViewModel
-import com.arrowescape.puzzle.ui.components.DailyUnlockDialog
+import com.arrowescape.puzzle.ui.components.DailyStartPromptDialog
 import com.arrowescape.puzzle.ui.components.SoundSettingsDialog
 import com.arrowescape.puzzle.ui.screens.DailyChallengeScreen
 import com.arrowescape.puzzle.ui.screens.DevTestScreen
 import com.arrowescape.puzzle.ui.screens.GamePlayScreen
 import com.arrowescape.puzzle.ui.screens.HomeScreen
 import com.arrowescape.puzzle.ui.screens.SettingsScreen
+import java.time.LocalDate
 
 enum class AppScreen {
     HOME,
@@ -63,6 +70,12 @@ class MainActivity : ComponentActivity() {
             var currentScreen by remember { mutableStateOf(initialScreen) }
             var showSoundSettingsDialog by remember { mutableStateOf(false) }
 
+            val notificationPermissionLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission()
+            ) { isGranted ->
+                gameViewModel.onNotificationPermissionResult(isGranted)
+            }
+
             LaunchedEffect(intent) {
                 if (intent.getStringExtra("EXTRA_NAVIGATE_TO") == "daily_challenge") {
                     currentScreen = AppScreen.DAILY_CHALLENGE
@@ -87,13 +100,18 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onDailyChallengeClick = {
                                         gameViewModel.playClick()
-                                        if (uiState.currentLevelNumber >= 5) {
+                                        val isUnlocked = uiState.currentLevelNumber > 5 || 
+                                            uiState.lastCompletedLevelNumber >= 5 || 
+                                            uiState.hasSeenDailyUnlockCelebration
+
+                                        if (isUnlocked) {
                                             currentScreen = AppScreen.DAILY_CHALLENGE
                                         } else {
-                                            val needed = 5 - uiState.currentLevelNumber
+                                            val completed = uiState.lastCompletedLevelNumber.coerceAtLeast(uiState.currentLevelNumber - 1)
+                                            val needed = (5 - completed).coerceAtLeast(1)
                                             Toast.makeText(
                                                 this@MainActivity,
-                                                "Complete $needed more level${if (needed > 1) "s" else ""} to unlock Daily Challenges!",
+                                                "Complete Level 5 to unlock Daily Challenges! ($needed level${if (needed > 1) "s" else ""} left)",
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
@@ -150,11 +168,34 @@ class MainActivity : ComponentActivity() {
                                     onNextLevelClick = {
                                         gameViewModel.playClick()
                                         gameViewModel.markHasPlayedBefore()
+                                        if (uiState.currentLevelNumber == 5 && !uiState.hasSeenDailyUnlockCelebration) {
+                                            gameViewModel.markDailyUnlockCelebrationSeen()
+                                        }
                                         val wasDaily = uiState.isDailyChallengeMode
                                         gameViewModel.nextLevel()
                                         if (wasDaily) {
                                             currentScreen = AppScreen.DAILY_CHALLENGE
                                         }
+                                    },
+                                    onStartDailyChallengeClick = {
+                                        gameViewModel.playClick()
+                                        gameViewModel.markDailyUnlockCelebrationSeen()
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                            val hasPermission = ContextCompat.checkSelfPermission(
+                                                this@MainActivity,
+                                                Manifest.permission.POST_NOTIFICATIONS
+                                            ) == PackageManager.PERMISSION_GRANTED
+                                            if (!hasPermission) {
+                                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                            } else {
+                                                gameViewModel.setDailyRemindersEnabled(true)
+                                            }
+                                        } else {
+                                            gameViewModel.setDailyRemindersEnabled(true)
+                                        }
+                                        val today = LocalDate.now().toString()
+                                        gameViewModel.startDailyChallenge(today)
+                                        currentScreen = AppScreen.GAMEPLAY
                                     },
                                     onClaimDoubleCoins = { amount ->
                                         gameViewModel.claimDoubleCoins(amount)
@@ -268,18 +309,21 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    // Celebratory Milestone Modal Dialog when Daily Challenge unlocks at Level 5
-                    if (uiState.showDailyUnlockDialog && currentScreen == AppScreen.HOME) {
-                        DailyUnlockDialog(
+                    // Game Start Daily Challenge Prompt Modal on Home screen
+                    if (uiState.showDailyLaunchPrompt && currentScreen == AppScreen.HOME) {
+                        DailyStartPromptDialog(
+                            streakDays = uiState.streakDays,
                             theme = uiState.activeTheme,
-                            onPlayTodayClick = { optInReminders ->
+                            onPlayTodayClick = {
                                 gameViewModel.playClick()
-                                gameViewModel.dismissDailyUnlockDialog(optInReminders)
-                                currentScreen = AppScreen.DAILY_CHALLENGE
+                                gameViewModel.dismissDailyLaunchPrompt()
+                                val today = LocalDate.now().toString()
+                                gameViewModel.startDailyChallenge(today)
+                                currentScreen = AppScreen.GAMEPLAY
                             },
-                            onDismiss = { optInReminders ->
+                            onDismiss = {
                                 gameViewModel.playClick()
-                                gameViewModel.dismissDailyUnlockDialog(optInReminders)
+                                gameViewModel.dismissDailyLaunchPrompt()
                             }
                         )
                     }

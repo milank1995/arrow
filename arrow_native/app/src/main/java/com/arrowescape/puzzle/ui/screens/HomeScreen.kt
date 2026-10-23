@@ -297,7 +297,7 @@ fun HomeScreen(
                     .padding(bottom = 24.dp)
             ) {
                 // Daily Challenge Card: Standardized 16dp corner radius & 54dp height matching design system
-                val isUnlocked = uiState.currentLevelNumber >= 5
+                val isUnlocked = uiState.currentLevelNumber > 5 || uiState.lastCompletedLevelNumber >= 5 || uiState.hasSeenDailyUnlockCelebration
                 val todayStr = remember { LocalDate.now().toString() }
                 val isCompletedToday = uiState.completedDailyDates.contains(todayStr)
 
@@ -393,7 +393,7 @@ fun HomeScreen(
                             } else {
                                 Text(
                                     text = when {
-                                        !isUnlocked -> "Unlocks at Level 5"
+                                        !isUnlocked -> "Unlocks after Level 5"
                                         isCompletedToday -> "✓ Completed Today"
                                         else -> "Special Daily Puzzle"
                                     },

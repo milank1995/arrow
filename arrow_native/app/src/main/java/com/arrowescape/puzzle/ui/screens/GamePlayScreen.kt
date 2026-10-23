@@ -62,6 +62,7 @@ fun GamePlayScreen(
     onGridClick: () -> Unit,
     onThemeSelect: (ThemePreset) -> Unit,
     onNextLevelClick: () -> Unit,
+    onStartDailyChallengeClick: () -> Unit = {},
     onRestartClick: () -> Unit,
     onBackToHomeClick: () -> Unit,
     onClaimFreeLives: () -> Unit = {},
@@ -146,6 +147,10 @@ fun GamePlayScreen(
 
     if (uiState.isLevelComplete) {
         val baseCoins = if (uiState.isDailyChallengeMode) 100 else 50 + (uiState.comboCount * 5)
+        val isDailyUnlockMilestone = uiState.currentLevelNumber == 5 && 
+            !uiState.isDailyChallengeMode && 
+            !uiState.hasSeenDailyUnlockCelebration
+
         VictoryScreen(
             levelNumber = uiState.currentLevelNumber,
             coinsEarned = baseCoins,
@@ -160,6 +165,8 @@ fun GamePlayScreen(
             score = uiState.levelFinalScore,
             accuracyPercent = uiState.levelAccuracyPercent,
             starsEarned = uiState.levelStarsEarned,
+            isDailyUnlockMilestone = isDailyUnlockMilestone,
+            onStartDailyChallengeClick = onStartDailyChallengeClick,
             onClaimDoubleCoins = onClaimDoubleCoins,
             onNextLevelClick = onNextLevelClick,
             onHomeClick = onBackToHomeClick,

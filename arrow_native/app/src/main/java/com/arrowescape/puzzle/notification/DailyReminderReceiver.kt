@@ -25,14 +25,14 @@ class DailyReminderReceiver : BroadcastReceiver() {
 
         // Check conditions:
         // 1. Reminders enabled in settings
-        // 2. Player has reached Level 5 or higher
+        // 2. Player has completed Level 5 (currentLevel > 5)
         // 3. Today's puzzle has NOT already been completed
         val remindersEnabled = repository.isDailyRemindersEnabledSynchronous()
         val currentLevel = repository.getCurrentLevelSynchronous()
         val todayStr = LocalDate.now().toString()
         val alreadyCompletedToday = repository.isDailyCompletedTodaySynchronous(todayStr)
 
-        if (remindersEnabled && currentLevel >= 5 && !alreadyCompletedToday) {
+        if (remindersEnabled && currentLevel > 5 && !alreadyCompletedToday) {
             val streak = repository.getStreakDaysSynchronous()
             NotificationHelper.postDailyChallengeNotification(context, streak)
         }
