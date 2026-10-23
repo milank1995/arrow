@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.game.GameUiState
 import com.arrowescape.puzzle.ui.components.AppPrimaryButton
 import com.arrowescape.puzzle.ui.components.SculptedStar3D
+import com.arrowescape.puzzle.ui.components.StreakChip
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 
 /**
@@ -132,27 +133,10 @@ fun HomeScreen(
                     .padding(top = 10.dp)
             ) {
                 // Streak Pill Indicator
-                Surface(
-                    shape = RoundedCornerShape(percent = 50),
-                    color = theme.surface,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
-                    shadowElevation = 1.dp,
-                    modifier = Modifier.height(40.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        modifier = Modifier.padding(horizontal = 14.dp)
-                    ) {
-                        Text(text = "🔥", fontSize = 15.sp)
-                        Text(
-                            text = "${uiState.streakDays} Day Streak",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (theme.isDark) Color(0xFFFDE047) else Color(0xFFD97706)
-                        )
-                    }
-                }
+                StreakChip(
+                    streakDays = uiState.streakDays,
+                    theme = theme
+                )
 
                 // Settings Gear Button
                 Surface(

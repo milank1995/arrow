@@ -70,10 +70,45 @@ class MainActivity : ComponentActivity() {
             var currentScreen by remember { mutableStateOf(initialScreen) }
             var showSoundSettingsDialog by remember { mutableStateOf(false) }
 
+            var pendingStartDailyChallenge by remember { mutableStateOf(false) }
+            var pendingNavigateScreen by remember { mutableStateOf<AppScreen?>(null) }
+
             val notificationPermissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestPermission()
             ) { isGranted ->
                 gameViewModel.onNotificationPermissionResult(isGranted)
+                if (pendingStartDailyChallenge) {
+                    pendingStartDailyChallenge = false
+                    val today = LocalDate.now().toString()
+                    gameViewModel.startDailyChallenge(today)
+                    currentScreen = AppScreen.GAMEPLAY
+                } else if (pendingNavigateScreen != null) {
+                    currentScreen = pendingNavigateScreen!!
+                    pendingNavigateScreen = null
+                }
+            }
+
+            fun launchDailyChallengeWithPermissionCheck() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val hasPermission = ContextCompat.checkSelfPermission(
+                        this@MainActivity,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
+                    if (!hasPermission) {
+                        pendingStartDailyChallenge = true
+                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        gameViewModel.setDailyRemindersEnabled(true)
+                        val today = LocalDate.now().toString()
+                        gameViewModel.startDailyChallenge(today)
+                        currentScreen = AppScreen.GAMEPLAY
+                    }
+                } else {
+                    gameViewModel.setDailyRemindersEnabled(true)
+                    val today = LocalDate.now().toString()
+                    gameViewModel.startDailyChallenge(today)
+                    currentScreen = AppScreen.GAMEPLAY
+                }
             }
 
             LaunchedEffect(intent) {
@@ -105,7 +140,20 @@ class MainActivity : ComponentActivity() {
                                             uiState.hasSeenDailyUnlockCelebration
 
                                         if (isUnlocked) {
-                                            currentScreen = AppScreen.DAILY_CHALLENGE
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                                val hasPermission = ContextCompat.checkSelfPermission(
+                                                    this@MainActivity,
+                                                    Manifest.permission.POST_NOTIFICATIONS
+                                                ) == PackageManager.PERMISSION_GRANTED
+                                                if (!hasPermission) {
+                                                    pendingNavigateScreen = AppScreen.DAILY_CHALLENGE
+                                                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                                } else {
+                                                    currentScreen = AppScreen.DAILY_CHALLENGE
+                                                }
+                                            } else {
+                                                currentScreen = AppScreen.DAILY_CHALLENGE
+                                            }
                                         } else {
                                             val completed = uiState.lastCompletedLevelNumber.coerceAtLeast(uiState.currentLevelNumber - 1)
                                             val needed = (5 - completed).coerceAtLeast(1)
@@ -180,22 +228,7 @@ class MainActivity : ComponentActivity() {
                                     onStartDailyChallengeClick = {
                                         gameViewModel.playClick()
                                         gameViewModel.markDailyUnlockCelebrationSeen()
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                            val hasPermission = ContextCompat.checkSelfPermission(
-                                                this@MainActivity,
-                                                Manifest.permission.POST_NOTIFICATIONS
-                                            ) == PackageManager.PERMISSION_GRANTED
-                                            if (!hasPermission) {
-                                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                                            } else {
-                                                gameViewModel.setDailyRemindersEnabled(true)
-                                            }
-                                        } else {
-                                            gameViewModel.setDailyRemindersEnabled(true)
-                                        }
-                                        val today = LocalDate.now().toString()
-                                        gameViewModel.startDailyChallenge(today)
-                                        currentScreen = AppScreen.GAMEPLAY
+                                        launchDailyChallengeWithPermissionCheck()
                                     },
                                     onClaimDoubleCoins = { amount ->
                                         gameViewModel.claimDoubleCoins(amount)
@@ -278,7 +311,26 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.toggleVibration()
                                     },
                                     onToggleDailyReminders = {
-                                        gameViewModel.toggleDailyReminders()
+                                        gameViewModel.playClick()
+                                        val isCurrentlyEnabled = uiState.dailyRemindersEnabled
+                                        if (!isCurrentlyEnabled) {
+                                            // User wants to turn ON reminders: check OS permission
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                                val hasPermission = ContextCompat.checkSelfPermission(
+                                                    this@MainActivity,
+                                                    Manifest.permission.POST_NOTIFICATIONS
+                                                ) == PackageManager.PERMISSION_GRANTED
+                                                if (!hasPermission) {
+                                                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                                } else {
+                                                    gameViewModel.toggleDailyReminders()
+                                                }
+                                            } else {
+                                                gameViewModel.toggleDailyReminders()
+                                            }
+                                        } else {
+                                            gameViewModel.toggleDailyReminders()
+                                        }
                                     },
                                     onThemeSelect = { selectedTheme ->
                                         gameViewModel.playClick()
@@ -317,9 +369,7 @@ class MainActivity : ComponentActivity() {
                             onPlayTodayClick = {
                                 gameViewModel.playClick()
                                 gameViewModel.dismissDailyLaunchPrompt()
-                                val today = LocalDate.now().toString()
-                                gameViewModel.startDailyChallenge(today)
-                                currentScreen = AppScreen.GAMEPLAY
+                                launchDailyChallengeWithPermissionCheck()
                             },
                             onDismiss = {
                                 gameViewModel.playClick()

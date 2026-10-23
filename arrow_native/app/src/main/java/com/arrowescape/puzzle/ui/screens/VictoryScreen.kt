@@ -46,9 +46,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
@@ -61,11 +64,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.ui.components.AppPrimaryButton
 import com.arrowescape.puzzle.ui.components.AppSecondaryButton
 import com.arrowescape.puzzle.ui.components.ConfettiBurstEffect
 import com.arrowescape.puzzle.ui.components.SculptedStar3D
+import com.arrowescape.puzzle.ui.components.StreakChip
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -123,6 +128,54 @@ fun VictoryScreen(
     val star2Scale = remember { Animatable(0f) }
     val star3Scale = remember { Animatable(0f) }
     val sunburstAlpha = remember { Animatable(0f) }
+
+    // Fire Flight Animation States for Level 5 Daily Challenge Unlock Celebration
+    val flameScale = remember { Animatable(0f) }
+    val flameAlpha = remember { Animatable(0f) }
+    val flightProgress = remember { Animatable(0f) }
+    var isStreakDocked by remember { mutableStateOf(!isDailyUnlockMilestone) }
+    val dockPulseScale = remember { Animatable(1f) }
+
+    if (isDailyUnlockMilestone) {
+        LaunchedEffect(Unit) {
+            // 1. Wait for stars to land and celebrate (~750ms)
+            delay(750)
+
+            // 2. Central Flame Pop: Scales up and glows in the center
+            launch {
+                flameAlpha.animateTo(1f, tween(240))
+            }
+            flameScale.animateTo(
+                targetValue = 1.35f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            )
+            flameScale.animateTo(1.0f, tween(180))
+
+            delay(350) // Let the player see the flame in center
+
+            // 3. Flight: Smoothly glide from center to top-left corner
+            flightProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(650, easing = FastOutSlowInEasing)
+            )
+
+            // 4. Docking: Lands in top-left, fades traveling flame, blooms streak chip
+            isStreakDocked = true
+            flameAlpha.animateTo(0f, tween(120))
+
+            dockPulseScale.snapTo(0.82f)
+            dockPulseScale.animateTo(
+                targetValue = 1.0f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessMedium
+                )
+            )
+        }
+    }
 
     val infiniteTransition = rememberInfiniteTransition(label = "victorySunburst")
     val sunburstRotation by infiniteTransition.animateFloat(
@@ -245,6 +298,18 @@ fun VictoryScreen(
             // Drifting Confetti Particles Layer
             ConfettiBurstEffect(modifier = Modifier.fillMaxSize(), particleCount = 26)
 
+            // Responsive calculation for Flame Flight Trajectory from Screen Center to Top-Left
+            val screenWidth = maxWidth
+            val screenHeight = maxHeight
+            val targetFlightX = -(screenWidth / 2f - 84.dp)
+            val targetFlightY = -(screenHeight / 2f - if (isCompact) 48.dp else 56.dp)
+
+            val currentProgress = flightProgress.value
+            val currentFlightX = targetFlightX * currentProgress
+            val currentFlightY = targetFlightY * currentProgress
+            val currentFlameSize = lerp(68.dp, 24.dp, currentProgress)
+            val auraAlpha = (1f - currentProgress).coerceIn(0f, 1f)
+
             // Content Container with responsive vertical constraints
             val scrollState = rememberScrollState()
             val contentModifier = if (requiresScroll) {
@@ -263,7 +328,7 @@ fun VictoryScreen(
                 verticalArrangement = if (requiresScroll) Arrangement.Top else Arrangement.SpaceBetween,
                 modifier = contentModifier
             ) {
-                // 1. TOP BAR: Home Navigation Button & Level Pill
+                // 1. TOP BAR: Home Navigation Button / Docked Streak & Level Pill
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -271,26 +336,43 @@ fun VictoryScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = theme.surface,
-                        border = androidx.compose.foundation.BorderStroke(1.2.dp, theme.gridLine),
-                        shadowElevation = 2.dp,
-                        modifier = Modifier.size(42.dp)
-                    ) {
-                        IconButton(
-                            onClick = {
-                                onPlayClickSound()
-                                onHomeClick()
-                            },
-                            modifier = Modifier.fillMaxSize()
+                    if (isDailyUnlockMilestone) {
+                        Box(
+                            modifier = Modifier
+                                .widthIn(min = 120.dp)
+                                .height(42.dp),
+                            contentAlignment = Alignment.CenterStart
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Home,
-                                contentDescription = "Home",
-                                tint = theme.textPrimary,
-                                modifier = Modifier.size(22.dp)
-                            )
+                            if (isStreakDocked) {
+                                StreakChip(
+                                    streakDays = streakDays,
+                                    theme = theme,
+                                    modifier = Modifier.scale(dockPulseScale.value)
+                                )
+                            }
+                        }
+                    } else {
+                        Surface(
+                            shape = CircleShape,
+                            color = theme.surface,
+                            border = androidx.compose.foundation.BorderStroke(1.2.dp, theme.gridLine),
+                            shadowElevation = 2.dp,
+                            modifier = Modifier.size(42.dp)
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    onPlayClickSound()
+                                    onHomeClick()
+                                },
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Home,
+                                    contentDescription = "Home",
+                                    tint = theme.textPrimary,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
                         }
                     }
 
@@ -314,7 +396,7 @@ fun VictoryScreen(
                     }
 
                     // Spacer for visual symmetry
-                    Spacer(modifier = Modifier.size(42.dp))
+                    Spacer(modifier = Modifier.size(if (isDailyUnlockMilestone) 120.dp else 42.dp))
                 }
 
                 if (!requiresScroll) {
@@ -560,6 +642,38 @@ fun VictoryScreen(
                     }
                 }
             }
+
+            // 4. Overlaid Animated Flying Flame for Level 5 Unlock Celebration
+            if (isDailyUnlockMilestone && flameAlpha.value > 0f) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .offset(x = currentFlightX, y = currentFlightY)
+                        .alpha(flameAlpha.value),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Ambient Radiant Flame Aura
+                    Box(
+                        modifier = Modifier
+                            .size(currentFlameSize * 2.3f)
+                            .clip(CircleShape)
+                            .background(
+                                Brush.radialGradient(
+                                    colors = listOf(
+                                        Color(0xFFF59E0B).copy(alpha = 0.55f * auraAlpha),
+                                        Color(0xFFF97316).copy(alpha = 0.22f * auraAlpha),
+                                        Color.Transparent
+                                    )
+                                )
+                            )
+                    )
+                    Text(
+                        text = "🔥",
+                        fontSize = (currentFlameSize.value * 0.74f).sp,
+                        modifier = Modifier.scale(flameScale.value)
+                    )
+                }
+            }
         }
     }
 }
@@ -582,17 +696,28 @@ private fun DailyChallengeUnlockHero(
         label = "pulseAlpha"
     )
 
-    val scaleAnim = remember { Animatable(0.85f) }
+    // Smooth Upward Slide-In Animation from Bottom
+    val slideOffsetY = remember { Animatable(180f) }
+    val heroAlpha = remember { Animatable(0f) }
 
     LaunchedEffect(Unit) {
-        delay(350)
-        scaleAnim.animateTo(
-            targetValue = 1f,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessLow
+        // Starts smoothly at 1050ms right as the flame is gliding to top-left
+        delay(1050)
+        launch {
+            slideOffsetY.animateTo(
+                targetValue = 0f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
             )
-        )
+        }
+        launch {
+            heroAlpha.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(420, easing = FastOutSlowInEasing)
+            )
+        }
     }
 
     Column(
@@ -601,7 +726,8 @@ private fun DailyChallengeUnlockHero(
         modifier = modifier
             .fillMaxWidth()
             .widthIn(max = 380.dp)
-            .scale(scaleAnim.value)
+            .offset(y = slideOffsetY.value.dp)
+            .alpha(heroAlpha.value)
     ) {
         // Milestone Card
         Surface(
