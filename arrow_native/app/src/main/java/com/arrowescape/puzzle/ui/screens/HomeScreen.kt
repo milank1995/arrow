@@ -89,6 +89,16 @@ fun HomeScreen(
         label = "playScale"
     )
 
+    val dailyReadyAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.35f,
+        targetValue = 0.90f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1100),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "dailyReadyAlpha"
+    )
+
     // Dynamic theme-based CTA button palette
     val (ctaGrad1, ctaGrad2, ctaBevel) = when (theme.name) {
         "Warm Sepia" -> Triple(Color(0xFFE09F3E), Color(0xFFC57B22), Color(0xFF8C5314))
@@ -295,14 +305,14 @@ fun HomeScreen(
                     shape = RoundedCornerShape(16.dp),
                     color = theme.surface,
                     border = androidx.compose.foundation.BorderStroke(
-                        width = 1.2.dp,
+                        width = if (isUnlocked && !isCompletedToday) 1.5.dp else 1.2.dp,
                         color = when {
                             !isUnlocked -> theme.gridLine
                             isCompletedToday -> if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
-                            else -> theme.arrowHint.copy(alpha = 0.5f)
+                            else -> theme.arrowHint.copy(alpha = dailyReadyAlpha)
                         }
                     ),
-                    shadowElevation = 1.dp,
+                    shadowElevation = if (isUnlocked && !isCompletedToday) 2.dp else 1.dp,
                     modifier = Modifier
                         .widthIn(max = 380.dp)
                         .fillMaxWidth(0.88f)
@@ -348,7 +358,7 @@ fun HomeScreen(
 
                         Spacer(modifier = Modifier.width(12.dp))
 
-                        // Text column with precise vertical centering
+                        // Text column with status indicator
                         Column(
                             verticalArrangement = Arrangement.Center,
                             modifier = Modifier.weight(1f)
@@ -361,21 +371,75 @@ fun HomeScreen(
                                 style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
                             )
                             Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = when {
-                                    !isUnlocked -> "Unlocks at Level 5"
-                                    isCompletedToday -> "✓ Completed Today"
-                                    else -> "Today's Special Puzzle"
-                                },
-                                fontSize = 11.sp,
-                                color = when {
-                                    !isUnlocked -> theme.textSecondary
-                                    isCompletedToday -> if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
-                                    else -> theme.textSecondary
-                                },
-                                fontWeight = if (isUnlocked && !isCompletedToday) FontWeight.SemiBold else FontWeight.Medium,
-                                style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
-                            )
+                            if (isUnlocked && !isCompletedToday) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(6.dp)
+                                            .clip(CircleShape)
+                                            .background(theme.arrowHint)
+                                    )
+                                    Text(
+                                        text = "Today's Puzzle Ready",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = theme.arrowHint,
+                                        style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                                    )
+                                }
+                            } else {
+                                Text(
+                                    text = when {
+                                        !isUnlocked -> "Unlocks at Level 5"
+                                        isCompletedToday -> "✓ Completed Today"
+                                        else -> "Special Daily Puzzle"
+                                    },
+                                    fontSize = 11.sp,
+                                    color = when {
+                                        !isUnlocked -> theme.textSecondary
+                                        isCompletedToday -> if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
+                                        else -> theme.textSecondary
+                                    },
+                                    fontWeight = if (isCompletedToday) FontWeight.SemiBold else FontWeight.Medium,
+                                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                                )
+                            }
+                        }
+
+                        // Trailing Chip Badge
+                        if (isUnlocked && !isCompletedToday) {
+                            Surface(
+                                shape = RoundedCornerShape(percent = 50),
+                                color = theme.arrowHint.copy(alpha = 0.16f),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, theme.arrowHint.copy(alpha = 0.4f))
+                            ) {
+                                Text(
+                                    text = "READY",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = theme.arrowHint,
+                                    letterSpacing = 0.8.sp,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                )
+                            }
+                        } else if (isCompletedToday) {
+                            Surface(
+                                shape = RoundedCornerShape(percent = 50),
+                                color = theme.arrowClear.copy(alpha = 0.16f),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, theme.arrowClear.copy(alpha = 0.4f))
+                            ) {
+                                Text(
+                                    text = "DONE",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = theme.arrowClear,
+                                    letterSpacing = 0.8.sp,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                )
+                            }
                         }
                     }
                 }

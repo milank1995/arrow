@@ -34,6 +34,7 @@ import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Policy
 import androidx.compose.material.icons.filled.Settings
@@ -63,9 +64,11 @@ import com.arrowescape.puzzle.ui.theme.ThemePresets
 fun SettingsScreen(
     isSoundEnabled: Boolean,
     isVibrationEnabled: Boolean,
+    dailyRemindersEnabled: Boolean = true,
     activeTheme: ThemePreset,
     onToggleSound: () -> Unit,
     onToggleVibration: () -> Unit,
+    onToggleDailyReminders: () -> Unit = {},
     onThemeSelect: (ThemePreset) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -223,10 +226,10 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     // =========================================================
-                    // SECTION 2: AUDIO & HAPTICS (Grouped Card)
+                    // SECTION 2: AUDIO, HAPTICS & REMINDERS (Grouped Card)
                     // =========================================================
                     SectionHeader(
-                        title = "AUDIO & HAPTICS",
+                        title = "AUDIO & REMINDERS",
                         icon = Icons.AutoMirrored.Filled.VolumeUp,
                         theme = activeTheme
                     )
@@ -266,6 +269,23 @@ fun SettingsScreen(
                                 iconTint = if (isVibrationEnabled) activeTheme.arrowDefault else activeTheme.textSecondary,
                                 isChecked = isVibrationEnabled,
                                 onCheckedChange = { onToggleVibration() },
+                                activeTheme = activeTheme
+                            )
+
+                            androidx.compose.material3.HorizontalDivider(
+                                color = cardBorder.copy(alpha = 0.6f),
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            // Daily Challenge Reminders Row
+                            SettingsToggleRow(
+                                title = "Daily Challenge Reminders",
+                                icon = Icons.Default.NotificationsActive,
+                                iconBg = if (dailyRemindersEnabled) activeTheme.arrowHint.copy(alpha = 0.16f) else activeTheme.gridLine.copy(alpha = 0.35f),
+                                iconTint = if (dailyRemindersEnabled) activeTheme.arrowHint else activeTheme.textSecondary,
+                                isChecked = dailyRemindersEnabled,
+                                onCheckedChange = { onToggleDailyReminders() },
                                 activeTheme = activeTheme
                             )
                         }

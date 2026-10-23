@@ -12,6 +12,7 @@ import com.arrowescape.puzzle.core.model.Arrow
 import com.arrowescape.puzzle.core.model.ArrowState
 import com.arrowescape.puzzle.core.model.LevelData
 import com.arrowescape.puzzle.data.UserPreferencesRepository
+import com.arrowescape.puzzle.notification.NotificationHelper
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 import com.arrowescape.puzzle.ui.theme.ThemePresets
 import kotlinx.coroutines.Dispatchers
@@ -68,6 +69,9 @@ data class GameUiState(
     val levelFinalScore: Int = 0,
     val levelAccuracyPercent: Int = 100,
     val levelStarsEarned: Int = 3,
+    val hasSeenDailyUnlockCelebration: Boolean = false,
+    val dailyRemindersEnabled: Boolean = true,
+    val showDailyUnlockDialog: Boolean = false,
     val restartTrigger: Long = 0L
 ) {
     val previewRayArrowId: String? get() = previewRayArrowIds.firstOrNull()
@@ -95,6 +99,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 audioHapticManager.isSoundEnabled = data.soundEnabled
                 audioHapticManager.isVibrationEnabled = data.vibrationEnabled
 
+                val shouldShowDailyUnlock = data.currentLevel >= 5 && !data.hasSeenDailyUnlockCelebration
+
                 _uiState.update { current ->
                     current.copy(
                         currentLevelNumber = if (current.levelData == null) data.currentLevel else current.currentLevelNumber,
@@ -110,7 +116,10 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         lastCompletedLevelNumber = if (current.levelData == null) maxOf(1, data.currentLevel - 1) else current.lastCompletedLevelNumber,
                         isSoundEnabled = data.soundEnabled,
                         isVibrationEnabled = data.vibrationEnabled,
-                        activeTheme = theme
+                        activeTheme = theme,
+                        hasSeenDailyUnlockCelebration = data.hasSeenDailyUnlockCelebration,
+                        dailyRemindersEnabled = data.dailyRemindersEnabled,
+                        showDailyUnlockDialog = shouldShowDailyUnlock
                     )
                 }
 
@@ -118,6 +127,38 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 if (_uiState.value.levelData == null) {
                     loadLevel(data.currentLevel)
                 }
+            }
+        }
+    }
+
+    fun dismissDailyUnlockDialog(optInReminders: Boolean) {
+        viewModelScope.launch {
+            repository.markDailyUnlockCelebrationSeen()
+            repository.setDailyRemindersEnabled(optInReminders)
+            if (optInReminders) {
+                NotificationHelper.scheduleDailyReminderAlarm(app)
+            } else {
+                NotificationHelper.cancelDailyReminderAlarm(app)
+            }
+            _uiState.update {
+                it.copy(
+                    showDailyUnlockDialog = false,
+                    hasSeenDailyUnlockCelebration = true,
+                    dailyRemindersEnabled = optInReminders
+                )
+            }
+        }
+    }
+
+    fun toggleDailyReminders() {
+        viewModelScope.launch {
+            val nextState = !_uiState.value.dailyRemindersEnabled
+            repository.setDailyRemindersEnabled(nextState)
+            _uiState.update { it.copy(dailyRemindersEnabled = nextState) }
+            if (nextState) {
+                NotificationHelper.scheduleDailyReminderAlarm(app)
+            } else {
+                NotificationHelper.cancelDailyReminderAlarm(app)
             }
         }
     }

@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arrowescape.puzzle.game.GameViewModel
+import com.arrowescape.puzzle.ui.components.DailyUnlockDialog
 import com.arrowescape.puzzle.ui.components.SoundSettingsDialog
 import com.arrowescape.puzzle.ui.screens.DailyChallengeScreen
 import com.arrowescape.puzzle.ui.screens.DevTestScreen
@@ -39,6 +40,11 @@ class MainActivity : ComponentActivity() {
 
     private val gameViewModel: GameViewModel by viewModels()
 
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -46,10 +52,22 @@ class MainActivity : ComponentActivity() {
         setContent {
             val uiState by gameViewModel.uiState.collectAsState()
             val initialScreen = remember {
-                if (gameViewModel.hasPlayedBeforeSynchronous()) AppScreen.HOME else AppScreen.GAMEPLAY
+                if (intent.getStringExtra("EXTRA_NAVIGATE_TO") == "daily_challenge") {
+                    AppScreen.DAILY_CHALLENGE
+                } else if (gameViewModel.hasPlayedBeforeSynchronous()) {
+                    AppScreen.HOME
+                } else {
+                    AppScreen.GAMEPLAY
+                }
             }
             var currentScreen by remember { mutableStateOf(initialScreen) }
             var showSoundSettingsDialog by remember { mutableStateOf(false) }
+
+            LaunchedEffect(intent) {
+                if (intent.getStringExtra("EXTRA_NAVIGATE_TO") == "daily_challenge") {
+                    currentScreen = AppScreen.DAILY_CHALLENGE
+                }
+            }
 
             MaterialTheme {
                 Surface(
@@ -210,12 +228,16 @@ class MainActivity : ComponentActivity() {
                                 SettingsScreen(
                                     isSoundEnabled = uiState.isSoundEnabled,
                                     isVibrationEnabled = uiState.isVibrationEnabled,
+                                    dailyRemindersEnabled = uiState.dailyRemindersEnabled,
                                     activeTheme = uiState.activeTheme,
                                     onToggleSound = {
                                         gameViewModel.toggleSound()
                                     },
                                     onToggleVibration = {
                                         gameViewModel.toggleVibration()
+                                    },
+                                    onToggleDailyReminders = {
+                                        gameViewModel.toggleDailyReminders()
                                     },
                                     onThemeSelect = { selectedTheme ->
                                         gameViewModel.playClick()
@@ -244,6 +266,22 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         }
+                    }
+
+                    // Celebratory Milestone Modal Dialog when Daily Challenge unlocks at Level 5
+                    if (uiState.showDailyUnlockDialog && currentScreen == AppScreen.HOME) {
+                        DailyUnlockDialog(
+                            theme = uiState.activeTheme,
+                            onPlayTodayClick = { optInReminders ->
+                                gameViewModel.playClick()
+                                gameViewModel.dismissDailyUnlockDialog(optInReminders)
+                                currentScreen = AppScreen.DAILY_CHALLENGE
+                            },
+                            onDismiss = { optInReminders ->
+                                gameViewModel.playClick()
+                                gameViewModel.dismissDailyUnlockDialog(optInReminders)
+                            }
+                        )
                     }
 
                     // Audio & Sound Settings Menu Modal Dialog

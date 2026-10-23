@@ -31,7 +31,9 @@ data class UserGameData(
     val soundEnabled: Boolean = true,
     val vibrationEnabled: Boolean = true,
     val themeIndex: Int = 0,
-    val globalLives: Int = 6
+    val globalLives: Int = 6,
+    val hasSeenDailyUnlockCelebration: Boolean = false,
+    val dailyRemindersEnabled: Boolean = true
 )
 
 class UserPreferencesRepository(private val context: Context) {
@@ -50,6 +52,8 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_VIBRATION = booleanPreferencesKey("vibration_enabled")
     private val KEY_THEME = intPreferencesKey("selected_theme_index")
     private val KEY_GLOBAL_LIVES = intPreferencesKey("global_lives_bank")
+    private val KEY_DAILY_UNLOCK_SEEN = booleanPreferencesKey("daily_unlock_celebration_seen")
+    private val KEY_DAILY_REMINDERS_ENABLED = booleanPreferencesKey("daily_reminders_enabled")
 
     private val SYNC_PREFS = "arrow_sync_prefs"
     private val KEY_SYNC_HAS_PLAYED = "has_played_before"
@@ -57,6 +61,27 @@ class UserPreferencesRepository(private val context: Context) {
     fun hasPlayedBeforeSynchronous(): Boolean {
         val sp = context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
         return sp.getBoolean(KEY_SYNC_HAS_PLAYED, false)
+    }
+
+    fun isDailyCompletedTodaySynchronous(todayDate: String): Boolean {
+        val sp = context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
+        val set = sp.getStringSet("completed_dates", emptySet()) ?: emptySet()
+        return set.contains(todayDate)
+    }
+
+    fun isDailyRemindersEnabledSynchronous(): Boolean {
+        val sp = context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
+        return sp.getBoolean("daily_reminders_enabled", true)
+    }
+
+    fun getCurrentLevelSynchronous(): Int {
+        val sp = context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
+        return sp.getInt("current_level", 1)
+    }
+
+    fun getStreakDaysSynchronous(): Int {
+        val sp = context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
+        return sp.getInt("streak_days", 1)
     }
 
     val userGameData: Flow<UserGameData> = context.dataStore.data.map { prefs ->
@@ -80,7 +105,9 @@ class UserPreferencesRepository(private val context: Context) {
             soundEnabled = prefs[KEY_SOUND] ?: true,
             vibrationEnabled = prefs[KEY_VIBRATION] ?: true,
             themeIndex = prefs[KEY_THEME] ?: 0,
-            globalLives = prefs[KEY_GLOBAL_LIVES] ?: 6
+            globalLives = prefs[KEY_GLOBAL_LIVES] ?: 6,
+            hasSeenDailyUnlockCelebration = prefs[KEY_DAILY_UNLOCK_SEEN] ?: false,
+            dailyRemindersEnabled = prefs[KEY_DAILY_REMINDERS_ENABLED] ?: true
         )
     }
 
@@ -105,6 +132,8 @@ class UserPreferencesRepository(private val context: Context) {
     }
 
     suspend fun recordLevelCompletion(level: Int, starsEarned: Int) {
+        context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
+            .edit().putInt("current_level", level + 1).apply()
         context.dataStore.edit { prefs ->
             val current = prefs[KEY_LEVEL] ?: 1
             if (level >= current) {
@@ -120,6 +149,8 @@ class UserPreferencesRepository(private val context: Context) {
     }
 
     suspend fun updateLevel(level: Int) {
+        context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
+            .edit().putInt("current_level", level).apply()
         context.dataStore.edit { prefs ->
             val current = prefs[KEY_LEVEL] ?: 1
             if (level > current) {
@@ -182,6 +213,11 @@ class UserPreferencesRepository(private val context: Context) {
     }
 
     suspend fun recordDailyCompletion(dateString: String) {
+        context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE).let { sp ->
+            val set = (sp.getStringSet("completed_dates", emptySet()) ?: emptySet()).toMutableSet()
+            set.add(dateString)
+            sp.edit().putStringSet("completed_dates", set).apply()
+        }
         context.dataStore.edit { prefs ->
             val completed = (prefs[KEY_COMPLETED_DAILY_DATES] ?: emptySet()).toMutableSet()
             val isFirstTimeForDate = completed.add(dateString)
@@ -197,7 +233,24 @@ class UserPreferencesRepository(private val context: Context) {
                 val newStreak = calculateStreak(lastDateStr, dateString, currentStreak)
                 prefs[KEY_STREAK] = newStreak
                 prefs[KEY_LAST_DAILY] = dateString
+
+                context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
+                    .edit().putInt("streak_days", newStreak).apply()
             }
+        }
+    }
+
+    suspend fun markDailyUnlockCelebrationSeen() {
+        context.dataStore.edit { prefs ->
+            prefs[KEY_DAILY_UNLOCK_SEEN] = true
+        }
+    }
+
+    suspend fun setDailyRemindersEnabled(enabled: Boolean) {
+        context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
+            .edit().putBoolean("daily_reminders_enabled", enabled).apply()
+        context.dataStore.edit { prefs ->
+            prefs[KEY_DAILY_REMINDERS_ENABLED] = enabled
         }
     }
 
