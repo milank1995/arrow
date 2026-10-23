@@ -50,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.arrowescape.puzzle.ui.components.AppPrimaryButton
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 import java.time.LocalDate
 import java.time.YearMonth
@@ -509,49 +510,16 @@ fun DailyChallengeScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Primary Play / Replay 3D Tactile CTA Button (Matching Unity Benchmark)
+                    // Primary Play / Replay Flat Modern CTA Button
                     if (!isSelectedFuture) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(58.dp)
-                                .clickable {
-                                    onPlayDate(selectedDate.toString())
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            // 3D Shadow layer
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(52.dp)
-                                    .align(Alignment.BottomCenter)
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .background(ctaBevel)
-                            )
-
-                            // Top face layer with centered text
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(52.dp)
-                                    .align(Alignment.TopCenter)
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .background(Brush.verticalGradient(listOf(ctaGrad1, ctaGrad2))),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = if (selectedDateCompleted) "Replay Level" else "Play Daily Puzzle",
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    letterSpacing = 0.5.sp,
-                                    color = Color.White,
-                                    style = androidx.compose.ui.text.TextStyle(
-                                        platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
-                                    )
-                                )
-                            }
-                        }
+                        AppPrimaryButton(
+                            text = if (selectedDateCompleted) "Replay Level" else "Play Daily Puzzle",
+                            onClick = {
+                                onPlayDate(selectedDate.toString())
+                            },
+                            theme = theme,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 }
             }

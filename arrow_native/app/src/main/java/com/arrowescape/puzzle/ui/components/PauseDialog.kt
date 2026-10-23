@@ -118,35 +118,12 @@ fun PauseDialog(
                 Spacer(modifier = Modifier.height(18.dp))
 
                 // 2. PRIMARY ACTION: RESUME GAME
-                Button(
+                AppPrimaryButton(
+                    text = "Resume Game",
                     onClick = onDismiss,
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = activeTheme.arrowDefault
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = "Resume",
-                            tint = if (activeTheme.isDark) Color(0xFF0F172A) else Color.White,
-                            modifier = Modifier.size(22.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "Resume Game",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (activeTheme.isDark) Color(0xFF0F172A) else Color.White
-                        )
-                    }
-                }
+                    theme = activeTheme,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -155,69 +132,25 @@ fun PauseDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    OutlinedButton(
+                    AppSecondaryButton(
+                        text = "Restart",
                         onClick = {
                             onDismiss()
                             onRestartClick()
                         },
-                        shape = RoundedCornerShape(14.dp),
-                        border = BorderStroke(
-                            1.dp,
-                            if (activeTheme.isDark) Color(0xFF475569) else Color(0xFFCBD5E1)
-                        ),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = activeTheme.textPrimary
-                        ),
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(44.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Refresh,
-                                contentDescription = "Restart",
-                                modifier = Modifier.size(17.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "Restart",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-                    }
+                        theme = activeTheme,
+                        modifier = Modifier.weight(1f)
+                    )
 
-                    OutlinedButton(
+                    AppSecondaryButton(
+                        text = "Home",
                         onClick = {
                             onDismiss()
                             onHomeClick()
                         },
-                        shape = RoundedCornerShape(14.dp),
-                        border = BorderStroke(
-                            1.dp,
-                            if (activeTheme.isDark) Color(0xFF475569) else Color(0xFFCBD5E1)
-                        ),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = activeTheme.textPrimary
-                        ),
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(44.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Home,
-                                contentDescription = "Home",
-                                modifier = Modifier.size(17.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "Home",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-                    }
+                        theme = activeTheme,
+                        modifier = Modifier.weight(1f)
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(18.dp))

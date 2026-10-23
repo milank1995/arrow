@@ -145,7 +145,7 @@ class UserPreferencesRepository(private val context: Context) {
                 else -> null
             }
             if (key != null) {
-                val count = prefs[key] ?: if (booster == "hint") 0 else 2
+                val count = prefs[key] ?: if (booster == "hint") 3 else 2
                 if (count > 0) {
                     prefs[key] = count - 1
                     success = true

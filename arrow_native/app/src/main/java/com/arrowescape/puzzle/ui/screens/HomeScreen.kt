@@ -53,6 +53,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.game.GameUiState
+import com.arrowescape.puzzle.ui.components.AppPrimaryButton
 import com.arrowescape.puzzle.ui.components.SculptedStar3D
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 
@@ -380,45 +381,16 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // Primary Play 3D Button (Matching Unity Benchmark)
-                Box(
+                // Primary Play Flat Button
+                AppPrimaryButton(
+                    text = "Play Level ${uiState.currentLevelNumber}",
+                    onClick = onPlayClick,
+                    theme = theme,
                     modifier = Modifier
                         .widthIn(max = 380.dp)
                         .fillMaxWidth(0.88f)
-                        .height(58.dp)
                         .scale(playScale)
-                        .clickable(onClick = onPlayClick),
-                    contentAlignment = Alignment.Center
-                ) {
-                    // 3D Bottom Bevel Layer
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .align(Alignment.BottomCenter)
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(ctaBevel)
-                    )
-                    // Top Surface Gradient Layer with centered text
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .align(Alignment.TopCenter)
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(Brush.verticalGradient(listOf(ctaGrad1, ctaGrad2))),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Play Level ${uiState.currentLevelNumber}",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 0.5.sp,
-                            color = Color.White,
-                            style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
-                        )
-                    }
-                }
+                )
             }
         }
     }

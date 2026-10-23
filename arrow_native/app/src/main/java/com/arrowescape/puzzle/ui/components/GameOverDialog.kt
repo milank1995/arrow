@@ -109,68 +109,24 @@ fun GameOverDialog(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Primary Action: CLAIM 3 LIVES or WATCH AD FOR +3 LIVES
-                Button(
+                // Primary Action: Claim 3 Lives or Watch Ad
+                AppPrimaryButton(
+                    text = if (hasGlobalLives) "Claim 3 Lives" else "Watch Ad for +3 Lives",
                     onClick = onClaimLives,
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (hasGlobalLives) Color(0xFFE11D48) else activeThemePrimary(theme)
-                    ),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            imageVector = if (hasGlobalLives) Icons.Default.Favorite else Icons.Default.PlayArrow,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(19.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = if (hasGlobalLives) "CLAIM 3 LIVES" else "WATCH AD FOR +3 LIVES",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp,
-                            color = Color.White
-                        )
-                    }
-                }
+                    theme = theme,
+                    containerColor = if (hasGlobalLives) Color(0xFFE11D48) else activeThemePrimary(theme),
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-                // Secondary Action: RESTART LEVEL
-                OutlinedButton(
+                // Secondary Action: Restart Level
+                AppSecondaryButton(
+                    text = "Restart Level",
                     onClick = onRestartClick,
-                    shape = RoundedCornerShape(16.dp),
-                    border = BorderStroke(1.dp, if (theme.isDark) Color(0xFF475569) else Color(0xFFCBD5E1)),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = null,
-                            tint = theme.textPrimary,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "RESTART LEVEL",
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 14.sp,
-                            color = theme.textPrimary
-                        )
-                    }
-                }
+                    theme = theme,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }

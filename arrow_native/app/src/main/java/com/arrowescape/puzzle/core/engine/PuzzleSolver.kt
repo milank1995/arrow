@@ -79,14 +79,18 @@ object PuzzleSolver {
         val movable = findAllMovableArrows(arrows, occupancy)
         if (movable.isEmpty()) return null
 
+        // First prioritize movable arrows that are not yet highlighted as hinted
+        val unhintedMovable = movable.filter { it.state != ArrowState.HINTED }
+        val candidatePool = if (unhintedMovable.isNotEmpty()) unhintedMovable else movable
+
         // Pick the arrow that unlocks the most other arrows once cleared
-        return movable.maxByOrNull { candidate ->
+        return candidatePool.maxByOrNull { candidate ->
             val simulatedOccupancy = GridOccupancyMap(occupancy.width, occupancy.height).apply {
                 rebuild(arrows)
                 release(candidate)
             }
             findAllMovableArrows(arrows.filter { it.id != candidate.id }, simulatedOccupancy).size
-        } ?: movable.firstOrNull()
+        } ?: candidatePool.firstOrNull()
     }
 
     /**

@@ -458,7 +458,10 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                             val updated = state.arrows.map {
                                 if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
                             }
-                            state.copy(arrows = updated)
+                            state.copy(
+                                arrows = updated,
+                                hintsAvailable = maxOf(0, state.hintsAvailable - 1)
+                            )
                         }
                     }
                 } else {
@@ -670,13 +673,13 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
         // Scale-proportional score rewarding board size, pace, health, and streak
         val totalArrows = finalArrows.size
-        val arrowPoints = totalArrows * 40
-        val targetPaceSeconds = maxOf(45, totalArrows * 4)
+        val arrowPoints = totalArrows * 50
+        val targetPaceSeconds = maxOf(30, totalArrows * 4)
         val timeBonus = ((targetPaceSeconds - elapsedSec).coerceAtLeast(0) * 5)
-        val healthBonus = _uiState.value.heartsRemaining * 120
-        val streakBonus = _uiState.value.streakDays * 50
-        val completionBonus = if (_uiState.value.isDailyChallengeMode) 1500 else (500 + completedLvl * 25)
-        val finalScore = completionBonus + arrowPoints + timeBonus + healthBonus + streakBonus
+        val healthBonus = _uiState.value.heartsRemaining * 250
+        val streakBonus = _uiState.value.streakDays * 100
+        val modeClearBonus = if (_uiState.value.isDailyChallengeMode) 2000 else (500 + completedLvl * 25)
+        val finalScore = modeClearBonus + arrowPoints + timeBonus + healthBonus + streakBonus
 
         _uiState.update { state ->
             state.copy(

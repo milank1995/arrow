@@ -110,56 +110,24 @@ fun HintRefillDialog(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Primary Action: WATCH AD FOR +3 HINTS
-                Button(
+                // Primary Action: Watch Ad for +3 Hints
+                AppPrimaryButton(
+                    text = "Watch Ad for +3 Hints",
                     onClick = onWatchAdClick,
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFD97706) // Rich radiant amber
-                    ),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "WATCH AD FOR +3 HINTS",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp,
-                            color = Color.White
-                        )
-                    }
-                }
+                    theme = theme,
+                    containerColor = Color(0xFFD97706),
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-                // Secondary Action: CANCEL
-                OutlinedButton(
+                // Secondary Action: Cancel
+                AppSecondaryButton(
+                    text = "Cancel",
                     onClick = onDismiss,
-                    shape = RoundedCornerShape(16.dp),
-                    border = BorderStroke(1.dp, if (theme.isDark) Color(0xFF475569) else Color(0xFFCBD5E1)),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                ) {
-                    Text(
-                        text = "CANCEL",
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
-                        color = theme.textPrimary
-                    )
-                }
+                    theme = theme,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }

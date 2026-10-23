@@ -61,6 +61,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.arrowescape.puzzle.ui.components.AppPrimaryButton
+import com.arrowescape.puzzle.ui.components.AppSecondaryButton
 import com.arrowescape.puzzle.ui.components.ConfettiBurstEffect
 import com.arrowescape.puzzle.ui.components.SculptedStar3D
 import com.arrowescape.puzzle.ui.theme.ThemePreset
@@ -508,7 +510,7 @@ fun VictoryScreen(
                     Spacer(modifier = Modifier.height(20.dp))
                 }
 
-                // 3. ACTION BUTTONS: Tactile CTA Buttons Matching Unity Benchmark
+                // 3. ACTION BUTTONS: Modern Flat CTA Buttons
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -516,75 +518,28 @@ fun VictoryScreen(
                         .fillMaxWidth()
                         .widthIn(max = 380.dp)
                 ) {
-                    // Primary 3D Tactile CTA
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(58.dp)
-                            .clickable {
-                                onPlayClickSound()
-                                onNextLevelClick()
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        // Bottom Bevel Depth Layer
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(52.dp)
-                                .align(Alignment.BottomCenter)
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(ctaBevel)
-                        )
-                        // Top Surface Gradient Layer
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(52.dp)
-                                .align(Alignment.TopCenter)
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(Brush.verticalGradient(listOf(ctaGrad1, ctaGrad2))),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = if (isDailyChallenge) "Continue" else "Next Level",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 0.5.sp,
-                                color = Color.White,
-                                style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
-                            )
-                        }
-                    }
+                    // Primary Modern Flat CTA
+                    AppPrimaryButton(
+                        text = if (isDailyChallenge) "Continue" else "Next Level",
+                        onClick = {
+                            onPlayClickSound()
+                            onNextLevelClick()
+                        },
+                        theme = theme,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
                     // Secondary Home Button (Shown only in Campaign Mode to eliminate redundant Daily Challenge duplicate)
                     if (!isDailyChallenge) {
-                        Surface(
-                            shape = RoundedCornerShape(20.dp),
-                            color = theme.surface,
-                            border = androidx.compose.foundation.BorderStroke(1.2.dp, theme.gridLine),
-                            shadowElevation = 2.dp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp)
-                                .clickable {
-                                    onPlayClickSound()
-                                    onHomeClick()
-                                }
-                        ) {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier.fillMaxSize()
-                            ) {
-                                Text(
-                                    text = "Home",
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = theme.textPrimary,
-                                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
-                                )
-                            }
-                        }
+                        AppSecondaryButton(
+                            text = "Home",
+                            onClick = {
+                                onPlayClickSound()
+                                onHomeClick()
+                            },
+                            theme = theme,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 }
             }
