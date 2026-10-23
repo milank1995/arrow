@@ -276,7 +276,7 @@ fun GamePlayScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             val effectiveHints = if (uiState.isDailyChallengeMode) {
-                                uiState.dailyComplimentaryHintsRemaining + uiState.hintsAvailable
+                                uiState.dailyComplimentaryHintsRemaining
                             } else {
                                 uiState.hintsAvailable
                             }

@@ -286,27 +286,28 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .padding(bottom = 24.dp)
             ) {
-                // Daily Challenge Capsule: 100% Theme Adaptive (Locked below Level 5)
+                // Daily Challenge Card: Standardized 16dp corner radius & 54dp height matching design system
                 val isUnlocked = uiState.currentLevelNumber >= 5
                 val todayStr = remember { LocalDate.now().toString() }
                 val isCompletedToday = uiState.completedDailyDates.contains(todayStr)
 
                 Surface(
-                    shape = RoundedCornerShape(percent = 50),
+                    shape = RoundedCornerShape(16.dp),
                     color = theme.surface,
                     border = androidx.compose.foundation.BorderStroke(
                         width = 1.2.dp,
                         color = when {
                             !isUnlocked -> theme.gridLine
                             isCompletedToday -> if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
-                            else -> theme.arrowHint
+                            else -> theme.arrowHint.copy(alpha = 0.5f)
                         }
                     ),
-                    shadowElevation = 2.dp,
+                    shadowElevation = 1.dp,
                     modifier = Modifier
                         .widthIn(max = 380.dp)
                         .fillMaxWidth(0.88f)
-                        .height(62.dp)
+                        .height(54.dp)
+                        .clip(RoundedCornerShape(16.dp))
                         .clickable(onClick = onDailyChallengeClick)
                 ) {
                     Row(
@@ -318,8 +319,8 @@ fun HomeScreen(
                         // Dynamic Theme-Harmonized Icon Pod
                         Box(
                             modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
+                                .size(34.dp)
+                                .clip(RoundedCornerShape(10.dp))
                                 .background(
                                     when {
                                         !isUnlocked -> theme.gridLine
@@ -341,11 +342,11 @@ fun HomeScreen(
                                     isCompletedToday -> if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
                                     else -> theme.arrowHint
                                 },
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(18.dp)
                             )
                         }
 
-                        Spacer(modifier = Modifier.width(14.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
 
                         // Text column with precise vertical centering
                         Column(
@@ -354,7 +355,7 @@ fun HomeScreen(
                         ) {
                             Text(
                                 text = "Daily Challenge",
-                                fontSize = 15.sp,
+                                fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = theme.textPrimary,
                                 style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
@@ -364,9 +365,9 @@ fun HomeScreen(
                                 text = when {
                                     !isUnlocked -> "Unlocks at Level 5"
                                     isCompletedToday -> "✓ Completed Today"
-                                    else -> "Today's Challenge • Special Puzzle"
+                                    else -> "Today's Special Puzzle"
                                 },
-                                fontSize = 12.sp,
+                                fontSize = 11.sp,
                                 color = when {
                                     !isUnlocked -> theme.textSecondary
                                     isCompletedToday -> if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear

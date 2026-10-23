@@ -438,17 +438,22 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     }
                     state.copy(arrows = updated)
                 }
-            } else if (_uiState.value.isDailyChallengeMode && _uiState.value.dailyComplimentaryHintsRemaining > 0) {
-                // 1 complimentary daily hint lifeline per daily challenge puzzle
-                audioHapticManager.playBoosterUse("hint")
-                _uiState.update { state ->
-                    val updated = state.arrows.map {
-                        if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
+            } else if (_uiState.value.isDailyChallengeMode) {
+                if (_uiState.value.dailyComplimentaryHintsRemaining > 0) {
+                    // Strictly 1 hint in Daily Challenge mode
+                    audioHapticManager.playBoosterUse("hint")
+                    _uiState.update { state ->
+                        val updated = state.arrows.map {
+                            if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
+                        }
+                        state.copy(
+                            arrows = updated,
+                            dailyComplimentaryHintsRemaining = 0
+                        )
                     }
-                    state.copy(
-                        arrows = updated,
-                        dailyComplimentaryHintsRemaining = state.dailyComplimentaryHintsRemaining - 1
-                    )
+                } else {
+                    // Out of hints in Daily Challenge -> prompt rewarded ad dialog
+                    _uiState.update { it.copy(showHintAdPrompt = true) }
                 }
             } else {
                 if (_uiState.value.hintsAvailable > 0) {
@@ -478,19 +483,36 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun claimAdHints(amount: Int = 3) {
         viewModelScope.launch {
-            repository.addHints(amount)
-            _uiState.update { it.copy(showHintAdPrompt = false) }
-
-            // Immediately auto-execute 1 hint on the board for instant relief
-            val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap)
-            if (hintTarget != null) {
-                if (repository.useBooster("hint")) {
+            if (_uiState.value.isDailyChallengeMode) {
+                _uiState.update { it.copy(dailyComplimentaryHintsRemaining = 1, showHintAdPrompt = false) }
+                val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap)
+                if (hintTarget != null) {
                     audioHapticManager.playBoosterUse("hint")
                     _uiState.update { state ->
                         val updated = state.arrows.map {
                             if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
                         }
-                        state.copy(arrows = updated)
+                        state.copy(arrows = updated, dailyComplimentaryHintsRemaining = 0)
+                    }
+                }
+            } else {
+                repository.addHints(amount)
+                _uiState.update { it.copy(showHintAdPrompt = false) }
+
+                // Immediately auto-execute 1 hint on the board for instant relief
+                val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap)
+                if (hintTarget != null) {
+                    if (repository.useBooster("hint")) {
+                        audioHapticManager.playBoosterUse("hint")
+                        _uiState.update { state ->
+                            val updated = state.arrows.map {
+                                if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
+                            }
+                            state.copy(
+                                arrows = updated,
+                                hintsAvailable = maxOf(0, state.hintsAvailable - 1)
+                            )
+                        }
                     }
                 }
             }
