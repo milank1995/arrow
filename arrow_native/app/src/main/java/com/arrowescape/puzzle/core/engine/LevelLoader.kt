@@ -17,7 +17,7 @@ import javax.crypto.spec.SecretKeySpec
 
 object LevelLoader {
 
-    const val TOTAL_LEVELS = 14040
+    const val TOTAL_LEVELS = 5000
     const val CHUNK_SIZE = 1000
 
     // AES-256 Secret Key (32 bytes)
@@ -31,7 +31,7 @@ object LevelLoader {
     private var cachedDailyLevels: JSONArray? = null
 
     /**
-     * Loads an authentic level from the AES-256 encrypted binary packs (Levels 1 to 14,040).
+     * Loads an authentic level from the AES-256 encrypted binary packs (Levels 1 to 5,000).
      * Automatically handles chunk caching in memory for sub-millisecond level loads.
      */
     fun loadLevel(context: Context, levelNumber: Int): LevelData {

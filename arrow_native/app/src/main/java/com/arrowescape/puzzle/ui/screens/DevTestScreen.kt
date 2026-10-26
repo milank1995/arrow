@@ -460,7 +460,7 @@ private fun LevelSelectorDialog(
                             color = Color(0xFF0F172A)
                         )
                         Text(
-                            text = "14,040 Authentic Amaze Go Levels",
+                            text = "5,000 Curated Authentic Levels",
                             fontSize = 12.sp,
                             color = Color(0xFF64748B)
                         )
@@ -511,21 +511,20 @@ private fun LevelSelectorDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 val quickLevels = listOf(
-                    1 to "Tutorial (4x5)",
-                    5 to "Binoculars (50x18)",
-                    10 to "Lightbulb (40x50)",
-                    15 to "Tic-Tac-Toe #",
-                    20 to "Cat Head (37x35)",
-                    25 to "SuperHard U-Turn",
-                    26 to "Cactus (130 arr)",
-                    30 to "Crescent Moon",
-                    50 to "Hard Normal",
+                    1 to "Tutorial (4 arr)",
+                    4 to "Fish Shape (15 arr)",
+                    9 to "Cup Shape (20 arr)",
+                    14 to "Cat Shape (25 arr)",
+                    19 to "Binoculars (32 arr)",
+                    24 to "Heart Shape (38 arr)",
+                    29 to "Jet Shape (46 arr)",
+                    30 to "Chapter 1 (50 arr)",
+                    50 to "Casual L50",
                     100 to "Century L100",
-                    500 to "Master L500",
-                    1000 to "Pack 1 End",
-                    5000 to "Pack 5 Mid",
-                    10000 to "Pack 10 Master",
-                    14040 to "Grand Finale"
+                    500 to "Pack 00 Mid",
+                    1000 to "Pack 00 Finale",
+                    2500 to "Mid-Game Master",
+                    5000 to "Grand Finale"
                 )
 
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
