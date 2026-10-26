@@ -1,7 +1,7 @@
 {
-  "totalLevels": 5000,
+  "totalLevels": 2000,
   "chunkSize": 1000,
-  "totalPacks": 5,
+  "totalPacks": 2,
   "packs": [
     {
       "packIndex": 0,
@@ -9,7 +9,7 @@
       "startLevel": 1,
       "endLevel": 1000,
       "count": 1000,
-      "sizeBytes": 337648
+      "sizeBytes": 1333072
     },
     {
       "packIndex": 1,
@@ -17,31 +17,7 @@
       "startLevel": 1001,
       "endLevel": 2000,
       "count": 1000,
-      "sizeBytes": 459152
-    },
-    {
-      "packIndex": 2,
-      "fileName": "level_pack_02.dat",
-      "startLevel": 2001,
-      "endLevel": 3000,
-      "count": 1000,
-      "sizeBytes": 658080
-    },
-    {
-      "packIndex": 3,
-      "fileName": "level_pack_03.dat",
-      "startLevel": 3001,
-      "endLevel": 4000,
-      "count": 1000,
-      "sizeBytes": 1130976
-    },
-    {
-      "packIndex": 4,
-      "fileName": "level_pack_04.dat",
-      "startLevel": 4001,
-      "endLevel": 5000,
-      "count": 1000,
-      "sizeBytes": 2612944
+      "sizeBytes": 2594096
     }
   ]
 }

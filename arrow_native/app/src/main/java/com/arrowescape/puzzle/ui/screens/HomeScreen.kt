@@ -445,9 +445,9 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // Explore All 5,000 Curated Levels
+                // Explore All 2,000 Curated Levels
                 AppSecondaryButton(
-                    text = "🧪 New Levels (5,000 Curated Levels)",
+                    text = "🧪 New Levels (2,000 Curated Levels)",
                     onClick = onDevTestClick,
                     theme = theme,
                     modifier = Modifier
