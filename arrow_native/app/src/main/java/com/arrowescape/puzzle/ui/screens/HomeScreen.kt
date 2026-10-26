@@ -54,6 +54,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.game.GameUiState
 import com.arrowescape.puzzle.ui.components.AppPrimaryButton
+
+import com.arrowescape.puzzle.ui.components.AppSecondaryButton
 import com.arrowescape.puzzle.ui.components.SculptedStar3D
 import com.arrowescape.puzzle.ui.components.StreakChip
 import com.arrowescape.puzzle.ui.theme.ThemePreset
@@ -439,6 +441,30 @@ fun HomeScreen(
                         .widthIn(max = 380.dp)
                         .fillMaxWidth(0.88f)
                         .scale(playScale)
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // New Levels Test Hub Button (Testing 1,533 Authentic Sequential Levels)
+                AppSecondaryButton(
+                    text = "🧪 New Levels (1,533 Normal Levels)",
+                    onClick = onDevTestClick,
+                    theme = theme,
+                    modifier = Modifier
+                        .widthIn(max = 380.dp)
+                        .fillMaxWidth(0.88f)
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // New Levels Test Hub Button (Testing 1,533 Authentic Sequential Levels)
+                AppSecondaryButton(
+                    text = "🧪 New Levels (1,533 Normal Levels)",
+                    onClick = onDevTestClick,
+                    theme = theme,
+                    modifier = Modifier
+                        .widthIn(max = 380.dp)
+                        .fillMaxWidth(0.88f)
                 )
             }
         }

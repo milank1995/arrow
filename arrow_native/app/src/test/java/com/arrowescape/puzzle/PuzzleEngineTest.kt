@@ -208,4 +208,23 @@ class PuzzleEngineTest {
         println("Best hint for daily 97: ${hint?.id} at head ${hint?.head}")
         assertNotNull("Daily challenge must have a valid movable hint", hint)
     }
+
+    @Test
+    fun testAuthenticSequentialNormalLevels() {
+        val testLevels = listOf(1, 2, 3, 4, 5, 10, 20, 21, 50, 100, 500, 1000, 1533)
+        for (lvlNum in testLevels) {
+            val file = java.io.File("src/main/assets/new_levels/NewLevel_$lvlNum.json")
+            assertTrue("NewLevel_$lvlNum.json must exist", file.exists())
+            val json = file.readText()
+            val level = com.arrowescape.puzzle.core.engine.LevelLoader.parseLevelJson(lvlNum, json)
+            assertNotNull("NewLevel_$lvlNum must parse successfully", level)
+            assertTrue("NewLevel_$lvlNum must have arrows", level!!.arrows.isNotEmpty())
+            assertTrue("NewLevel_$lvlNum grid must be positive", level.xSize > 0 && level.ySize > 0)
+            val occupancy = GridOccupancyMap(level.xSize, level.ySize).apply {
+                rebuild(level.arrows)
+            }
+            val movable = level.arrows.filter { PuzzleSolver.canMoveOut(it, occupancy) }
+            assertTrue("NewLevel_$lvlNum must have at least one unblocked arrow to start", movable.isNotEmpty())
+        }
+    }
 }

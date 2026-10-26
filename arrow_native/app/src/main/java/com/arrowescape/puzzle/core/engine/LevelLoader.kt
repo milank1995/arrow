@@ -55,6 +55,29 @@ object LevelLoader {
         }
 
         return loadLevel(context, dailyIndex)
+    }
+
+    /**
+     * Loads an authentic sequential normal level from assets/new_levels/NewLevel_{N}.json.
+     * There are 1,533 authentic sequential normal levels extracted directly from Amaze Go:
+     * - Levels 1–20: Authentic onboarding / intro sequence (GuideLevels17)
+     * - Levels 21–1533: Mainline prioritized normal progression (NormalLevelsPriority 0-3)
+     */
+    fun loadNewLevel(context: Context, levelNumber: Int): LevelData {
+        val totalNewLevels = 1533
+        val actualLevelNumber = ((levelNumber - 1) % totalNewLevels) + 1
+        val assetName = "new_levels/NewLevel_$actualLevelNumber.json"
+        try {
+            val jsonStr = context.assets.open(assetName).bufferedReader().use { it.readText() }
+            val level = parseLevelJson(levelNumber, jsonStr)
+            if (level != null && level.arrows.isNotEmpty()) {
+                return level
+            }
+        } catch (e: Exception) {
+            // Fall back to main level loader
+        }
+
+        return loadLevel(context, levelNumber)
     }
 
     fun parseLevelJson(levelNumber: Int, jsonStr: String): LevelData? {

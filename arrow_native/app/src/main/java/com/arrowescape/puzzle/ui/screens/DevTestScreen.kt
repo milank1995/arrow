@@ -76,7 +76,8 @@ fun DevTestScreen(
     val coroutineScope = rememberCoroutineScope()
     BackHandler(onBack = onBackToHomeClick)
 
-    var currentLevelNumber by remember { mutableIntStateOf(50) } // Default to a dense, challenging level
+    var isNewLevelsMode by remember { mutableStateOf(true) } // Default to testing new Unity levels (1-1533)
+    var currentLevelNumber by remember { mutableIntStateOf(1) } // Start at Level 1 of New Levels
     var levelData by remember { mutableStateOf<LevelData?>(null) }
     var arrows by remember { mutableStateOf<List<Arrow>>(emptyList()) }
     var occupancyMap by remember { mutableStateOf(GridOccupancyMap(4, 4)) }
@@ -93,9 +94,15 @@ fun DevTestScreen(
     var showLevelSelectDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
 
-    fun loadLevel(levelNum: Int) {
-        val boundedLevel = levelNum.coerceIn(1, 1001)
-        val level = LevelLoader.loadLevel(context, boundedLevel)
+    fun loadLevel(levelNum: Int, isNew: Boolean = isNewLevelsMode) {
+        val maxLevels = if (isNew) 1533 else 1001
+        val boundedLevel = levelNum.coerceIn(1, maxLevels)
+        val level = if (isNew) {
+            LevelLoader.loadNewLevel(context, boundedLevel)
+        } else {
+            LevelLoader.loadLevel(context, boundedLevel)
+        }
+        isNewLevelsMode = isNew
         levelData = level
         arrows = level.arrows
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
@@ -279,7 +286,8 @@ fun DevTestScreen(
                             }
                         },
                         onNextLevelClick = {
-                            if (currentLevelNumber < 1001) {
+                            val maxLevels = if (isNewLevelsMode) 1533 else 1001
+                            if (currentLevelNumber < maxLevels) {
                                 loadLevel(currentLevelNumber + 1)
                             }
                         },
@@ -380,7 +388,12 @@ fun DevTestScreen(
                 isDailyChallenge = false,
                 onClaimDoubleCoins = {},
                 onNextLevelClick = {
-                    loadLevel(currentLevelNumber + 1)
+                    val maxLevels = if (isNewLevelsMode) 1533 else 1001
+                    if (currentLevelNumber < maxLevels) {
+                        loadLevel(currentLevelNumber + 1)
+                    } else {
+                        loadLevel(1)
+                    }
                 },
                 onHomeClick = onBackToHomeClick
             )
@@ -399,9 +412,10 @@ fun DevTestScreen(
         if (showLevelSelectDialog) {
             LevelSelectorDialog(
                 currentLevel = currentLevelNumber,
-                onLevelSelected = { lvl ->
+                isNewLevelsMode = isNewLevelsMode,
+                onLevelSelected = { lvl, isNew ->
                     showLevelSelectDialog = false
-                    loadLevel(lvl)
+                    loadLevel(lvl, isNew)
                 },
                 onDismiss = { showLevelSelectDialog = false }
             )
@@ -412,9 +426,11 @@ fun DevTestScreen(
 @Composable
 private fun LevelSelectorDialog(
     currentLevel: Int,
-    onLevelSelected: (Int) -> Unit,
+    isNewLevelsMode: Boolean,
+    onLevelSelected: (Int, Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
+    var isNewMode by remember { mutableStateOf(isNewLevelsMode) }
     var inputLevelText by remember { mutableStateOf(currentLevel.toString()) }
 
     Dialog(onDismissRequest = onDismiss) {
@@ -447,33 +463,96 @@ private fun LevelSelectorDialog(
                     }
                 }
 
-                Text(
-                    text = "Choose an authentic original game puzzle (1 to 1001):",
-                    fontSize = 13.sp,
-                    color = Color(0xFF64748B),
-                    modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
-                )
+                Spacer(modifier = Modifier.height(10.dp))
 
-                // Quick presets for varied grid sizes and complexities
+                // Mode Tabs (New Unity Levels vs Classic Levels)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = if (isNewMode) Color(0xFF4F46E5) else Color(0xFFF1F5F9),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                isNewMode = true
+                                inputLevelText = "1"
+                            }
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.padding(vertical = 10.dp)
+                        ) {
+                            Text(
+                                text = "≡ƒº¬ New Levels (1533)",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isNewMode) Color.White else Color(0xFF475569)
+                            )
+                        }
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = if (!isNewMode) Color(0xFF4F46E5) else Color(0xFFF1F5F9),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                isNewMode = false
+                                inputLevelText = "1"
+                            }
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.padding(vertical = 10.dp)
+                        ) {
+                            Text(
+                                text = "Classic Levels (1001)",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (!isNewMode) Color.White else Color(0xFF475569)
+                            )
+                        }
+                    }
+                }
+
                 Text(
-                    text = "Curated Layout Complexities:",
+                    text = if (isNewMode) {
+                        "1533 authentic new levels extracted from the new Unity version:"
+                    } else {
+                        "Handcrafted original designer levels (1 to 1001):"
+                    },
                     fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF334155),
-                    modifier = Modifier.padding(bottom = 6.dp)
+                    color = Color(0xFF64748B),
+                    modifier = Modifier.padding(top = 10.dp, bottom = 10.dp)
                 )
 
-                val quickLevels = listOf(
-                    1 to "Intro (5x5)",
-                    5 to "Simple (5x5)",
-                    20 to "Medium (6x6)",
-                    50 to "Dense (20x24)",
-                    100 to "Labyrinth (45 arr)",
-                    500 to "Master (50+ arr)",
-                    999 to "Mega (37x53, 80+)",
-                    1000 to "Spiral Milestone",
-                    1001 to "Final Labyrinth (81)"
-                )
+                val quickLevels = if (isNewMode) {
+                    listOf(
+                        1 to "Intro (L1 4x5)",
+                        5 to "Milestone (L5 50x18)",
+                        10 to "Milestone (L10 40x50)",
+                        20 to "Intro Final (L20)",
+                        21 to "Normal Start (L21)",
+                        50 to "Normal (L50)",
+                        100 to "Normal (L100)",
+                        500 to "Normal (L500)",
+                        1000 to "Normal (L1000)",
+                        1533 to "Normal (L1533)"
+                    )
+                } else {
+                    listOf(
+                        1 to "Intro (5x5)",
+                        5 to "Simple (5x5)",
+                        20 to "Medium (6x6)",
+                        50 to "Dense (20x24)",
+                        100 to "Labyrinth (45 arr)",
+                        500 to "Master (50+ arr)",
+                        999 to "Mega (37x53, 80+)",
+                        1001 to "Final Labyrinth (81)"
+                    )
+                }
 
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     quickLevels.chunked(2).forEach { rowPair ->
@@ -482,7 +561,7 @@ private fun LevelSelectorDialog(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             rowPair.forEach { (lvl, desc) ->
-                                val isCurrent = (lvl == currentLevel)
+                                val isCurrent = (lvl == currentLevel && isNewMode == isNewLevelsMode)
                                 Surface(
                                     shape = RoundedCornerShape(10.dp),
                                     color = if (isCurrent) Color(0xFFEEF2FF) else Color(0xFFF8FAFC),
@@ -492,7 +571,7 @@ private fun LevelSelectorDialog(
                                     ),
                                     modifier = Modifier
                                         .weight(1f)
-                                        .clickable { onLevelSelected(lvl) }
+                                        .clickable { onLevelSelected(lvl, isNewMode) }
                                 ) {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
@@ -520,9 +599,10 @@ private fun LevelSelectorDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 // Custom Level Number Input
+                val maxLimit = if (isNewMode) 1533 else 1001
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -531,15 +611,15 @@ private fun LevelSelectorDialog(
                     OutlinedTextField(
                         value = inputLevelText,
                         onValueChange = { inputLevelText = it },
-                        label = { Text("Level # (1-1001)") },
+                        label = { Text("Level # (1-$maxLimit)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
                     Button(
                         onClick = {
-                            val lvl = inputLevelText.toIntOrNull()?.coerceIn(1, 1001) ?: currentLevel
-                            onLevelSelected(lvl)
+                            val lvl = inputLevelText.toIntOrNull()?.coerceIn(1, maxLimit) ?: 1
+                            onLevelSelected(lvl, isNewMode)
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4F46E5)),
                         modifier = Modifier.height(56.dp)
