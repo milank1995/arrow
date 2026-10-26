@@ -445,21 +445,9 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // New Levels Test Hub Button (Testing 1,533 Authentic Sequential Levels)
+                // Explore All 14,040 Authentic Levels
                 AppSecondaryButton(
-                    text = "🧪 New Levels (1,533 Normal Levels)",
-                    onClick = onDevTestClick,
-                    theme = theme,
-                    modifier = Modifier
-                        .widthIn(max = 380.dp)
-                        .fillMaxWidth(0.88f)
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                // New Levels Test Hub Button (Testing 1,533 Authentic Sequential Levels)
-                AppSecondaryButton(
-                    text = "🧪 New Levels (1,533 Normal Levels)",
+                    text = "🧪 New Levels (14,040 Authentic Levels)",
                     onClick = onDevTestClick,
                     theme = theme,
                     modifier = Modifier
