@@ -196,10 +196,12 @@ class PuzzleEngineTest {
 
     @Test
     fun testDailyLevelHintCalculation() {
-        val file = java.io.File("src/main/assets/levels/DailyLevels_97.json")
-        assertTrue("DailyLevels_97.json must exist", file.exists())
-        val json = file.readText()
-        val level = com.arrowescape.puzzle.core.engine.LevelLoader.parseLevelJson(97, json)
+        val file = java.io.File("src/main/assets/levels/daily_pack.dat")
+        assertTrue("daily_pack.dat must exist", file.exists())
+        val jsonStr = com.arrowescape.puzzle.core.engine.LevelLoader.decryptAndDecompress(java.io.FileInputStream(file))
+        val dailyArray = org.json.JSONArray(jsonStr)
+        val levelObj = dailyArray.getJSONObject(96) // Level 97
+        val level = com.arrowescape.puzzle.core.engine.LevelLoader.parseLevelJsonObject(97, levelObj)
         assertNotNull("Level should parse", level)
         val occupancy = GridOccupancyMap(level!!.xSize, level.ySize).apply {
             rebuild(level.arrows)
@@ -211,20 +213,32 @@ class PuzzleEngineTest {
 
     @Test
     fun testAuthenticSequentialNormalLevels() {
-        val testLevels = listOf(1, 2, 3, 4, 5, 10, 20, 21, 50, 100, 500, 1000, 1533)
+        val pack0File = java.io.File("src/main/assets/levels/level_pack_00.dat")
+        assertTrue("level_pack_00.dat must exist", pack0File.exists())
+        val jsonStr0 = com.arrowescape.puzzle.core.engine.LevelLoader.decryptAndDecompress(java.io.FileInputStream(pack0File))
+        val pack0Array = org.json.JSONArray(jsonStr0)
+
+        val pack1File = java.io.File("src/main/assets/levels/level_pack_01.dat")
+        assertTrue("level_pack_01.dat must exist", pack1File.exists())
+        val jsonStr1 = com.arrowescape.puzzle.core.engine.LevelLoader.decryptAndDecompress(java.io.FileInputStream(pack1File))
+        val pack1Array = org.json.JSONArray(jsonStr1)
+
+        val testLevels = listOf(1, 2, 3, 4, 5, 10, 20, 21, 25, 50, 100, 500, 1000, 1533)
         for (lvlNum in testLevels) {
-            val file = java.io.File("src/main/assets/new_levels/NewLevel_$lvlNum.json")
-            assertTrue("NewLevel_$lvlNum.json must exist", file.exists())
-            val json = file.readText()
-            val level = com.arrowescape.puzzle.core.engine.LevelLoader.parseLevelJson(lvlNum, json)
-            assertNotNull("NewLevel_$lvlNum must parse successfully", level)
-            assertTrue("NewLevel_$lvlNum must have arrows", level!!.arrows.isNotEmpty())
-            assertTrue("NewLevel_$lvlNum grid must be positive", level.xSize > 0 && level.ySize > 0)
+            val levelObj = if (lvlNum <= 1000) {
+                pack0Array.getJSONObject(lvlNum - 1)
+            } else {
+                pack1Array.getJSONObject(lvlNum - 1001)
+            }
+            val level = com.arrowescape.puzzle.core.engine.LevelLoader.parseLevelJsonObject(lvlNum, levelObj)
+            assertNotNull("Level $lvlNum must parse successfully", level)
+            assertTrue("Level $lvlNum must have arrows", level!!.arrows.isNotEmpty())
+            assertTrue("Level $lvlNum grid must be positive", level.xSize > 0 && level.ySize > 0)
             val occupancy = GridOccupancyMap(level.xSize, level.ySize).apply {
                 rebuild(level.arrows)
             }
             val movable = level.arrows.filter { PuzzleSolver.canMoveOut(it, occupancy) }
-            assertTrue("NewLevel_$lvlNum must have at least one unblocked arrow to start", movable.isNotEmpty())
+            assertTrue("Level $lvlNum must have at least one unblocked arrow to start", movable.isNotEmpty())
         }
     }
 }

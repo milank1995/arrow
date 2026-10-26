@@ -6,83 +6,151 @@ import com.arrowescape.puzzle.core.model.Direction
 import com.arrowescape.puzzle.core.model.GridCoordinate
 import com.arrowescape.puzzle.core.model.LevelData
 import com.arrowescape.puzzle.core.model.LevelDifficulty
+import org.json.JSONArray
 import org.json.JSONObject
+import java.io.ByteArrayInputStream
+import java.io.InputStream
+import java.util.zip.GZIPInputStream
+import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 object LevelLoader {
 
+    const val TOTAL_LEVELS = 14040
+    const val CHUNK_SIZE = 1000
+
+    // AES-256 Secret Key (32 bytes)
+    private val AES_KEY = "AmazeGo_Arrow_Security_Key_2026!".toByteArray(Charsets.UTF_8)
+
+    // In-memory cache of the currently active decrypted pack (1,000 levels)
+    private var cachedPackIndex: Int = -1
+    private var cachedPackLevels: JSONArray? = null
+
+    // In-memory cache for daily challenge pack (300 levels)
+    private var cachedDailyLevels: JSONArray? = null
+
     /**
-     * Loads the authentic Unity level from assets/levels/Level_{N}.json.
-     * The original game has 1001 handcrafted levels (Level 1 to Level 1001).
-     * For any levelNumber > 1001, it wraps cleanly into the authentic level pool,
-     * ensuring every level displays the true intended handcrafted puzzle layout.
+     * Loads an authentic level from the AES-256 encrypted binary packs (Levels 1 to 14,040).
+     * Automatically handles chunk caching in memory for sub-millisecond level loads.
      */
     fun loadLevel(context: Context, levelNumber: Int): LevelData {
-        val totalHandcraftedLevels = 1001
-        val actualLevelNumber = ((levelNumber - 1) % totalHandcraftedLevels) + 1
-        val assetName = "levels/Level_$actualLevelNumber.json"
-        try {
-            val jsonStr = context.assets.open(assetName).bufferedReader().use { it.readText() }
-            val level = parseLevelJson(levelNumber, jsonStr)
-            if (level != null && level.arrows.isNotEmpty()) {
-                return level
-            }
-        } catch (e: Exception) {
-            // If any asset read issue, load Level 1 as safe authentic fallback
-        }
+        val actualLevelNumber = ((levelNumber - 1) % TOTAL_LEVELS) + 1
+        val packIndex = (actualLevelNumber - 1) / CHUNK_SIZE
+        val indexInPack = (actualLevelNumber - 1) % CHUNK_SIZE
 
         try {
-            val fallbackJson = context.assets.open("levels/Level_1.json").bufferedReader().use { it.readText() }
-            val fallback = parseLevelJson(levelNumber, fallbackJson)
-            if (fallback != null) return fallback
-        } catch (e: Exception) {}
+            val packArray = getOrLoadPack(context, packIndex)
+            if (packArray != null && indexInPack < packArray.length()) {
+                val levelJson = packArray.getJSONObject(indexInPack)
+                val level = parseLevelJsonObject(actualLevelNumber, levelJson)
+                if (level != null && level.arrows.isNotEmpty()) {
+                    return level
+                }
+            }
+        } catch (e: Exception) {
+            // Fallback handled below
+        }
 
         return LevelGenerator.generateProceduralLevel(levelNumber, levelNumber.toLong())
     }
 
     /**
-     * Loads a daily level from assets/levels/DailyLevels_{N}.json.
+     * Loads a daily level from the encrypted daily_pack.dat.
      */
     fun loadDailyLevel(context: Context, dailyIndex: Int): LevelData {
-        val assetName = "levels/DailyLevels_$dailyIndex.json"
+        val actualIndex = ((dailyIndex - 1) % 300)
         try {
-            val jsonStr = context.assets.open(assetName).bufferedReader().use { it.readText() }
-            val level = parseLevelJson(dailyIndex, jsonStr)
-            if (level != null && level.arrows.isNotEmpty()) {
-                return level
+            val dailyArray = getOrLoadDailyPack(context)
+            if (dailyArray != null && actualIndex < dailyArray.length()) {
+                val levelJson = dailyArray.getJSONObject(actualIndex)
+                val level = parseLevelJsonObject(dailyIndex, levelJson)
+                if (level != null && level.arrows.isNotEmpty()) {
+                    return level
+                }
             }
         } catch (e: Exception) {
             // Fall back to standard level
         }
 
         return loadLevel(context, dailyIndex)
-    }
+    }
 
     /**
-     * Loads an authentic sequential normal level from assets/new_levels/NewLevel_{N}.json.
-     * There are 1,533 authentic sequential normal levels extracted directly from Amaze Go:
-     * - Levels 1–20: Authentic onboarding / intro sequence (GuideLevels17)
-     * - Levels 21–1533: Mainline prioritized normal progression (NormalLevelsPriority 0-3)
+     * Unified interface: loads from the authentic master sequence (1 to 14,040).
      */
     fun loadNewLevel(context: Context, levelNumber: Int): LevelData {
-        val totalNewLevels = 1533
-        val actualLevelNumber = ((levelNumber - 1) % totalNewLevels) + 1
-        val assetName = "new_levels/NewLevel_$actualLevelNumber.json"
-        try {
-            val jsonStr = context.assets.open(assetName).bufferedReader().use { it.readText() }
-            val level = parseLevelJson(levelNumber, jsonStr)
-            if (level != null && level.arrows.isNotEmpty()) {
-                return level
-            }
-        } catch (e: Exception) {
-            // Fall back to main level loader
-        }
-
         return loadLevel(context, levelNumber)
     }
 
+    @Synchronized
+    private fun getOrLoadPack(context: Context, packIndex: Int): JSONArray? {
+        if (cachedPackIndex == packIndex && cachedPackLevels != null) {
+            return cachedPackLevels
+        }
+
+        val fileName = String.format("levels/level_pack_%02d.dat", packIndex)
+        return try {
+            context.assets.open(fileName).use { inputStream ->
+                val jsonStr = decryptAndDecompress(inputStream)
+                val array = JSONArray(jsonStr)
+                cachedPackIndex = packIndex
+                cachedPackLevels = array
+                array
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    @Synchronized
+    private fun getOrLoadDailyPack(context: Context): JSONArray? {
+        if (cachedDailyLevels != null) {
+            return cachedDailyLevels
+        }
+
+        return try {
+            context.assets.open("levels/daily_pack.dat").use { inputStream ->
+                val jsonStr = decryptAndDecompress(inputStream)
+                val array = JSONArray(jsonStr)
+                cachedDailyLevels = array
+                array
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun decryptAndDecompress(inputStream: InputStream): String {
+        val iv = ByteArray(16)
+        var bytesRead = 0
+        while (bytesRead < 16) {
+            val r = inputStream.read(iv, bytesRead, 16 - bytesRead)
+            if (r == -1) break
+            bytesRead += r
+        }
+        val ciphertext = inputStream.readBytes()
+
+        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+        val keySpec = SecretKeySpec(AES_KEY, "AES")
+        val ivSpec = IvParameterSpec(iv)
+        cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec)
+        val decrypted = cipher.doFinal(ciphertext)
+
+        val gzipIn = GZIPInputStream(ByteArrayInputStream(decrypted))
+        return gzipIn.bufferedReader(Charsets.UTF_8).use { it.readText() }
+    }
+
     fun parseLevelJson(levelNumber: Int, jsonStr: String): LevelData? {
+        return try {
+            parseLevelJsonObject(levelNumber, JSONObject(jsonStr))
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun parseLevelJsonObject(levelNumber: Int, root: JSONObject): LevelData? {
         try {
-            val root = JSONObject(jsonStr)
             val xSize = root.getInt("XSize")
             val ySize = root.getInt("YSize")
             val maxHearts = root.optInt("MaxHearts", 3).coerceIn(1, 5)
@@ -110,8 +178,6 @@ object LevelLoader {
                     bodyPointsReversed.add(GridCoordinate(canvasX, canvasY))
                 }
 
-                // In JSON, Indices starts with HEAD at index 0 and ends with TAIL.
-                // In our model, body is ordered TAIL -> HEAD.
                 val body = bodyPointsReversed.reversed()
                 val head = body.last()
 
@@ -150,7 +216,7 @@ object LevelLoader {
                 maxHearts = maxHearts,
                 difficulty = difficulty,
                 diffScore = arrowList.size * 10,
-                diffDna = "UNITY_LVL_${levelNumber}_${xSize}x${ySize}_${arrowList.size}"
+                diffDna = "AMZ_LVL_${levelNumber}_${xSize}x${ySize}_${arrowList.size}"
             )
         } catch (e: Exception) {
             return null

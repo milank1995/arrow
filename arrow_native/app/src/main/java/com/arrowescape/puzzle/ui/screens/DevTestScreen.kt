@@ -95,7 +95,7 @@ fun DevTestScreen(
     var showThemeDialog by remember { mutableStateOf(false) }
 
     fun loadLevel(levelNum: Int, isNew: Boolean = isNewLevelsMode) {
-        val maxLevels = if (isNew) 1533 else 1001
+        val maxLevels = LevelLoader.TOTAL_LEVELS
         val boundedLevel = levelNum.coerceIn(1, maxLevels)
         val level = if (isNew) {
             LevelLoader.loadNewLevel(context, boundedLevel)
@@ -286,7 +286,7 @@ fun DevTestScreen(
                             }
                         },
                         onNextLevelClick = {
-                            val maxLevels = if (isNewLevelsMode) 1533 else 1001
+                            val maxLevels = LevelLoader.TOTAL_LEVELS
                             if (currentLevelNumber < maxLevels) {
                                 loadLevel(currentLevelNumber + 1)
                             }
@@ -388,7 +388,7 @@ fun DevTestScreen(
                 isDailyChallenge = false,
                 onClaimDoubleCoins = {},
                 onNextLevelClick = {
-                    val maxLevels = if (isNewLevelsMode) 1533 else 1001
+                    val maxLevels = LevelLoader.TOTAL_LEVELS
                     if (currentLevelNumber < maxLevels) {
                         loadLevel(currentLevelNumber + 1)
                     } else {
