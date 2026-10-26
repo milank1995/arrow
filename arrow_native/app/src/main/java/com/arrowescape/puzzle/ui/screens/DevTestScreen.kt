@@ -488,7 +488,8 @@ private fun LevelSelectorDialog(
                     )
                     Button(
                         onClick = {
-                            val lvl = inputLevelText.toIntOrNull()?.coerceIn(1, maxLimit) ?: 1
+                            val parsed = inputLevelText.replace(",", "").replace(".", "").replace(" ", "").trim().toIntOrNull()
+                            val lvl = parsed?.coerceIn(1, maxLimit) ?: 1
                             onLevelSelected(lvl, true)
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4F46E5)),

@@ -107,22 +107,26 @@ fun GameHeader(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
             ) {
                 // LEFT: Clean, minimal HUD pods (Pause || + Dual-Action Sound 🔊/🔇)
+                val podSize = if (isTestMode) 36.dp else 40.dp
+                val iconSize = if (isTestMode) 18.dp else 20.dp
+                val podCorner = if (isTestMode) 12.dp else 14.dp
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(if (isTestMode) 6.dp else 8.dp)
                 ) {
                     // 1. Pause button inside rounded tactile pod
                     Surface(
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(podCorner),
                         color = theme.boosterBg,
                         border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
                         shadowElevation = 1.dp,
                         modifier = Modifier
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(14.dp))
+                            .size(podSize)
+                            .clip(RoundedCornerShape(podCorner))
                             .clickable(onClick = effectivePause)
                     ) {
                         Box(
@@ -133,20 +137,20 @@ fun GameHeader(
                                 imageVector = Icons.Default.Pause,
                                 contentDescription = "Pause Game",
                                 tint = theme.textPrimary,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(iconSize)
                             )
                         }
                     }
 
                     // 2. Dual-action Sound button: Quick tap toggles audio, Hold for settings
                     Surface(
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(podCorner),
                         color = theme.boosterBg,
                         border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
                         shadowElevation = 1.dp,
                         modifier = Modifier
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(14.dp))
+                            .size(podSize)
+                            .clip(RoundedCornerShape(podCorner))
                             .combinedClickable(
                                 onClick = effectiveSoundToggle,
                                 onLongClick = effectiveSoundLongPress
@@ -160,7 +164,7 @@ fun GameHeader(
                                 imageVector = if (isSoundOn) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeMute,
                                 contentDescription = if (isSoundOn) "Mute Sound (Hold for Settings)" else "Unmute Sound (Hold for Settings)",
                                 tint = if (isSoundOn) theme.textPrimary else theme.textSecondary.copy(alpha = 0.5f),
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(iconSize)
                             )
                         }
                     }
@@ -168,13 +172,13 @@ fun GameHeader(
                     // Optional Dev Theme button (shown only in test mode)
                     if (isTestMode && onThemeClick != null) {
                         Surface(
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(podCorner),
                             color = theme.boosterBg,
                             border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
                             shadowElevation = 1.dp,
                             modifier = Modifier
-                                .size(40.dp)
-                                .clip(RoundedCornerShape(14.dp))
+                                .size(podSize)
+                                .clip(RoundedCornerShape(podCorner))
                                 .clickable(onClick = onThemeClick)
                         ) {
                             Box(
@@ -185,7 +189,7 @@ fun GameHeader(
                                     imageVector = Icons.Default.Palette,
                                     contentDescription = "Themes",
                                     tint = theme.textPrimary,
-                                    modifier = Modifier.size(20.dp)
+                                    modifier = Modifier.size(iconSize)
                                 )
                             }
                         }
@@ -259,19 +263,21 @@ fun GameHeader(
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                    modifier = Modifier.padding(horizontal = 9.dp, vertical = 2.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(3.dp),
+                                    modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp)
                                 ) {
                                     Text(
                                         text = "Level $levelNumber",
-                                        fontSize = 13.sp,
+                                        fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = theme.textPrimary
+                                        color = theme.textPrimary,
+                                        maxLines = 1,
+                                        softWrap = false
                                     )
                                     if (onLevelNumberClick != null) {
                                         Text(
                                             text = "▾",
-                                            fontSize = 11.sp,
+                                            fontSize = 10.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = theme.textSecondary
                                         )
@@ -321,16 +327,16 @@ fun GameHeader(
                     border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
                     shadowElevation = 1.dp,
                     modifier = Modifier
-                        .height(40.dp)
+                        .height(38.dp)
                         .scale(badgeScale.value)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                     ) {
                         // Bold solid directional arrow icon matching Screenshot 1
-                        androidx.compose.foundation.Canvas(modifier = Modifier.size(15.dp)) {
+                        androidx.compose.foundation.Canvas(modifier = Modifier.size(14.dp)) {
                             val path = androidx.compose.ui.graphics.Path().apply {
                                 moveTo(size.width * 0.95f, size.height * 0.05f)
                                 lineTo(size.width * 0.95f, size.height * 0.65f)
@@ -346,9 +352,11 @@ fun GameHeader(
 
                         Text(
                             text = "$remainingArrowsCount",
-                            fontSize = 16.sp,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
-                            color = theme.textPrimary
+                            color = theme.textPrimary,
+                            maxLines = 1,
+                            softWrap = false
                         )
                     }
                 }
