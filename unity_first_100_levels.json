@@ -1,0 +1,802 @@
+[
+  {
+    "level_number": 1,
+    "arrow_count": 4,
+    "width": 4,
+    "height": 5,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 2,
+    "arrow_count": 4,
+    "width": 5,
+    "height": 5,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 3,
+    "arrow_count": 4,
+    "width": 5,
+    "height": 5,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 4,
+    "arrow_count": 7,
+    "width": 8,
+    "height": 10,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 5,
+    "arrow_count": 14,
+    "width": 12,
+    "height": 14,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 6,
+    "arrow_count": 54,
+    "width": 50,
+    "height": 18,
+    "is_shape_level": true,
+    "shape_name": "Shape Puzzle (c2f9042ea8ee)"
+  },
+  {
+    "level_number": 7,
+    "arrow_count": 17,
+    "width": 10,
+    "height": 13,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 8,
+    "arrow_count": 15,
+    "width": 10,
+    "height": 15,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 9,
+    "arrow_count": 23,
+    "width": 14,
+    "height": 19,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 10,
+    "arrow_count": 99,
+    "width": 40,
+    "height": 50,
+    "is_shape_level": true,
+    "shape_name": "Shape Puzzle (def53ee0c254)"
+  },
+  {
+    "level_number": 11,
+    "arrow_count": 12,
+    "width": 10,
+    "height": 12,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 12,
+    "arrow_count": 30,
+    "width": 14,
+    "height": 21,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 13,
+    "arrow_count": 20,
+    "width": 14,
+    "height": 17,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 14,
+    "arrow_count": 31,
+    "width": 16,
+    "height": 20,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 15,
+    "arrow_count": 28,
+    "width": 15,
+    "height": 22,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 16,
+    "arrow_count": 53,
+    "width": 37,
+    "height": 33,
+    "is_shape_level": true,
+    "shape_name": "Shape Puzzle (2a79f522f5d2)"
+  },
+  {
+    "level_number": 17,
+    "arrow_count": 19,
+    "width": 12,
+    "height": 14,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 18,
+    "arrow_count": 34,
+    "width": 15,
+    "height": 22,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 19,
+    "arrow_count": 24,
+    "width": 14,
+    "height": 21,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 20,
+    "arrow_count": 62,
+    "width": 22,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 21,
+    "arrow_count": 49,
+    "width": 37,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 22,
+    "arrow_count": 54,
+    "width": 20,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 23,
+    "arrow_count": 28,
+    "width": 16,
+    "height": 18,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 24,
+    "arrow_count": 46,
+    "width": 20,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 25,
+    "arrow_count": 37,
+    "width": 18,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 26,
+    "arrow_count": 130,
+    "width": 37,
+    "height": 49,
+    "is_shape_level": true,
+    "shape_name": "Shape Puzzle (e6cd4dbe80cc)"
+  },
+  {
+    "level_number": 27,
+    "arrow_count": 19,
+    "width": 15,
+    "height": 17,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 28,
+    "arrow_count": 33,
+    "width": 16,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 29,
+    "arrow_count": 36,
+    "width": 17,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 30,
+    "arrow_count": 22,
+    "width": 14,
+    "height": 17,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 31,
+    "arrow_count": 35,
+    "width": 15,
+    "height": 22,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 32,
+    "arrow_count": 68,
+    "width": 35,
+    "height": 35,
+    "is_shape_level": true,
+    "shape_name": "Shape Puzzle (db2e2bbb4f98)"
+  },
+  {
+    "level_number": 33,
+    "arrow_count": 41,
+    "width": 18,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 34,
+    "arrow_count": 45,
+    "width": 20,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 35,
+    "arrow_count": 29,
+    "width": 16,
+    "height": 20,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 36,
+    "arrow_count": 36,
+    "width": 20,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 37,
+    "arrow_count": 31,
+    "width": 17,
+    "height": 18,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 38,
+    "arrow_count": 101,
+    "width": 36,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 39,
+    "arrow_count": 42,
+    "width": 18,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 40,
+    "arrow_count": 99,
+    "width": 26,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 41,
+    "arrow_count": 57,
+    "width": 22,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 42,
+    "arrow_count": 56,
+    "width": 25,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 43,
+    "arrow_count": 40,
+    "width": 17,
+    "height": 21,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 44,
+    "arrow_count": 49,
+    "width": 22,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 45,
+    "arrow_count": 86,
+    "width": 23,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 46,
+    "arrow_count": 81,
+    "width": 22,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 47,
+    "arrow_count": 47,
+    "width": 20,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 48,
+    "arrow_count": 36,
+    "width": 23,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 49,
+    "arrow_count": 41,
+    "width": 18,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 50,
+    "arrow_count": 35,
+    "width": 17,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 51,
+    "arrow_count": 53,
+    "width": 18,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 52,
+    "arrow_count": 30,
+    "width": 16,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 53,
+    "arrow_count": 55,
+    "width": 20,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 54,
+    "arrow_count": 61,
+    "width": 23,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 55,
+    "arrow_count": 46,
+    "width": 20,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 56,
+    "arrow_count": 55,
+    "width": 20,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 57,
+    "arrow_count": 53,
+    "width": 20,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 58,
+    "arrow_count": 54,
+    "width": 23,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 59,
+    "arrow_count": 63,
+    "width": 21,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 60,
+    "arrow_count": 49,
+    "width": 19,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 61,
+    "arrow_count": 59,
+    "width": 23,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 62,
+    "arrow_count": 55,
+    "width": 21,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 63,
+    "arrow_count": 31,
+    "width": 19,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 64,
+    "arrow_count": 50,
+    "width": 18,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 65,
+    "arrow_count": 42,
+    "width": 20,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 66,
+    "arrow_count": 52,
+    "width": 20,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 67,
+    "arrow_count": 43,
+    "width": 19,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 68,
+    "arrow_count": 47,
+    "width": 25,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 69,
+    "arrow_count": 75,
+    "width": 22,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 70,
+    "arrow_count": 55,
+    "width": 20,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 71,
+    "arrow_count": 49,
+    "width": 22,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 72,
+    "arrow_count": 43,
+    "width": 18,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 73,
+    "arrow_count": 67,
+    "width": 23,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 74,
+    "arrow_count": 48,
+    "width": 20,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 75,
+    "arrow_count": 60,
+    "width": 22,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 76,
+    "arrow_count": 47,
+    "width": 19,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 77,
+    "arrow_count": 38,
+    "width": 23,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 78,
+    "arrow_count": 49,
+    "width": 22,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 79,
+    "arrow_count": 50,
+    "width": 22,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 80,
+    "arrow_count": 53,
+    "width": 22,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 81,
+    "arrow_count": 37,
+    "width": 20,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 82,
+    "arrow_count": 49,
+    "width": 18,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 83,
+    "arrow_count": 63,
+    "width": 21,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 84,
+    "arrow_count": 38,
+    "width": 22,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 85,
+    "arrow_count": 46,
+    "width": 19,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 86,
+    "arrow_count": 84,
+    "width": 24,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 87,
+    "arrow_count": 43,
+    "width": 20,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 88,
+    "arrow_count": 39,
+    "width": 18,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 89,
+    "arrow_count": 59,
+    "width": 23,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 90,
+    "arrow_count": 52,
+    "width": 21,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 91,
+    "arrow_count": 86,
+    "width": 23,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 92,
+    "arrow_count": 28,
+    "width": 18,
+    "height": 22,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 93,
+    "arrow_count": 49,
+    "width": 19,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 94,
+    "arrow_count": 37,
+    "width": 23,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 95,
+    "arrow_count": 44,
+    "width": 18,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 96,
+    "arrow_count": 51,
+    "width": 22,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 97,
+    "arrow_count": 57,
+    "width": 23,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 98,
+    "arrow_count": 54,
+    "width": 19,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 99,
+    "arrow_count": 59,
+    "width": 20,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 100,
+    "arrow_count": 47,
+    "width": 20,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  }
+]
