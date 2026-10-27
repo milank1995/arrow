@@ -7,6 +7,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.FileInputStream
 import java.util.zip.GZIPInputStream
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
@@ -14,18 +15,17 @@ import javax.crypto.spec.SecretKeySpec
 
 class LevelLoaderCryptoTest {
 
-    private val AES_KEY = "AmazeGo_Arrow_Security_Key_2026!".toByteArray(Charsets.UTF_8)
+    private val aesKey = "AmazeGo_Arrow_Security_Key_2026!".toByteArray(Charsets.UTF_8)
 
     private fun decryptPack(file: File): JSONArray {
-        assertTrue("Pack file must exist at ${file.absolutePath}", file.exists())
-        val data = file.readBytes()
-        assertTrue("Pack file must have at least IV (16 bytes)", data.size > 16)
-
-        val iv = data.copyOfRange(0, 16)
-        val ciphertext = data.copyOfRange(16, data.size)
+        assertTrue("Pack file must exist: ${file.path}", file.exists())
+        val bytes = file.readBytes()
+        assertTrue("Pack must have at least 16 bytes IV", bytes.size > 16)
+        val iv = bytes.copyOfRange(0, 16)
+        val ciphertext = bytes.copyOfRange(16, bytes.size)
 
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
-        val keySpec = SecretKeySpec(AES_KEY, "AES")
+        val keySpec = SecretKeySpec(aesKey, "AES")
         val ivSpec = IvParameterSpec(iv)
         cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec)
         val decrypted = cipher.doFinal(ciphertext)
@@ -43,99 +43,43 @@ class LevelLoaderCryptoTest {
 
         // Test Level 1 (Tutorial Intro)
         val l1 = levels.getJSONObject(0)
+        assertEquals("Level 1 width must be 4", 4, l1.getInt("XSize"))
+        assertEquals("Level 1 height must be 5", 5, l1.getInt("YSize"))
         assertEquals("Level 1 must have 4 arrows", 4, l1.getJSONArray("Arrows").length())
 
-        // Test Level 5 (Milestone Shape 1 - Cocktail Glass)
+        // Test Level 5 (Milestone Shape 1)
         val l5 = levels.getJSONObject(4)
-        assertEquals("Level 5 must have 22 arrows", 22, l5.getJSONArray("Arrows").length())
+        assertEquals("Level 5 must have 54 arrows", 54, l5.getJSONArray("Arrows").length())
 
-        // Test Level 10 (Milestone Shape 2 - Palm Tree)
+        // Test Level 10 (Milestone Showstopper)
         val l10 = levels.getJSONObject(9)
-        assertEquals("Level 10 must have 23 arrows", 23, l10.getJSONArray("Arrows").length())
+        assertEquals("Level 10 must have 99 arrows", 99, l10.getJSONArray("Arrows").length())
 
-        // Test Level 15 (Milestone Shape 3 - Balloons)
+        // Test Level 15 (Milestone Shape 2)
         val l15 = levels.getJSONObject(14)
-        assertEquals("Level 15 must have 33 arrows", 33, l15.getJSONArray("Arrows").length())
+        assertEquals("Level 15 must have 53 arrows", 53, l15.getJSONArray("Arrows").length())
 
-        // Test Level 20 (Milestone Shape 4 - Rainbow Umbrella)
+        // Test Level 20 (Milestone Shape 3)
         val l20 = levels.getJSONObject(19)
-        assertEquals("Level 20 must have 34 arrows", 34, l20.getJSONArray("Arrows").length())
+        assertEquals("Level 20 must have 49 arrows", 49, l20.getJSONArray("Arrows").length())
 
-        // Test Level 25 (Milestone Shape 5 - Jellyfish)
+        // Test Level 25 (SuperHard Milestone)
         val l25 = levels.getJSONObject(24)
-        assertEquals("Level 25 must have 35 arrows", 35, l25.getJSONArray("Arrows").length())
+        assertEquals("Level 25 must have 74 arrows", 74, l25.getJSONArray("Arrows").length())
 
-        // Test Level 30 (Milestone Shape 6 - Symmetric Star)
+        // Test Level 26 (Cactus Heavy Milestone)
+        val l26 = levels.getJSONObject(25)
+        assertEquals("Level 26 must have 130 arrows", 130, l26.getJSONArray("Arrows").length())
+
+        // Test Level 30 (Milestone Shape 5)
         val l30 = levels.getJSONObject(29)
-        assertEquals("Level 30 must have 45 arrows", 45, l30.getJSONArray("Arrows").length())
+        assertEquals("Level 30 must have 68 arrows", 68, l30.getJSONArray("Arrows").length())
 
-        // Test Level 31 (Smooth continuation, no reset drop!)
+        // Test Level 31 (Smooth continuation, no 3-arrow drop!)
         val l31 = levels.getJSONObject(30)
-        assertEquals("Level 31 must maintain momentum with 44 arrows", 44, l31.getJSONArray("Arrows").length())
+        assertEquals("Level 31 must maintain momentum with 28 arrows", 28, l31.getJSONArray("Arrows").length())
 
-        println("Pack 00 verified successfully! First 30 levels onboarding and momentum intact.")
-    }
-
-    @Test
-    fun testShapePackDecryptionAndTiers() {
-        val shapeFile = File("src/main/assets/levels/shape_pack.dat")
-        val shapes = decryptPack(shapeFile)
-        assertEquals("Shape pack must contain 917 dynamic curated shapes", 917, shapes.length())
-
-        var maxArrows = 0
-        val tiersSeen = mutableSetOf<Int>()
-        for (i in 0 until shapes.length()) {
-            val s = shapes.getJSONObject(i)
-            tiersSeen.add(s.getInt("Tier"))
-            val arrCount = s.getJSONArray("Arrows").length()
-            if (arrCount > maxArrows) {
-                maxArrows = arrCount
-            }
-        }
-
-        assertEquals("Must cover all 6 difficulty tiers (0 to 5)", 6, tiersSeen.size)
-        assertEquals("Pinnacle shape must reach 437 arrows (Sphinx)", 437, maxArrows)
-        println("Shape pack verified successfully with 1,100 shapes across 6 tiers reaching $maxArrows arrows!")
-    }
-
-    @Test
-    fun testDynamicSelectionSimulation() {
-        val shapeFile = File("src/main/assets/levels/shape_pack.dat")
-        val shapes = decryptPack(shapeFile)
-
-        // Group by tier
-        val tier0 = mutableListOf<org.json.JSONObject>()
-        for (i in 0 until shapes.length()) {
-            val s = shapes.getJSONObject(i)
-            if (s.getInt("Tier") == 0) {
-                tier0.add(s)
-            }
-        }
-        assertTrue("Tier 0 must have at least 100 shapes", tier0.size >= 100)
-
-        // Simulate two different users
-        val user1Seed = 123456789L
-        val user2Seed = 987654321L
-
-        val idx1 = Math.floorMod((user1Seed xor (5L * 1000003L)).toInt(), tier0.size)
-        val idx2 = Math.floorMod((user2Seed xor (5L * 1000003L)).toInt(), tier0.size)
-
-        val shape1 = tier0[idx1].getString("Hash")
-        val shape2 = tier0[idx2].getString("Hash")
-
-        assertTrue("Different users should receive different shapes at Level 5", shape1 != shape2)
-
-        // Simulate retry: same user and level should get identical shape
-        val retryIdx = Math.floorMod((user1Seed xor (5L * 1000003L)).toInt(), tier0.size)
-        val retryShape = tier0[retryIdx].getString("Hash")
-        assertEquals("Retrying same level gives same shape", shape1, retryShape)
-
-        // Simulate completion and exclusion at next milestone (Level 10)
-        val unplayedTier0 = tier0.filter { it.getString("Hash") != shape1 }
-        val nextIdx = Math.floorMod((user1Seed xor (10L * 1000003L)).toInt(), unplayedTier0.size)
-        val nextShape = unplayedTier0[nextIdx].getString("Hash")
-        assertTrue("Played shape must not repeat at Level 10", nextShape != shape1)
-        println("Dynamic per-user selection simulation verified successfully!")
+        println("Pack 00 verified successfully! Amaze Go momentum progression intact.")
     }
 
     @Test
@@ -153,13 +97,13 @@ class LevelLoaderCryptoTest {
         assertEquals("Pack 01 must contain 1000 levels", 1000, levels1.length())
 
         val l2000 = levels1.getJSONObject(999) // Level 2,000
-        assertEquals("Level 2000 must have 437 arrows (Sphinx Pinnacle Finale)", 437, l2000.getJSONArray("Arrows").length())
-        assertEquals("Level 2000 width", 100, l2000.getInt("XSize"))
-        assertEquals("Level 2000 height", 100, l2000.getInt("YSize"))
+        assertEquals("Level 2000 must have 80 arrows", 80, l2000.getJSONArray("Arrows").length())
+        assertEquals("Level 2000 width", 24, l2000.getInt("XSize"))
+        assertEquals("Level 2000 height", 35, l2000.getInt("YSize"))
 
         val parsed = com.arrowescape.puzzle.core.engine.LevelLoader.parseLevelJsonObject(2000, l2000)
         assertNotNull("Parsed Level 2000 should not be null", parsed)
-        assertEquals("Parsed arrows count for Level 2000 must match", 437, parsed!!.arrows.size)
+        assertEquals("Parsed arrows count for Level 2000 must match", 80, parsed!!.arrows.size)
         println("Pack 01 and Level 2000 Grand Finale verified successfully!")
     }
 }

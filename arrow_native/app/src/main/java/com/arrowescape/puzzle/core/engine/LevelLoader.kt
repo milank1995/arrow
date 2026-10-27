@@ -36,19 +36,6 @@ object LevelLoader {
      */
     fun loadLevel(context: Context, levelNumber: Int): LevelData {
         val actualLevelNumber = ((levelNumber - 1) % TOTAL_LEVELS) + 1
-
-        // Every 5th level is a dynamic, personalized, non-repeating shape milestone
-        if (actualLevelNumber % 5 == 0) {
-            try {
-                val dynamicShape = DynamicShapeManager.getShapeForLevel(context, actualLevelNumber)
-                if (dynamicShape != null && dynamicShape.arrows.isNotEmpty()) {
-                    return dynamicShape
-                }
-            } catch (e: Exception) {
-                // Fallback to static pack below
-            }
-        }
-
         val packIndex = (actualLevelNumber - 1) / CHUNK_SIZE
         val indexInPack = (actualLevelNumber - 1) % CHUNK_SIZE
 
