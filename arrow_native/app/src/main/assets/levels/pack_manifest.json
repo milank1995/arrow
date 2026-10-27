@@ -9,7 +9,7 @@
       "startLevel": 1,
       "endLevel": 1000,
       "count": 1000,
-      "sizeBytes": 947328
+      "sizeBytes": 1251296
     },
     {
       "packIndex": 1,
@@ -17,13 +17,13 @@
       "startLevel": 1001,
       "endLevel": 2000,
       "count": 1000,
-      "sizeBytes": 2135984
+      "sizeBytes": 2779264
     }
   ],
   "shapePack": {
     "fileName": "shape_pack.dat",
-    "totalShapes": 1100,
+    "totalShapes": 917,
     "tiers": 6,
-    "sizeBytes": 1373904
+    "sizeBytes": 2027248
   }
 }

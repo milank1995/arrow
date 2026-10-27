@@ -10,7 +10,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 import UnityPy
 
-sys.stdout.reconfigure(line_buffering=True)
+sys.stdout.reconfigure(line_buffering=True, encoding='utf-8')
 UnityPy.config.FALLBACK_UNITY_VERSION = '2022.3.20f1'
 AES_KEY = b'AmazeGo_Arrow_Security_Key_2026!'
 
@@ -133,52 +133,11 @@ def crop_level(lvl, padding=1):
     return cropped_lvl
 
 print("==========================================================", flush=True)
-print("  STEP 1: INGESTING CANDIDATES & CONFIG TABLES            ", flush=True)
+print("  STEP 1: INGESTING CANDIDATES & PICTORIAL SHAPES         ", flush=True)
 print("==========================================================", flush=True)
 t0 = time.time()
 
-# 1. Ingest official shape level hashes from Unity levelconfigs
-config_path = r'C:\Projects\Personal\Games\arrow decode\original arrow decode\app\src\main\assets\AssetBundle\levelconfigs_d4dc0c9ff6c741d4efc9d9025ef15652.ab'
-official_shape_hashes = set()
-with open(config_path, 'rb') as f:
-    f.seek(32)
-    env_cfg = UnityPy.load(f.read())
-for obj in env_cfg.objects:
-    if obj.type.name == 'TextAsset':
-        d = obj.read()
-        name = getattr(d, 'm_Name', '')
-        if 'shapenormal' in name.lower():
-            for h in re.findall(r'[0-9a-fA-F]{16}', d.m_Script):
-                official_shape_hashes.add(h.lower())
-
-print(f"Loaded {len(official_shape_hashes)} official shape hashes from Unity design tables.", flush=True)
-
 raw_candidates = []
-
-# 2. Ingest Scratch levels
-old_dir = "scratch/old_levels/arrow_native/app/src/main/assets/levels"
-new_dir = "scratch/old_levels/arrow_native/app/src/main/assets/new_levels"
-for p in glob.glob(os.path.join(old_dir, "Level_*.json")):
-    try:
-        with open(p, 'r', encoding='utf-8') as f:
-            d = json.load(f)
-            d['Source'] = os.path.basename(p)
-            d['Hash'] = 'OLD_' + os.path.basename(p).replace('.json', '')
-            raw_candidates.append(d)
-    except Exception:
-        pass
-
-for p in glob.glob(os.path.join(new_dir, "NewLevel_*.json")):
-    try:
-        with open(p, 'r', encoding='utf-8') as f:
-            d = json.load(f)
-            d['Source'] = os.path.basename(p)
-            d['Hash'] = 'NEW_' + os.path.basename(p).replace('.json', '')
-            raw_candidates.append(d)
-    except Exception:
-        pass
-
-# 3. Ingest Unity levels
 packs_path = r'C:\Projects\Personal\Games\arrow decode\original arrow decode\app\src\main\assets\AssetBundle\levelpacks_newuser_2c8302a1cbb1e9f8abf1795f681728e4.ab'
 with open(packs_path, 'rb') as f:
     f.seek(32)
@@ -209,11 +168,17 @@ for obj in env_pack.objects:
                     'BendCount': len(pts) - 2 if len(pts) > 2 else 0
                 })
             if arrows_out:
+                # Is pictorial shape if non-generic name
+                is_named_shape = (
+                    not re.match(r'^[0-9a-fA-F]{16}$', name) and
+                    not any(p in name for p in ['pipes_', 'hole_', 'reason_', 'Level_', 'NewLevel_'])
+                )
                 raw_candidates.append({
                     'XSize': xs,
                     'YSize': ys,
                     'Arrows': arrows_out,
                     'Hash': name,
+                    'IsNamedShape': is_named_shape,
                     'Source': 'Unity_' + name
                 })
         except Exception:
@@ -229,16 +194,11 @@ seen_fps = set()
 unique_candidates = []
 
 for c in raw_candidates:
-    # Auto-crop empty outer borders with 1-cell padding
     cropped = crop_level(c, padding=1)
     xs = cropped['XSize']
     ys = cropped['YSize']
     arrs = cropped['Arrows']
     
-    # Cap maximum dimension to 58 to ensure arrows always render with comfortable touch targets
-    if max(xs, ys) > 58:
-        continue
-        
     fp_items = []
     for a in arrs:
         idxs = a['Indices']
@@ -248,16 +208,16 @@ for c in raw_candidates:
         seen_fps.add(fp)
         unique_candidates.append(cropped)
 
-print(f"Unique cropped candidates (max dim <= 58): {len(unique_candidates)} (in {time.time()-t1:.1f}s)", flush=True)
+print(f"Unique cropped candidates: {len(unique_candidates)} (in {time.time()-t1:.1f}s)", flush=True)
 
 print("==========================================================", flush=True)
-print("  STEP 3: SOLVABILITY FILTER & SHAPE CLASSIFICATION       ", flush=True)
+print("  STEP 3: SOLVABILITY FILTER & SHAPE POOL CURATION        ", flush=True)
 print("==========================================================", flush=True)
 t2 = time.time()
 solvable_all = []
-solvable_shapes = []
+solvable_pictorial_shapes = []
 
-landmark_keywords = ['sphinx', 'taj', 'tower', 'opera', 'arc', 'starry', 'pirate', 'chest', 'shape', 'gallery', 'trophy', 'cat', 'horse', 'robot', 'car', 'falcon', 'fish', 'guitar', 'camera', 'crown', 'butterfly', 'heart', 'star', 'bird', 'flower', 'apple', 'anchor', 'diamond', 'sushi']
+landmark_keywords = ['sphinx', 'taj', 'tower', 'opera', 'arc', 'starry', 'pirate', 'chest', 'shape', 'gallery', 'trophy', 'cat', 'horse', 'robot', 'car', 'falcon', 'fish', 'guitar', 'camera', 'crown', 'butterfly', 'heart', 'star', 'bird', 'flower', 'apple', 'anchor', 'diamond', 'sushi', 'stoneidol', 'thinker', 'sofa']
 
 for c in unique_candidates:
     h = c.get('Hash', '').lower()
@@ -272,73 +232,70 @@ for c in unique_candidates:
             occupied.add(p)
     occ = len(occupied) / max(1, xs * ys)
     
-    is_official_shape = any(sh in h for sh in official_shape_hashes)
+    is_named = c.get('IsNamedShape', False)
     is_landmark = any(k in h for k in landmark_keywords)
-    is_silhouette_shape = (occ <= 0.52 and xs >= 18 and ys >= 18 and narr >= 18)
+    is_silhouette_shape = (occ <= 0.48 and xs >= 20 and ys >= 20 and narr >= 20)
     
     if solve_level(c):
         c['Occupancy'] = round(occ, 3)
         c['ArrowCount'] = narr
-        c['IsOfficialShape'] = is_official_shape
-        c['IsLandmark'] = is_landmark
+        c['IsPictorial'] = is_named or is_landmark
         solvable_all.append(c)
         
-        if is_official_shape or is_landmark or is_silhouette_shape:
-            solvable_shapes.append(c)
+        if is_named or is_landmark or is_silhouette_shape:
+            solvable_pictorial_shapes.append(c)
 
 print(f"Total verified solvable candidates: {len(solvable_all)}", flush=True)
-print(f"Solvable shape candidates:          {len(solvable_shapes)}", flush=True)
+print(f"Solvable pictorial shapes:          {len(solvable_pictorial_shapes)}", flush=True)
 print(f"Solvability validation completed in {time.time()-t2:.1f}s", flush=True)
 
 print("==========================================================", flush=True)
-print("  STEP 4: CURATING DYNAMIC SHAPE PACK (6 TIERS)           ", flush=True)
+print("  STEP 4: CURATING DYNAMIC SHAPE PACK (6 TIERS, 1100 SHAPES)", flush=True)
 print("==========================================================", flush=True)
-# Target calibrated shape tiers:
-# Tier 0 (L5-50): 20 to 60 arrows, compact grid <= 32x32
-# Tier 1 (L55-200): 60 to 95 arrows, grid <= 42x42
-# Tier 2 (L205-500): 95 to 130 arrows, grid <= 48x48
-# Tier 3 (L505-1000): 130 to 170 arrows, grid <= 52x52
-# Tier 4 (L1005-1500): 170 to 210 arrows, grid <= 56x56
-# Tier 5 (L1505-2000): 180 to 265 arrows, grid <= 58x58
+# Target calibrated shape tiers (now covering the full 19 to 437 arrow range):
+# Tier 0 (L5-50): 19 to 60 arrows (Cocktail Glass, Palm Tree, Balloons, Rainbow Umbrella, Jellyfish, Star, Fish, Dancer...)
+# Tier 1 (L55-200): 60 to 100 arrows (Berry Ice Cream, Panda, Guitar, Camera, Wheat, Clock, Globe, Koala, Squirrel...)
+# Tier 2 (L205-500): 100 to 160 arrows (Magic Book, Sun, Great Wall, Tarot...)
+# Tier 3 (L505-1000): 160 to 220 arrows (Sea Turtle, Pumpkin House, Gift Box, Butterfly Wings, Sunflower...)
+# Tier 4 (L1005-1500): 220 to 300 arrows (Sushi, Pirate Ship, Cat in Leaves, Sofa, Thinker, Stone Idol...)
+# Tier 5 (L1505-2000): 300 to 437 arrows (Treasure Chest 355, The Starry Night 358, Arc de Triomphe 369, Pirate 374, Sydney Opera 379, Taj Mahal 380, Tower of Pisa 399, Detective 402, Sphinx 437!)
 
 tier_defs = [
-    (0, "Tier 0 (L5-50)", 20, 60, 32, 160),
-    (1, "Tier 1 (L55-200)", 60, 95, 42, 200),
-    (2, "Tier 2 (L205-500)", 95, 130, 48, 240),
-    (3, "Tier 3 (L505-1000)", 130, 170, 52, 200),
-    (4, "Tier 4 (L1005-1500)", 170, 210, 56, 150),
-    (5, "Tier 5 (L1505-2000)", 180, 265, 58, 150)
+    (0, "Tier 0 (L5-50)", 19, 60, 160),
+    (1, "Tier 1 (L55-200)", 60, 100, 200),
+    (2, "Tier 2 (L205-500)", 100, 160, 240),
+    (3, "Tier 3 (L505-1000)", 160, 220, 200),
+    (4, "Tier 4 (L1005-1500)", 220, 300, 150),
+    (5, "Tier 5 (L1505-2000)", 300, 437, 150)
 ]
 
 used_shape_hashes = set()
 shape_pack_list = []
 
-for t_idx, t_name, min_arr, max_arr, max_dim, quota in tier_defs:
+for t_idx, t_name, min_arr, max_arr, quota in tier_defs:
     pool = [
-        s for s in solvable_shapes
+        s for s in solvable_pictorial_shapes
         if min_arr <= s['ArrowCount'] <= max_arr
-        and max(s['XSize'], s['YSize']) <= max_dim
         and s['Hash'] not in used_shape_hashes
     ]
-    # Priority: Official shapes first, then landmark names, then arrow count
+    # Priority: Authentic named pictorial shapes first, then landmark keywords, then arrow count
     pool.sort(key=lambda s: (
-        0 if s.get('IsOfficialShape', False) else (1 if s.get('IsLandmark', False) else 2),
+        0 if s.get('IsNamedShape', False) else (1 if s.get('IsLandmark', False) else 2),
         s['ArrowCount'],
         s['XSize'] * s['YSize']
     ))
     selected = pool[:quota]
-    # If pool is slightly short for quota in Tier 5, pull from solvable_all in that arrow/dim range
-    if len(selected) < quota and t_idx == 5:
-        extra_cands = [
+    # If quota still needs more shapes in Tier 4 or 5, pull from high-arrow candidates
+    if len(selected) < quota:
+        extra = [
             c for c in solvable_all
             if min_arr <= c['ArrowCount'] <= max_arr
-            and max(c['XSize'], c['YSize']) <= max_dim
             and c['Hash'] not in used_shape_hashes
             and c not in selected
         ]
-        extra_cands.sort(key=lambda c: (c['ArrowCount'], c['XSize'] * c['YSize']))
+        extra.sort(key=lambda c: (c['ArrowCount'], c['XSize'] * c['YSize']))
         needed = quota - len(selected)
-        selected.extend(extra_cands[:needed])
+        selected.extend(extra[:needed])
         
     for s in selected:
         used_shape_hashes.add(s['Hash'])
@@ -353,7 +310,7 @@ for t_idx, t_name, min_arr, max_arr, max_dim, quota in tier_defs:
             'MaxHearts': 3,
             'Arrows': s['Arrows']
         })
-    print(f"{t_name}: Selected {len(selected)} unique shapes (targets {min_arr}-{max_arr} arrows, max dim {max_dim})", flush=True)
+    print(f"{t_name}: Selected {len(selected)} unique shapes (targets {min_arr}-{max_arr} arrows)", flush=True)
 
 print(f"Total dynamic shapes in Shape Pack: {len(shape_pack_list)}", flush=True)
 
@@ -364,31 +321,29 @@ with open(shape_pack_path, "wb") as f:
 print(f"Encrypted shape_pack.dat created: {os.path.getsize(shape_pack_path) / 1024:.1f} KB", flush=True)
 
 print("==========================================================", flush=True)
-print("  STEP 5: BUILDING 2,000 REGULAR CAMPAIGN LEVELS          ", flush=True)
+print("  STEP 5: BUILDING 2,000 CAMPAIGN LEVELS                  ", flush=True)
 print("==========================================================", flush=True)
 
 campaign_2000 = [None] * 2000
 used_campaign_hashes = set()
 
-# Curate specific iconic milestone shapes for early milestones (L5, 10, 15, 20, 25, 30, 35, 40, 45, 50)
-early_milestone_shapes = {
-    5:  24,  # Compact iconic shape (e.g. 7dbf39492f230c20, 23x23)
-    10: 28,  # Bird / Parrot (e.g. aa9ac9686e23de71, 29x29)
-    15: 34,  # Anchor / Icon (e.g. 6c4ffb28ec59ef95, 23x21)
-    20: 39,  # Shield / Crest (e.g. ab3554567ed86251, 20x26)
-    25: 43,  # Trophy (e.g. fec4f9635987f93d, 27x26)
-    30: 48,  # Star / Rocket (e.g. 9b1dc0cfd5870020, 28x28)
-    35: 50,  # Diamond / Crown (e.g. 0e3200028896cf1f, 29x31)
-    40: 54,  # Flower / Icon (e.g. cb74c99238c5ad9c, 28x27)
-    45: 57,  # Heart (e.g. e3f71776b765205a, 30x30)
-    50: 60   # Milestone Landmark (30x32)
+# Curate authentic pictorial shapes for the early milestones (Levels 5, 10, 15, 20, 25, 30, 35, 40, 45, 50)
+early_milestone_names = {
+    5:  '鸡尾酒',      # Cocktail Glass (22 arr)
+    10: '椰树',        # Palm Tree (23 arr)
+    15: '气球束',      # Balloons (33 arr)
+    20: '彩虹伞',      # Rainbow Umbrella (34 arr)
+    25: '水母-ed5df',  # Jellyfish (35 arr)
+    30: '对称星',      # Symmetric Star (45 arr)
+    35: 'fishing',     # Fish (46 arr)
+    40: '舞者',        # Dancer (47 arr)
+    45: 'HeartFlow',   # Heart (57 arr)
+    50: 'windmill'     # Windmill (60 arr)
 }
 
-for lvl_num, target_arr in early_milestone_shapes.items():
+for lvl_num, kw in early_milestone_names.items():
     pool0 = [s for s in shape_pack_list if s['Tier'] == 0]
-    cands = [s for s in pool0 if s['ArrowCount'] == target_arr]
-    if not cands:
-        cands = [s for s in pool0 if abs(s['ArrowCount'] - target_arr) <= 2]
+    cands = [s for s in pool0 if kw in s['Hash']]
     s_obj = cands[0] if cands else pool0[0]
     campaign_2000[lvl_num - 1] = {
         'Level': lvl_num,
@@ -401,9 +356,23 @@ for lvl_num, target_arr in early_milestone_shapes.items():
         'Arrows': s_obj['Arrows']
     }
 
-# Fill remaining milestone shapes (L55 to L2000, every 5th level)
+# Pinnacle finale milestone shape at Level 2000: Sphinx (437 arrows, 100% solvable!)
+sphinx_cands = [s for s in shape_pack_list if 'sphinx' in s['Hash'].lower()]
+sphinx_obj = sphinx_cands[0] if sphinx_cands else shape_pack_list[-1]
+campaign_2000[1999] = {
+    'Level': 2000,
+    'XSize': sphinx_obj['XSize'],
+    'YSize': sphinx_obj['YSize'],
+    'MaxHearts': 3,
+    'Hash': sphinx_obj['Hash'],
+    'ArrowCount': sphinx_obj['ArrowCount'],
+    'IsMilestoneShape': True,
+    'Arrows': sphinx_obj['Arrows']
+}
+
+# Fill remaining milestone shapes (L55 to L1995, every 5th level)
 shape_tier_ptr = defaultdict(int)
-for lvl_num in range(55, 2001, 5):
+for lvl_num in range(55, 1996, 5):
     if lvl_num <= 200: t_idx = 1
     elif lvl_num <= 500: t_idx = 2
     elif lvl_num <= 1000: t_idx = 3
@@ -427,7 +396,7 @@ for lvl_num in range(55, 2001, 5):
 
 # Pool of available regular levels: all solvable candidates not used in shape_pack_list
 solvable_regular = [c for c in solvable_all if c['Hash'] not in used_shape_hashes]
-print(f"Available regular candidates (not in shape pack): {len(solvable_regular)}", flush=True)
+print(f"Available regular candidates: {len(solvable_regular)}", flush=True)
 
 # First 24 regular slots onboarding targets (L1-4, 6-9, 11-14, 16-19, 21-24, 26-29)
 early_regular_targets = {
@@ -457,22 +426,22 @@ for lvl_num, target_arr in sorted(early_regular_targets.items()):
         'Arrows': chosen['Arrows']
     }
 
-# Fill remaining 1,576 regular levels with a smooth monotonic progression curve (44 to 245 arrows)
+# Fill remaining 1,576 regular levels with smooth progression curve (44 to 280 arrows)
 unfilled_slots = [i for i in range(2000) if campaign_2000[i] is None]
 print(f"Unfilled regular slots: {len(unfilled_slots)}", flush=True)
 
-reg_pool = [r for r in solvable_regular if r['Hash'] not in used_campaign_hashes and r['ArrowCount'] >= 42 and max(r['XSize'], r['YSize']) <= 56]
+reg_pool = [r for r in solvable_regular if r['Hash'] not in used_campaign_hashes and r['ArrowCount'] >= 42]
 reg_pool.sort(key=lambda r: (r['ArrowCount'], r['XSize'] * r['YSize']))
-print(f"Eligible regular pool (>=42 arr, dim <= 56): {len(reg_pool)}", flush=True)
+print(f"Eligible regular pool (>=42 arr): {len(reg_pool)}", flush=True)
 assert len(reg_pool) >= len(unfilled_slots), "Not enough regular candidates!"
 
 K = len(unfilled_slots)
 for k, slot_i in enumerate(unfilled_slots):
     lvl_num = slot_i + 1
     progress = k / (K - 1)
-    target_arr = int(round(44 + (245 - 44) * (progress ** 1.15)))
+    target_arr = int(round(44 + (280 - 44) * (progress ** 1.15)))
     
-    # Binary/linear search for best candidate closest to target_arr
+    # Pick candidate closest to target_arr
     best_cand = None
     best_diff = 999999
     best_idx = -1
@@ -506,12 +475,11 @@ for idx, lvl in enumerate(campaign_2000):
     assert lvl is not None, f"Level {idx+1} is None!"
     assert len(lvl['Arrows']) == lvl['ArrowCount'], f"Arrow count mismatch at {idx+1}"
     assert solve_level(lvl), f"Level {idx+1} is not solvable!"
-    assert max(lvl['XSize'], lvl['YSize']) <= 58, f"Level {idx+1} exceeded dimension 58: {lvl['XSize']}x{lvl['YSize']}"
     if not lvl.get('IsMilestoneShape', False):
         assert lvl['Hash'] not in hashes_seen, f"Duplicate regular level at {idx+1}: {lvl['Hash']}"
         hashes_seen.add(lvl['Hash'])
 
-print("Campaign verification passed! 100% solvable, 0 duplicate regular levels, all grids <= 58!", flush=True)
+print("Campaign verification passed! 100% solvable, 0 duplicate regular levels!", flush=True)
 
 pack00 = campaign_2000[:1000]
 pack01 = campaign_2000[1000:2000]
@@ -531,7 +499,7 @@ print("\n=== First 50 Levels Audit ===", flush=True)
 for i in range(50):
     l = campaign_2000[i]
     is_m = l.get('IsMilestoneShape', False)
-    kind = f"[DYNAMIC SHAPE MILESTONE]" if is_m else "regular"
+    kind = f"[DYNAMIC PICTORIAL SHAPE]" if is_m else "regular"
     print(f"Level {i+1:2d}: {l['ArrowCount']:3d} arrows ({l['XSize']:2d}x{l['YSize']:2d}) - {kind} - Hash={l['Hash'][:16]}", flush=True)
 
 print("\n=== 100-Level Blocks Arrow Summary ===", flush=True)

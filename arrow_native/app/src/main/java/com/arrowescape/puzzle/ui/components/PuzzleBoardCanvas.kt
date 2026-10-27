@@ -216,6 +216,7 @@ fun PuzzleBoardCanvas(
         val availableWidth = viewportWidth * 0.82f
         val availableHeight = viewportHeight * 0.80f
         val maxCellPx = with(LocalDensity.current) { 50.dp.toPx() }
+        val minComfortCellPx = with(LocalDensity.current) { 15.dp.toPx() }
         val cellSize = minOf(availableWidth / xSize, availableHeight / ySize).coerceAtMost(maxCellPx)
         val boardWidth = cellSize * xSize
         val boardHeight = cellSize * ySize
@@ -224,10 +225,17 @@ fun PuzzleBoardCanvas(
             (viewportHeight - boardHeight) / 2f
         )
 
+        // For massive boards (e.g. 75x75, 100x100, 131x90), calculate an optimal default zoom so arrows are clear and playable
+        val autoComfortScale = if (cellSize < minComfortCellPx) {
+            (minComfortCellPx / cellSize).coerceIn(1.0f, 3.2f)
+        } else {
+            1.0f
+        }
+
         // Dynamic zoom limits matching Unity's ComputeZoomLimitsForLevel (minCellScreenPx / maxCellScreenPx)
-        val minScale = 0.75f
+        val minScale = minOf(0.65f, 1.0f / autoComfortScale).coerceAtLeast(0.40f)
         val targetMaxCellPx = maxOf(viewportWidth * 0.50f, 450f)
-        val maxScale = (targetMaxCellPx / cellSize).coerceIn(5.0f, 18.0f)
+        val maxScale = (targetMaxCellPx / cellSize).coerceIn(5.0f, 25.0f)
 
         val currentXSize by rememberUpdatedState(xSize)
         val currentYSize by rememberUpdatedState(ySize)
@@ -244,11 +252,17 @@ fun PuzzleBoardCanvas(
         val currentOnDismissPreviewRays by rememberUpdatedState(onDismissPreviewRays)
         val minTouchTargetPx = with(LocalDensity.current) { 15.dp.toPx() }
         val currentMinTouchTargetPx by rememberUpdatedState(minTouchTargetPx)
-        val minStrokePx = with(LocalDensity.current) { 1.2.dp.toPx() }
-        val maxStrokePx = with(LocalDensity.current) { 5.0.dp.toPx() }
-        val baseStrokeWidth = (cellSize * 0.22f).coerceIn(minStrokePx, maxStrokePx)
-        val baseHeadWidth = (cellSize * 0.62f).coerceAtLeast(baseStrokeWidth * 2.0f).coerceAtMost(cellSize * 0.78f)
+        val minStrokePx = 1.0f
+        val maxStrokePx = with(LocalDensity.current) { 4.5.dp.toPx() }
+        val baseStrokeWidth = (cellSize * 0.20f).coerceIn(minStrokePx, maxStrokePx)
+        val baseHeadWidth = (cellSize * 0.54f).coerceAtLeast(baseStrokeWidth * 1.8f).coerceAtMost(cellSize * 0.68f)
         val currentHeadSize by rememberUpdatedState(baseHeadWidth)
+
+        LaunchedEffect(xSize, ySize, autoComfortScale, restartTrigger) {
+            scale = autoComfortScale
+            panX = 0f
+            panY = 0f
+        }
 
         // Smooth Auto-Framing: gently glides zoom and pan to center the hinted arrow if off-screen
         val hintedArrow = arrows.firstOrNull { it.state == ArrowState.HINTED }
@@ -1154,10 +1168,10 @@ private fun DrawScope.drawArrowEntity(
         else -> theme.arrowDefault
     }
 
-    // Exact Unity One stroke: slender, crisp lines (22% of cell size, bounded for all grid scales)
+    // Exact Unity One stroke: slender, crisp lines (20% of cell size, bounded for all grid scales)
     // Guarantees generous gap between parallel channels matching Image 2 perfectly
-    val minStroke = 1.2f
-    val maxStroke = 5.0.dp.toPx()
+    val minStroke = 1.0f
+    val maxStroke = 4.5.dp.toPx()
     val scaleMultiplier = when {
         isPreviewHold -> 1.10f * (1f + (hintPulseScale - 1f) * 0.35f)
         isFlying -> 1.08f
@@ -1165,12 +1179,12 @@ private fun DrawScope.drawArrowEntity(
         arrow.state == ArrowState.HINTED -> hintPulseScale
         else -> 1.0f
     }
-    val strokeWidth = (cellSize * 0.22f).coerceIn(minStroke, maxStroke) * scaleMultiplier
+    val strokeWidth = (cellSize * 0.20f).coerceIn(minStroke, maxStroke) * scaleMultiplier
 
     // Exact Unity One arrowhead proportions bounded strictly within the cell (never overlaps neighbor cells)
-    val headWidth = (cellSize * 0.60f).coerceAtLeast(strokeWidth * 2.0f).coerceAtMost(cellSize * 0.76f) *
+    val headWidth = (cellSize * 0.54f).coerceAtLeast(strokeWidth * 1.8f).coerceAtMost(cellSize * 0.68f) *
         (if (isPreviewHold) 1.08f else if (isFlying) 1.10f else 1.0f)
-    val headLength = headWidth * 0.96f
+    val headLength = headWidth * 0.88f
 
     // Build the full motion track: body points + escape extension along arrow.direction
     val track = mutableListOf<Offset>()
@@ -1232,10 +1246,10 @@ private fun DrawScope.drawArrowEntity(
     }
 
     // Symmetrical head tip and tail reach: both extend cleanly from cell center
-    val tipForward = (cellSize * 0.36f)
-    val tailOffset = (tipForward - strokeWidth * 0.45f).coerceAtLeast(0f)
+    val tipForward = (cellSize * 0.35f)
+    val tailOffset = (cellSize * 0.32f).coerceAtLeast(strokeWidth * 0.45f)
     // Stem enters smoothly into the interior of the triangular arrowhead base
-    val stemHeadOffset = (tipForward - headLength * 0.75f).coerceAtLeast(0f)
+    val stemHeadOffset = (tipForward - headLength * 0.65f).coerceAtLeast(0f)
 
     val startDist = displacement
     val endDist = visibleBodyLen + displacement
