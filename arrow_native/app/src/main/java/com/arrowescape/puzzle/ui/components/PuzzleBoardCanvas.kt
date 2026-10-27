@@ -244,10 +244,10 @@ fun PuzzleBoardCanvas(
         val currentOnDismissPreviewRays by rememberUpdatedState(onDismissPreviewRays)
         val minTouchTargetPx = with(LocalDensity.current) { 15.dp.toPx() }
         val currentMinTouchTargetPx by rememberUpdatedState(minTouchTargetPx)
-        val minStrokePx = with(LocalDensity.current) { 2.0.dp.toPx() }
+        val minStrokePx = with(LocalDensity.current) { 1.2.dp.toPx() }
         val maxStrokePx = with(LocalDensity.current) { 5.0.dp.toPx() }
-        val baseStrokeWidth = (cellSize * 0.23f).coerceIn(minStrokePx, maxStrokePx)
-        val baseHeadWidth = baseStrokeWidth * 2.0f
+        val baseStrokeWidth = (cellSize * 0.22f).coerceIn(minStrokePx, maxStrokePx)
+        val baseHeadWidth = (cellSize * 0.62f).coerceAtLeast(baseStrokeWidth * 2.0f).coerceAtMost(cellSize * 0.78f)
         val currentHeadSize by rememberUpdatedState(baseHeadWidth)
 
         // Smooth Auto-Framing: gently glides zoom and pan to center the hinted arrow if off-screen
@@ -719,36 +719,50 @@ fun PuzzleBoardCanvas(
 
                 }
 
-                // 2. Cleared Area Silhouette Dots:
-                // Only become visible once an arrow has moved out of the gameplay area.
-                // Delicate pinpoints with tactile pop-in matching New Unity One pixel-for-pixel
-                if (clearedCells.isNotEmpty()) {
-                    val dotColor = theme.gridDot
-                    val minDotPx = 0.85.dp.toPx()
-                    val maxDotPx = 2.0.dp.toPx()
-                    val dotRadius = (cellSize * 0.055f).coerceIn(minDotPx, maxDotPx)
-                    val now = System.currentTimeMillis()
+                // 2. Grid Alignment & Silhouette Dots:
+                // Subtle architectural grid dots across the board eliminate "random blank gaps" and unify the UI.
+                // When an arrow is cleared, its dot dynamically pops in with tactile feedback matching New Unity One.
+                val dotColor = theme.gridDot
+                val dotRadius = (cellSize * 0.052f).coerceIn(0.85.dp.toPx(), 2.2.dp.toPx())
+                val now = System.currentTimeMillis()
 
-                    for (coord in clearedCells) {
-                        val spawnTime = clearedCellTimestamps[coord] ?: 0L
-                        val elapsed = (now - spawnTime).coerceAtLeast(0L)
-                        val animDuration = 220f
-                        val animProgress = if (spawnTime == 0L || elapsed >= animDuration) 1.0f else (elapsed / animDuration).coerceIn(0f, 1f)
-                        val popScale = when {
-                            animProgress >= 1f -> 1.0f
-                            animProgress < 0.65f -> (animProgress / 0.65f) * 1.15f
-                            else -> 1.15f - ((animProgress - 0.65f) / 0.35f) * 0.15f
-                        }
-                        val alpha = (animProgress * 0.45f).coerceIn(0f, 0.45f)
+                for (cy in 0 until ySize) {
+                    for (cx in 0 until xSize) {
+                        val coord = GridCoordinate(cx, cy)
+                        val isCleared = clearedCells.contains(coord)
+                        val isOccupied = !occupancyMap.isCellFree(coord)
 
-                        drawCircle(
-                            color = dotColor.copy(alpha = alpha),
-                            radius = dotRadius * popScale,
-                            center = Offset(
-                                boardOrigin.x + (coord.x + 0.5f) * cellSize,
-                                boardOrigin.y + (coord.y + 0.5f) * cellSize
+                        if (isCleared) {
+                            val spawnTime = clearedCellTimestamps[coord] ?: 0L
+                            val elapsed = (now - spawnTime).coerceAtLeast(0L)
+                            val animDuration = 220f
+                            val animProgress = if (spawnTime == 0L || elapsed >= animDuration) 1.0f else (elapsed / animDuration).coerceIn(0f, 1f)
+                            val popScale = when {
+                                animProgress >= 1f -> 1.0f
+                                animProgress < 0.65f -> (animProgress / 0.65f) * 1.15f
+                                else -> 1.15f - ((animProgress - 0.65f) / 0.35f) * 0.15f
+                            }
+                            val alpha = (animProgress * 0.45f).coerceIn(0f, 0.45f)
+
+                            drawCircle(
+                                color = dotColor.copy(alpha = alpha),
+                                radius = dotRadius * popScale,
+                                center = Offset(
+                                    boardOrigin.x + (cx + 0.5f) * cellSize,
+                                    boardOrigin.y + (cy + 0.5f) * cellSize
+                                )
                             )
-                        )
+                        } else if (!isOccupied) {
+                            // Subtle background corridor alignment dot gives elegant structure to the board
+                            drawCircle(
+                                color = dotColor.copy(alpha = 0.15f),
+                                radius = dotRadius * 0.85f,
+                                center = Offset(
+                                    boardOrigin.x + (cx + 0.5f) * cellSize,
+                                    boardOrigin.y + (cy + 0.5f) * cellSize
+                                )
+                            )
+                        }
                     }
                 }
 
@@ -1140,9 +1154,9 @@ private fun DrawScope.drawArrowEntity(
         else -> theme.arrowDefault
     }
 
-    // Exact Unity One stroke: slender, crisp lines (20% of cell size, 1.6dp .. 4.5dp)
-    // Guarantees generous 3x-4x gap between parallel channels matching Image 2 perfectly
-    val minStroke = 2.0.dp.toPx()
+    // Exact Unity One stroke: slender, crisp lines (22% of cell size, bounded for all grid scales)
+    // Guarantees generous gap between parallel channels matching Image 2 perfectly
+    val minStroke = 1.2f
     val maxStroke = 5.0.dp.toPx()
     val scaleMultiplier = when {
         isPreviewHold -> 1.10f * (1f + (hintPulseScale - 1f) * 0.35f)
@@ -1151,11 +1165,12 @@ private fun DrawScope.drawArrowEntity(
         arrow.state == ArrowState.HINTED -> hintPulseScale
         else -> 1.0f
     }
-    val strokeWidth = (cellSize * 0.23f).coerceIn(minStroke, maxStroke) * scaleMultiplier
+    val strokeWidth = (cellSize * 0.22f).coerceIn(minStroke, maxStroke) * scaleMultiplier
 
-    // Exact Unity One arrowhead proportions (2.0x stroke width, 1.05x aspect ratio)
-    val headWidth = strokeWidth * 2.0f * (if (isPreviewHold) 1.08f else if (isFlying) 1.10f else 1.0f)
-    val headLength = headWidth * 1.05f
+    // Exact Unity One arrowhead proportions bounded strictly within the cell (never overlaps neighbor cells)
+    val headWidth = (cellSize * 0.60f).coerceAtLeast(strokeWidth * 2.0f).coerceAtMost(cellSize * 0.76f) *
+        (if (isPreviewHold) 1.08f else if (isFlying) 1.10f else 1.0f)
+    val headLength = headWidth * 0.96f
 
     // Build the full motion track: body points + escape extension along arrow.direction
     val track = mutableListOf<Offset>()
@@ -1216,11 +1231,11 @@ private fun DrawScope.drawArrowEntity(
         originalBodyLen.toFloat()
     }
 
-    // Symmetrical head tip and tail reach: both extend by exactly 0.32 * cellSize from cell center
-    val tipForward = (cellSize * 0.32f).coerceAtLeast(headLength * 0.55f)
-    val tailOffset = (tipForward - strokeWidth * 0.50f).coerceAtLeast(0f)
-    // Stem enters slightly past the base into the widest part of the triangle (no gap, no notch, no tip bulb)
-    val stemHeadOffset = tipForward - headLength + (strokeWidth * 0.25f)
+    // Symmetrical head tip and tail reach: both extend cleanly from cell center
+    val tipForward = (cellSize * 0.36f)
+    val tailOffset = (tipForward - strokeWidth * 0.45f).coerceAtLeast(0f)
+    // Stem enters smoothly into the interior of the triangular arrowhead base
+    val stemHeadOffset = (tipForward - headLength * 0.75f).coerceAtLeast(0f)
 
     val startDist = displacement
     val endDist = visibleBodyLen + displacement
