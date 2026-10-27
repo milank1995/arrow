@@ -512,19 +512,18 @@ private fun LevelSelectorDialog(
 
                 val quickLevels = listOf(
                     1 to "Tutorial (4 arr)",
-                    5 to "Shape 1 (54 arr)",
-                    10 to "Showstopper (99 arr)",
-                    15 to "Shape 2 (53 arr)",
-                    20 to "Cat Shape (49 arr)",
-                    25 to "SuperHard (74 arr)",
-                    26 to "Cactus (130 arr)",
-                    30 to "Moon Shape (68 arr)",
-                    31 to "L31 Flow (28 arr)",
-                    50 to "Golden L50 (48 arr)",
+                    5 to "Dynamic Shape 1",
+                    10 to "Dynamic Shape 2",
+                    15 to "Dynamic Shape 3",
+                    20 to "Dynamic Shape 4",
+                    25 to "Dynamic Shape 5",
+                    30 to "Dynamic Shape 6",
+                    31 to "L31 Flow (42 arr)",
+                    50 to "Golden L50",
                     100 to "Century L100",
-                    500 to "Pack 00 Mid",
+                    500 to "L500 Milestone",
                     1000 to "Pack 00 Finale",
-                    2000 to "Grand Finale"
+                    2000 to "Grand Finale (383 arr)"
                 )
 
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {

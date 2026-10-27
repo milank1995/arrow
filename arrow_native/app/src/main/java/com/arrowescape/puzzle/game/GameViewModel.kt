@@ -850,6 +850,10 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 repository.recordDailyCompletion(dateStr)
             } else {
                 repository.recordLevelCompletion(completedLevel, stars)
+                if (completedLevel % 5 == 0) {
+                    val shapeHash = _uiState.value.levelData?.diffDna ?: ""
+                    com.arrowescape.puzzle.core.engine.DynamicShapeManager.markShapeCompleted(app, shapeHash)
+                }
             }
             repository.addCoins(baseCoins)
         }

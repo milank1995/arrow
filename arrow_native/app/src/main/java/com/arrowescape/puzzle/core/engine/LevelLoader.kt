@@ -36,6 +36,19 @@ object LevelLoader {
      */
     fun loadLevel(context: Context, levelNumber: Int): LevelData {
         val actualLevelNumber = ((levelNumber - 1) % TOTAL_LEVELS) + 1
+
+        // Every 5th level is a dynamic, personalized, non-repeating shape milestone
+        if (actualLevelNumber % 5 == 0) {
+            try {
+                val dynamicShape = DynamicShapeManager.getShapeForLevel(context, actualLevelNumber)
+                if (dynamicShape != null && dynamicShape.arrows.isNotEmpty()) {
+                    return dynamicShape
+                }
+            } catch (e: Exception) {
+                // Fallback to static pack below
+            }
+        }
+
         val packIndex = (actualLevelNumber - 1) / CHUNK_SIZE
         val indexInPack = (actualLevelNumber - 1) % CHUNK_SIZE
 
@@ -208,6 +221,9 @@ object LevelLoader {
                 else -> LevelDifficulty.HARD
             }
 
+            val hash = root.optString("Hash", "")
+            val dna = if (hash.isNotEmpty()) hash else "AMZ_LVL_${levelNumber}_${xSize}x${ySize}_${arrowList.size}"
+
             return LevelData(
                 levelNumber = levelNumber,
                 xSize = xSize,
@@ -216,7 +232,7 @@ object LevelLoader {
                 maxHearts = maxHearts,
                 difficulty = difficulty,
                 diffScore = arrowList.size * 10,
-                diffDna = "AMZ_LVL_${levelNumber}_${xSize}x${ySize}_${arrowList.size}"
+                diffDna = dna
             )
         } catch (e: Exception) {
             return null
