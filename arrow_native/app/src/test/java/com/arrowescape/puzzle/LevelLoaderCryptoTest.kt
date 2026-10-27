@@ -97,13 +97,13 @@ class LevelLoaderCryptoTest {
         assertEquals("Pack 01 must contain 1000 levels", 1000, levels1.length())
 
         val l2000 = levels1.getJSONObject(999) // Level 2,000
-        assertEquals("Level 2000 must have 80 arrows", 80, l2000.getJSONArray("Arrows").length())
-        assertEquals("Level 2000 width", 24, l2000.getInt("XSize"))
-        assertEquals("Level 2000 height", 35, l2000.getInt("YSize"))
+        assertEquals("Level 2000 must have 437 arrows (Sphinx Pinnacle Finale)", 437, l2000.getJSONArray("Arrows").length())
+        assertEquals("Level 2000 width", 100, l2000.getInt("XSize"))
+        assertEquals("Level 2000 height", 100, l2000.getInt("YSize"))
 
         val parsed = com.arrowescape.puzzle.core.engine.LevelLoader.parseLevelJsonObject(2000, l2000)
         assertNotNull("Parsed Level 2000 should not be null", parsed)
-        assertEquals("Parsed arrows count for Level 2000 must match", 80, parsed!!.arrows.size)
+        assertEquals("Parsed arrows count for Level 2000 must match", 437, parsed!!.arrows.size)
         println("Pack 01 and Level 2000 Grand Finale verified successfully!")
     }
 }

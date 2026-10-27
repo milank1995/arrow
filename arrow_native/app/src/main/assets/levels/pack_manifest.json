@@ -9,7 +9,7 @@
       "startLevel": 1,
       "endLevel": 1000,
       "count": 1000,
-      "sizeBytes": 1333072
+      "sizeBytes": 972592
     },
     {
       "packIndex": 1,
@@ -17,7 +17,7 @@
       "startLevel": 1001,
       "endLevel": 2000,
       "count": 1000,
-      "sizeBytes": 2594096
+      "sizeBytes": 2691152
     }
   ]
 }
