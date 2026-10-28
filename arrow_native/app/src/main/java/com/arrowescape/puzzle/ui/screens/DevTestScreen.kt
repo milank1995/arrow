@@ -318,6 +318,8 @@ fun DevTestScreen(
                         isCelebrationBurstActive = isCelebrationBurstActive,
                         restartTrigger = restartTrigger,
                         previewRayArrowIds = previewRayArrowIds,
+                        currentLevelNumber = currentLevelNumber,
+                        showTutorialHand = (currentLevelNumber == 1),
                         onArrowClick = { arrow ->
                             onArrowClicked(arrow)
                         },

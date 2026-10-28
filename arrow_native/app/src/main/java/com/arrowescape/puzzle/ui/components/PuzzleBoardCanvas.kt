@@ -124,8 +124,9 @@ fun PuzzleBoardCanvas(
     restartTrigger: Long = 0L,
     previewRayArrowIds: Set<String> = emptySet(),
     activeBoosterAnimation: BoosterEffectAnimation? = null,
-    currentLevelNumber: Int = 1,
+    currentLevelNumber: Int = 0,
     isDailyChallengeMode: Boolean = false,
+    showTutorialHand: Boolean = (currentLevelNumber == 1 && !isDailyChallengeMode),
     onArrowClick: (Arrow) -> Unit,
     onArrowLongPress: (Arrow, isPressed: Boolean) -> Unit,
     onDismissPreviewRays: () -> Unit = {},
@@ -377,15 +378,15 @@ fun PuzzleBoardCanvas(
         val hasUnclearedArrows = arrows.any { it.state != ArrowState.CLEARED }
 
         // Tutorial hand indicator: active strictly during Level 1 until all arrows are cleared
-        val tutorialTargetArrow = remember(arrows, currentLevelNumber, isDailyChallengeMode, occupancyMap) {
-            if (currentLevelNumber == 1 && !isDailyChallengeMode) {
+        val tutorialTargetArrow = remember(arrows, showTutorialHand, occupancyMap) {
+            if (showTutorialHand) {
                 arrows.firstOrNull { it.state == ArrowState.IDLE && PuzzleSolver.canMoveOut(it, occupancyMap) }
                     ?: arrows.firstOrNull { it.state == ArrowState.IDLE }
             } else null
         }
 
-        LaunchedEffect(isCelebrationBurstActive, activeBoosterAnimation, currentLevelNumber, isDailyChallengeMode, hasUnclearedArrows) {
-            while (isCelebrationBurstActive || (confettiPieces.isNotEmpty() && confettiStartTime > 0L) || activeBoosterAnimation != null || (currentLevelNumber == 1 && !isDailyChallengeMode && hasUnclearedArrows)) {
+        LaunchedEffect(isCelebrationBurstActive, activeBoosterAnimation, showTutorialHand, hasUnclearedArrows) {
+            while (isCelebrationBurstActive || (confettiPieces.isNotEmpty() && confettiStartTime > 0L) || activeBoosterAnimation != null || (showTutorialHand && hasUnclearedArrows)) {
                 withFrameNanos { frameTimeNanos ->
                     animTick = frameTimeNanos
                 }
