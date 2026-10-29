@@ -69,7 +69,5 @@ Thumbs.db
 *.kotlin_module
 
 
-# =========================
-# Firebase (optional)
-# =========================
-# google-services.json
+# Local scratch files
+scratch/

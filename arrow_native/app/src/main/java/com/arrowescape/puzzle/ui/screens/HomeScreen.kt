@@ -459,7 +459,7 @@ fun HomeScreen(
 
                 // Testing Category 2: New Unity Normal Levels
                 AppSecondaryButton(
-                    text = "🎮 New Unity Normal Levels (6,743 Levels)",
+                    text = "🎮 New Unity Normal Levels (8,445 Levels)",
                     onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.UNITY_NORMAL) },
                     theme = theme,
                     modifier = Modifier
@@ -471,7 +471,7 @@ fun HomeScreen(
 
                 // Testing Category 3: Shape Puzzle Levels
                 AppSecondaryButton(
-                    text = "⭐ Shape Puzzle Levels (15,427 Shapes)",
+                    text = "⭐ Shape Puzzle Levels (1,000 Shapes)",
                     onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.SHAPE_PUZZLES) },
                     theme = theme,
                     modifier = Modifier

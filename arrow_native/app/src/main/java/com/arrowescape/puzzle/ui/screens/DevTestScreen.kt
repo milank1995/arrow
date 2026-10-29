@@ -345,7 +345,7 @@ fun DevTestScreen(
 
                     Spacer(modifier = Modifier.height(6.dp))
 
-                    // LEVEL METRICS BADGE (Arrow count, Grid size, Category progress)
+                    // LEVEL METRICS BADGE (Arrow count, Grid size, Category progress, Shape name)
                     Surface(
                         shape = RoundedCornerShape(8.dp),
                         color = Color(0x0F000000),
@@ -356,8 +356,11 @@ fun DevTestScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
                         ) {
+                            val shapePrefix = if (currentLevel.shapeName.isNotEmpty()) {
+                                "🐾 ${currentLevel.shapeName}  •  "
+                            } else ""
                             Text(
-                                text = "Lvl $currentLevelNumber of ${currentCategory.totalLevels}  •  ${arrows.size} Arrows  •  Grid ${currentLevel.xSize}×${currentLevel.ySize}",
+                                text = "${shapePrefix}Lvl $currentLevelNumber of ${currentCategory.totalLevels}  •  ${arrows.size} Arrows  •  Grid ${currentLevel.xSize}×${currentLevel.ySize}",
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = theme.textPrimary.copy(alpha = 0.85f)
@@ -633,21 +636,21 @@ private fun LevelSelectorDialog(
                     )
                     TestLevelCategory.UNITY_NORMAL -> listOf(
                         1 to "Intro (4 arr)",
-                        100 to "Early (20 arr)",
-                        500 to "Growing (35 arr)",
-                        1000 to "Medium (50 arr)",
-                        2500 to "Dense (80 arr)",
-                        5000 to "Expert (120 arr)",
-                        6743 to "Apex (158 arr)"
+                        500 to "Early (25 arr)",
+                        1500 to "Growing (40 arr)",
+                        3000 to "Medium (60 arr)",
+                        5000 to "Dense (90 arr)",
+                        7000 to "Expert (130 arr)",
+                        8445 to "Apex (223 arr)"
                     )
                     TestLevelCategory.SHAPE_PUZZLES -> listOf(
-                        1 to "Smallest (15 arr)",
-                        500 to "Medium (50 arr)",
-                        2000 to "Solid (80 arr)",
-                        5000 to "Dense (110 arr)",
-                        10000 to "Complex (150 arr)",
-                        14000 to "Huge (200 arr)",
-                        15427 to "Sphinx (437 arr)"
+                        1 to "Intro Shape (12 arr)",
+                        100 to "Early (45 arr)",
+                        250 to "Mid (70 arr)",
+                        500 to "Solid (105 arr)",
+                        750 to "Dense (140 arr)",
+                        950 to "Grand (200 arr)",
+                        1000 to "Sphinx (437 arr)"
                     )
                 }
 

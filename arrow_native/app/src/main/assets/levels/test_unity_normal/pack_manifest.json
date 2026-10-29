@@ -1,64 +1,79 @@
 {
-  "category": "test_unity_normal",
-  "totalLevels": 6743,
+  "totalLevels": 8445,
   "chunkSize": 1000,
-  "totalPacks": 7,
+  "packsCount": 9,
   "packs": [
     {
       "packIndex": 0,
       "fileName": "level_pack_00.dat",
+      "levelsCount": 1000,
       "startLevel": 1,
       "endLevel": 1000,
-      "count": 1000,
-      "sizeBytes": 251312
+      "fileSizeBytes": 249952
     },
     {
       "packIndex": 1,
       "fileName": "level_pack_01.dat",
+      "levelsCount": 1000,
       "startLevel": 1001,
       "endLevel": 2000,
-      "count": 1000,
-      "sizeBytes": 363264
+      "fileSizeBytes": 363408
     },
     {
       "packIndex": 2,
       "fileName": "level_pack_02.dat",
+      "levelsCount": 1000,
       "startLevel": 2001,
       "endLevel": 3000,
-      "count": 1000,
-      "sizeBytes": 448384
+      "fileSizeBytes": 437312
     },
     {
       "packIndex": 3,
       "fileName": "level_pack_03.dat",
+      "levelsCount": 1000,
       "startLevel": 3001,
       "endLevel": 4000,
-      "count": 1000,
-      "sizeBytes": 541888
+      "fileSizeBytes": 516208
     },
     {
       "packIndex": 4,
       "fileName": "level_pack_04.dat",
+      "levelsCount": 1000,
       "startLevel": 4001,
       "endLevel": 5000,
-      "count": 1000,
-      "sizeBytes": 610608
+      "fileSizeBytes": 576928
     },
     {
       "packIndex": 5,
       "fileName": "level_pack_05.dat",
+      "levelsCount": 1000,
       "startLevel": 5001,
       "endLevel": 6000,
-      "count": 1000,
-      "sizeBytes": 873168
+      "fileSizeBytes": 668800
     },
     {
       "packIndex": 6,
       "fileName": "level_pack_06.dat",
+      "levelsCount": 1000,
       "startLevel": 6001,
-      "endLevel": 6743,
-      "count": 743,
-      "sizeBytes": 925664
+      "endLevel": 7000,
+      "fileSizeBytes": 929536
+    },
+    {
+      "packIndex": 7,
+      "fileName": "level_pack_07.dat",
+      "levelsCount": 1000,
+      "startLevel": 7001,
+      "endLevel": 8000,
+      "fileSizeBytes": 1426864
+    },
+    {
+      "packIndex": 8,
+      "fileName": "level_pack_08.dat",
+      "levelsCount": 445,
+      "startLevel": 8001,
+      "endLevel": 8445,
+      "fileSizeBytes": 906704
     }
   ]
 }

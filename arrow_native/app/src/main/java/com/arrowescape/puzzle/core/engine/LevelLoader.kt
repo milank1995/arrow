@@ -29,14 +29,14 @@ enum class TestLevelCategory(
     ),
     UNITY_NORMAL(
         title = "New Unity Normal Levels",
-        subtitle = "6,743 Normal Levels (Sorted Smallest to Largest)",
-        totalLevels = 6743,
+        subtitle = "8,445 Normal Levels (Sorted Smallest to Largest)",
+        totalLevels = 8445,
         folder = "levels/test_unity_normal"
     ),
     SHAPE_PUZZLES(
         title = "Shape Puzzle Levels",
-        subtitle = "15,427 Shapes (Sorted Smallest to Largest)",
-        totalLevels = 15427,
+        subtitle = "1,000 Recognizable Shapes (Sorted Smallest to Largest)",
+        totalLevels = 1000,
         folder = "levels/test_shape_puzzles"
     )
 }
@@ -288,7 +288,12 @@ object LevelLoader {
             }
 
             val hash = root.optString("Hash", "")
-            val dna = if (hash.isNotEmpty()) hash else "AMZ_LVL_${levelNumber}_${xSize}x${ySize}_${arrowList.size}"
+            val shapeName = root.optString("ShapeName", "")
+            val dna = when {
+                shapeName.isNotEmpty() -> shapeName
+                hash.isNotEmpty() -> hash
+                else -> "AMZ_LVL_${levelNumber}_${xSize}x${ySize}_${arrowList.size}"
+            }
 
             return LevelData(
                 levelNumber = levelNumber,
@@ -298,7 +303,8 @@ object LevelLoader {
                 maxHearts = maxHearts,
                 difficulty = difficulty,
                 diffScore = arrowList.size * 10,
-                diffDna = dna
+                diffDna = dna,
+                shapeName = shapeName
             )
         } catch (e: Exception) {
             return null
