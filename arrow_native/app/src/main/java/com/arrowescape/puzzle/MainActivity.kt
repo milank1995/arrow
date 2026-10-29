@@ -70,6 +70,7 @@ class MainActivity : ComponentActivity() {
             }
             var currentScreen by remember { mutableStateOf(initialScreen) }
             var devTestCategory by remember { mutableStateOf(TestLevelCategory.EXISTING_1K) }
+            var devTestShapesOnly by remember { mutableStateOf(false) }
             var showSoundSettingsDialog by remember { mutableStateOf(false) }
 
             val notificationPermissionLauncher = rememberLauncherForActivityResult(
@@ -146,9 +147,10 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.playClick()
                                         currentScreen = AppScreen.SETTINGS
                                     },
-                                    onDevTestClick = { category ->
+                                    onDevTestClick = { category, shapesOnly ->
                                         gameViewModel.playClick()
                                         devTestCategory = category
+                                        devTestShapesOnly = shapesOnly
                                         currentScreen = AppScreen.DEV_TEST
                                     }
                                 )
@@ -275,6 +277,7 @@ class MainActivity : ComponentActivity() {
                             AppScreen.DEV_TEST -> {
                                 DevTestScreen(
                                     initialCategory = devTestCategory,
+                                    initialShapesOnly = devTestShapesOnly,
                                     theme = uiState.activeTheme,
                                     audioHapticManager = gameViewModel.audioHapticManager,
                                     onBackToHomeClick = {

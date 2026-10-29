@@ -15,34 +15,45 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
+data class ShapeLevelInfo(
+    val levelNumber: Int,
+    val shapeName: String,
+    val arrowCount: Int
+)
+
 enum class TestLevelCategory(
     val title: String,
     val subtitle: String,
     val totalLevels: Int,
+    val shapeCount: Int,
     val folder: String
 ) {
     EXISTING_1K(
         title = "Existing 1K Levels",
         subtitle = "1,001 Levels (Sorted Smallest to Largest)",
         totalLevels = 1001,
+        shapeCount = 200,
         folder = "levels/test_existing_1k"
     ),
     UNITY_NORMAL(
         title = "New Unity Normal Levels",
         subtitle = "8,445 Normal Levels (Sorted Smallest to Largest)",
         totalLevels = 8445,
+        shapeCount = 0,
         folder = "levels/test_unity_normal"
     ),
     SHAPE_PUZZLES(
         title = "Shape Puzzle Levels",
         subtitle = "788 Recognizable Shapes (Sorted Smallest to Largest)",
         totalLevels = 788,
+        shapeCount = 788,
         folder = "levels/test_shape_puzzles"
     ),
     LARGE_PUZZLES(
         title = "Large Puzzles",
         subtitle = "46 Mega Grids (250–437 Arrows)",
         totalLevels = 46,
+        shapeCount = 12,
         folder = "levels/test_large_puzzles"
     )
 }
@@ -159,6 +170,35 @@ object LevelLoader {
         } catch (e: Exception) {
             null
         }
+    }
+
+    private val cachedShapeLevels = mutableMapOf<TestLevelCategory, List<ShapeLevelInfo>>()
+
+    @Synchronized
+    fun getShapeLevels(context: Context, category: TestLevelCategory): List<ShapeLevelInfo> {
+        cachedShapeLevels[category]?.let { return it }
+        val filePath = "${category.folder}/shape_levels.json"
+        val list = mutableListOf<ShapeLevelInfo>()
+        try {
+            context.assets.open(filePath).use { stream ->
+                val jsonStr = stream.bufferedReader().use { it.readText() }
+                val array = JSONArray(jsonStr)
+                for (i in 0 until array.length()) {
+                    val obj = array.getJSONObject(i)
+                    list.add(
+                        ShapeLevelInfo(
+                            levelNumber = obj.getInt("level"),
+                            shapeName = obj.optString("name", ""),
+                            arrowCount = obj.optInt("arrows", 0)
+                        )
+                    )
+                }
+            }
+        } catch (_: Exception) {
+            // Handled gracefully
+        }
+        cachedShapeLevels[category] = list
+        return list
     }
 
     /**

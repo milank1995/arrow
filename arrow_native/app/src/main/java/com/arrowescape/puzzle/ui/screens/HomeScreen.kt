@@ -78,7 +78,7 @@ fun HomeScreen(
     onThemeClick: () -> Unit,
     onSoundToggle: () -> Unit,
     onSettingsClick: () -> Unit,
-    onDevTestClick: (com.arrowescape.puzzle.core.engine.TestLevelCategory) -> Unit = {},
+    onDevTestClick: (com.arrowescape.puzzle.core.engine.TestLevelCategory, Boolean) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "playPulse")
@@ -448,7 +448,19 @@ fun HomeScreen(
                 // Testing Category 1: Existing 1K Levels
                 AppSecondaryButton(
                     text = "📁 Existing 1K Levels (1,001 Levels)",
-                    onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.EXISTING_1K) },
+                    onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.EXISTING_1K, false) },
+                    theme = theme,
+                    modifier = Modifier
+                        .widthIn(max = 380.dp)
+                        .fillMaxWidth(0.88f)
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Category 1 Shapes Only Button
+                AppSecondaryButton(
+                    text = "⭐ 1K Shape Puzzles Only (200 Shapes)",
+                    onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.EXISTING_1K, true) },
                     theme = theme,
                     modifier = Modifier
                         .widthIn(max = 380.dp)
@@ -457,10 +469,10 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Testing Category 2: New Unity Normal Levels
+                // Testing Category 2: New Unity Normal Levels (Pure Normal)
                 AppSecondaryButton(
                     text = "🎮 New Unity Normal Levels (8,445 Levels)",
-                    onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.UNITY_NORMAL) },
+                    onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.UNITY_NORMAL, false) },
                     theme = theme,
                     modifier = Modifier
                         .widthIn(max = 380.dp)
@@ -469,10 +481,10 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Testing Category 3: Shape Puzzle Levels
+                // Testing Category 3: Shape Puzzle Levels (100% Shapes)
                 AppSecondaryButton(
                     text = "⭐ Shape Puzzle Levels (788 Shapes)",
-                    onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.SHAPE_PUZZLES) },
+                    onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.SHAPE_PUZZLES, true) },
                     theme = theme,
                     modifier = Modifier
                         .widthIn(max = 380.dp)
@@ -484,7 +496,19 @@ fun HomeScreen(
                 // Testing Category 4: Large Puzzles
                 AppSecondaryButton(
                     text = "🧩 Large Puzzles (46 Mega Grids)",
-                    onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.LARGE_PUZZLES) },
+                    onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.LARGE_PUZZLES, false) },
+                    theme = theme,
+                    modifier = Modifier
+                        .widthIn(max = 380.dp)
+                        .fillMaxWidth(0.88f)
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Category 4 Shapes Only Button
+                AppSecondaryButton(
+                    text = "⭐ Large Shape Puzzles Only (12 Shapes)",
+                    onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.LARGE_PUZZLES, true) },
                     theme = theme,
                     modifier = Modifier
                         .widthIn(max = 380.dp)

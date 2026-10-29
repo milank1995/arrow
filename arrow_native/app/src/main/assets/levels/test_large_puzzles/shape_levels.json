@@ -1,0 +1,62 @@
+[
+  {
+    "level": 7,
+    "name": "Sofa",
+    "arrows": 261
+  },
+  {
+    "level": 9,
+    "name": "The Thinker",
+    "arrows": 262
+  },
+  {
+    "level": 18,
+    "name": "Stone Idol",
+    "arrows": 291
+  },
+  {
+    "level": 27,
+    "name": "Treasure Chest",
+    "arrows": 355
+  },
+  {
+    "level": 28,
+    "name": "The Starry Night",
+    "arrows": 358
+  },
+  {
+    "level": 29,
+    "name": "Arc de Triomphe",
+    "arrows": 369
+  },
+  {
+    "level": 30,
+    "name": "Pirate Ship",
+    "arrows": 374
+  },
+  {
+    "level": 31,
+    "name": "Sydney Opera House",
+    "arrows": 379
+  },
+  {
+    "level": 32,
+    "name": "Taj Mahal",
+    "arrows": 380
+  },
+  {
+    "level": 37,
+    "name": "Leaning Tower of Pisa",
+    "arrows": 399
+  },
+  {
+    "level": 38,
+    "name": "Detective",
+    "arrows": 402
+  },
+  {
+    "level": 46,
+    "name": "The Great Sphinx",
+    "arrows": 437
+  }
+]

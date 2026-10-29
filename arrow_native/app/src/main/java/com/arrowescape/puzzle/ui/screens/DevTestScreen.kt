@@ -43,6 +43,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -68,6 +71,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DevTestScreen(
     initialCategory: TestLevelCategory = TestLevelCategory.EXISTING_1K,
+    initialShapesOnly: Boolean = false,
     theme: ThemePreset,
     audioHapticManager: AudioHapticManager,
     onBackToHomeClick: () -> Unit,
@@ -79,6 +83,8 @@ fun DevTestScreen(
     BackHandler(onBack = onBackToHomeClick)
 
     var currentCategory by remember { mutableStateOf(initialCategory) }
+    var isShapesOnly by remember { mutableStateOf(initialShapesOnly) }
+    val currentShapeLevels = remember(currentCategory) { LevelLoader.getShapeLevels(context, currentCategory) }
     var currentLevelNumber by remember { mutableIntStateOf(1) }
     var levelData by remember { mutableStateOf<LevelData?>(null) }
     var arrows by remember { mutableStateOf<List<Arrow>>(emptyList()) }
@@ -115,8 +121,12 @@ fun DevTestScreen(
         restartTrigger = System.currentTimeMillis()
     }
 
-    LaunchedEffect(initialCategory) {
-        loadLevel(1, initialCategory)
+    LaunchedEffect(initialCategory, initialShapesOnly) {
+        currentCategory = initialCategory
+        isShapesOnly = initialShapesOnly
+        val shapes = LevelLoader.getShapeLevels(context, initialCategory)
+        val targetLvl = if (initialShapesOnly && shapes.isNotEmpty()) shapes.first().levelNumber else 1
+        loadLevel(targetLvl, initialCategory)
     }
 
     fun launchArrowFlight(arrow: Arrow) {
@@ -277,12 +287,22 @@ fun DevTestScreen(
                         theme = theme,
                         isTestMode = true,
                         onPrevLevelClick = {
-                            if (currentLevelNumber > 1) {
+                            if (isShapesOnly && currentShapeLevels.isNotEmpty()) {
+                                val idx = currentShapeLevels.indexOfFirst { it.levelNumber == currentLevelNumber }
+                                if (idx > 0) {
+                                    loadLevel(currentShapeLevels[idx - 1].levelNumber)
+                                }
+                            } else if (currentLevelNumber > 1) {
                                 loadLevel(currentLevelNumber - 1)
                             }
                         },
                         onNextLevelClick = {
-                            if (currentLevelNumber < currentCategory.totalLevels) {
+                            if (isShapesOnly && currentShapeLevels.isNotEmpty()) {
+                                val idx = currentShapeLevels.indexOfFirst { it.levelNumber == currentLevelNumber }
+                                if (idx in 0 until currentShapeLevels.size - 1) {
+                                    loadLevel(currentShapeLevels[idx + 1].levelNumber)
+                                }
+                            } else if (currentLevelNumber < currentCategory.totalLevels) {
                                 loadLevel(currentLevelNumber + 1)
                             }
                         },
@@ -319,7 +339,9 @@ fun DevTestScreen(
                                     .clickable {
                                         if (currentCategory != cat) {
                                             audioHapticManager.playTap()
-                                            loadLevel(1, cat)
+                                            val shapes = LevelLoader.getShapeLevels(context, cat)
+                                            val targetLvl = if (isShapesOnly && shapes.isNotEmpty()) shapes.first().levelNumber else 1
+                                            loadLevel(targetLvl, cat)
                                         }
                                     }
                             ) {
@@ -346,6 +368,80 @@ fun DevTestScreen(
 
                     Spacer(modifier = Modifier.height(6.dp))
 
+                    // SHAPE FILTER BUTTONS ROW (All Puzzles vs Shape Puzzles Only)
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp)
+                    ) {
+                        // 1. All Levels Button
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = if (!isShapesOnly) theme.arrowDefault else Color(0x14000000),
+                            border = if (!isShapesOnly) null else BorderStroke(1.dp, Color(0x1F000000)),
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable {
+                                    if (isShapesOnly) {
+                                        audioHapticManager.playTap()
+                                        isShapesOnly = false
+                                    }
+                                }
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(vertical = 6.dp, horizontal = 4.dp)
+                            ) {
+                                Text(
+                                    text = "📋 All Levels (${currentCategory.totalLevels})",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (!isShapesOnly) Color.White else theme.textPrimary
+                                )
+                            }
+                        }
+
+                        // 2. Shape Puzzles Only Button
+                        val shapeCount = currentCategory.shapeCount
+                        val hasShapes = shapeCount > 0
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = if (isShapesOnly) Color(0xFFF59E0B) else (if (hasShapes) Color(0x14000000) else Color(0x08000000)),
+                            border = if (isShapesOnly) null else BorderStroke(1.dp, if (hasShapes) Color(0x40F59E0B) else Color(0x1F000000)),
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable(enabled = hasShapes) {
+                                    if (!isShapesOnly) {
+                                        audioHapticManager.playTap()
+                                        isShapesOnly = true
+                                        if (currentShapeLevels.isNotEmpty()) {
+                                            val nextShape = currentShapeLevels.firstOrNull { it.levelNumber >= currentLevelNumber }
+                                                ?: currentShapeLevels.first()
+                                            loadLevel(nextShape.levelNumber, currentCategory)
+                                        }
+                                    }
+                                }
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(vertical = 6.dp, horizontal = 4.dp)
+                            ) {
+                                Text(
+                                    text = if (hasShapes) "⭐ Shapes Only ($shapeCount)" else "⭐ No Shapes (0)",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isShapesOnly) Color.White else (if (hasShapes) Color(0xFFD97706) else theme.textSecondary.copy(alpha = 0.4f))
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
                     // LEVEL METRICS BADGE (Arrow count, Grid size, Category progress, Shape name)
                     Surface(
                         shape = RoundedCornerShape(8.dp),
@@ -357,11 +453,17 @@ fun DevTestScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
                         ) {
+                            val shapeIndex = currentShapeLevels.indexOfFirst { it.levelNumber == currentLevelNumber }
+                            val progressText = if (isShapesOnly && shapeIndex >= 0) {
+                                "Shape ${shapeIndex + 1} of ${currentShapeLevels.size} (Lvl $currentLevelNumber)"
+                            } else {
+                                "Lvl $currentLevelNumber of ${currentCategory.totalLevels}"
+                            }
                             val shapePrefix = if (currentLevel.shapeName.isNotEmpty()) {
                                 "🐾 ${currentLevel.shapeName}  •  "
                             } else ""
                             Text(
-                                text = "${shapePrefix}Lvl $currentLevelNumber of ${currentCategory.totalLevels}  •  ${arrows.size} Arrows  •  Grid ${currentLevel.xSize}×${currentLevel.ySize}",
+                                text = "${shapePrefix}$progressText  •  ${arrows.size} Arrows  •  Grid ${currentLevel.xSize}×${currentLevel.ySize}",
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = theme.textPrimary.copy(alpha = 0.85f)
@@ -515,11 +617,15 @@ fun DevTestScreen(
             LevelSelectorDialog(
                 currentCategory = currentCategory,
                 currentLevel = currentLevelNumber,
+                initialShapesOnly = isShapesOnly,
                 onCategorySelected = { cat ->
-                    loadLevel(1, cat)
+                    val shapes = LevelLoader.getShapeLevels(context, cat)
+                    val targetLvl = if (isShapesOnly && shapes.isNotEmpty()) shapes.first().levelNumber else 1
+                    loadLevel(targetLvl, cat)
                 },
-                onLevelSelected = { lvl, cat ->
+                onLevelSelected = { lvl, cat, shapesOnly ->
                     showLevelSelectDialog = false
+                    isShapesOnly = shapesOnly
                     loadLevel(lvl, cat)
                 },
                 onDismiss = { showLevelSelectDialog = false }
@@ -532,11 +638,15 @@ fun DevTestScreen(
 private fun LevelSelectorDialog(
     currentCategory: TestLevelCategory,
     currentLevel: Int,
+    initialShapesOnly: Boolean = false,
     onCategorySelected: (TestLevelCategory) -> Unit,
-    onLevelSelected: (Int, TestLevelCategory) -> Unit,
+    onLevelSelected: (Int, TestLevelCategory, Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
     var selectedCategory by remember { mutableStateOf(currentCategory) }
+    var filterShapesOnly by remember { mutableStateOf(initialShapesOnly) }
+    val shapeLevels = remember(selectedCategory) { LevelLoader.getShapeLevels(context, selectedCategory) }
     var inputLevelText by remember { mutableStateOf(currentLevel.toString()) }
     val maxLimit = selectedCategory.totalLevels
 
@@ -617,126 +727,242 @@ private fun LevelSelectorDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-                // Custom Level Number Input
+                // SHAPE FILTER TOGGLE BUTTONS INSIDE DIALOG
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    OutlinedTextField(
-                        value = inputLevelText,
-                        onValueChange = { inputLevelText = it },
-                        label = { Text("Enter Level # (1-$maxLimit)") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        singleLine = true,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Button(
-                        onClick = {
-                            val parsed = inputLevelText.replace(",", "").replace(".", "").replace(" ", "").trim().toIntOrNull()
-                            val lvl = parsed?.coerceIn(1, maxLimit) ?: 1
-                            onLevelSelected(lvl, selectedCategory)
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4F46E5)),
-                        modifier = Modifier.height(56.dp)
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = if (!filterShapesOnly) Color(0xFF4F46E5) else Color(0xFFF1F5F9),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { filterShapesOnly = false }
                     ) {
-                        Text("Load", fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "📋 All Levels (${selectedCategory.totalLevels})",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                            color = if (!filterShapesOnly) Color.White else Color(0xFF475569),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 6.dp)
+                        )
+                    }
+
+                    val shapeCount = selectedCategory.shapeCount
+                    val hasShapes = shapeCount > 0
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = if (filterShapesOnly) Color(0xFFD97706) else (if (hasShapes) Color(0xFFFEF3C7) else Color(0xFFF1F5F9)),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable(enabled = hasShapes) { filterShapesOnly = true }
+                    ) {
+                        Text(
+                            text = if (hasShapes) "⭐ Shapes Only ($shapeCount)" else "⭐ No Shapes (0)",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                            color = if (filterShapesOnly) Color.White else (if (hasShapes) Color(0xFFB45309) else Color(0xFF94A3B8)),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 6.dp)
+                        )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                Text(
-                    text = "Quick Milestone Jumps (Smallest → Largest):",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF475569)
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                val quickLevels = when (selectedCategory) {
-                    TestLevelCategory.EXISTING_1K -> listOf(
-                        1 to "Tutorial (3 arr)",
-                        50 to "Early (28 arr)",
-                        100 to "Flow (45 arr)",
-                        250 to "Mid (65 arr)",
-                        500 to "Milestone (100 arr)",
-                        750 to "Complex (130 arr)",
-                        1001 to "Finale (229 arr)"
-                    )
-                    TestLevelCategory.UNITY_NORMAL -> listOf(
-                        1 to "Intro (4 arr)",
-                        500 to "Early (25 arr)",
-                        1500 to "Growing (40 arr)",
-                        3000 to "Medium (60 arr)",
-                        5000 to "Dense (90 arr)",
-                        7000 to "Expert (130 arr)",
-                        8445 to "Apex (223 arr)"
-                    )
-                    TestLevelCategory.SHAPE_PUZZLES -> listOf(
-                        1 to "Intro Shape (19 arr)",
-                        100 to "Early (50 arr)",
-                        250 to "Mid (75 arr)",
-                        400 to "Solid (100 arr)",
-                        600 to "Dense (130 arr)",
-                        750 to "Grand (180 arr)",
-                        788 to "Apex Shape (247 arr)"
-                    )
-                    TestLevelCategory.LARGE_PUZZLES -> listOf(
-                        1 to "Start (253 arr)",
-                        7 to "Sofa (261 arr)",
-                        9 to "The Thinker (262 arr)",
-                        18 to "Stone Idol (291 arr)",
-                        28 to "Starry Night (358 arr)",
-                        32 to "Taj Mahal (380 arr)",
-                        46 to "Sphinx (437 arr)"
-                    )
-                }
-
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    quickLevels.chunked(2).forEach { rowPair ->
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.fillMaxWidth()
+                if (filterShapesOnly) {
+                    if (shapeLevels.isEmpty()) {
+                        Text(
+                            text = "This category does not contain shape puzzles (it has pure normal levels).",
+                            fontSize = 12.sp,
+                            color = Color(0xFF64748B),
+                            modifier = Modifier.padding(vertical = 12.dp)
+                        )
+                    } else {
+                        Text(
+                            text = "Shape Puzzles in ${selectedCategory.title} (${shapeLevels.size} Shapes):",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF475569)
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 260.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            rowPair.forEach { (lvl, desc) ->
-                                val isCurrent = (lvl == currentLevel && selectedCategory == currentCategory)
+                            items(shapeLevels) { shape ->
+                                val isCurrent = (shape.levelNumber == currentLevel && selectedCategory == currentCategory)
                                 Surface(
-                                    shape = RoundedCornerShape(10.dp),
+                                    shape = RoundedCornerShape(8.dp),
                                     color = if (isCurrent) Color(0xFFEEF2FF) else Color(0xFFF8FAFC),
-                                    border = BorderStroke(
-                                        1.dp,
-                                        if (isCurrent) Color(0xFF6366F1) else Color(0xFFE2E8F0)
-                                    ),
+                                    border = BorderStroke(1.dp, if (isCurrent) Color(0xFF6366F1) else Color(0xFFE2E8F0)),
                                     modifier = Modifier
-                                        .weight(1f)
-                                        .clickable { onLevelSelected(lvl, selectedCategory) }
+                                        .fillMaxWidth()
+                                        .clickable { onLevelSelected(shape.levelNumber, selectedCategory, true) }
                                 ) {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp)
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp)
                                     ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.weight(1f, fill = false)
+                                        ) {
+                                            Text(
+                                                text = "L${shape.levelNumber}",
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 12.sp,
+                                                color = if (isCurrent) Color(0xFF4338CA) else Color(0xFF1E293B)
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(
+                                                text = "🐾 ${shape.shapeName}",
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 12.sp,
+                                                color = Color(0xFF334155),
+                                                maxLines = 1
+                                            )
+                                        }
                                         Text(
-                                            text = "L$lvl",
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 12.sp,
-                                            color = if (isCurrent) Color(0xFF4338CA) else Color(0xFF1E293B)
-                                        )
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text(
-                                            text = desc,
+                                            text = "${shape.arrowCount} arr",
                                             fontSize = 11.sp,
-                                            color = Color(0xFF64748B),
-                                            maxLines = 1
+                                            color = Color(0xFF64748B)
                                         )
                                     }
                                 }
                             }
-                            if (rowPair.size == 1) {
-                                Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                } else {
+                    // Custom Level Number Input
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = inputLevelText,
+                            onValueChange = { inputLevelText = it },
+                            label = { Text("Enter Level # (1-$maxLimit)") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            singleLine = true,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Button(
+                            onClick = {
+                                val parsed = inputLevelText.replace(",", "").replace(".", "").replace(" ", "").trim().toIntOrNull()
+                                val lvl = parsed?.coerceIn(1, maxLimit) ?: 1
+                                onLevelSelected(lvl, selectedCategory, false)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4F46E5)),
+                            modifier = Modifier.height(56.dp)
+                        ) {
+                            Text("Load", fontWeight = FontWeight.Bold)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    Text(
+                        text = "Quick Milestone Jumps (Smallest → Largest):",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF475569)
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    val quickLevels = when (selectedCategory) {
+                        TestLevelCategory.EXISTING_1K -> listOf(
+                            1 to "Tutorial (3 arr)",
+                            50 to "Early (28 arr)",
+                            100 to "Flow (45 arr)",
+                            250 to "Mid (65 arr)",
+                            500 to "Milestone (100 arr)",
+                            750 to "Complex (130 arr)",
+                            1001 to "Finale (229 arr)"
+                        )
+                        TestLevelCategory.UNITY_NORMAL -> listOf(
+                            1 to "Intro (4 arr)",
+                            500 to "Early (25 arr)",
+                            1500 to "Growing (40 arr)",
+                            3000 to "Medium (60 arr)",
+                            5000 to "Dense (90 arr)",
+                            7000 to "Expert (130 arr)",
+                            8445 to "Apex (223 arr)"
+                        )
+                        TestLevelCategory.SHAPE_PUZZLES -> listOf(
+                            1 to "Intro Shape (19 arr)",
+                            100 to "Early (50 arr)",
+                            250 to "Mid (75 arr)",
+                            400 to "Solid (100 arr)",
+                            600 to "Dense (130 arr)",
+                            750 to "Grand (180 arr)",
+                            788 to "Apex Shape (247 arr)"
+                        )
+                        TestLevelCategory.LARGE_PUZZLES -> listOf(
+                            1 to "Start (253 arr)",
+                            7 to "Sofa (261 arr)",
+                            9 to "The Thinker (262 arr)",
+                            18 to "Stone Idol (291 arr)",
+                            28 to "Starry Night (358 arr)",
+                            32 to "Taj Mahal (380 arr)",
+                            46 to "Sphinx (437 arr)"
+                        )
+                    }
+
+                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        quickLevels.chunked(2).forEach { rowPair ->
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                rowPair.forEach { (lvl, desc) ->
+                                    val isCurrent = (lvl == currentLevel && selectedCategory == currentCategory)
+                                    Surface(
+                                        shape = RoundedCornerShape(10.dp),
+                                        color = if (isCurrent) Color(0xFFEEF2FF) else Color(0xFFF8FAFC),
+                                        border = BorderStroke(
+                                            1.dp,
+                                            if (isCurrent) Color(0xFF6366F1) else Color(0xFFE2E8F0)
+                                        ),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .clickable { onLevelSelected(lvl, selectedCategory, false) }
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp)
+                                        ) {
+                                            Text(
+                                                text = "L$lvl",
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 12.sp,
+                                                color = if (isCurrent) Color(0xFF4338CA) else Color(0xFF1E293B)
+                                            )
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text(
+                                                text = desc,
+                                                fontSize = 11.sp,
+                                                color = Color(0xFF64748B),
+                                                maxLines = 1
+                                            )
+                                        }
+                                    }
+                                }
+                                if (rowPair.size == 1) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
                             }
                         }
                     }

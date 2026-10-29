@@ -1,0 +1,1002 @@
+[
+  {
+    "level": 6,
+    "name": "Shape #1000",
+    "arrows": 12
+  },
+  {
+    "level": 16,
+    "name": "Shape #125",
+    "arrows": 25
+  },
+  {
+    "level": 29,
+    "name": "Shape #60",
+    "arrows": 30
+  },
+  {
+    "level": 30,
+    "name": "Shape #180",
+    "arrows": 30
+  },
+  {
+    "level": 31,
+    "name": "Shape #5",
+    "arrows": 30
+  },
+  {
+    "level": 38,
+    "name": "Shape #210",
+    "arrows": 32
+  },
+  {
+    "level": 43,
+    "name": "Shape #200",
+    "arrows": 33
+  },
+  {
+    "level": 44,
+    "name": "Shape #230",
+    "arrows": 33
+  },
+  {
+    "level": 46,
+    "name": "Shape #20",
+    "arrows": 33
+  },
+  {
+    "level": 54,
+    "name": "Shape #195",
+    "arrows": 34
+  },
+  {
+    "level": 65,
+    "name": "Shape #15",
+    "arrows": 36
+  },
+  {
+    "level": 70,
+    "name": "Shape #485",
+    "arrows": 37
+  },
+  {
+    "level": 72,
+    "name": "Shape #155",
+    "arrows": 38
+  },
+  {
+    "level": 79,
+    "name": "Shape #90",
+    "arrows": 40
+  },
+  {
+    "level": 89,
+    "name": "Shape #220",
+    "arrows": 42
+  },
+  {
+    "level": 95,
+    "name": "Shape #30",
+    "arrows": 42
+  },
+  {
+    "level": 96,
+    "name": "Shape #370",
+    "arrows": 42
+  },
+  {
+    "level": 98,
+    "name": "Shape #10",
+    "arrows": 43
+  },
+  {
+    "level": 101,
+    "name": "Shape #55",
+    "arrows": 43
+  },
+  {
+    "level": 109,
+    "name": "Shape #115",
+    "arrows": 44
+  },
+  {
+    "level": 119,
+    "name": "Shape #150",
+    "arrows": 45
+  },
+  {
+    "level": 120,
+    "name": "Shape #215",
+    "arrows": 45
+  },
+  {
+    "level": 123,
+    "name": "Shape #165",
+    "arrows": 45
+  },
+  {
+    "level": 126,
+    "name": "Shape #130",
+    "arrows": 46
+  },
+  {
+    "level": 133,
+    "name": "Shape #325",
+    "arrows": 46
+  },
+  {
+    "level": 140,
+    "name": "Shape #410",
+    "arrows": 47
+  },
+  {
+    "level": 141,
+    "name": "Shape #45",
+    "arrows": 47
+  },
+  {
+    "level": 144,
+    "name": "Shape #265",
+    "arrows": 47
+  },
+  {
+    "level": 145,
+    "name": "Shape #190",
+    "arrows": 48
+  },
+  {
+    "level": 146,
+    "name": "Shape #135",
+    "arrows": 48
+  },
+  {
+    "level": 158,
+    "name": "Shape #425",
+    "arrows": 49
+  },
+  {
+    "level": 163,
+    "name": "Shape #500",
+    "arrows": 50
+  },
+  {
+    "level": 174,
+    "name": "Shape #85",
+    "arrows": 51
+  },
+  {
+    "level": 175,
+    "name": "Shape #225",
+    "arrows": 51
+  },
+  {
+    "level": 179,
+    "name": "Shape #75",
+    "arrows": 52
+  },
+  {
+    "level": 180,
+    "name": "Shape #25",
+    "arrows": 52
+  },
+  {
+    "level": 181,
+    "name": "Shape #170",
+    "arrows": 52
+  },
+  {
+    "level": 184,
+    "name": "Shape #100",
+    "arrows": 53
+  },
+  {
+    "level": 187,
+    "name": "Shape #240",
+    "arrows": 53
+  },
+  {
+    "level": 189,
+    "name": "Shape #455",
+    "arrows": 53
+  },
+  {
+    "level": 191,
+    "name": "Shape #235",
+    "arrows": 54
+  },
+  {
+    "level": 193,
+    "name": "Shape #35",
+    "arrows": 54
+  },
+  {
+    "level": 195,
+    "name": "Shape #175",
+    "arrows": 54
+  },
+  {
+    "level": 197,
+    "name": "Shape #205",
+    "arrows": 54
+  },
+  {
+    "level": 200,
+    "name": "Shape #50",
+    "arrows": 55
+  },
+  {
+    "level": 206,
+    "name": "Shape #70",
+    "arrows": 56
+  },
+  {
+    "level": 207,
+    "name": "Shape #365",
+    "arrows": 56
+  },
+  {
+    "level": 215,
+    "name": "Shape #245",
+    "arrows": 57
+  },
+  {
+    "level": 221,
+    "name": "Shape #160",
+    "arrows": 59
+  },
+  {
+    "level": 222,
+    "name": "Shape #110",
+    "arrows": 59
+  },
+  {
+    "level": 234,
+    "name": "Shape #80",
+    "arrows": 60
+  },
+  {
+    "level": 243,
+    "name": "Shape #40",
+    "arrows": 61
+  },
+  {
+    "level": 257,
+    "name": "Shape #120",
+    "arrows": 63
+  },
+  {
+    "level": 262,
+    "name": "Shape #65",
+    "arrows": 63
+  },
+  {
+    "level": 263,
+    "name": "Shape #340",
+    "arrows": 63
+  },
+  {
+    "level": 268,
+    "name": "Shape #145",
+    "arrows": 64
+  },
+  {
+    "level": 269,
+    "name": "Shape #185",
+    "arrows": 64
+  },
+  {
+    "level": 282,
+    "name": "Shape #250",
+    "arrows": 67
+  },
+  {
+    "level": 285,
+    "name": "Shape #285",
+    "arrows": 67
+  },
+  {
+    "level": 286,
+    "name": "Shape #505",
+    "arrows": 67
+  },
+  {
+    "level": 293,
+    "name": "Shape #105",
+    "arrows": 68
+  },
+  {
+    "level": 297,
+    "name": "Shape #300",
+    "arrows": 69
+  },
+  {
+    "level": 311,
+    "name": "Shape #355",
+    "arrows": 71
+  },
+  {
+    "level": 312,
+    "name": "Shape #275",
+    "arrows": 71
+  },
+  {
+    "level": 315,
+    "name": "Shape #390",
+    "arrows": 72
+  },
+  {
+    "level": 322,
+    "name": "Shape #475",
+    "arrows": 73
+  },
+  {
+    "level": 329,
+    "name": "Shape #490",
+    "arrows": 74
+  },
+  {
+    "level": 336,
+    "name": "Shape #140",
+    "arrows": 75
+  },
+  {
+    "level": 339,
+    "name": "Shape #330",
+    "arrows": 76
+  },
+  {
+    "level": 347,
+    "name": "Shape #95",
+    "arrows": 78
+  },
+  {
+    "level": 357,
+    "name": "Shape #315",
+    "arrows": 80
+  },
+  {
+    "level": 359,
+    "name": "Shape #610",
+    "arrows": 80
+  },
+  {
+    "level": 365,
+    "name": "Shape #255",
+    "arrows": 81
+  },
+  {
+    "level": 370,
+    "name": "Shape #385",
+    "arrows": 82
+  },
+  {
+    "level": 380,
+    "name": "Shape #480",
+    "arrows": 83
+  },
+  {
+    "level": 387,
+    "name": "Shape #350",
+    "arrows": 84
+  },
+  {
+    "level": 388,
+    "name": "Shape #460",
+    "arrows": 84
+  },
+  {
+    "level": 390,
+    "name": "Shape #260",
+    "arrows": 84
+  },
+  {
+    "level": 392,
+    "name": "Shape #445",
+    "arrows": 85
+  },
+  {
+    "level": 406,
+    "name": "Shape #450",
+    "arrows": 87
+  },
+  {
+    "level": 412,
+    "name": "Shape #470",
+    "arrows": 88
+  },
+  {
+    "level": 420,
+    "name": "Shape #395",
+    "arrows": 90
+  },
+  {
+    "level": 426,
+    "name": "Shape #305",
+    "arrows": 91
+  },
+  {
+    "level": 428,
+    "name": "Shape #380",
+    "arrows": 91
+  },
+  {
+    "level": 434,
+    "name": "Shape #430",
+    "arrows": 92
+  },
+  {
+    "level": 435,
+    "name": "Shape #360",
+    "arrows": 92
+  },
+  {
+    "level": 439,
+    "name": "Shape #440",
+    "arrows": 92
+  },
+  {
+    "level": 440,
+    "name": "Shape #840",
+    "arrows": 92
+  },
+  {
+    "level": 441,
+    "name": "Shape #640",
+    "arrows": 92
+  },
+  {
+    "level": 446,
+    "name": "Shape #335",
+    "arrows": 93
+  },
+  {
+    "level": 472,
+    "name": "Shape #420",
+    "arrows": 98
+  },
+  {
+    "level": 473,
+    "name": "Shape #495",
+    "arrows": 98
+  },
+  {
+    "level": 478,
+    "name": "Shape #310",
+    "arrows": 99
+  },
+  {
+    "level": 479,
+    "name": "Shape #745",
+    "arrows": 99
+  },
+  {
+    "level": 485,
+    "name": "Shape #280",
+    "arrows": 100
+  },
+  {
+    "level": 488,
+    "name": "Shape #400",
+    "arrows": 100
+  },
+  {
+    "level": 497,
+    "name": "Shape #520",
+    "arrows": 101
+  },
+  {
+    "level": 501,
+    "name": "Shape #345",
+    "arrows": 102
+  },
+  {
+    "level": 507,
+    "name": "Shape #630",
+    "arrows": 102
+  },
+  {
+    "level": 513,
+    "name": "Shape #910",
+    "arrows": 103
+  },
+  {
+    "level": 520,
+    "name": "Shape #645",
+    "arrows": 104
+  },
+  {
+    "level": 530,
+    "name": "Shape #295",
+    "arrows": 105
+  },
+  {
+    "level": 535,
+    "name": "Shape #685",
+    "arrows": 105
+  },
+  {
+    "level": 539,
+    "name": "Shape #715",
+    "arrows": 106
+  },
+  {
+    "level": 548,
+    "name": "Shape #675",
+    "arrows": 107
+  },
+  {
+    "level": 561,
+    "name": "Shape #785",
+    "arrows": 109
+  },
+  {
+    "level": 563,
+    "name": "Shape #660",
+    "arrows": 109
+  },
+  {
+    "level": 569,
+    "name": "Shape #560",
+    "arrows": 110
+  },
+  {
+    "level": 570,
+    "name": "Shape #415",
+    "arrows": 111
+  },
+  {
+    "level": 571,
+    "name": "Shape #270",
+    "arrows": 111
+  },
+  {
+    "level": 587,
+    "name": "Shape #375",
+    "arrows": 114
+  },
+  {
+    "level": 588,
+    "name": "Shape #725",
+    "arrows": 114
+  },
+  {
+    "level": 592,
+    "name": "Shape #465",
+    "arrows": 115
+  },
+  {
+    "level": 593,
+    "name": "Shape #320",
+    "arrows": 115
+  },
+  {
+    "level": 594,
+    "name": "Shape #290",
+    "arrows": 115
+  },
+  {
+    "level": 598,
+    "name": "Shape #655",
+    "arrows": 115
+  },
+  {
+    "level": 600,
+    "name": "Shape #890",
+    "arrows": 115
+  },
+  {
+    "level": 602,
+    "name": "Shape #650",
+    "arrows": 115
+  },
+  {
+    "level": 612,
+    "name": "Shape #575",
+    "arrows": 116
+  },
+  {
+    "level": 625,
+    "name": "Shape #405",
+    "arrows": 119
+  },
+  {
+    "level": 628,
+    "name": "Shape #580",
+    "arrows": 119
+  },
+  {
+    "level": 639,
+    "name": "Shape #825",
+    "arrows": 121
+  },
+  {
+    "level": 645,
+    "name": "Shape #730",
+    "arrows": 122
+  },
+  {
+    "level": 646,
+    "name": "Shape #740",
+    "arrows": 122
+  },
+  {
+    "level": 652,
+    "name": "Shape #765",
+    "arrows": 123
+  },
+  {
+    "level": 658,
+    "name": "Shape #695",
+    "arrows": 123
+  },
+  {
+    "level": 671,
+    "name": "Shape #435",
+    "arrows": 125
+  },
+  {
+    "level": 680,
+    "name": "Shape #960",
+    "arrows": 126
+  },
+  {
+    "level": 685,
+    "name": "Shape #720",
+    "arrows": 127
+  },
+  {
+    "level": 700,
+    "name": "Shape #900",
+    "arrows": 130
+  },
+  {
+    "level": 702,
+    "name": "Shape #525",
+    "arrows": 131
+  },
+  {
+    "level": 703,
+    "name": "Shape #845",
+    "arrows": 131
+  },
+  {
+    "level": 704,
+    "name": "Shape #870",
+    "arrows": 131
+  },
+  {
+    "level": 705,
+    "name": "Shape #700",
+    "arrows": 131
+  },
+  {
+    "level": 706,
+    "name": "Shape #920",
+    "arrows": 131
+  },
+  {
+    "level": 709,
+    "name": "Shape #555",
+    "arrows": 132
+  },
+  {
+    "level": 710,
+    "name": "Shape #820",
+    "arrows": 132
+  },
+  {
+    "level": 711,
+    "name": "Shape #755",
+    "arrows": 132
+  },
+  {
+    "level": 712,
+    "name": "Shape #865",
+    "arrows": 133
+  },
+  {
+    "level": 717,
+    "name": "Shape #775",
+    "arrows": 134
+  },
+  {
+    "level": 726,
+    "name": "Shape #835",
+    "arrows": 136
+  },
+  {
+    "level": 729,
+    "name": "Shape #830",
+    "arrows": 136
+  },
+  {
+    "level": 732,
+    "name": "Shape #710",
+    "arrows": 137
+  },
+  {
+    "level": 736,
+    "name": "Shape #875",
+    "arrows": 137
+  },
+  {
+    "level": 738,
+    "name": "Shape #980",
+    "arrows": 137
+  },
+  {
+    "level": 752,
+    "name": "Shape #790",
+    "arrows": 140
+  },
+  {
+    "level": 759,
+    "name": "Shape #535",
+    "arrows": 141
+  },
+  {
+    "level": 761,
+    "name": "Shape #810",
+    "arrows": 141
+  },
+  {
+    "level": 767,
+    "name": "Shape #880",
+    "arrows": 142
+  },
+  {
+    "level": 769,
+    "name": "Shape #690",
+    "arrows": 143
+  },
+  {
+    "level": 774,
+    "name": "Shape #975",
+    "arrows": 143
+  },
+  {
+    "level": 776,
+    "name": "Shape #665",
+    "arrows": 144
+  },
+  {
+    "level": 783,
+    "name": "Shape #585",
+    "arrows": 145
+  },
+  {
+    "level": 784,
+    "name": "Shape #545",
+    "arrows": 146
+  },
+  {
+    "level": 789,
+    "name": "Shape #570",
+    "arrows": 147
+  },
+  {
+    "level": 791,
+    "name": "Shape #620",
+    "arrows": 147
+  },
+  {
+    "level": 794,
+    "name": "Shape #670",
+    "arrows": 147
+  },
+  {
+    "level": 806,
+    "name": "Shape #530",
+    "arrows": 149
+  },
+  {
+    "level": 814,
+    "name": "Shape #680",
+    "arrows": 150
+  },
+  {
+    "level": 816,
+    "name": "Shape #995",
+    "arrows": 150
+  },
+  {
+    "level": 820,
+    "name": "Shape #805",
+    "arrows": 151
+  },
+  {
+    "level": 825,
+    "name": "Shape #985",
+    "arrows": 151
+  },
+  {
+    "level": 830,
+    "name": "Shape #625",
+    "arrows": 152
+  },
+  {
+    "level": 836,
+    "name": "Shape #990",
+    "arrows": 153
+  },
+  {
+    "level": 842,
+    "name": "Shape #510",
+    "arrows": 154
+  },
+  {
+    "level": 848,
+    "name": "Shape #915",
+    "arrows": 155
+  },
+  {
+    "level": 850,
+    "name": "Shape #795",
+    "arrows": 156
+  },
+  {
+    "level": 851,
+    "name": "Shape #780",
+    "arrows": 156
+  },
+  {
+    "level": 853,
+    "name": "Shape #850",
+    "arrows": 156
+  },
+  {
+    "level": 854,
+    "name": "Shape #855",
+    "arrows": 156
+  },
+  {
+    "level": 872,
+    "name": "Shape #860",
+    "arrows": 160
+  },
+  {
+    "level": 873,
+    "name": "Shape #770",
+    "arrows": 160
+  },
+  {
+    "level": 878,
+    "name": "Shape #515",
+    "arrows": 161
+  },
+  {
+    "level": 882,
+    "name": "Shape #635",
+    "arrows": 161
+  },
+  {
+    "level": 888,
+    "name": "Shape #590",
+    "arrows": 162
+  },
+  {
+    "level": 889,
+    "name": "Shape #605",
+    "arrows": 162
+  },
+  {
+    "level": 901,
+    "name": "Shape #800",
+    "arrows": 165
+  },
+  {
+    "level": 902,
+    "name": "Shape #735",
+    "arrows": 165
+  },
+  {
+    "level": 903,
+    "name": "Shape #705",
+    "arrows": 165
+  },
+  {
+    "level": 908,
+    "name": "Shape #930",
+    "arrows": 167
+  },
+  {
+    "level": 913,
+    "name": "Shape #600",
+    "arrows": 169
+  },
+  {
+    "level": 914,
+    "name": "Shape #750",
+    "arrows": 169
+  },
+  {
+    "level": 919,
+    "name": "Shape #885",
+    "arrows": 170
+  },
+  {
+    "level": 921,
+    "name": "Shape #965",
+    "arrows": 170
+  },
+  {
+    "level": 931,
+    "name": "Shape #905",
+    "arrows": 173
+  },
+  {
+    "level": 932,
+    "name": "Shape #970",
+    "arrows": 173
+  },
+  {
+    "level": 933,
+    "name": "Shape #550",
+    "arrows": 174
+  },
+  {
+    "level": 941,
+    "name": "Shape #595",
+    "arrows": 177
+  },
+  {
+    "level": 946,
+    "name": "Shape #615",
+    "arrows": 178
+  },
+  {
+    "level": 947,
+    "name": "Shape #895",
+    "arrows": 178
+  },
+  {
+    "level": 951,
+    "name": "Shape #540",
+    "arrows": 180
+  },
+  {
+    "level": 955,
+    "name": "Shape #760",
+    "arrows": 181
+  },
+  {
+    "level": 957,
+    "name": "Shape #565",
+    "arrows": 182
+  },
+  {
+    "level": 958,
+    "name": "Shape #955",
+    "arrows": 182
+  },
+  {
+    "level": 959,
+    "name": "Shape #925",
+    "arrows": 182
+  },
+  {
+    "level": 966,
+    "name": "Shape #935",
+    "arrows": 185
+  },
+  {
+    "level": 969,
+    "name": "Shape #950",
+    "arrows": 186
+  },
+  {
+    "level": 970,
+    "name": "Shape #815",
+    "arrows": 187
+  },
+  {
+    "level": 981,
+    "name": "Shape #945",
+    "arrows": 194
+  },
+  {
+    "level": 988,
+    "name": "Shape #940",
+    "arrows": 198
+  }
+]

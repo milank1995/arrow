@@ -414,6 +414,18 @@ def write_category_packs(subfolder, level_list, chunk_size=1000):
         
     with open(os.path.join(target_dir, 'pack_manifest.json'), 'w', encoding='utf-8') as f:
         json.dump(pack_manifest, f, indent=2)
+
+    shapes_summary = [
+        {
+            'level': idx + 1,
+            'name': lvl.get('ShapeName', ''),
+            'arrows': len(lvl['Arrows'])
+        }
+        for idx, lvl in enumerate(level_list)
+        if lvl.get('ShapeName')
+    ]
+    with open(os.path.join(target_dir, 'shape_levels.json'), 'w', encoding='utf-8') as f:
+        json.dump(shapes_summary, f, indent=2)
         
     manifest_summary = []
     for idx, lvl in enumerate(level_list):
