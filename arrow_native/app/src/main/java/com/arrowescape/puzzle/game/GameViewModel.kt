@@ -23,6 +23,7 @@ import java.time.LocalDate
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 sealed class BoosterEffectAnimation {
@@ -310,7 +311,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     fun onArrowClicked(clickedArrow: Arrow) {
         if (_uiState.value.isLevelComplete || _uiState.value.isGameOver) return
         val currentArrow = _uiState.value.arrows.firstOrNull { it.id == clickedArrow.id } ?: clickedArrow
-        if (currentArrow.state == ArrowState.CLEARED || currentArrow.state == ArrowState.FLYING_OUT) return
+        // Multi-tap prevention: Ignore clicks on arrows that are already flying, cleared, or recoiling
+        if (currentArrow.state != ArrowState.IDLE && currentArrow.state != ArrowState.HINTED) return
 
         if (!hasGameplayStarted || levelStartTime == 0L) {
             levelStartTime = System.currentTimeMillis()
@@ -361,7 +363,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             }
 
             val dist = PuzzleSolver.getDistanceToBlocker(currentArrow, occupancyMap)
-            val durationMs = (300L + (dist * 40L).toLong()).coerceIn(360L, 640L)
+            val durationMs = (280L + (dist * 35L).toLong()).coerceIn(320L, 560L)
 
             _uiState.update { state ->
                 val flashedArrows = state.arrows.map {
@@ -442,14 +444,14 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             }
         }
 
-        // Animate flight smoothly at 60fps and transition to CLEARED
+        // Animate flight smoothly at 60fps matching Unity (snappy 400ms duration) and transition to CLEARED
         viewModelScope.launch {
-            val durationMs = 820L
+            val durationMs = 400L
             val startTime = System.currentTimeMillis()
             while (true) {
                 val elapsed = System.currentTimeMillis() - startTime
                 val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
-                // Smooth continuous unified flight easing (whole arrow moves together smoothly)
+                // Smooth continuous unified flight easing (smooth acceleration matching Unity)
                 val easedProgress = rawProgress * rawProgress * (3f - 2f * rawProgress)
                 _uiState.update { state ->
                     val updated = state.arrows.map {
@@ -473,28 +475,46 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 _uiState.update { state ->
                     state.copy(arrows = finalArrows)
                 }
-                // Check once the active arrow has COMPLETELY cleared the board (strictly sequential exits)
+                // Trigger cascading auto-release for any highlighted arrows that are now unblocked
                 checkAndAutoReleaseHighlightedArrows()
             }
         }
     }
 
+    private var autoReleaseJob: Job? = null
+
+    /**
+     * Cascading auto-release queue:
+     * When blocking arrows exit or are cleared, any highlighted arrows waiting behind them
+     * are evaluated and smoothly released in sequence with a crisp 120ms stagger matching Unity.
+     */
     private fun checkAndAutoReleaseHighlightedArrows() {
-        viewModelScope.launch {
-            // Guard: wait if any arrow is currently in flight to ensure strictly sequential exits
-            if (_uiState.value.arrows.any { it.state == ArrowState.FLYING_OUT }) {
-                return@launch
-            }
-            delay(120) // Brief natural pause between sequential exits matching Unity
-            if (_uiState.value.arrows.any { it.state == ArrowState.FLYING_OUT }) {
-                return@launch
-            }
-            val highlightedCandidates = _uiState.value.arrows.filter {
-                it.isHighlighted && it.state == ArrowState.IDLE
-            }
-            for (candidate in highlightedCandidates) {
-                if (PuzzleSolver.canMoveOut(candidate, occupancyMap)) {
+        autoReleaseJob?.cancel()
+        autoReleaseJob = viewModelScope.launch {
+            while (isActive) {
+                // If any arrow is actively in flight, wait for it to clear so exits are cleanly sequential
+                while (_uiState.value.arrows.any { it.state == ArrowState.FLYING_OUT }) {
+                    delay(30)
+                }
+
+                // Brief natural pause between sequential exits matching Unity (120ms)
+                delay(120)
+
+                if (!isActive || _uiState.value.isLevelComplete || _uiState.value.isGameOver) return@launch
+                if (_uiState.value.arrows.any { it.state == ArrowState.FLYING_OUT }) {
+                    continue
+                }
+
+                // Find the next highlighted arrow that is ready to move out
+                val candidate = _uiState.value.arrows.firstOrNull {
+                    it.isHighlighted && it.state == ArrowState.IDLE && PuzzleSolver.canMoveOut(it, occupancyMap)
+                }
+
+                if (candidate != null) {
                     launchArrowFlight(candidate)
+                    // Wait briefly for candidate flight to register in state before continuing queue loop
+                    delay(30)
+                } else {
                     break
                 }
             }
