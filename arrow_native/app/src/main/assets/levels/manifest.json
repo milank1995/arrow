@@ -321,13 +321,13 @@
   },
   {
     "LevelNumber": 33,
-    "ArrowCount": 95,
-    "Difficulty": "Hard",
-    "ShapeName": "Concert Grand Piano",
+    "ArrowCount": 58,
+    "Difficulty": "Medium",
+    "ShapeName": "Eiffel Tower",
     "IsShape": true,
     "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 38,
-    "YSize": 44
+    "XSize": 49,
+    "YSize": 75
   },
   {
     "LevelNumber": 34,
