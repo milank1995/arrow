@@ -308,7 +308,6 @@ fun DevTestScreen(
                                 TestLevelCategory.EXISTING_1K -> "📁 1K Existing"
                                 TestLevelCategory.UNITY_NORMAL -> "🎮 Unity Normal"
                                 TestLevelCategory.SHAPE_PUZZLES -> "⭐ Shape Puzzles"
-                                TestLevelCategory.LARGE_PUZZLES -> "🧩 Large Puzzles"
                             }
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
@@ -590,7 +589,6 @@ private fun LevelSelectorDialog(
                             TestLevelCategory.EXISTING_1K -> "📁 1K Old"
                             TestLevelCategory.UNITY_NORMAL -> "🎮 Normal"
                             TestLevelCategory.SHAPE_PUZZLES -> "⭐ Shapes"
-                            TestLevelCategory.LARGE_PUZZLES -> "🧩 Large"
                         }
                         Surface(
                             shape = RoundedCornerShape(10.dp),
@@ -677,22 +675,13 @@ private fun LevelSelectorDialog(
                         8445 to "Apex (223 arr)"
                     )
                     TestLevelCategory.SHAPE_PUZZLES -> listOf(
-                        1 to "Intro Shape (12 arr)",
-                        100 to "Early (45 arr)",
-                        250 to "Mid (70 arr)",
-                        500 to "Solid (105 arr)",
-                        750 to "Dense (140 arr)",
-                        950 to "Grand (200 arr)",
-                        1000 to "Sphinx (437 arr)"
-                    )
-                    TestLevelCategory.LARGE_PUZZLES -> listOf(
-                        1 to "Start (253 arr)",
-                        7 to "Sofa (261 arr)",
-                        9 to "Thinker (262 arr)",
-                        18 to "Stone Idol (291 arr)",
-                        27 to "Starry Night (358 arr)",
-                        34 to "Taj Mahal (380 arr)",
-                        46 to "Sphinx (437 arr)"
+                        1 to "Intro Shape (19 arr)",
+                        100 to "Early (50 arr)",
+                        250 to "Mid (75 arr)",
+                        400 to "Solid (100 arr)",
+                        600 to "Dense (130 arr)",
+                        750 to "Grand (180 arr)",
+                        800 to "Sphinx (437 arr)"
                     )
                 }
 

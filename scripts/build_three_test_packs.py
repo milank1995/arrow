@@ -2,7 +2,6 @@ import os
 import sys
 import json
 import gzip
-import time
 import glob
 import re
 from collections import defaultdict
@@ -12,21 +11,11 @@ import UnityPy
 
 sys.stdout.reconfigure(encoding='utf-8')
 UnityPy.config.FALLBACK_UNITY_VERSION = '2022.3.20f1'
-AES_KEY = b'AmazeGo_Arrow_Security_Key_2026!'
 
+AES_KEY = b'AmazeGo_Arrow_Security_Key_2026!'
 BASE_OUT = r'arrow_native/app/src/main/assets/levels'
 
 ZH_EN_MAP = {
-    '泰姬陵': 'Taj Mahal',
-    '比萨斜塔': 'Tower of Pisa',
-    '狮身人面像': 'The Great Sphinx',
-    '埃菲尔铁塔': 'Eiffel Tower',
-    '凯旋门': 'Arc de Triomphe',
-    '悉尼歌剧院': 'Sydney Opera House',
-    '天坛': 'Temple of Heaven',
-    '城堡': 'Castle',
-    '长城': 'Great Wall',
-    '自由女神': 'Statue of Liberty',
     '金字塔': 'Pyramid',
     '侦探': 'Detective',
     '奔马': 'Galloping Horse',
@@ -108,50 +97,165 @@ ZH_EN_MAP = {
     '甜甜圈': 'Donut',
     '冰淇凌': 'Ice Cream',
     '鸡尾酒': 'Cocktail',
-    '咖啡': 'Coffee',
-    '咖啡豆': 'Coffee Beans',
-    '水壶': 'Kettle',
+    '彩虹吉他': 'Rainbow Guitar',
+    '萨克斯': 'Saxophone',
+    '小提琴': 'Violin',
     '唱片机': 'Gramophone',
-    '唱片': 'Vinyl Record',
-    '吉他': 'Guitar',
-    '钢琴': 'Piano',
-    '彩虹钢琴': 'Rainbow Piano',
-    '帆船': 'Sailboat',
-    '海盗船': 'Pirate Ship',
+    '胶片唱机': 'Vinyl Record Player',
     '热气球': 'Hot Air Balloon',
-    '月亮船': 'Moon Boat',
-    '月窗': 'Moon Window',
-    '日出山脉': 'Sunrise Mountains',
-    '雪山': 'Snow Mountain',
-    '雪花': 'Snowflake',
-    '礼物': 'Gift Box',
+    '火箭': 'Rocket',
+    '雨伞': 'Umbrella',
+    '雨伞修改': 'Umbrella',
+    '墨镜': 'Sunglasses',
+    '跑鞋': 'Sneaker',
+    '自行车': 'Bicycle',
+    '小火车': 'Toy Train',
+    '摩托车': 'Motorcycle',
+    '汽车': 'Automobile',
+    '相机': 'Camera',
+    '台灯': 'Desk Lamp',
+    '水壶': 'Kettle',
+    '茶壶': 'Teapot',
+    '马克杯': 'Mug',
     '钻石': 'Diamond',
-    '红唇': 'Red Lips',
-    '比心': 'Finger Heart',
-    '羽翼': 'Angel Wings',
-    '宝藏': 'Treasure',
-    '风扇小兔': 'Fan Bunny',
-    '飞马': 'Pegasus',
+    '王冠': 'Crown',
+    '沙漏': 'Hourglass',
+    '灯塔': 'Lighthouse',
+    '风车': 'Windmill',
+    '城堡': 'Castle',
+    '比萨斜塔': 'Tower of Pisa',
+    '埃菲尔铁塔': 'Eiffel Tower',
+    '悉尼歌剧院': 'Sydney Opera House',
+    '凯旋门': 'Arc de Triomphe',
+    '泰姬陵': 'Taj Mahal',
+    '斯芬克斯': 'Sphinx',
+    '狮身人面像': 'The Great Sphinx',
+    '大本钟': 'Big Ben',
+    '星空': 'The Starry Night',
+    '长城': 'The Great Wall',
+    '罗马斗兽场': 'Colosseum',
+    '巨石阵': 'Stonehenge',
+    '自由女神': 'Statue of Liberty',
+    '海盗船': 'Pirate Ship',
+    '藏宝箱': 'Treasure Chest',
+    '指南针': 'Compass',
+    '望远镜': 'Telescope',
+    '椰树': 'Palm Tree',
+    '小树': 'Little Tree',
+    '松树': 'Pine Tree',
+    '蘑菇': 'Mushroom',
+    '彩虹': 'Rainbow',
+    '枫叶': 'Maple Leaf',
+    '四叶草': 'Four-Leaf Clover',
+    '玫瑰': 'Rose',
+    '太阳花': 'Sun Flower',
+    '康乃馨': 'Carnation',
+    '小提琴修改': 'Violin',
+    '电吉他': 'Electric Guitar',
+    '钢琴': 'Piano',
+    '口琴': 'Harmonica',
+    '留声机': 'Gramophone',
+    '滑板': 'Skateboard',
+    '轮滑鞋': 'Roller Skate',
+    '降落伞': 'Parachute',
+    '帆船': 'Sailboat',
+    '游艇': 'Yacht',
+    '潜水艇': 'Submarine',
+    '飞机': 'Airplane',
+    '直升机': 'Helicopter',
+    '飞碟': 'UFO',
     '机器人': 'Robot',
-    '游戏机': 'Game Console',
-    '魔法青蛙': 'Magic Frog',
-    '绿洲骆驼': 'Oasis Camel',
+    '太空人': 'Astronaut',
+    '卫星': 'Satellite',
+    '地球仪': 'Globe',
+    '天平': 'Balance Scale',
+    '显微镜': 'Microscope',
+    '试管': 'Test Tube',
+    '温度计': 'Thermometer',
+    '放大镜': 'Magnifying Glass',
+    '扳手': 'Wrench',
+    '锤子': 'Hammer',
+    '螺丝刀': 'Screwdriver',
+    '锯子': 'Hand Saw',
+    '剪刀': 'Scissors',
+    '闹钟': 'Alarm Clock',
+    '怀表': 'Pocket Watch',
+    '沙滩伞': 'Beach Umbrella',
+    '救生圈': 'Lifebuoy',
+    '锚': 'Anchor',
+    '舵': "Ship's Wheel",
+    '宝剑': 'Sword',
+    '盾牌': 'Shield',
+    '弓箭': 'Bow and Arrow',
+    '头盔': 'Helmet',
+    '皇冠': 'Royal Crown',
+    '权杖': 'Scepter',
+    '奖杯': 'Trophy',
+    '勋章': 'Medal',
+    '书本': 'Book',
+    '羽毛笔': 'Quill Pen',
+    '墨水瓶': 'Ink Bottle',
+    '画架': 'Easel',
+    '调色盘': 'Palette',
+    '吉他': 'Guitar',
+    '风铃': 'Wind Chime',
+    '捕梦网': 'Dreamcatcher',
+    '折扇': 'Folding Fan',
+    '灯笼': 'Lantern',
+    '中国结': 'Chinese Knot',
+    '风筝': 'Kite',
+    '毽子': 'Shuttlecock',
+    '不倒翁': 'Tumbler Toy',
+    '木马': 'Rocking Horse',
+    '雪人': 'Snowman',
+    '圣诞树': 'Christmas Tree',
+    '姜饼人': 'Gingerbread Man',
+    '糖果': 'Candy',
+    '棒棒糖': 'Lollipop',
+    '巧克力': 'Chocolate',
+    '爆米花': 'Popcorn',
+    '薯条': 'French Fries',
+    '热狗': 'Hot Dog',
+    '三明治': 'Sandwich',
+    '可乐': 'Cola',
+    '咖啡': 'Coffee',
+    '茶杯': 'Teacup',
+    '酒杯': 'Wine Glass',
+    '高脚杯': 'Goblet',
+    '奶瓶': 'Baby Bottle',
+    '奶嘴': 'Pacifier',
+    '气球': 'Balloon',
+    '风车玩具': 'Pinwheel',
+    '魔方': "Rubik's Cube",
+    '扑克牌': 'Playing Card',
+    '骰子': 'Dice',
+    '麻将': 'Mahjong Tile',
+    '棋盘': 'Chess Board',
+    '足球': 'Soccer Ball',
+    '篮球': 'Basketball',
+    '排球': 'Volleyball',
+    '网球': 'Tennis Ball',
+    '棒球': 'Baseball',
+    '保龄球': 'Bowling Pin',
+    '高尔夫': 'Golf Club',
+    '哑铃': 'Dumbbell',
+    '瑜伽': 'Yoga Pose',
+    '靶心': 'Bullseye',
+    '奖牌': 'Medal Ribbon'
 }
 
 def clean_shape_name(raw_name):
+    clean = re.sub(r'[-_][0-9a-fA-F]{16}$', '', raw_name)
+    clean = re.sub(r'[-_][0-9a-fA-F]{8,}$', '', clean)
+    clean = re.sub(r'[-_]v[0-9]+$', '', clean, flags=re.IGNORECASE)
     for zh, en in ZH_EN_MAP.items():
-        if zh in raw_name:
-            return en
-    s = re.sub(r'[-_][0-9a-fA-F]{11,16}$', '', raw_name)
-    s = re.sub(r'[-_][0-9a-fA-F]{8,}$', '', s)
-    s = re.sub(r'_v\d+.*$', '', s)
-    s = re.sub(r'v\d+.*$', '', s)
-    s = re.sub(r'#\d+.*$', '', s)
-    s = re.sub(r'pro$', '', s)
-    s = re.sub(r'xg$', '', s)
-    s = s.replace('_', ' ').replace('-', ' ').strip()
-    s = re.sub(r'([a-z])([A-Z])', r'\1 \2', s)
-    return s.title()
+        if zh in clean:
+            clean = clean.replace(zh, en)
+    clean = re.sub(r'([a-z])([A-Z])', r'\1 \2', clean)
+    clean = clean.replace('_', ' ').replace('-', ' ')
+    clean = ' '.join(w.capitalize() for w in clean.split())
+    clean = re.sub(r'\s+', ' ', clean).strip()
+    return clean if clean else "Shape Puzzle"
 
 def encrypt_pack(json_obj):
     raw_json = json.dumps(json_obj, separators=(',', ':')).encode('utf-8')
@@ -173,7 +277,7 @@ def solve_level(lvl):
     heads, dirs, cells_list = [], [], []
     for a in arrows:
         idxs = a['Indices']
-        if not idxs: continue
+        if not idxs or len(idxs) < 2: continue
         i = len(heads)
         hx, hy = idxs[0] % xs, (ys - 1) - (idxs[0] // xs)
         heads.append((hx, hy))
@@ -250,7 +354,6 @@ def write_category_packs(subfolder, level_list, chunk_size=1000):
     target_dir = os.path.join(BASE_OUT, subfolder)
     os.makedirs(target_dir, exist_ok=True)
     
-    # Remove existing dat files in folder
     for f in glob.glob(os.path.join(target_dir, "*.dat")):
         os.remove(f)
         
@@ -323,22 +426,22 @@ for p in old_files:
 
 print(f"Ingested {len(existing_1k_raw)} existing 1K files.")
 
-seen_1k = set()
+# Category 1: Existing 1K levels (Keep ALL 1,001 levels)
+seen_1k_signatures = set()
 existing_1k_solvable = []
 for lvl in existing_1k_raw:
     c = crop_level(lvl)
     sig = get_signature(c)
-    if sig not in seen_1k:
-        seen_1k.add(sig)
+    if sig not in seen_1k_signatures:
+        seen_1k_signatures.add(sig)
         if solve_level(c):
             existing_1k_solvable.append(c)
 
-print(f"100% solvable unique existing 1K levels: {len(existing_1k_solvable)}")
+print(f"Category 1 (Existing 1K): {len(existing_1k_solvable)} levels (100% solvable)")
 existing_1k_solvable.sort(key=lambda x: (len(x['Arrows']), x['XSize'] * x['YSize']))
-print(f"Sorted 1K arrow range: {len(existing_1k_solvable[0]['Arrows'])} to {len(existing_1k_solvable[-1]['Arrows'])}")
 
 print("==========================================================")
-print("  STEP 2: INGESTING RECOGNIZABLE SHAPE PUZZLES            ")
+print("  STEP 2: INGESTING SHAPE PUZZLES (STRICTLY NO 1K DUPS)    ")
 print("==========================================================")
 packs_path = r'C:\Projects\Personal\Games\arrow decode\original arrow decode\app\src\main\assets\AssetBundle\levelpacks_newuser_2c8302a1cbb1e9f8abf1795f681728e4.ab'
 with open(packs_path, 'rb') as f:
@@ -389,25 +492,7 @@ for obj in env_pack.objects:
 
 print(f"Ingested {len(unity_shape_candidates)} named Unity shape candidates.")
 
-# Existing 1K shape levels (every 5th level)
-existing_1k_shapes = []
-for p in old_files:
-    bn = os.path.basename(p)
-    num = int(bn.replace('Level_', '').replace('.json', ''))
-    if num % 5 == 0:
-        try:
-            with open(p, 'r', encoding='utf-8') as f:
-                d = json.load(f)
-                d['Hash'] = f"Level_{num}"
-                d['ShapeName'] = f"Shape #{num}"
-                d['Source'] = 'Existing1K'
-                existing_1k_shapes.append(d)
-        except:
-            pass
-
-print(f"Ingested {len(existing_1k_shapes)} Existing 1K shape levels.")
-
-# NewLevels shape levels (every 5th level + Level 26 Cactus)
+# NewLevels shape levels (that do NOT duplicate Existing 1K)
 new_levels_shapes = []
 new_files = glob.glob('scratch/old_levels/arrow_native/app/src/main/assets/new_levels/NewLevel_*.json')
 for p in new_files:
@@ -424,25 +509,25 @@ for p in new_files:
         except:
             pass
 
-print(f"Ingested {len(new_levels_shapes)} NewLevels shape levels.")
-
-# Deduplicate all true shapes
+# Deduplicate shape levels against EACH OTHER and against Existing 1K!
 seen_shape_signatures = set()
 curated_shapes = []
-for s in unity_shape_candidates + existing_1k_shapes + new_levels_shapes:
+for s in unity_shape_candidates + new_levels_shapes:
     cropped = crop_level(s)
     sig = get_signature(cropped)
+    # MUST NOT BE IN EXISTING 1K!
+    if sig in seen_1k_signatures:
+        continue
     if sig not in seen_shape_signatures:
         seen_shape_signatures.add(sig)
         if solve_level(cropped):
             curated_shapes.append(cropped)
 
-print(f"Total curated, 100% solvable, unique recognizable shape levels: {len(curated_shapes)}")
+print(f"Category 3 (Shape Puzzles): {len(curated_shapes)} pure recognizable shapes (Zero 1K duplicates!)")
 curated_shapes.sort(key=lambda x: (len(x['Arrows']), x['XSize'] * x['YSize']))
-print(f"Shape arrow range: {len(curated_shapes[0]['Arrows'])} to {len(curated_shapes[-1]['Arrows'])}")
 
 print("==========================================================")
-print("  STEP 3: INGESTING NEW UNITY NORMAL LEVELS               ")
+print("  STEP 3: INGESTING UNITY NORMAL (NO 1K, NO SHAPES)       ")
 print("==========================================================")
 config_bundle_path = r'C:\Projects\Personal\Games\arrow decode\original arrow decode\app\src\main\assets\AssetBundle\levelconfigs_d4dc0c9ff6c741d4efc9d9025ef15652.ab'
 with open(config_bundle_path, 'rb') as f:
@@ -502,9 +587,6 @@ for obj in env_pack.objects:
         except:
             pass
 
-print(f"Loaded {len(unity_assets)} playable levels from Unity packs bundle.")
-
-# Filter normal levels: in normal_table_hashes, NOT in seen_shape_signatures
 seen_normal_signatures = set()
 unity_normal_solvable = []
 
@@ -513,17 +595,16 @@ for h in normal_table_hashes:
         item = unity_assets[h]
         cropped = crop_level(item)
         sig = get_signature(cropped)
-        # MUST NOT be in shapes
-        if sig in seen_shape_signatures:
+        # MUST NOT be in Existing 1K, MUST NOT be in Shape Puzzles!
+        if sig in seen_1k_signatures or sig in seen_shape_signatures:
             continue
         if sig not in seen_normal_signatures:
             seen_normal_signatures.add(sig)
             if solve_level(cropped):
                 unity_normal_solvable.append(cropped)
 
-print(f"Unique, 100% solvable Unity Normal levels: {len(unity_normal_solvable)}")
+print(f"Category 2 (Unity Normal): {len(unity_normal_solvable)} levels (Zero duplicates with 1K and Shapes!)")
 unity_normal_solvable.sort(key=lambda x: (len(x['Arrows']), x['XSize'] * x['YSize']))
-print(f"Sorted Unity Normal arrow range: {len(unity_normal_solvable[0]['Arrows'])} to {len(unity_normal_solvable[-1]['Arrows'])}")
 
 print("==========================================================")
 print("  STEP 4: WRITING ENCRYPTED PACKS & MANIFESTS             ")
@@ -543,9 +624,23 @@ m3 = write_category_packs("test_shape_puzzles", curated_shapes, chunk_size=1000)
 with open('manifest_shape_puzzles.json', 'w', encoding='utf-8') as f:
     json.dump(m3, f, indent=2)
 
+# Verify 0 cross-category duplicates
 print("==========================================================")
-print(f"  ALL 3 CATEGORIES SUCCESSFULLY BUILT & ENCRYPTED!        ")
+print("  STEP 5: VERIFYING ZERO CROSS-CATEGORY OVERLAP           ")
+print("==========================================================")
+sigs1 = set(get_signature(x) for x in existing_1k_solvable)
+sigs2 = set(get_signature(x) for x in unity_normal_solvable)
+sigs3 = set(get_signature(x) for x in curated_shapes)
+
+print(f"Overlap between Cat 1 (Existing 1K) and Cat 2 (Unity Normal): {len(sigs1 & sigs2)}")
+print(f"Overlap between Cat 1 (Existing 1K) and Cat 3 (Shape Puzzles): {len(sigs1 & sigs3)}")
+print(f"Overlap between Cat 2 (Unity Normal) and Cat 3 (Shape Puzzles): {len(sigs2 & sigs3)}")
+
+assert len(sigs1 & sigs2) == 0, "Overlap found between Cat 1 and Cat 2!"
+assert len(sigs1 & sigs3) == 0, "Overlap found between Cat 1 and Cat 3!"
+assert len(sigs2 & sigs3) == 0, "Overlap found between Cat 2 and Cat 3!"
+
+print("\nSUCCESS! EXACTLY ZERO DUPLICATES ACROSS ALL 3 CATEGORIES!")
 print(f"  Category 1 (Existing 1K):    {len(m1)} levels ({m1[0]['ArrowCount']} to {m1[-1]['ArrowCount']} arr)")
 print(f"  Category 2 (Unity Normal):   {len(m2)} levels ({m2[0]['ArrowCount']} to {m2[-1]['ArrowCount']} arr)")
 print(f"  Category 3 (Shape Puzzles):  {len(m3)} shapes ({m3[0]['ArrowCount']} to {m3[-1]['ArrowCount']} arr)")
-print("==========================================================")

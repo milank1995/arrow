@@ -9,7 +9,7 @@
       "levelsCount": 1000,
       "startLevel": 1,
       "endLevel": 1000,
-      "fileSizeBytes": 249952
+      "fileSizeBytes": 249792
     },
     {
       "packIndex": 1,
@@ -17,7 +17,7 @@
       "levelsCount": 1000,
       "startLevel": 1001,
       "endLevel": 2000,
-      "fileSizeBytes": 363408
+      "fileSizeBytes": 363840
     },
     {
       "packIndex": 2,
@@ -25,7 +25,7 @@
       "levelsCount": 1000,
       "startLevel": 2001,
       "endLevel": 3000,
-      "fileSizeBytes": 437312
+      "fileSizeBytes": 437088
     },
     {
       "packIndex": 3,
@@ -33,7 +33,7 @@
       "levelsCount": 1000,
       "startLevel": 3001,
       "endLevel": 4000,
-      "fileSizeBytes": 516208
+      "fileSizeBytes": 516656
     },
     {
       "packIndex": 4,
@@ -41,7 +41,7 @@
       "levelsCount": 1000,
       "startLevel": 4001,
       "endLevel": 5000,
-      "fileSizeBytes": 576928
+      "fileSizeBytes": 577104
     },
     {
       "packIndex": 5,
@@ -57,7 +57,7 @@
       "levelsCount": 1000,
       "startLevel": 6001,
       "endLevel": 7000,
-      "fileSizeBytes": 929536
+      "fileSizeBytes": 929632
     },
     {
       "packIndex": 7,
@@ -65,7 +65,7 @@
       "levelsCount": 1000,
       "startLevel": 7001,
       "endLevel": 8000,
-      "fileSizeBytes": 1426864
+      "fileSizeBytes": 1426832
     },
     {
       "packIndex": 8,
@@ -73,7 +73,7 @@
       "levelsCount": 445,
       "startLevel": 8001,
       "endLevel": 8445,
-      "fileSizeBytes": 906704
+      "fileSizeBytes": 906640
     }
   ]
 }

@@ -35,15 +35,9 @@ enum class TestLevelCategory(
     ),
     SHAPE_PUZZLES(
         title = "Shape Puzzle Levels",
-        subtitle = "1,000 Recognizable Shapes (Sorted Smallest to Largest)",
-        totalLevels = 1000,
+        subtitle = "800 Recognizable Shapes (Sorted Smallest to Largest)",
+        totalLevels = 800,
         folder = "levels/test_shape_puzzles"
-    ),
-    LARGE_PUZZLES(
-        title = "Large Puzzles",
-        subtitle = "46 Mega Grids (250–437 Arrows)",
-        totalLevels = 46,
-        folder = "levels/test_large_puzzles"
     )
 }
 
