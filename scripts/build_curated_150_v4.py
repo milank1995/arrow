@@ -139,7 +139,7 @@ SHAPE_PLAN = {
     4:  (20,  "Swan", "Swan", 99, "Super Hard"),
     5:  (25,  "Strawberry", "Strawberry", 130, "Super Hard"),
     6:  (28,  "Black Cat", "Black Cat", 57, "Medium"),
-    7:  (33,  "Rainbow", "Rainbow", 80, "Medium"),
+    7:  (33,  "Rainbow", "Piano", 80, "Medium"),     # Piano Keyboard with Music Notes!
     8:  (38,  "Jellyfish", "Jellyfish", 44, "Medium"),
     9:  (45,  "Squirrel", "Squirrel", 62, "Medium"),
     10: (49,  "Cactus", "Cactus", 130, "Super Hard"),
@@ -165,10 +165,10 @@ SHAPE_PLAN = {
     30: (147, "Lion", "Lion", 141, "Hard"),
 }
 
-# Special Bosses
+# Special Bosses (Reduced arrow counts for better balance)
 BOSS_PLAN = {
-    100: ("Century Climax Mega Grid", 253, "Super Hard"),
-    150: ("Sofa Grand Finale", 261, "Super Hard"),
+    100: ("Century Climax Mega Grid", 195, "Super Hard"),
+    150: ("Rose Grand Finale", 190, "Super Hard"),
 }
 
 # Invert shapes by level number
@@ -238,11 +238,11 @@ for lvl_num in range(1, 151):
     if lvl_num in BOSS_PLAN:
         b_name, b_arr, b_diff = BOSS_PLAN[lvl_num]
         if lvl_num == 150:
-            sofa = [l for l in large if 'sofa' in l.get('ShapeName', '').lower()][0]
-            cand = prepare_level(sofa, 150, "Sofa Grand Finale", "Super Hard", "Large Puzzles")
+            rose = [s for s in shapes if s.get('ShapeName') == 'Hrose Final'][0]
+            cand = prepare_level(rose, 150, "Rose Grand Finale", "Super Hard", "Shape Puzzle Levels")
         else: # 100
-            mg = [l for l in large if len(l['Arrows']) == 253][0]
-            cand = prepare_level(mg, 100, None, "Super Hard", "Large Puzzles")
+            climax = [l for l in one_k if len(l['Arrows']) == 195][0]
+            cand = prepare_level(climax, 100, None, "Super Hard", "Existing 1K Levels")
             
     elif lvl_num in shape_by_lvl:
         _, search_name, disp_name, s_arr, s_diff = shape_by_lvl[lvl_num]

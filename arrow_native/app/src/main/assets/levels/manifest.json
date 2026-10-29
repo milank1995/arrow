@@ -323,7 +323,7 @@
     "LevelNumber": 33,
     "ArrowCount": 80,
     "Difficulty": "Medium",
-    "ShapeName": "Rainbow",
+    "ShapeName": "Piano",
     "IsShape": true,
     "SourceCategory": "Shape Puzzle Levels",
     "XSize": 80,
@@ -991,13 +991,13 @@
   },
   {
     "LevelNumber": 100,
-    "ArrowCount": 253,
+    "ArrowCount": 195,
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Large Puzzles",
-    "XSize": 45,
-    "YSize": 65
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 36,
+    "YSize": 55
   },
   {
     "LevelNumber": 101,
@@ -1491,12 +1491,12 @@
   },
   {
     "LevelNumber": 150,
-    "ArrowCount": 261,
+    "ArrowCount": 190,
     "Difficulty": "Super Hard",
-    "ShapeName": "Sofa Grand Finale",
+    "ShapeName": "Rose Grand Finale",
     "IsShape": true,
-    "SourceCategory": "Large Puzzles",
-    "XSize": 90,
-    "YSize": 93
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 50,
+    "YSize": 92
   }
 ]

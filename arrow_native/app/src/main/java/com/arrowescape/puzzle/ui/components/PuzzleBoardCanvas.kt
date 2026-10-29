@@ -753,16 +753,6 @@ fun PuzzleBoardCanvas(
                                     boardOrigin.y + (cy + 0.5f) * cellSize
                                 )
                             )
-                        } else if (!isOccupied) {
-                            // Subtle background corridor alignment dot gives elegant structure to the board
-                            drawCircle(
-                                color = dotColor.copy(alpha = 0.15f),
-                                radius = dotRadius * 0.85f,
-                                center = Offset(
-                                    boardOrigin.x + (cx + 0.5f) * cellSize,
-                                    boardOrigin.y + (cy + 0.5f) * cellSize
-                                )
-                            )
                         }
                     }
                 }
