@@ -437,8 +437,11 @@ for p in old_files:
     try:
         with open(p, 'r', encoding='utf-8') as f:
             d = json.load(f)
-            d['Source'] = os.path.basename(p)
-            d['Hash'] = 'OLD_' + os.path.basename(p).replace('.json', '')
+            bn = os.path.basename(p)
+            num = int(bn.replace('Level_', '').replace('.json', ''))
+            d['Source'] = bn
+            d['Hash'] = 'OLD_' + bn.replace('.json', '')
+            d['ShapeName'] = f"Shape #{num}" if num % 5 == 0 else ""
             existing_1k_raw.append(d)
     except:
         pass
@@ -654,6 +657,7 @@ for obj in env_pack.objects:
                     'YSize': ys,
                     'Arrows': arrows_out,
                     'Hash': name,
+                    'ShapeName': clean_shape_name(name),
                     'Source': 'Unity_' + name
                 }
         except:
@@ -721,8 +725,15 @@ assert len(sigs3 & sigs4) == 0, "Duplicate between 3 and 4!"
 
 print("\nSUCCESS! ZERO DUPLICATES ACROSS ALL 4 CATEGORIES!")
 print(f"  Category 1 (Existing 1K):    {len(m1)} levels ({m1[0]['ArrowCount']} to {m1[-1]['ArrowCount']} arr)")
+shape_in_1k = sum(1 for x in m1 if x.get('ShapeName'))
+print(f"  Category 1 shapes with names: {shape_in_1k} of {len(m1)} levels")
 print(f"  Category 2 (Unity Normal):   {len(m2)} levels ({m2[0]['ArrowCount']} to {m2[-1]['ArrowCount']} arr)")
+shape_in_normal = sum(1 for x in m2 if x.get('ShapeName'))
+print(f"  Category 2 shapes with names: {shape_in_normal} of {len(m2)} levels")
 print(f"  Category 3 (Shape Puzzles):  {len(m3)} shapes ({m3[0]['ArrowCount']} to {m3[-1]['ArrowCount']} arr)")
+shape_in_shapes = sum(1 for x in m3 if x.get('ShapeName'))
+print(f"  Category 3 shapes with names: {shape_in_shapes} of {len(m3)} shapes")
 print(f"  Category 4 (Large Puzzles):  {len(m4)} mega grids ({m4[0]['ArrowCount']} to {m4[-1]['ArrowCount']} arr)")
-shape_in_large = sum(1 for x in m4 if x['ShapeName'])
+shape_in_large = sum(1 for x in m4 if x.get('ShapeName'))
 print(f"  Category 4 shapes with names: {shape_in_large} of {len(m4)} levels")
+print(f"  TOTAL NAMED SHAPES ACROSS ALL CATEGORIES: {shape_in_1k + shape_in_normal + shape_in_shapes + shape_in_large}")
