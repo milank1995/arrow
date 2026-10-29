@@ -321,13 +321,13 @@
   },
   {
     "LevelNumber": 33,
-    "ArrowCount": 82,
+    "ArrowCount": 95,
     "Difficulty": "Hard",
-    "ShapeName": "Grand Piano",
+    "ShapeName": "Concert Grand Piano",
     "IsShape": true,
     "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 36,
-    "YSize": 40
+    "XSize": 38,
+    "YSize": 44
   },
   {
     "LevelNumber": 34,
