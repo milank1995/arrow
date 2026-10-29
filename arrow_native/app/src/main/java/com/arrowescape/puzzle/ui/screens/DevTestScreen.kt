@@ -308,6 +308,7 @@ fun DevTestScreen(
                                 TestLevelCategory.EXISTING_1K -> "📁 1K Existing"
                                 TestLevelCategory.UNITY_NORMAL -> "🎮 Unity Normal"
                                 TestLevelCategory.SHAPE_PUZZLES -> "⭐ Shape Puzzles"
+                                TestLevelCategory.LARGE_PUZZLES -> "🧩 Large Puzzles"
                             }
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
@@ -589,6 +590,7 @@ private fun LevelSelectorDialog(
                             TestLevelCategory.EXISTING_1K -> "📁 1K Old"
                             TestLevelCategory.UNITY_NORMAL -> "🎮 Normal"
                             TestLevelCategory.SHAPE_PUZZLES -> "⭐ Shapes"
+                            TestLevelCategory.LARGE_PUZZLES -> "🧩 Large"
                         }
                         Surface(
                             shape = RoundedCornerShape(10.dp),
@@ -681,7 +683,16 @@ private fun LevelSelectorDialog(
                         400 to "Solid (100 arr)",
                         600 to "Dense (130 arr)",
                         750 to "Grand (180 arr)",
-                        800 to "Sphinx (437 arr)"
+                        788 to "Apex Shape (247 arr)"
+                    )
+                    TestLevelCategory.LARGE_PUZZLES -> listOf(
+                        1 to "Start (253 arr)",
+                        7 to "Sofa (261 arr)",
+                        9 to "The Thinker (262 arr)",
+                        18 to "Stone Idol (291 arr)",
+                        28 to "Starry Night (358 arr)",
+                        32 to "Taj Mahal (380 arr)",
+                        46 to "Sphinx (437 arr)"
                     )
                 }
 

@@ -471,8 +471,20 @@ fun HomeScreen(
 
                 // Testing Category 3: Shape Puzzle Levels
                 AppSecondaryButton(
-                    text = "⭐ Shape Puzzle Levels (800 Shapes)",
+                    text = "⭐ Shape Puzzle Levels (788 Shapes)",
                     onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.SHAPE_PUZZLES) },
+                    theme = theme,
+                    modifier = Modifier
+                        .widthIn(max = 380.dp)
+                        .fillMaxWidth(0.88f)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Testing Category 4: Large Puzzles
+                AppSecondaryButton(
+                    text = "🧩 Large Puzzles (46 Mega Grids)",
+                    onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.LARGE_PUZZLES) },
                     theme = theme,
                     modifier = Modifier
                         .widthIn(max = 380.dp)

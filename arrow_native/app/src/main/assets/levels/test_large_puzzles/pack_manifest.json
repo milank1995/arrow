@@ -1,0 +1,15 @@
+{
+  "totalLevels": 46,
+  "chunkSize": 1000,
+  "packsCount": 1,
+  "packs": [
+    {
+      "packIndex": 0,
+      "fileName": "level_pack_00.dat",
+      "levelsCount": 46,
+      "startLevel": 1,
+      "endLevel": 46,
+      "fileSizeBytes": 221552
+    }
+  ]
+}

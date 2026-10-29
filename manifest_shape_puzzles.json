@@ -104,7 +104,7 @@
     "XSize": 34,
     "YSize": 60,
     "Hash": "\u6c14\u7403\u675f-6047e90d3a4612ea",
-    "ShapeName": "Balloon\u675f",
+    "ShapeName": "Balloon",
     "Source": "Unity"
   },
   {
@@ -167,7 +167,7 @@
     "XSize": 24,
     "YSize": 48,
     "Hash": "\u5f69\u8679\u4f1e-83cf3fbbdc5ffb89",
-    "ShapeName": "Rainbow\u4f1e",
+    "ShapeName": "Rainbow",
     "Source": "Unity"
   },
   {
@@ -2498,7 +2498,7 @@
     "XSize": 52,
     "YSize": 79,
     "Hash": "\u6c34\u74f6\u6539-b9c61411e6e8be81",
-    "ShapeName": "Aquarius (water Bearer)",
+    "ShapeName": "Aquarius (Water-Bearer)",
     "Source": "Unity"
   },
   {
@@ -2642,7 +2642,7 @@
     "XSize": 48,
     "YSize": 100,
     "Hash": "\u7f51\u7403\u62cd-c566fdc964804775",
-    "ShapeName": "Tennis Ball\u62cd",
+    "ShapeName": "Tennis Ball",
     "Source": "Unity"
   },
   {
@@ -2768,7 +2768,7 @@
     "XSize": 62,
     "YSize": 58,
     "Hash": "\u62c6\u81ea\u884c\u8f66-b3efcf4259ce3363",
-    "ShapeName": "\u62c6bicycle",
+    "ShapeName": "Bicycle",
     "Source": "Unity"
   },
   {
@@ -2840,7 +2840,7 @@
     "XSize": 68,
     "YSize": 60,
     "Hash": "\u5496\u5561\u8c46-bc87c039700c4d17",
-    "ShapeName": "Coffee\u8c46",
+    "ShapeName": "Coffee",
     "Source": "Unity"
   },
   {
@@ -3362,7 +3362,7 @@
     "XSize": 80,
     "YSize": 57,
     "Hash": "\u8349\u8393\u82ad\u83f2-d83be0713795e29c",
-    "ShapeName": "Strawberry\u82ad\u83f2",
+    "ShapeName": "Strawberry",
     "Source": "Unity"
   },
   {
@@ -3659,7 +3659,7 @@
     "XSize": 68,
     "YSize": 65,
     "Hash": "\u86cb\u7cd5\u6539-4b4d170cf85d8d9d",
-    "ShapeName": "Cake\u6539",
+    "ShapeName": "Cake",
     "Source": "Unity"
   },
   {
@@ -3668,7 +3668,7 @@
     "XSize": 80,
     "YSize": 74,
     "Hash": "\u5f69\u8679\u94a2\u7434-019a6cd7a58497e1",
-    "ShapeName": "Rainbow Piano",
+    "ShapeName": "Rainbow",
     "Source": "Unity"
   },
   {
@@ -3803,7 +3803,7 @@
     "XSize": 59,
     "YSize": 47,
     "Hash": "\u8774\u8776\u6606\u866b\u4e16\u754c-34a6b5af12fe1f98",
-    "ShapeName": "Butterfly\u6606\u866b\u4e16\u754c",
+    "ShapeName": "Butterfly",
     "Source": "Unity"
   },
   {
@@ -4145,7 +4145,7 @@
     "XSize": 58,
     "YSize": 65,
     "Hash": "\u98de\u789f\u5f69\u8679\u55b5-8be0499519aa78e3",
-    "ShapeName": "Uforainbow\u55b5",
+    "ShapeName": "Rainbow",
     "Source": "Unity"
   },
   {
@@ -4172,7 +4172,7 @@
     "XSize": 90,
     "YSize": 90,
     "Hash": "\u624b\u6258\u8774\u8776-2443c731a69f6df8",
-    "ShapeName": "\u624b\u6258butterfly",
+    "ShapeName": "Butterfly",
     "Source": "Unity"
   },
   {
@@ -4460,7 +4460,7 @@
     "XSize": 56,
     "YSize": 87,
     "Hash": "\u767d\u7f8a-ef7efebaa054b48b",
-    "ShapeName": "Aries (ram)",
+    "ShapeName": "Aries (Ram)",
     "Source": "Unity"
   },
   {
@@ -4586,7 +4586,7 @@
     "XSize": 42,
     "YSize": 72,
     "Hash": "sofaCAT-ddb7eb9a4a956b51",
-    "ShapeName": "Sofa Cat",
+    "ShapeName": "Sofa",
     "Source": "Unity"
   },
   {
@@ -4649,7 +4649,7 @@
     "XSize": 57,
     "YSize": 97,
     "Hash": "\u5929\u79e4-0eb34c40f4887e22",
-    "ShapeName": "Libra (scales)",
+    "ShapeName": "Libra (Scales)",
     "Source": "Unity"
   },
   {
@@ -5027,7 +5027,7 @@
     "XSize": 49,
     "YSize": 48,
     "Hash": "\u751f\u65e5\u86cb\u7cd5v2-9b1c8eea2bcfc25a",
-    "ShapeName": "\u751f\u65e5cakev2",
+    "ShapeName": "Cake",
     "Source": "Unity"
   },
   {
@@ -5054,7 +5054,7 @@
     "XSize": 70,
     "YSize": 80,
     "Hash": "\u6cf0\u59ec\u9675d-12c477406c226fdd",
-    "ShapeName": "Taj Mahald",
+    "ShapeName": "Taj Mahal",
     "Source": "Unity"
   },
   {
@@ -5126,7 +5126,7 @@
     "XSize": 50,
     "YSize": 70,
     "Hash": "\u6d77\u5cb8\u706f\u5854-754456149cce3630",
-    "ShapeName": "\u6d77\u5cb8lighthouse",
+    "ShapeName": "Lighthouse",
     "Source": "Unity"
   },
   {
@@ -5567,7 +5567,7 @@
     "XSize": 59,
     "YSize": 97,
     "Hash": "\u53cc\u9c7cd-277304e83043df5f",
-    "ShapeName": "Pisces (fish)d",
+    "ShapeName": "Pisces (Fish)",
     "Source": "Unity"
   },
   {
@@ -5585,7 +5585,7 @@
     "XSize": 44,
     "YSize": 64,
     "Hash": "\u6c7d\u8f66\u516c\u8def-c08604918100440d",
-    "ShapeName": "Automobile\u516c\u8def",
+    "ShapeName": "Automobile",
     "Source": "Unity"
   },
   {
@@ -5747,7 +5747,7 @@
     "XSize": 64,
     "YSize": 108,
     "Hash": "\u8349\u8393\u82ad\u83f2\u7ec8\u6781\u7248-a9b12996f6195b3d",
-    "ShapeName": "Strawberry\u82ad\u83f2\u7ec8\u6781\u7248",
+    "ShapeName": "Strawberry",
     "Source": "Unity"
   },
   {
@@ -5864,7 +5864,7 @@
     "XSize": 49,
     "YSize": 80,
     "Hash": "\u91d1\u725b-34be70e1bdc4e98a",
-    "ShapeName": "Taurus (bull)",
+    "ShapeName": "Taurus (Bull)",
     "Source": "Unity"
   },
   {
@@ -6008,7 +6008,7 @@
     "XSize": 61,
     "YSize": 66,
     "Hash": "\u8349\u8393\u745e\u58eb\u5377-e4a8bc7563e8fced",
-    "ShapeName": "Strawberry\u745e\u58eb\u5377",
+    "ShapeName": "Strawberry",
     "Source": "Unity"
   },
   {
@@ -6053,7 +6053,7 @@
     "XSize": 69,
     "YSize": 61,
     "Hash": "\u9e66\u9e49\u94c5\u7b14v4-d3c77dfe32eea72b",
-    "ShapeName": "Parrot\u94c5\u7b14v4",
+    "ShapeName": "Parrot",
     "Source": "Unity"
   },
   {
@@ -6062,7 +6062,7 @@
     "XSize": 56,
     "YSize": 88,
     "Hash": "\u5c0f\u9e2d\u6d17\u6fa1v4-1bd7fa6cbcd739bc",
-    "ShapeName": "Ducking Bathv4",
+    "ShapeName": "Ducking Bath",
     "Source": "Unity"
   },
   {
@@ -6143,7 +6143,7 @@
     "XSize": 57,
     "YSize": 97,
     "Hash": "\u5904\u5973\u5ea7-17319eaad789e620",
-    "ShapeName": "Virgo (maiden)",
+    "ShapeName": "Virgo (Maiden)",
     "Source": "Unity"
   },
   {
@@ -6359,7 +6359,7 @@
     "XSize": 60,
     "YSize": 69,
     "Hash": "\u72ee\u5b50\u96be-0642d31bc228d7d9",
-    "ShapeName": "Lion\u96be",
+    "ShapeName": "Lion",
     "Source": "Unity"
   },
   {
@@ -6395,7 +6395,7 @@
     "XSize": 64,
     "YSize": 98,
     "Hash": "\u5de8\u87f9-9ed4783a4a56d9c2",
-    "ShapeName": "Cancer (crab)",
+    "ShapeName": "Cancer (Crab)",
     "Source": "Unity"
   },
   {
@@ -6422,7 +6422,7 @@
     "XSize": 62,
     "YSize": 112,
     "Hash": "\u72ee\u5b50\u5ea7v3-99f314f27c962ed3",
-    "ShapeName": "Lion\u5ea7v3",
+    "ShapeName": "Lion",
     "Source": "Unity"
   },
   {
@@ -6431,7 +6431,7 @@
     "XSize": 72,
     "YSize": 104,
     "Hash": "\u5c04\u624b\u5ea7-815f55ac0d14ac49",
-    "ShapeName": "Sagittarius (archer)",
+    "ShapeName": "Sagittarius (Archer)",
     "Source": "Unity"
   },
   {
@@ -6440,7 +6440,7 @@
     "XSize": 66,
     "YSize": 79,
     "Hash": "\u62ab\u8428\u9876\u683c-f82e01d507bd0ee8",
-    "ShapeName": "Pizza\u9876\u683c",
+    "ShapeName": "Pizza",
     "Source": "Unity"
   },
   {
@@ -6485,7 +6485,7 @@
     "XSize": 51,
     "YSize": 94,
     "Hash": "\u6469\u7faf\u5ea7-6405ad3e7c5c505c",
-    "ShapeName": "Capricorn (sea Goat)",
+    "ShapeName": "Capricorn (Sea-Goat)",
     "Source": "Unity"
   },
   {
@@ -6548,7 +6548,7 @@
     "XSize": 80,
     "YSize": 80,
     "Hash": "\u5f69\u8679\u55b5\u4e91v3-cc5e7414f1795a4a",
-    "ShapeName": "Rainbow\u55b5\u4e91v3",
+    "ShapeName": "Rainbow",
     "Source": "Unity"
   },
   {
@@ -6764,7 +6764,7 @@
     "XSize": 67,
     "YSize": 100,
     "Hash": "\u53cc\u5b50\u5ea7-5180aa4454c33a04",
-    "ShapeName": "Gemini (twins)",
+    "ShapeName": "Gemini (Twins)",
     "Source": "Unity"
   },
   {
@@ -6917,7 +6917,7 @@
     "XSize": 62,
     "YSize": 110,
     "Hash": "\u5929\u874e\u5ea7v3-40b45f5090fd87ed",
-    "ShapeName": "Scorpio (scorpion)v3",
+    "ShapeName": "Scorpio (Scorpion)",
     "Source": "Unity"
   },
   {
@@ -7061,7 +7061,7 @@
     "XSize": 84,
     "YSize": 60,
     "Hash": "Pirateship-1e4f2a0d057a798e",
-    "ShapeName": "Pirateship",
+    "ShapeName": "Pirate Ship",
     "Source": "Unity"
   },
   {
@@ -7089,114 +7089,6 @@
     "YSize": 80,
     "Hash": "\u53f6\u95f4\u732b-11a57a7c9652a1d7",
     "ShapeName": "Leaf Cat",
-    "Source": "Unity"
-  },
-  {
-    "Level": 789,
-    "ArrowCount": 261,
-    "XSize": 90,
-    "YSize": 93,
-    "Hash": "Sofa_620c36293ce45ee5",
-    "ShapeName": "Sofa",
-    "Source": "Unity"
-  },
-  {
-    "Level": 790,
-    "ArrowCount": 262,
-    "XSize": 64,
-    "YSize": 99,
-    "Hash": "thinker1-2b4c75e8db29fb34",
-    "ShapeName": "Thinker1",
-    "Source": "Unity"
-  },
-  {
-    "Level": 791,
-    "ArrowCount": 291,
-    "XSize": 73,
-    "YSize": 80,
-    "Hash": "Stoneidol-4f7c946108d78d6a",
-    "ShapeName": "Stoneidol",
-    "Source": "Unity"
-  },
-  {
-    "Level": 792,
-    "ArrowCount": 355,
-    "XSize": 85,
-    "YSize": 88,
-    "Hash": "Treasurechest-bfd4391989d4643a",
-    "ShapeName": "Treasurechest",
-    "Source": "Unity"
-  },
-  {
-    "Level": 793,
-    "ArrowCount": 358,
-    "XSize": 75,
-    "YSize": 75,
-    "Hash": "TheStarryNight_v8-fad070071d04c00e",
-    "ShapeName": "The Starry Night",
-    "Source": "Unity"
-  },
-  {
-    "Level": 794,
-    "ArrowCount": 369,
-    "XSize": 85,
-    "YSize": 90,
-    "Hash": "ArcdeTriomphe-340c541d86ae47bc",
-    "ShapeName": "Arcde Triomphe",
-    "Source": "Unity"
-  },
-  {
-    "Level": 795,
-    "ArrowCount": 374,
-    "XSize": 98,
-    "YSize": 90,
-    "Hash": "pirate-90e517b4341e87b2",
-    "ShapeName": "Pirate",
-    "Source": "Unity"
-  },
-  {
-    "Level": 796,
-    "ArrowCount": 379,
-    "XSize": 131,
-    "YSize": 90,
-    "Hash": "SydneyOpera-ea205602469161ea",
-    "ShapeName": "Sydney Opera",
-    "Source": "Unity"
-  },
-  {
-    "Level": 797,
-    "ArrowCount": 380,
-    "XSize": 94,
-    "YSize": 86,
-    "Hash": "TajMahal-9e0eeabf5067f313",
-    "ShapeName": "Taj Mahal",
-    "Source": "Unity"
-  },
-  {
-    "Level": 798,
-    "ArrowCount": 399,
-    "XSize": 68,
-    "YSize": 120,
-    "Hash": "TowerOfPisa-fa789109b55f7eb6",
-    "ShapeName": "Tower Of Pisa",
-    "Source": "Unity"
-  },
-  {
-    "Level": 799,
-    "ArrowCount": 402,
-    "XSize": 83,
-    "YSize": 90,
-    "Hash": "zhentan-abd579d582ab8750",
-    "ShapeName": "Zhentan",
-    "Source": "Unity"
-  },
-  {
-    "Level": 800,
-    "ArrowCount": 437,
-    "XSize": 100,
-    "YSize": 100,
-    "Hash": "Sphinx-10e52caf0ab7ebbd",
-    "ShapeName": "Sphinx",
     "Source": "Unity"
   }
 ]

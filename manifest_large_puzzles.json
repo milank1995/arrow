@@ -1,0 +1,416 @@
+[
+  {
+    "Level": 1,
+    "ArrowCount": 253,
+    "XSize": 45,
+    "YSize": 65,
+    "Hash": "97b246e8a867b9ac",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 2,
+    "ArrowCount": 255,
+    "XSize": 50,
+    "YSize": 57,
+    "Hash": "3d69fb88f559a181",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 3,
+    "ArrowCount": 257,
+    "XSize": 45,
+    "YSize": 63,
+    "Hash": "88189ad02249a2ea",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 4,
+    "ArrowCount": 258,
+    "XSize": 50,
+    "YSize": 82,
+    "Hash": "a717ad2dfd71ee46",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 5,
+    "ArrowCount": 259,
+    "XSize": 50,
+    "YSize": 50,
+    "Hash": "80f71701844b176d",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 6,
+    "ArrowCount": 260,
+    "XSize": 66,
+    "YSize": 45,
+    "Hash": "5d4b44c2180e730f",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 7,
+    "ArrowCount": 261,
+    "XSize": 90,
+    "YSize": 93,
+    "Hash": "Sofa_620c36293ce45ee5",
+    "ShapeName": "Sofa",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 8,
+    "ArrowCount": 262,
+    "XSize": 40,
+    "YSize": 75,
+    "Hash": "32703be78f5ebb38",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 9,
+    "ArrowCount": 262,
+    "XSize": 64,
+    "YSize": 99,
+    "Hash": "thinker1-2b4c75e8db29fb34",
+    "ShapeName": "The Thinker",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 10,
+    "ArrowCount": 266,
+    "XSize": 50,
+    "YSize": 61,
+    "Hash": "2613149bb9a854de",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 11,
+    "ArrowCount": 273,
+    "XSize": 45,
+    "YSize": 65,
+    "Hash": "19580d0cbf24fb91",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 12,
+    "ArrowCount": 274,
+    "XSize": 45,
+    "YSize": 65,
+    "Hash": "b145bfb032969955",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 13,
+    "ArrowCount": 274,
+    "XSize": 45,
+    "YSize": 65,
+    "Hash": "ba14b50a23935c52",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 14,
+    "ArrowCount": 278,
+    "XSize": 50,
+    "YSize": 78,
+    "Hash": "84cc35ec93837cdb",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 15,
+    "ArrowCount": 282,
+    "XSize": 50,
+    "YSize": 61,
+    "Hash": "b50dab9dc8d914a6",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 16,
+    "ArrowCount": 282,
+    "XSize": 50,
+    "YSize": 65,
+    "Hash": "75a1de32c71413af",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 17,
+    "ArrowCount": 291,
+    "XSize": 50,
+    "YSize": 64,
+    "Hash": "becd7d4335b37f38",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 18,
+    "ArrowCount": 291,
+    "XSize": 73,
+    "YSize": 80,
+    "Hash": "Stoneidol-4f7c946108d78d6a",
+    "ShapeName": "Stone Idol",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 19,
+    "ArrowCount": 297,
+    "XSize": 45,
+    "YSize": 75,
+    "Hash": "87a23c41b4a1b71a",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 20,
+    "ArrowCount": 326,
+    "XSize": 50,
+    "YSize": 74,
+    "Hash": "b72dcd64411b0418",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 21,
+    "ArrowCount": 331,
+    "XSize": 45,
+    "YSize": 81,
+    "Hash": "e5e744873b1560df",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 22,
+    "ArrowCount": 331,
+    "XSize": 50,
+    "YSize": 74,
+    "Hash": "362ab0d02d5504c2",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 23,
+    "ArrowCount": 342,
+    "XSize": 98,
+    "YSize": 95,
+    "Hash": "470ba4e9ea81672e",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 24,
+    "ArrowCount": 346,
+    "XSize": 35,
+    "YSize": 134,
+    "Hash": "82414eab045ee1fa",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 25,
+    "ArrowCount": 350,
+    "XSize": 50,
+    "YSize": 74,
+    "Hash": "f3bdc6ee3c077bfd",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 26,
+    "ArrowCount": 351,
+    "XSize": 72,
+    "YSize": 100,
+    "Hash": "28fbac54c9a78daa",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 27,
+    "ArrowCount": 355,
+    "XSize": 85,
+    "YSize": 88,
+    "Hash": "Treasurechest-bfd4391989d4643a",
+    "ShapeName": "Treasure Chest",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 28,
+    "ArrowCount": 358,
+    "XSize": 75,
+    "YSize": 75,
+    "Hash": "TheStarryNight_v8-fad070071d04c00e",
+    "ShapeName": "The Starry Night",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 29,
+    "ArrowCount": 369,
+    "XSize": 85,
+    "YSize": 90,
+    "Hash": "ArcdeTriomphe-340c541d86ae47bc",
+    "ShapeName": "Arc de Triomphe",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 30,
+    "ArrowCount": 374,
+    "XSize": 98,
+    "YSize": 90,
+    "Hash": "pirate-90e517b4341e87b2",
+    "ShapeName": "Pirate Ship",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 31,
+    "ArrowCount": 379,
+    "XSize": 131,
+    "YSize": 90,
+    "Hash": "SydneyOpera-ea205602469161ea",
+    "ShapeName": "Sydney Opera House",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 32,
+    "ArrowCount": 380,
+    "XSize": 94,
+    "YSize": 86,
+    "Hash": "TajMahal-9e0eeabf5067f313",
+    "ShapeName": "Taj Mahal",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 33,
+    "ArrowCount": 383,
+    "XSize": 60,
+    "YSize": 74,
+    "Hash": "6fc7dd35de1bf877",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 34,
+    "ArrowCount": 391,
+    "XSize": 50,
+    "YSize": 85,
+    "Hash": "f619a7a53b9aa610",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 35,
+    "ArrowCount": 395,
+    "XSize": 84,
+    "YSize": 72,
+    "Hash": "58f091cad95a4a5e",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 36,
+    "ArrowCount": 399,
+    "XSize": 80,
+    "YSize": 51,
+    "Hash": "b33396b7cca49a29",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 37,
+    "ArrowCount": 399,
+    "XSize": 68,
+    "YSize": 120,
+    "Hash": "TowerOfPisa-fa789109b55f7eb6",
+    "ShapeName": "Leaning Tower of Pisa",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 38,
+    "ArrowCount": 402,
+    "XSize": 83,
+    "YSize": 90,
+    "Hash": "zhentan-abd579d582ab8750",
+    "ShapeName": "Detective",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 39,
+    "ArrowCount": 407,
+    "XSize": 72,
+    "YSize": 84,
+    "Hash": "4d5f25f774c8be38",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 40,
+    "ArrowCount": 407,
+    "XSize": 100,
+    "YSize": 91,
+    "Hash": "26506ed59ba283ee",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 41,
+    "ArrowCount": 411,
+    "XSize": 81,
+    "YSize": 131,
+    "Hash": "4236cfb6c766139f",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 42,
+    "ArrowCount": 412,
+    "XSize": 78,
+    "YSize": 94,
+    "Hash": "6a206e57d582d1b7",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 43,
+    "ArrowCount": 420,
+    "XSize": 95,
+    "YSize": 72,
+    "Hash": "85b27f75a1a2c0ae",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 44,
+    "ArrowCount": 430,
+    "XSize": 92,
+    "YSize": 100,
+    "Hash": "3ca8ca8d08dee8cb",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 45,
+    "ArrowCount": 432,
+    "XSize": 40,
+    "YSize": 123,
+    "Hash": "240345b960d90c61",
+    "ShapeName": "",
+    "Source": "UnityLarge"
+  },
+  {
+    "Level": 46,
+    "ArrowCount": 437,
+    "XSize": 100,
+    "YSize": 100,
+    "Hash": "Sphinx-10e52caf0ab7ebbd",
+    "ShapeName": "The Great Sphinx",
+    "Source": "UnityLarge"
+  }
+]
