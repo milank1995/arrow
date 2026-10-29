@@ -72,6 +72,7 @@ fun GameHeader(
     theme: ThemePreset,
     isDailyChallenge: Boolean = false,
     dailyDateString: String? = null,
+    shapeName: String? = null,
     isTestMode: Boolean = false,
     onPrevLevelClick: (() -> Unit)? = null,
     onNextLevelClick: (() -> Unit)? = null,
@@ -294,7 +295,11 @@ fun GameHeader(
                         }
                     } else {
                         Text(
-                            text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
+                            text = when {
+                                isDailyChallenge -> "Daily Challenge"
+                                !shapeName.isNullOrBlank() -> "Level $levelNumber • $shapeName"
+                                else -> "Level $levelNumber"
+                            },
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = theme.textPrimary,

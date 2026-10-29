@@ -95,6 +95,7 @@ fun VictoryScreen(
     theme: ThemePreset,
     heartsRemaining: Int = 3,
     maxHearts: Int = 3,
+    shapeName: String? = null,
     isDailyChallenge: Boolean = false,
     completionTimeSeconds: Int = 0,
     movesCount: Int = 0,
@@ -389,7 +390,11 @@ fun VictoryScreen(
                         modifier = Modifier.align(Alignment.Center)
                     ) {
                         Text(
-                            text = if (isDailyChallenge) "DAILY CHALLENGE" else "LEVEL $levelNumber",
+                            text = when {
+                                isDailyChallenge -> "DAILY CHALLENGE"
+                                !shapeName.isNullOrBlank() -> "LEVEL $levelNumber • ${shapeName.uppercase()}"
+                                else -> "LEVEL $levelNumber"
+                            },
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.8.sp,

@@ -1,0 +1,45 @@
+import json
+
+# User's reference dictionary:
+user_ref = {
+  "1.jpg_rectangle_simple": 4, "2.jpg_rectangle_simple": 4, "3.jpg_rectangle_simple": 4, "4.jpg_rectangle_simple": 7,
+  "5.jpg_goggles_hard": 54, "6.jpg_rectangle_simple": 28, "7.jpg_rectangle_simple": 54, "8.jpg_rectangle_hard": 78,
+  "9.jpg_rectangle_simple": 36, "10.jpg_oillamp_hard": 99, "11.jpg_rectangle_simple": 45, "12.jpg_rectangle_simple": 62,
+  "13.jpg_rectangle_hard": 80, "14.jpg_rectangle_simple": 46, "15.jpg_lamp_hard": 81, "16.jpg_rectangle_simple": 55,
+  "17.jpg_rectangle_simple": 59, "18.jpg_rectangle_hard": 112, "19.jpg_rectangle_simple": 68, "20.jpg_plant_super_hard": 130,
+  "21.jpg_rectangle_simple": 75, "22.jpg_rectangle_hard": 161, "23.jpg_rectangle_simple": 83, "24.jpg_rectangle_simple": 41,
+  "25.jpg_rectangle_super_hard": 177, "26.jpg_rectangle_simple": 77, "27.jpg_rectangle_hard": 158, "28.jpg_man_simple": 57,
+  "29.jpg_rectangle_simple": 55, "30.jpg_rectangle_super_hard": 158, "31.jpg_rectangle_simple": 107, "32.jpg_rectangle_super_hard": 167,
+  "33.jpg_rectangle_simple": 54, "34.jpg_rectangle_hard": 164, "35.jpg_rectangle_simple": 70, "36.jpg_puzzle_simple": 40,
+  "37.jpg_rectangle_super_hard": 188, "38.jpg_rectangle_simple": 102, "39.jpg_rectangle_hard": 165, "40.jpg_rectangle_simple": 135,
+  "41.jpg_rectangle_simple": 45, "42.jpg_rectangle_super_hard": 221, "43.jpg_rectangle_simple": 60, "44.jpg_rectangle_super_hard": 192,
+  "45.jpg_scholaraward_simple": 62, "46.jpg_chakra_hard": 131, "47.jpg_rectangle_simple": 54, "48.jpg_rectangle_simple": 94,
+  "49.jpg_camera_super_hard": 130, "50.jpg_rectangle_simple": 53, "51.jpg_rectangle_hard": 180, "52.jpg_rectangle_simple": 85,
+  "53.jpg_dollar_simple": 45, "54.jpg_rectangle_super_hard": 200, "55.jpg_rectangle_simple": 124, "56.jpg_rectangle_super_hard": 167,
+  "57.jpg_rectangle_simple": 114, "58.jpg_rectangle_hard": 168, "59.jpg_rectangle_simple": 42, "60.jpg_rectangle_simple": 136,
+  "61.jpg_rectangle_super_hard": 177, "62.jpg_flower_simple": 70, "63.jpg_rectangle_hard": 171, "64.jpg_rectangle_simple": 88,
+  "65.jpg_rectangle_simple": 50, "66.jpg_rectangle_super_hard": 203, "67.jpg_rectangle_simple": 72, "68.jpg_rectangle_super_hard": 194,
+  "69.jpg_rectangle_simple": 60, "70.jpg_rectangle_hard": 173, "71.jpg_windmill_simple": 90, "72.jpg_rectangle_simple": 88,
+  "73.jpg_rectangle_super_hard": 169, "74.jpg_rectangle_simple": 28, "75.jpg_twoglass_hard": 90, "76.jpg_rectangle_simple": 40,
+  "77.jpg_rectangle_simple": 55, "78.jpg_rectangle_super_hard": 194, "79.jpg_snowflake_simple": 68, "80.jpg_tyre_super_hard": 167,
+  "81.jpg_rectangle_simple": 60, "82.jpg_rectangle_hard": 138, "83.jpg_rectangle_simple": 56, "84.jpg_rectangle_simple": 55,
+  "85.jpg_rectangle_super_hard": 166, "86.jpg_rectangle_simple": 63, "87.jpg_rectangle_hard": 177, "88.jpg_dog_simple": 80,
+  "89.jpg_rectangle_simple": 50, "90.jpg_rectangle_super_hard": 167, "91.jpg_rectangle_simple": 53, "92.jpg_rectangle_super_hard": 180,
+  "93.jpg_rectangle_simple": 65, "94.jpg_rectangle_hard": 170, "95.jpg_rectangle_simple": 42, "96.jpg_<unknown_shape>_simple": 64,
+  "97.jpg_rectangle_super_hard": 191, "98.jpg_rectangle_simple": 55, "99.jpg_rectangle_hard": 154, "100.jpg_rectangle_simple": 34,
+  "101.jpg_rectangle_simple": 52, "102.jpg_rectangle_super_hard": 227, "103.jpg_rectangle_simple": 132, "104.jpg_rectangle_super_hard": 145,
+  "105.jpg_owl_simple": 103, "106.jpg_oillamp_hard": 121, "107.jpg_rectangle_simple": 76, "108.jpg_rectangle_simple": 75,
+  "109.jpg_spider_super_hard": 105, "110.jpg_rectangle_simple": 88, "111.jpg_rectangle_hard": 171, "112.jpg_rectangle_simple": 93,
+  "113.jpg_cherry_simple": 65, "114.jpg_rectangle_super_hard": 120, "115.jpg_rectangle_simple": 60, "116.jpg_rectangle_super_hard": 214,
+  "117.jpg_rectangle_simple": 43, "118.jpg_rectangle_hard": 172, "119.jpg_rectangle_simple": 107, "120.jpg_rectangle_simple": 54,
+  "121.jpg_rectangle_super_hard": 202, "122.jpg_halfstar_simple": 54, "123.jpg_rectangle_hard": 169, "124.jpg_rectangle_simple": 140,
+  "125.jpg_rectangle_simple": 148, "126.jpg_rectangle_super_hard": 120, "127.jpg_rectangle_simple": 78, "128.jpg_rectangle_super_hard": 188,
+  "129.jpg_rectangle_simple": 60, "130.jpg_rectangle_hard": 182, "131.jpg_beach_simple": 56, "132.jpg_rectangle_simple": 59,
+  "133.jpg_rectangle_super_hard": 182, "134.jpg_rectangle_simple": 151, "135.jpg_<unknown_shape>_hard": 142, "136.jpg_rectangle_simple": 147,
+  "137.jpg_rectangle_simple": 59, "138.jpg_rectangle_super_hard": 179, "139.jpg_<unknown_shape>_simple": 85, "140.jpg_truck_super_hard": 122,
+  "141.jpg_rectangle_simple": 158, "142.jpg_rectangle_hard": 151, "143.jpg_rectangle_simple": 75, "144.jpg_rectangle_simple": 75,
+  "145.jpg_rectangle_super_hard": 216, "146.jpg_rectangle_simple": 69, "147.jpg_rectangle_hard": 187, "148.jpg_airplane_simple": 80,
+  "149.jpg_rectangle_simple": 82, "150.jpg_rectangle_super_hard": 112
+}
+
+print(f"Total reference levels loaded: {len(user_ref)}")

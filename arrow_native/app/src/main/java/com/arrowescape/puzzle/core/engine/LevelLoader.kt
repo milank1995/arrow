@@ -17,7 +17,7 @@ object LevelLoader {
      * ensuring every level displays the true intended handcrafted puzzle layout.
      */
     fun loadLevel(context: Context, levelNumber: Int): LevelData {
-        val totalHandcraftedLevels = 1001
+        val totalHandcraftedLevels = 150
         val actualLevelNumber = ((levelNumber - 1) % totalHandcraftedLevels) + 1
         val assetName = "levels/Level_$actualLevelNumber.json"
         try {
@@ -113,7 +113,11 @@ object LevelLoader {
                 )
             }
 
+            val shapeName = root.optString("ShapeName").takeIf { it.isNotBlank() && it != "null" }
+            val rawDiff = root.optString("Difficulty")
             val difficulty = when {
+                rawDiff.equals("Hard", ignoreCase = true) || rawDiff.equals("Super Hard", ignoreCase = true) -> LevelDifficulty.HARD
+                rawDiff.equals("Medium", ignoreCase = true) -> LevelDifficulty.MEDIUM
                 arrowList.size <= 5 -> LevelDifficulty.EASY
                 arrowList.size <= 12 -> LevelDifficulty.MEDIUM
                 else -> LevelDifficulty.HARD
@@ -127,7 +131,8 @@ object LevelLoader {
                 maxHearts = maxHearts,
                 difficulty = difficulty,
                 diffScore = arrowList.size * 10,
-                diffDna = "UNITY_LVL_${levelNumber}_${xSize}x${ySize}_${arrowList.size}"
+                diffDna = "CURATED_LVL_${levelNumber}_${xSize}x${ySize}_${arrowList.size}",
+                shapeName = shapeName
             )
         } catch (e: Exception) {
             return null

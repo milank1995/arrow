@@ -160,6 +160,7 @@ fun GamePlayScreen(
             theme = theme,
             heartsRemaining = uiState.heartsRemaining,
             maxHearts = uiState.maxHearts,
+            shapeName = level?.shapeName,
             isDailyChallenge = uiState.isDailyChallengeMode,
             completionTimeSeconds = uiState.levelCompletionTimeSeconds,
             movesCount = uiState.levelMovesCount,
@@ -212,6 +213,7 @@ fun GamePlayScreen(
                                 theme = theme,
                                 isDailyChallenge = uiState.isDailyChallengeMode,
                                 dailyDateString = uiState.activeDailyDate,
+                                shapeName = level?.shapeName,
                                 onPauseClick = {
                                     onPlayClickSound()
                                     showPauseDialog = true

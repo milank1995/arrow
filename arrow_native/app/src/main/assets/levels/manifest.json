@@ -1,0 +1,1052 @@
+[
+  {
+    "level": 1,
+    "arrows": 4,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 2,
+    "arrows": 6,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 3,
+    "arrows": 9,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 4,
+    "arrows": 12,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 5,
+    "arrows": 22,
+    "difficulty": "Medium",
+    "shapeName": "Palm Tree",
+    "isShape": true
+  },
+  {
+    "level": 6,
+    "arrows": 26,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 7,
+    "arrows": 32,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 8,
+    "arrows": 38,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 9,
+    "arrows": 44,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 10,
+    "arrows": 52,
+    "difficulty": "Hard",
+    "shapeName": "Robot",
+    "isShape": true
+  },
+  {
+    "level": 11,
+    "arrows": 45,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 12,
+    "arrows": 62,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 13,
+    "arrows": 80,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 14,
+    "arrows": 46,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 15,
+    "arrows": 81,
+    "difficulty": "Hard",
+    "shapeName": "Panda",
+    "isShape": true
+  },
+  {
+    "level": 16,
+    "arrows": 55,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 17,
+    "arrows": 59,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 18,
+    "arrows": 112,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 19,
+    "arrows": 68,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 20,
+    "arrows": 99,
+    "difficulty": "Super Hard",
+    "shapeName": "Swan",
+    "isShape": true
+  },
+  {
+    "level": 21,
+    "arrows": 75,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 22,
+    "arrows": 161,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 23,
+    "arrows": 83,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 24,
+    "arrows": 41,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 25,
+    "arrows": 130,
+    "difficulty": "Super Hard",
+    "shapeName": "Strawberry",
+    "isShape": true
+  },
+  {
+    "level": 26,
+    "arrows": 77,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 27,
+    "arrows": 158,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 28,
+    "arrows": 57,
+    "difficulty": "Medium",
+    "shapeName": "Black Cat",
+    "isShape": true
+  },
+  {
+    "level": 29,
+    "arrows": 55,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 30,
+    "arrows": 158,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 31,
+    "arrows": 107,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 32,
+    "arrows": 167,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 33,
+    "arrows": 60,
+    "difficulty": "Medium",
+    "shapeName": "Rainbow",
+    "isShape": true
+  },
+  {
+    "level": 34,
+    "arrows": 164,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 35,
+    "arrows": 70,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 36,
+    "arrows": 40,
+    "difficulty": "Medium",
+    "shapeName": "Jellyfish",
+    "isShape": true
+  },
+  {
+    "level": 37,
+    "arrows": 188,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 38,
+    "arrows": 102,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 39,
+    "arrows": 165,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 40,
+    "arrows": 135,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 41,
+    "arrows": 45,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 42,
+    "arrows": 221,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 43,
+    "arrows": 60,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 44,
+    "arrows": 192,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 45,
+    "arrows": 62,
+    "difficulty": "Medium",
+    "shapeName": "Squirrel",
+    "isShape": true
+  },
+  {
+    "level": 46,
+    "arrows": 131,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 47,
+    "arrows": 54,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 48,
+    "arrows": 94,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 49,
+    "arrows": 130,
+    "difficulty": "Super Hard",
+    "shapeName": "Cactus",
+    "isShape": true
+  },
+  {
+    "level": 50,
+    "arrows": 53,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 51,
+    "arrows": 180,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 52,
+    "arrows": 85,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 53,
+    "arrows": 45,
+    "difficulty": "Medium",
+    "shapeName": "Hourglass",
+    "isShape": true
+  },
+  {
+    "level": 54,
+    "arrows": 200,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 55,
+    "arrows": 124,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 56,
+    "arrows": 167,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 57,
+    "arrows": 114,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 58,
+    "arrows": 63,
+    "difficulty": "Hard",
+    "shapeName": "Magnolia",
+    "isShape": true
+  },
+  {
+    "level": 59,
+    "arrows": 42,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 60,
+    "arrows": 136,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 61,
+    "arrows": 177,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 62,
+    "arrows": 70,
+    "difficulty": "Medium",
+    "shapeName": "Flower Vase",
+    "isShape": true
+  },
+  {
+    "level": 63,
+    "arrows": 171,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 64,
+    "arrows": 88,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 65,
+    "arrows": 50,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 66,
+    "arrows": 203,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 67,
+    "arrows": 72,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 68,
+    "arrows": 194,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 69,
+    "arrows": 60,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 70,
+    "arrows": 77,
+    "difficulty": "Hard",
+    "shapeName": "Trophy",
+    "isShape": true
+  },
+  {
+    "level": 71,
+    "arrows": 90,
+    "difficulty": "Medium",
+    "shapeName": "Windmill",
+    "isShape": true
+  },
+  {
+    "level": 72,
+    "arrows": 88,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 73,
+    "arrows": 169,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 74,
+    "arrows": 28,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 75,
+    "arrows": 90,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 76,
+    "arrows": 40,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 77,
+    "arrows": 55,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 78,
+    "arrows": 194,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 79,
+    "arrows": 68,
+    "difficulty": "Medium",
+    "shapeName": "Snowflake",
+    "isShape": true
+  },
+  {
+    "level": 80,
+    "arrows": 167,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 81,
+    "arrows": 60,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 82,
+    "arrows": 138,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 83,
+    "arrows": 80,
+    "difficulty": "Medium",
+    "shapeName": "Sparrow",
+    "isShape": true
+  },
+  {
+    "level": 84,
+    "arrows": 55,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 85,
+    "arrows": 166,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 86,
+    "arrows": 63,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 87,
+    "arrows": 177,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 88,
+    "arrows": 80,
+    "difficulty": "Medium",
+    "shapeName": "Dog",
+    "isShape": true
+  },
+  {
+    "level": 89,
+    "arrows": 50,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 90,
+    "arrows": 167,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 91,
+    "arrows": 53,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 92,
+    "arrows": 180,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 93,
+    "arrows": 80,
+    "difficulty": "Medium",
+    "shapeName": "Seal",
+    "isShape": true
+  },
+  {
+    "level": 94,
+    "arrows": 170,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 95,
+    "arrows": 42,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 96,
+    "arrows": 64,
+    "difficulty": "Medium",
+    "shapeName": "Rabbit",
+    "isShape": true
+  },
+  {
+    "level": 97,
+    "arrows": 191,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 98,
+    "arrows": 55,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 99,
+    "arrows": 154,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 100,
+    "arrows": 248,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 101,
+    "arrows": 52,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 102,
+    "arrows": 227,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 103,
+    "arrows": 132,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 104,
+    "arrows": 145,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 105,
+    "arrows": 103,
+    "difficulty": "Medium",
+    "shapeName": "Owl",
+    "isShape": true
+  },
+  {
+    "level": 106,
+    "arrows": 121,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 107,
+    "arrows": 76,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 108,
+    "arrows": 75,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 109,
+    "arrows": 105,
+    "difficulty": "Super Hard",
+    "shapeName": "Spider",
+    "isShape": true
+  },
+  {
+    "level": 110,
+    "arrows": 88,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 111,
+    "arrows": 171,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 112,
+    "arrows": 93,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 113,
+    "arrows": 65,
+    "difficulty": "Medium",
+    "shapeName": "Cherry",
+    "isShape": true
+  },
+  {
+    "level": 114,
+    "arrows": 120,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 115,
+    "arrows": 60,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 116,
+    "arrows": 214,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 117,
+    "arrows": 43,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 118,
+    "arrows": 172,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 119,
+    "arrows": 82,
+    "difficulty": "Medium",
+    "shapeName": "Honeybee",
+    "isShape": true
+  },
+  {
+    "level": 120,
+    "arrows": 54,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 121,
+    "arrows": 202,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 122,
+    "arrows": 54,
+    "difficulty": "Medium",
+    "shapeName": "Star",
+    "isShape": true
+  },
+  {
+    "level": 123,
+    "arrows": 169,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 124,
+    "arrows": 140,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 125,
+    "arrows": 148,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 126,
+    "arrows": 120,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 127,
+    "arrows": 78,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 128,
+    "arrows": 67,
+    "difficulty": "Super Hard",
+    "shapeName": "Sunflower",
+    "isShape": true
+  },
+  {
+    "level": 129,
+    "arrows": 60,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 130,
+    "arrows": 182,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 131,
+    "arrows": 56,
+    "difficulty": "Medium",
+    "shapeName": "Beach Umbrella",
+    "isShape": true
+  },
+  {
+    "level": 132,
+    "arrows": 59,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 133,
+    "arrows": 182,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 134,
+    "arrows": 151,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 135,
+    "arrows": 142,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 136,
+    "arrows": 147,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 137,
+    "arrows": 59,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 138,
+    "arrows": 179,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 139,
+    "arrows": 85,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 140,
+    "arrows": 122,
+    "difficulty": "Super Hard",
+    "shapeName": "Truck",
+    "isShape": true
+  },
+  {
+    "level": 141,
+    "arrows": 158,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 142,
+    "arrows": 151,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 143,
+    "arrows": 75,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 144,
+    "arrows": 126,
+    "difficulty": "Medium",
+    "shapeName": "Catstar",
+    "isShape": true
+  },
+  {
+    "level": 145,
+    "arrows": 216,
+    "difficulty": "Super Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 146,
+    "arrows": 69,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 147,
+    "arrows": 187,
+    "difficulty": "Hard",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 148,
+    "arrows": 80,
+    "difficulty": "Medium",
+    "shapeName": "Airplane",
+    "isShape": true
+  },
+  {
+    "level": 149,
+    "arrows": 82,
+    "difficulty": "Medium",
+    "shapeName": null,
+    "isShape": false
+  },
+  {
+    "level": 150,
+    "arrows": 261,
+    "difficulty": "Super Hard",
+    "shapeName": "Sofa Grand Finale",
+    "isShape": true
+  }
+]

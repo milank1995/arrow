@@ -1,0 +1,1352 @@
+[
+  {
+    "level": 1,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L1",
+    "name": "Introductory Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 4
+  },
+  {
+    "level": 2,
+    "source_collection": "Existing 1K Levels",
+    "source_id": "L2",
+    "name": "Tutorial Corner Clearance",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 6
+  },
+  {
+    "level": 3,
+    "source_collection": "Existing 1K Levels",
+    "source_id": "L3",
+    "name": "Tutorial Cross Unblocking",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 8
+  },
+  {
+    "level": 4,
+    "source_collection": "Existing 1K Levels",
+    "source_id": "L4",
+    "name": "Tutorial Corner Turn",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 12
+  },
+  {
+    "level": 5,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L5",
+    "name": "Palm Tree",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 22
+  },
+  {
+    "level": 6,
+    "source_collection": "Existing 1K Levels",
+    "source_id": "L6",
+    "name": "Shape #1000 Mini Breather",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 26
+  },
+  {
+    "level": 7,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L2",
+    "name": "Step Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 32
+  },
+  {
+    "level": 8,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L3",
+    "name": "Interlocking Corner",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 38
+  },
+  {
+    "level": 9,
+    "source_collection": "Existing 1K Levels",
+    "source_id": "L9",
+    "name": "Classic Mini Maze",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 44
+  },
+  {
+    "level": 10,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L10",
+    "name": "Robot",
+    "is_shape": true,
+    "difficulty": "Hard",
+    "arrows": 52
+  },
+  {
+    "level": 11,
+    "source_collection": "Existing 1K Levels",
+    "source_id": "L11",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 45
+  },
+  {
+    "level": 12,
+    "source_collection": "Existing 1K Levels",
+    "source_id": "L12",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 62
+  },
+  {
+    "level": 13,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L4",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 80
+  },
+  {
+    "level": 14,
+    "source_collection": "Existing 1K Levels",
+    "source_id": "L14",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 46
+  },
+  {
+    "level": 15,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L15",
+    "name": "Panda",
+    "is_shape": true,
+    "difficulty": "Hard",
+    "arrows": 81
+  },
+  {
+    "level": 16,
+    "source_collection": "Existing 1K Levels",
+    "source_id": "L16",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 55
+  },
+  {
+    "level": 17,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L5",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 59
+  },
+  {
+    "level": 18,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L6",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 112
+  },
+  {
+    "level": 19,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L7",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 68
+  },
+  {
+    "level": 20,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L20",
+    "name": "Swan",
+    "is_shape": true,
+    "difficulty": "Super Hard",
+    "arrows": 99
+  },
+  {
+    "level": 21,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L8",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 75
+  },
+  {
+    "level": 22,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L9",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 161
+  },
+  {
+    "level": 23,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L10",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 83
+  },
+  {
+    "level": 24,
+    "source_collection": "Existing 1K Levels",
+    "source_id": "L24",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 41
+  },
+  {
+    "level": 25,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L25",
+    "name": "Strawberry",
+    "is_shape": true,
+    "difficulty": "Super Hard",
+    "arrows": 130
+  },
+  {
+    "level": 26,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L11",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 77
+  },
+  {
+    "level": 27,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L12",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 158
+  },
+  {
+    "level": 28,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L28",
+    "name": "Black Cat",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 57
+  },
+  {
+    "level": 29,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L13",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 55
+  },
+  {
+    "level": 30,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L14",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 158
+  },
+  {
+    "level": 31,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L15",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 107
+  },
+  {
+    "level": 32,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L16",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 167
+  },
+  {
+    "level": 33,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L33",
+    "name": "Rainbow",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 60
+  },
+  {
+    "level": 34,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L17",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 164
+  },
+  {
+    "level": 35,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L18",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 70
+  },
+  {
+    "level": 36,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L36",
+    "name": "Jellyfish",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 40
+  },
+  {
+    "level": 37,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L19",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 188
+  },
+  {
+    "level": 38,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L20",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 102
+  },
+  {
+    "level": 39,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L21",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 165
+  },
+  {
+    "level": 40,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L22",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 135
+  },
+  {
+    "level": 41,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L23",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 45
+  },
+  {
+    "level": 42,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L24",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 221
+  },
+  {
+    "level": 43,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L25",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 60
+  },
+  {
+    "level": 44,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L26",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 192
+  },
+  {
+    "level": 45,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L45",
+    "name": "Squirrel",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 62
+  },
+  {
+    "level": 46,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L27",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 131
+  },
+  {
+    "level": 47,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L28",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 54
+  },
+  {
+    "level": 48,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L29",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 94
+  },
+  {
+    "level": 49,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L49",
+    "name": "Cactus",
+    "is_shape": true,
+    "difficulty": "Super Hard",
+    "arrows": 130
+  },
+  {
+    "level": 50,
+    "source_collection": "Existing 1K Levels",
+    "source_id": "L50",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 53
+  },
+  {
+    "level": 51,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L30",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 180
+  },
+  {
+    "level": 52,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L31",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 85
+  },
+  {
+    "level": 53,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L53",
+    "name": "Hourglass",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 45
+  },
+  {
+    "level": 54,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L32",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 200
+  },
+  {
+    "level": 55,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L33",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 124
+  },
+  {
+    "level": 56,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L34",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 167
+  },
+  {
+    "level": 57,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L35",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 114
+  },
+  {
+    "level": 58,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L58",
+    "name": "Magnolia",
+    "is_shape": true,
+    "difficulty": "Hard",
+    "arrows": 63
+  },
+  {
+    "level": 59,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L36",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 42
+  },
+  {
+    "level": 60,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L37",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 136
+  },
+  {
+    "level": 61,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L38",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 177
+  },
+  {
+    "level": 62,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L62",
+    "name": "Flower Vase",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 70
+  },
+  {
+    "level": 63,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L39",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 171
+  },
+  {
+    "level": 64,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L40",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 88
+  },
+  {
+    "level": 65,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L41",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 50
+  },
+  {
+    "level": 66,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L42",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 203
+  },
+  {
+    "level": 67,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L43",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 72
+  },
+  {
+    "level": 68,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L44",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 194
+  },
+  {
+    "level": 69,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L45",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 60
+  },
+  {
+    "level": 70,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L70",
+    "name": "Trophy",
+    "is_shape": true,
+    "difficulty": "Hard",
+    "arrows": 77
+  },
+  {
+    "level": 71,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L71",
+    "name": "Windmill",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 90
+  },
+  {
+    "level": 72,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L46",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 88
+  },
+  {
+    "level": 73,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L47",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 169
+  },
+  {
+    "level": 74,
+    "source_collection": "Existing 1K Levels",
+    "source_id": "L74",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 28
+  },
+  {
+    "level": 75,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L48",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 90
+  },
+  {
+    "level": 76,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L49",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 40
+  },
+  {
+    "level": 77,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L50",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 55
+  },
+  {
+    "level": 78,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L51",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 194
+  },
+  {
+    "level": 79,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L79",
+    "name": "Snowflake",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 68
+  },
+  {
+    "level": 80,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L52",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 167
+  },
+  {
+    "level": 81,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L53",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 60
+  },
+  {
+    "level": 82,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L54",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 138
+  },
+  {
+    "level": 83,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L83",
+    "name": "Sparrow",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 80
+  },
+  {
+    "level": 84,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L55",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 55
+  },
+  {
+    "level": 85,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L56",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 166
+  },
+  {
+    "level": 86,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L57",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 63
+  },
+  {
+    "level": 87,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L58",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 177
+  },
+  {
+    "level": 88,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L88",
+    "name": "Dog",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 80
+  },
+  {
+    "level": 89,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L59",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 50
+  },
+  {
+    "level": 90,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L60",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 167
+  },
+  {
+    "level": 91,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L61",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 53
+  },
+  {
+    "level": 92,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L62",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 180
+  },
+  {
+    "level": 93,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L93",
+    "name": "Seal",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 80
+  },
+  {
+    "level": 94,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L63",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 170
+  },
+  {
+    "level": 95,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L64",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 42
+  },
+  {
+    "level": 96,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L96",
+    "name": "Rabbit",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 64
+  },
+  {
+    "level": 97,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L65",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 191
+  },
+  {
+    "level": 98,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L66",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 55
+  },
+  {
+    "level": 99,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L67",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 154
+  },
+  {
+    "level": 100,
+    "source_collection": "Large Puzzles",
+    "source_id": "Large_L100",
+    "name": "Mega Grid Century Climax",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 250
+  },
+  {
+    "level": 101,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L68",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 52
+  },
+  {
+    "level": 102,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L69",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 227
+  },
+  {
+    "level": 103,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L70",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 132
+  },
+  {
+    "level": 104,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L71",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 145
+  },
+  {
+    "level": 105,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L105",
+    "name": "Owl",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 103
+  },
+  {
+    "level": 106,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L72",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 121
+  },
+  {
+    "level": 107,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L73",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 76
+  },
+  {
+    "level": 108,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L74",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 75
+  },
+  {
+    "level": 109,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L109",
+    "name": "Spider",
+    "is_shape": true,
+    "difficulty": "Super Hard",
+    "arrows": 105
+  },
+  {
+    "level": 110,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L75",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 88
+  },
+  {
+    "level": 111,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L76",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 171
+  },
+  {
+    "level": 112,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L77",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 93
+  },
+  {
+    "level": 113,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L113",
+    "name": "Cherry",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 65
+  },
+  {
+    "level": 114,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L78",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 120
+  },
+  {
+    "level": 115,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L79",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 60
+  },
+  {
+    "level": 116,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L80",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 214
+  },
+  {
+    "level": 117,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L81",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 43
+  },
+  {
+    "level": 118,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L82",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 172
+  },
+  {
+    "level": 119,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L119",
+    "name": "Honeybee",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 82
+  },
+  {
+    "level": 120,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L83",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 54
+  },
+  {
+    "level": 121,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L84",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 202
+  },
+  {
+    "level": 122,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L122",
+    "name": "Star",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 54
+  },
+  {
+    "level": 123,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L85",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 169
+  },
+  {
+    "level": 124,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L86",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 140
+  },
+  {
+    "level": 125,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L87",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 148
+  },
+  {
+    "level": 126,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L88",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 120
+  },
+  {
+    "level": 127,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L89",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 78
+  },
+  {
+    "level": 128,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L128",
+    "name": "Sunflower",
+    "is_shape": true,
+    "difficulty": "Super Hard",
+    "arrows": 67
+  },
+  {
+    "level": 129,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L90",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 60
+  },
+  {
+    "level": 130,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L91",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 182
+  },
+  {
+    "level": 131,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L131",
+    "name": "Beach Umbrella",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 56
+  },
+  {
+    "level": 132,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L92",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 59
+  },
+  {
+    "level": 133,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L93",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 182
+  },
+  {
+    "level": 134,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L94",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 151
+  },
+  {
+    "level": 135,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L95",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 142
+  },
+  {
+    "level": 136,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L96",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 147
+  },
+  {
+    "level": 137,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L97",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 59
+  },
+  {
+    "level": 138,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L98",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 179
+  },
+  {
+    "level": 139,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L99",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 85
+  },
+  {
+    "level": 140,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L140",
+    "name": "Truck",
+    "is_shape": true,
+    "difficulty": "Super Hard",
+    "arrows": 122
+  },
+  {
+    "level": 141,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L100",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 158
+  },
+  {
+    "level": 142,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L101",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 151
+  },
+  {
+    "level": 143,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L102",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 75
+  },
+  {
+    "level": 144,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L144",
+    "name": "Catstar",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 126
+  },
+  {
+    "level": 145,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L103",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Super Hard",
+    "arrows": 216
+  },
+  {
+    "level": 146,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L104",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 69
+  },
+  {
+    "level": 147,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L105",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Hard",
+    "arrows": 187
+  },
+  {
+    "level": 148,
+    "source_collection": "Shape Puzzle Levels",
+    "source_id": "Shape_L148",
+    "name": "Airplane",
+    "is_shape": true,
+    "difficulty": "Medium",
+    "arrows": 80
+  },
+  {
+    "level": 149,
+    "source_collection": "New Unity Normal Levels",
+    "source_id": "UnityNormal_L106",
+    "name": "Geometric Abstract Grid",
+    "is_shape": false,
+    "difficulty": "Medium",
+    "arrows": 82
+  },
+  {
+    "level": 150,
+    "source_collection": "Large Puzzles",
+    "source_id": "Large_L150",
+    "name": "Sofa Grand Finale",
+    "is_shape": true,
+    "difficulty": "Super Hard",
+    "arrows": 261
+  }
+]
