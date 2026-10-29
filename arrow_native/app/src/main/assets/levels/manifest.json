@@ -321,13 +321,13 @@
   },
   {
     "LevelNumber": 33,
-    "ArrowCount": 58,
+    "ArrowCount": 62,
     "Difficulty": "Medium",
-    "ShapeName": "Eiffel Tower",
+    "ShapeName": "Clock",
     "IsShape": true,
     "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 49,
-    "YSize": 75
+    "XSize": 51,
+    "YSize": 57
   },
   {
     "LevelNumber": 34,
