@@ -2,7 +2,7 @@
   {
     "LevelNumber": 1,
     "ArrowCount": 4,
-    "Difficulty": "Medium",
+    "Difficulty": "Easy",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -11,32 +11,32 @@
   },
   {
     "LevelNumber": 2,
-    "ArrowCount": 6,
-    "Difficulty": "Medium",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
-    "XSize": 10,
-    "YSize": 12
-  },
-  {
-    "LevelNumber": 3,
     "ArrowCount": 8,
-    "Difficulty": "Medium",
+    "Difficulty": "Easy",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "New Unity Normal Levels",
     "XSize": 8,
     "YSize": 10
   },
   {
-    "LevelNumber": 4,
-    "ArrowCount": 12,
+    "LevelNumber": 3,
+    "ArrowCount": 14,
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "New Unity Normal Levels",
     "XSize": 10,
+    "YSize": 10
+  },
+  {
+    "LevelNumber": 4,
+    "ArrowCount": 18,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "New Unity Normal Levels",
+    "XSize": 11,
     "YSize": 10
   },
   {
@@ -51,43 +51,43 @@
   },
   {
     "LevelNumber": 6,
-    "ArrowCount": 26,
+    "ArrowCount": 28,
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "Existing 1K Levels",
-    "XSize": 20,
-    "YSize": 22
+    "XSize": 15,
+    "YSize": 15
   },
   {
     "LevelNumber": 7,
-    "ArrowCount": 32,
+    "ArrowCount": 54,
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
-    "XSize": 14,
-    "YSize": 17
+    "XSize": 18,
+    "YSize": 25
   },
   {
     "LevelNumber": 8,
-    "ArrowCount": 38,
+    "ArrowCount": 78,
     "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 29,
+    "YSize": 39
+  },
+  {
+    "LevelNumber": 9,
+    "ArrowCount": 36,
+    "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
     "XSize": 14,
     "YSize": 18
-  },
-  {
-    "LevelNumber": 9,
-    "ArrowCount": 44,
-    "Difficulty": "Medium",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
-    "XSize": 18,
-    "YSize": 24
   },
   {
     "LevelNumber": 10,
@@ -105,9 +105,9 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
-    "XSize": 18,
-    "YSize": 25
+    "SourceCategory": "New Unity Normal Levels",
+    "XSize": 16,
+    "YSize": 22
   },
   {
     "LevelNumber": 12,
@@ -175,9 +175,9 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 28,
-    "YSize": 37
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 34,
+    "YSize": 40
   },
   {
     "LevelNumber": 19,
@@ -202,7 +202,7 @@
   {
     "LevelNumber": 21,
     "ArrowCount": 75,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -215,14 +215,14 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 33,
-    "YSize": 49
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 32,
+    "YSize": 42
   },
   {
     "LevelNumber": 23,
     "ArrowCount": 83,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -231,13 +231,13 @@
   },
   {
     "LevelNumber": 24,
-    "ArrowCount": 41,
+    "ArrowCount": 58,
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "Existing 1K Levels",
     "XSize": 18,
-    "YSize": 25
+    "YSize": 26
   },
   {
     "LevelNumber": 25,
@@ -252,12 +252,12 @@
   {
     "LevelNumber": 26,
     "ArrowCount": 77,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 21,
-    "YSize": 30
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 23,
+    "YSize": 36
   },
   {
     "LevelNumber": 27,
@@ -292,17 +292,17 @@
   {
     "LevelNumber": 30,
     "ArrowCount": 158,
-    "Difficulty": "Super Hard",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 33,
-    "YSize": 47
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 34,
+    "YSize": 43
   },
   {
     "LevelNumber": 31,
     "ArrowCount": 107,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -312,12 +312,12 @@
   {
     "LevelNumber": 32,
     "ArrowCount": 167,
-    "Difficulty": "Super Hard",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 34,
-    "YSize": 45
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 32,
+    "YSize": 52
   },
   {
     "LevelNumber": 33,
@@ -335,9 +335,9 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 32,
-    "YSize": 50
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 35,
+    "YSize": 49
   },
   {
     "LevelNumber": 35,
@@ -345,19 +345,19 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 20,
-    "YSize": 28
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 31,
+    "YSize": 25
   },
   {
     "LevelNumber": 36,
-    "ArrowCount": 44,
+    "ArrowCount": 40,
     "Difficulty": "Medium",
-    "ShapeName": "Jellyfish",
-    "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 46,
-    "YSize": 56
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 19,
+    "YSize": 23
   },
   {
     "LevelNumber": 37,
@@ -371,13 +371,13 @@
   },
   {
     "LevelNumber": 38,
-    "ArrowCount": 102,
+    "ArrowCount": 44,
     "Difficulty": "Medium",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 27,
-    "YSize": 35
+    "ShapeName": "Jellyfish",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 46,
+    "YSize": 56
   },
   {
     "LevelNumber": 39,
@@ -392,12 +392,12 @@
   {
     "LevelNumber": 40,
     "ArrowCount": 135,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 30,
-    "YSize": 43
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 32,
+    "YSize": 41
   },
   {
     "LevelNumber": 41,
@@ -411,13 +411,13 @@
   },
   {
     "LevelNumber": 42,
-    "ArrowCount": 223,
+    "ArrowCount": 221,
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 38,
-    "YSize": 61
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 35,
+    "YSize": 55
   },
   {
     "LevelNumber": 43,
@@ -435,9 +435,9 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 35,
-    "YSize": 55
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 37,
+    "YSize": 52
   },
   {
     "LevelNumber": 45,
@@ -455,9 +455,9 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 28,
-    "YSize": 42
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 29,
+    "YSize": 47
   },
   {
     "LevelNumber": 47,
@@ -472,12 +472,12 @@
   {
     "LevelNumber": 48,
     "ArrowCount": 94,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 26,
-    "YSize": 32
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 27,
+    "YSize": 36
   },
   {
     "LevelNumber": 49,
@@ -502,7 +502,7 @@
   {
     "LevelNumber": 51,
     "ArrowCount": 180,
-    "Difficulty": "Hard",
+    "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -512,37 +512,37 @@
   {
     "LevelNumber": 52,
     "ArrowCount": 85,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 22,
-    "YSize": 32
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 27,
+    "YSize": 37
   },
   {
     "LevelNumber": 53,
-    "ArrowCount": 45,
+    "ArrowCount": 46,
     "Difficulty": "Medium",
     "ShapeName": "Hourglass",
     "IsShape": true,
     "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 16,
-    "YSize": 25
+    "XSize": 56,
+    "YSize": 94
   },
   {
     "LevelNumber": 54,
-    "ArrowCount": 201,
+    "ArrowCount": 199,
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 39,
-    "YSize": 52
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 38,
+    "YSize": 51
   },
   {
     "LevelNumber": 55,
     "ArrowCount": 124,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -552,17 +552,17 @@
   {
     "LevelNumber": 56,
     "ArrowCount": 167,
-    "Difficulty": "Super Hard",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Existing 1K Levels",
     "XSize": 36,
-    "YSize": 47
+    "YSize": 53
   },
   {
     "LevelNumber": 57,
     "ArrowCount": 114,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -573,7 +573,7 @@
     "LevelNumber": 58,
     "ArrowCount": 63,
     "Difficulty": "Hard",
-    "ShapeName": "Magnolia",
+    "ShapeName": "Magnolia Flower",
     "IsShape": true,
     "SourceCategory": "Shape Puzzle Levels",
     "XSize": 50,
@@ -581,28 +581,28 @@
   },
   {
     "LevelNumber": 59,
-    "ArrowCount": 42,
+    "ArrowCount": 68,
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
-    "XSize": 16,
-    "YSize": 20
+    "XSize": 20,
+    "YSize": 28
   },
   {
     "LevelNumber": 60,
     "ArrowCount": 136,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 31,
-    "YSize": 42
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 30,
+    "YSize": 46
   },
   {
     "LevelNumber": 61,
     "ArrowCount": 177,
-    "Difficulty": "Super Hard",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -611,33 +611,33 @@
   },
   {
     "LevelNumber": 62,
-    "ArrowCount": 46,
-    "Difficulty": "Medium",
-    "ShapeName": "Flower Vase",
-    "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 56,
-    "YSize": 94
-  },
-  {
-    "LevelNumber": 63,
-    "ArrowCount": 171,
+    "ArrowCount": 70,
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 35,
-    "YSize": 49
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 26,
+    "YSize": 40
+  },
+  {
+    "LevelNumber": 63,
+    "ArrowCount": 69,
+    "Difficulty": "Medium",
+    "ShapeName": "Dolphin",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 48,
+    "YSize": 48
   },
   {
     "LevelNumber": 64,
     "ArrowCount": 88,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 22,
-    "YSize": 36
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 27,
+    "YSize": 30
   },
   {
     "LevelNumber": 65,
@@ -655,14 +655,14 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 40,
-    "YSize": 51
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 37,
+    "YSize": 56
   },
   {
     "LevelNumber": 67,
     "ArrowCount": 72,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -671,13 +671,13 @@
   },
   {
     "LevelNumber": 68,
-    "ArrowCount": 194,
-    "Difficulty": "Super Hard",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 35,
-    "YSize": 55
+    "ArrowCount": 77,
+    "Difficulty": "Hard",
+    "ShapeName": "Trophy",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 43,
+    "YSize": 64
   },
   {
     "LevelNumber": 69,
@@ -691,28 +691,18 @@
   },
   {
     "LevelNumber": 70,
-    "ArrowCount": 77,
+    "ArrowCount": 173,
     "Difficulty": "Hard",
-    "ShapeName": "Trophy",
-    "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 43,
-    "YSize": 64
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 37,
+    "YSize": 47
   },
   {
     "LevelNumber": 71,
     "ArrowCount": 90,
-    "Difficulty": "Medium",
-    "ShapeName": "Windmill",
-    "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 50,
-    "YSize": 58
-  },
-  {
-    "LevelNumber": 72,
-    "ArrowCount": 88,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -720,24 +710,34 @@
     "YSize": 32
   },
   {
-    "LevelNumber": 73,
-    "ArrowCount": 169,
-    "Difficulty": "Super Hard",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 35,
-    "YSize": 46
-  },
-  {
-    "LevelNumber": 74,
-    "ArrowCount": 28,
-    "Difficulty": "Medium",
+    "LevelNumber": 72,
+    "ArrowCount": 88,
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "Existing 1K Levels",
-    "XSize": 15,
-    "YSize": 15
+    "XSize": 31,
+    "YSize": 34
+  },
+  {
+    "LevelNumber": 73,
+    "ArrowCount": 70,
+    "Difficulty": "Medium",
+    "ShapeName": "Goldfish",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 89,
+    "YSize": 85
+  },
+  {
+    "LevelNumber": 74,
+    "ArrowCount": 82,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 23,
+    "YSize": 35
   },
   {
     "LevelNumber": 75,
@@ -746,18 +746,18 @@
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
-    "XSize": 25,
-    "YSize": 32
+    "XSize": 23,
+    "YSize": 35
   },
   {
     "LevelNumber": 76,
-    "ArrowCount": 40,
-    "Difficulty": "Medium",
+    "ArrowCount": 70,
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 16,
-    "YSize": 20
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 29,
+    "YSize": 44
   },
   {
     "LevelNumber": 77,
@@ -775,9 +775,9 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 39,
-    "YSize": 54
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 35,
+    "YSize": 55
   },
   {
     "LevelNumber": 79,
@@ -786,8 +786,8 @@
     "ShapeName": "Snowflake",
     "IsShape": true,
     "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 20,
-    "YSize": 32
+    "XSize": 59,
+    "YSize": 57
   },
   {
     "LevelNumber": 80,
@@ -795,9 +795,9 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 34,
-    "YSize": 51
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 37,
+    "YSize": 53
   },
   {
     "LevelNumber": 81,
@@ -812,12 +812,12 @@
   {
     "LevelNumber": 82,
     "ArrowCount": 138,
-    "Difficulty": "Hard",
+    "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 29,
-    "YSize": 44
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 36,
+    "YSize": 38
   },
   {
     "LevelNumber": 83,
@@ -835,9 +835,9 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 18,
-    "YSize": 25
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 23,
+    "YSize": 30
   },
   {
     "LevelNumber": 85,
@@ -855,14 +855,14 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 18,
-    "YSize": 25
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 23,
+    "YSize": 31
   },
   {
     "LevelNumber": 87,
     "ArrowCount": 177,
-    "Difficulty": "Hard",
+    "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -895,9 +895,9 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 33,
-    "YSize": 53
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 47,
+    "YSize": 47
   },
   {
     "LevelNumber": 91,
@@ -915,9 +915,9 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 37,
-    "YSize": 50
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 36,
+    "YSize": 45
   },
   {
     "LevelNumber": 93,
@@ -932,42 +932,42 @@
   {
     "LevelNumber": 94,
     "ArrowCount": 170,
+    "Difficulty": "Super Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 37,
+    "YSize": 40
+  },
+  {
+    "LevelNumber": 95,
+    "ArrowCount": 78,
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
-    "XSize": 35,
-    "YSize": 48
-  },
-  {
-    "LevelNumber": 95,
-    "ArrowCount": 42,
-    "Difficulty": "Medium",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 16,
-    "YSize": 22
+    "XSize": 22,
+    "YSize": 32
   },
   {
     "LevelNumber": 96,
-    "ArrowCount": 89,
+    "ArrowCount": 64,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 23,
+    "YSize": 26
+  },
+  {
+    "LevelNumber": 97,
+    "ArrowCount": 91,
     "Difficulty": "Medium",
     "ShapeName": "Rabbit",
     "IsShape": true,
     "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 42,
-    "YSize": 86
-  },
-  {
-    "LevelNumber": 97,
-    "ArrowCount": 192,
-    "Difficulty": "Super Hard",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 36,
-    "YSize": 54
+    "XSize": 53,
+    "YSize": 63
   },
   {
     "LevelNumber": 98,
@@ -975,14 +975,14 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 18,
-    "YSize": 25
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 28,
+    "YSize": 36
   },
   {
     "LevelNumber": 99,
     "ArrowCount": 154,
-    "Difficulty": "Hard",
+    "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -1001,13 +1001,13 @@
   },
   {
     "LevelNumber": 101,
-    "ArrowCount": 52,
-    "Difficulty": "Medium",
+    "ArrowCount": 85,
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
-    "XSize": 19,
-    "YSize": 21
+    "XSize": 22,
+    "YSize": 32
   },
   {
     "LevelNumber": 102,
@@ -1015,14 +1015,14 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Existing 1K Levels",
     "XSize": 35,
     "YSize": 58
   },
   {
     "LevelNumber": 103,
     "ArrowCount": 132,
-    "Difficulty": "Medium",
+    "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -1031,38 +1031,38 @@
   },
   {
     "LevelNumber": 104,
-    "ArrowCount": 145,
-    "Difficulty": "Super Hard",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 28,
-    "YSize": 46
+    "ArrowCount": 102,
+    "Difficulty": "Medium",
+    "ShapeName": "Castle",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 49,
+    "YSize": 55
   },
   {
     "LevelNumber": 105,
     "ArrowCount": 103,
-    "Difficulty": "Medium",
-    "ShapeName": "Owl",
-    "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 26,
-    "YSize": 43
-  },
-  {
-    "LevelNumber": 106,
-    "ArrowCount": 121,
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
     "XSize": 28,
-    "YSize": 40
+    "YSize": 34
+  },
+  {
+    "LevelNumber": 106,
+    "ArrowCount": 121,
+    "Difficulty": "Super Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 33,
+    "YSize": 36
   },
   {
     "LevelNumber": 107,
     "ArrowCount": 76,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -1072,62 +1072,62 @@
   {
     "LevelNumber": 108,
     "ArrowCount": 75,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 22,
-    "YSize": 31
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 30,
+    "YSize": 30
   },
   {
     "LevelNumber": 109,
-    "ArrowCount": 105,
+    "ArrowCount": 110,
     "Difficulty": "Super Hard",
-    "ShapeName": "Spider",
+    "ShapeName": "Winter Bird",
     "IsShape": true,
     "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 46,
-    "YSize": 46
+    "XSize": 49,
+    "YSize": 79
   },
   {
     "LevelNumber": 110,
     "ArrowCount": 88,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 24,
-    "YSize": 35
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 35,
+    "YSize": 38
   },
   {
     "LevelNumber": 111,
     "ArrowCount": 171,
-    "Difficulty": "Hard",
+    "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
-    "XSize": 33,
-    "YSize": 52
+    "XSize": 35,
+    "YSize": 49
   },
   {
     "LevelNumber": 112,
     "ArrowCount": 93,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 24,
-    "YSize": 35
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 29,
+    "YSize": 45
   },
   {
     "LevelNumber": 113,
-    "ArrowCount": 65,
+    "ArrowCount": 115,
     "Difficulty": "Medium",
-    "ShapeName": "Cherry",
+    "ShapeName": "Elephant",
     "IsShape": true,
     "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 24,
-    "YSize": 28
+    "XSize": 51,
+    "YSize": 62
   },
   {
     "LevelNumber": 114,
@@ -1135,9 +1135,9 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Existing 1K Levels",
     "XSize": 29,
-    "YSize": 36
+    "YSize": 39
   },
   {
     "LevelNumber": 115,
@@ -1151,36 +1151,26 @@
   },
   {
     "LevelNumber": 116,
-    "ArrowCount": 215,
+    "ArrowCount": 214,
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 38,
-    "YSize": 58
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 37,
+    "YSize": 60
   },
   {
     "LevelNumber": 117,
-    "ArrowCount": 43,
-    "Difficulty": "Medium",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 16,
-    "YSize": 22
-  },
-  {
-    "LevelNumber": 118,
-    "ArrowCount": 172,
+    "ArrowCount": 90,
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
-    "XSize": 35,
-    "YSize": 48
+    "XSize": 24,
+    "YSize": 34
   },
   {
-    "LevelNumber": 119,
+    "LevelNumber": 118,
     "ArrowCount": 82,
     "Difficulty": "Medium",
     "ShapeName": "Honeybee",
@@ -1190,14 +1180,24 @@
     "YSize": 50
   },
   {
-    "LevelNumber": 120,
-    "ArrowCount": 54,
-    "Difficulty": "Medium",
+    "LevelNumber": 119,
+    "ArrowCount": 107,
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
-    "XSize": 18,
-    "YSize": 25
+    "XSize": 28,
+    "YSize": 38
+  },
+  {
+    "LevelNumber": 120,
+    "ArrowCount": 86,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 28,
+    "YSize": 31
   },
   {
     "LevelNumber": 121,
@@ -1211,6 +1211,16 @@
   },
   {
     "LevelNumber": 122,
+    "ArrowCount": 54,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 21,
+    "YSize": 25
+  },
+  {
+    "LevelNumber": 123,
     "ArrowCount": 60,
     "Difficulty": "Medium",
     "ShapeName": "Star",
@@ -1220,29 +1230,19 @@
     "YSize": 91
   },
   {
-    "LevelNumber": 123,
-    "ArrowCount": 169,
-    "Difficulty": "Hard",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 38,
-    "YSize": 45
-  },
-  {
     "LevelNumber": 124,
     "ArrowCount": 140,
-    "Difficulty": "Medium",
+    "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 35,
-    "YSize": 40
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 36,
+    "YSize": 38
   },
   {
     "LevelNumber": 125,
     "ArrowCount": 148,
-    "Difficulty": "Medium",
+    "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -1255,19 +1255,19 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Existing 1K Levels",
     "XSize": 28,
-    "YSize": 40
+    "YSize": 41
   },
   {
     "LevelNumber": 127,
     "ArrowCount": 78,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
     "XSize": 22,
-    "YSize": 32
+    "YSize": 33
   },
   {
     "LevelNumber": 128,
@@ -1281,37 +1281,27 @@
   },
   {
     "LevelNumber": 129,
-    "ArrowCount": 60,
-    "Difficulty": "Medium",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 21,
-    "YSize": 25
-  },
-  {
-    "LevelNumber": 130,
-    "ArrowCount": 182,
+    "ArrowCount": 88,
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
-    "XSize": 37,
+    "XSize": 22,
+    "YSize": 36
+  },
+  {
+    "LevelNumber": 130,
+    "ArrowCount": 183,
+    "Difficulty": "Super Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 32,
     "YSize": 48
   },
   {
     "LevelNumber": 131,
     "ArrowCount": 56,
-    "Difficulty": "Medium",
-    "ShapeName": "Beach Umbrella",
-    "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 19,
-    "YSize": 27
-  },
-  {
-    "LevelNumber": 132,
-    "ArrowCount": 59,
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
@@ -1320,29 +1310,39 @@
     "YSize": 25
   },
   {
-    "LevelNumber": 133,
-    "ArrowCount": 182,
-    "Difficulty": "Super Hard",
+    "LevelNumber": 132,
+    "ArrowCount": 88,
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 37,
-    "YSize": 48
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 35,
+    "YSize": 44
+  },
+  {
+    "LevelNumber": 133,
+    "ArrowCount": 56,
+    "Difficulty": "Medium",
+    "ShapeName": "Beach Umbrella",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 29,
+    "YSize": 29
   },
   {
     "LevelNumber": 134,
     "ArrowCount": 151,
-    "Difficulty": "Medium",
+    "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 33,
-    "YSize": 45
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 32,
+    "YSize": 47
   },
   {
     "LevelNumber": 135,
     "ArrowCount": 142,
-    "Difficulty": "Hard",
+    "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -1352,37 +1352,37 @@
   {
     "LevelNumber": 136,
     "ArrowCount": 147,
-    "Difficulty": "Medium",
+    "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 31,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 30,
     "YSize": 47
   },
   {
     "LevelNumber": 137,
-    "ArrowCount": 59,
-    "Difficulty": "Medium",
+    "ArrowCount": 88,
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
-    "XSize": 18,
-    "YSize": 25
+    "XSize": 25,
+    "YSize": 32
   },
   {
     "LevelNumber": 138,
-    "ArrowCount": 179,
+    "ArrowCount": 136,
     "Difficulty": "Super Hard",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 39,
-    "YSize": 46
+    "ShapeName": "Whale",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 60,
+    "YSize": 60
   },
   {
     "LevelNumber": 139,
     "ArrowCount": 85,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
@@ -1393,44 +1393,34 @@
     "LevelNumber": 140,
     "ArrowCount": 122,
     "Difficulty": "Super Hard",
-    "ShapeName": "Truck",
-    "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 34,
-    "YSize": 38
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 31,
+    "YSize": 37
   },
   {
     "LevelNumber": 141,
     "ArrowCount": 158,
-    "Difficulty": "Medium",
+    "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
-    "XSize": 34,
-    "YSize": 48
+    "XSize": 33,
+    "YSize": 47
   },
   {
     "LevelNumber": 142,
     "ArrowCount": 151,
-    "Difficulty": "Hard",
+    "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Existing 1K Levels",
     "XSize": 32,
-    "YSize": 47
+    "YSize": 51
   },
   {
     "LevelNumber": 143,
-    "ArrowCount": 75,
-    "Difficulty": "Medium",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 23,
-    "YSize": 30
-  },
-  {
-    "LevelNumber": 144,
     "ArrowCount": 126,
     "Difficulty": "Medium",
     "ShapeName": "Catstar",
@@ -1440,14 +1430,24 @@
     "YSize": 55
   },
   {
+    "LevelNumber": 144,
+    "ArrowCount": 75,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 38,
+    "YSize": 36
+  },
+  {
     "LevelNumber": 145,
-    "ArrowCount": 213,
+    "ArrowCount": 215,
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
     "XSize": 38,
-    "YSize": 59
+    "YSize": 58
   },
   {
     "LevelNumber": 146,
@@ -1455,34 +1455,34 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 20,
-    "YSize": 28
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 23,
+    "YSize": 31
   },
   {
     "LevelNumber": 147,
-    "ArrowCount": 187,
+    "ArrowCount": 141,
     "Difficulty": "Hard",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
-    "XSize": 39,
-    "YSize": 46
+    "ShapeName": "Lion",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 50,
+    "YSize": 80
   },
   {
     "LevelNumber": 148,
     "ArrowCount": 80,
-    "Difficulty": "Medium",
-    "ShapeName": "Airplane",
-    "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 35,
-    "YSize": 53
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 25,
+    "YSize": 35
   },
   {
     "LevelNumber": 149,
     "ArrowCount": 82,
-    "Difficulty": "Medium",
+    "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
     "SourceCategory": "New Unity Normal Levels",
