@@ -311,8 +311,18 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     fun onArrowClicked(clickedArrow: Arrow) {
         if (_uiState.value.isLevelComplete || _uiState.value.isGameOver) return
         val currentArrow = _uiState.value.arrows.firstOrNull { it.id == clickedArrow.id } ?: clickedArrow
-        // Multi-tap prevention: Ignore clicks on arrows that are already flying, cleared, or recoiling
-        if (currentArrow.state != ArrowState.IDLE && currentArrow.state != ArrowState.HINTED) return
+        // Multi-tap prevention: Ignore clicks on arrows that are actively flying out or already cleared.
+        // WRONG_FLASH arrows CAN be re-tapped immediately (user tapping blocked arrow again is valid input).
+        if (currentArrow.state == ArrowState.FLYING_OUT || currentArrow.state == ArrowState.CLEARED) return
+        // If arrow is still in WRONG_FLASH, snap it back to IDLE first, then process the tap immediately
+        if (currentArrow.state == ArrowState.WRONG_FLASH) {
+            _uiState.update { state ->
+                state.copy(arrows = state.arrows.map {
+                    if (it.id == currentArrow.id) it.copyWithState(ArrowState.IDLE, 0f, highlighted = it.isHighlighted)
+                    else it
+                })
+            }
+        }
 
         if (!hasGameplayStarted || levelStartTime == 0L) {
             levelStartTime = System.currentTimeMillis()
@@ -340,16 +350,18 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         audioHapticManager.playTap()
 
         levelMovesAttempted++
-        val canEscape = PuzzleSolver.canMoveOut(currentArrow, occupancyMap)
+        // Re-fetch after potential WRONG_FLASH → IDLE snap to ensure correct state is used
+        val freshArrow = _uiState.value.arrows.firstOrNull { it.id == currentArrow.id } ?: currentArrow
+        val canEscape = PuzzleSolver.canMoveOut(freshArrow, occupancyMap)
 
         if (canEscape) {
-            launchArrowFlight(currentArrow)
+            launchArrowFlight(freshArrow)
         } else {
             // WRONG MOVE: Collision
             levelMistakesCount++
             audioHapticManager.playWrongMove()
 
-            val isAlreadyHighlighted = currentArrow.isHighlighted
+            val isAlreadyHighlighted = freshArrow.isHighlighted
             val newHearts = if (isAlreadyHighlighted) {
                 // If user clicks on the same highlighted, blocked arrow again, deduct only one life for that interaction
                 _uiState.value.heartsRemaining
@@ -362,12 +374,12 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 audioHapticManager.playLevelFail()
             }
 
-            val dist = PuzzleSolver.getDistanceToBlocker(currentArrow, occupancyMap)
+            val dist = PuzzleSolver.getDistanceToBlocker(freshArrow, occupancyMap)
             val durationMs = (280L + (dist * 35L).toLong()).coerceIn(320L, 560L)
 
             _uiState.update { state ->
                 val flashedArrows = state.arrows.map {
-                    if (it.id == currentArrow.id) {
+                    if (it.id == freshArrow.id) {
                         it.copyWithState(
                             newState = ArrowState.WRONG_FLASH,
                             progress = 0f,
@@ -386,6 +398,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             }
 
             // Animate collision spring-bounce and reset to IDLE (keeping highlighted = true)
+            val flashArrowId = freshArrow.id
             viewModelScope.launch {
                 val startTime = System.currentTimeMillis()
                 while (true) {
@@ -393,7 +406,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
                     _uiState.update { state ->
                         val updated = state.arrows.map {
-                            if (it.id == currentArrow.id && it.state == ArrowState.WRONG_FLASH) {
+                            if (it.id == flashArrowId && it.state == ArrowState.WRONG_FLASH) {
                                 it.copy(flightProgress = rawProgress)
                             } else it
                         }
@@ -405,7 +418,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
                 _uiState.update { state ->
                     val resetArrows = state.arrows.map {
-                        if (it.id == currentArrow.id && it.state == ArrowState.WRONG_FLASH) {
+                        if (it.id == flashArrowId && it.state == ArrowState.WRONG_FLASH) {
                             it.copyWithState(ArrowState.IDLE, 0f, highlighted = true)
                         } else it
                     }

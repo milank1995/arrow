@@ -147,7 +147,11 @@ fun PuzzleBoardCanvas(
     }
     val clearedCellTimestamps = remember(xSize, ySize, arrows.firstOrNull()?.id, restartTrigger) { mutableMapOf<GridCoordinate, Long>() }
     val clearedCells = remember(arrows, initialLevelCells) {
-        val activeCoords = arrows.filter { it.state != ArrowState.CLEARED }.flatMap { it.allPoints }.toSet()
+        // Only show dots for truly CLEARED arrows.
+        // FLYING_OUT arrows are still "in transit" on screen — their cells must NOT show dots yet.
+        val activeCoords = arrows
+            .filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
+            .flatMap { it.allPoints }.toSet()
         val cleared = initialLevelCells.filter { it !in activeCoords }.toSet()
         val now = System.currentTimeMillis()
         for (coord in cleared) {
@@ -357,8 +361,11 @@ fun PuzzleBoardCanvas(
 
         var hasInteractedWithBoard by remember(restartTrigger, arrows.size, currentLevelNumber) { mutableStateOf(false) }
 
-        val occupancyMap = remember(xSize, ySize, currentArrows) {
-            GridOccupancyMap(xSize, ySize).apply { rebuild(currentArrows) }
+        // Build occupancy map live from the current arrows, excluding FLYING_OUT and CLEARED arrows.
+        // NOTE: We intentionally do NOT cache this with remember() to avoid the frame-lag race condition
+        // where the VM has already released a flying arrow's cells but the Canvas still sees them as occupied.
+        val occupancyMap = GridOccupancyMap(xSize, ySize).apply {
+            rebuild(arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT })
         }
         val currentOccupancyMap by rememberUpdatedState(occupancyMap)
 
