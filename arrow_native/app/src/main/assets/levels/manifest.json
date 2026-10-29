@@ -41,8 +41,8 @@
   },
   {
     "LevelNumber": 5,
-    "ArrowCount": 23,
-    "Difficulty": "Medium",
+    "ArrowCount": 55,
+    "Difficulty": "Hard",
     "ShapeName": "Palm Tree",
     "IsShape": true,
     "SourceCategory": "Shape Puzzle Levels",
@@ -321,13 +321,13 @@
   },
   {
     "LevelNumber": 33,
-    "ArrowCount": 80,
-    "Difficulty": "Medium",
-    "ShapeName": "Piano",
+    "ArrowCount": 82,
+    "Difficulty": "Hard",
+    "ShapeName": "Grand Piano",
     "IsShape": true,
     "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 80,
-    "YSize": 74
+    "XSize": 36,
+    "YSize": 40
   },
   {
     "LevelNumber": 34,
