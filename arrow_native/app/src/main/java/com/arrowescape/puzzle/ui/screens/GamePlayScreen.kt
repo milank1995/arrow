@@ -11,6 +11,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -266,13 +267,44 @@ fun GamePlayScreen(
                             )
                         }
 
+                        // Floating Shape Name Badge in Game Play Area
+                        if (level != null && level.shapeName.isNotBlank()) {
+                            Surface(
+                                shape = RoundedCornerShape(percent = 50),
+                                color = theme.surface.copy(alpha = 0.92f),
+                                border = BorderStroke(1.2.dp, theme.arrowDefault.copy(alpha = 0.40f)),
+                                shadowElevation = 3.dp,
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .padding(top = 8.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 5.dp)
+                                ) {
+                                    Text(
+                                        text = "🐾",
+                                        fontSize = 13.sp
+                                    )
+                                    Text(
+                                        text = level.shapeName,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = theme.textPrimary,
+                                        letterSpacing = 0.5.sp
+                                    )
+                                }
+                            }
+                        }
+
                         // Running-style combo praise notification banner positioned below header
                         CheerOverlay(
                             message = uiState.cheerMessage,
                             fromLeft = uiState.cheerFromLeft,
                             modifier = Modifier
                                 .align(Alignment.TopCenter)
-                                .padding(top = 8.dp)
+                                .padding(top = if (level?.shapeName?.isNotBlank() == true) 48.dp else 8.dp)
                         )
                     }
 

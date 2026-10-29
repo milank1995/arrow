@@ -405,12 +405,43 @@ fun DevTestScreen(
                     )
                 }
 
+                // Floating Shape Name Badge in Game Play Area
+                if (currentLevel != null && currentLevel.shapeName.isNotBlank()) {
+                    Surface(
+                        shape = RoundedCornerShape(percent = 50),
+                        color = theme.surface.copy(alpha = 0.92f),
+                        border = BorderStroke(1.2.dp, theme.arrowDefault.copy(alpha = 0.40f)),
+                        shadowElevation = 3.dp,
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(top = 8.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 5.dp)
+                        ) {
+                            Text(
+                                text = "🐾",
+                                fontSize = 13.sp
+                            )
+                            Text(
+                                text = currentLevel.shapeName,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = theme.textPrimary,
+                                letterSpacing = 0.5.sp
+                            )
+                        }
+                    }
+                }
+
                 CheerOverlay(
                     message = cheerMessage,
                     fromLeft = cheerFromLeft,
                     modifier = Modifier
                         .align(Alignment.TopCenter)
-                        .padding(top = 8.dp)
+                        .padding(top = if (currentLevel?.shapeName?.isNotBlank() == true) 48.dp else 8.dp)
                 )
             }
 
