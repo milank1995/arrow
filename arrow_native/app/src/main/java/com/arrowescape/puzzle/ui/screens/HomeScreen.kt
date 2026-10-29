@@ -478,6 +478,18 @@ fun HomeScreen(
                         .widthIn(max = 380.dp)
                         .fillMaxWidth(0.88f)
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Testing Category 4: Large Puzzles
+                AppSecondaryButton(
+                    text = "🧩 Large Puzzles (46 Mega Grids)",
+                    onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.LARGE_PUZZLES) },
+                    theme = theme,
+                    modifier = Modifier
+                        .widthIn(max = 380.dp)
+                        .fillMaxWidth(0.88f)
+                )
             }
         }
     }
