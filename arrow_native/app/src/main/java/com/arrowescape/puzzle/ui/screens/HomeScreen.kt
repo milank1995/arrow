@@ -249,19 +249,25 @@ fun HomeScreen(
                             fontWeight = FontWeight.Black,
                             color = theme.textPrimary,
                             lineHeight = 84.sp,
-                            style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                            style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false)),
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp))
+                                .clickable(onClick = onDevTestClick)
                         )
 
                         Spacer(modifier = Modifier.height(14.dp))
 
-                        // Refined "LEVEL" tracking badge
+                        // Refined "LEVEL" tracking badge (Clickable to open Level Selector)
                         Surface(
                             shape = RoundedCornerShape(percent = 50),
                             color = theme.background,
-                            border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine)
+                            border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(percent = 50))
+                                .clickable(onClick = onDevTestClick)
                         ) {
                             Text(
-                                text = "L E V E L",
+                                text = "L E V E L  ▾",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.ExtraBold,
                                 letterSpacing = 5.sp,
@@ -440,6 +446,35 @@ fun HomeScreen(
                         .fillMaxWidth(0.88f)
                         .scale(playScale)
                 )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Dev Testing Button: Select & Jump to Any Level (1–150)
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = theme.surface,
+                    border = androidx.compose.foundation.BorderStroke(1.2.dp, theme.gridLine),
+                    shadowElevation = 1.dp,
+                    modifier = Modifier
+                        .widthIn(max = 380.dp)
+                        .fillMaxWidth(0.88f)
+                        .height(48.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickable(onClick = onDevTestClick)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = "🛠️ Dev Test: Jump to Any Level (1–150)",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = theme.textPrimary
+                        )
+                    }
+                }
             }
         }
     }

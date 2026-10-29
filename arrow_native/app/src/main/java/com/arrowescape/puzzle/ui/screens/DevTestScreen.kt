@@ -69,6 +69,7 @@ fun DevTestScreen(
     theme: ThemePreset,
     audioHapticManager: AudioHapticManager,
     onBackToHomeClick: () -> Unit,
+    onPlayInRegularGame: ((Int) -> Unit)? = null,
     onThemeSelect: (ThemePreset) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -76,7 +77,7 @@ fun DevTestScreen(
     val coroutineScope = rememberCoroutineScope()
     BackHandler(onBack = onBackToHomeClick)
 
-    var currentLevelNumber by remember { mutableIntStateOf(50) } // Default to a dense, challenging level
+    var currentLevelNumber by remember { mutableIntStateOf(1) }
     var levelData by remember { mutableStateOf<LevelData?>(null) }
     var arrows by remember { mutableStateOf<List<Arrow>>(emptyList()) }
     var occupancyMap by remember { mutableStateOf(GridOccupancyMap(4, 4)) }
@@ -94,7 +95,7 @@ fun DevTestScreen(
     var showThemeDialog by remember { mutableStateOf(false) }
 
     fun loadLevel(levelNum: Int) {
-        val boundedLevel = levelNum.coerceIn(1, 1001)
+        val boundedLevel = levelNum.coerceIn(1, 150)
         val level = LevelLoader.loadLevel(context, boundedLevel)
         levelData = level
         arrows = level.arrows
@@ -272,6 +273,7 @@ fun DevTestScreen(
                         remainingArrowsCount = remainingArrowsCount,
                         totalArrowsCount = totalArrowsCount,
                         theme = theme,
+                        shapeName = levelData?.shapeName,
                         isTestMode = true,
                         onPrevLevelClick = {
                             if (currentLevelNumber > 1) {
@@ -279,7 +281,7 @@ fun DevTestScreen(
                             }
                         },
                         onNextLevelClick = {
-                            if (currentLevelNumber < 1001) {
+                            if (currentLevelNumber < 150) {
                                 loadLevel(currentLevelNumber + 1)
                             }
                         },
@@ -403,6 +405,10 @@ fun DevTestScreen(
                     showLevelSelectDialog = false
                     loadLevel(lvl)
                 },
+                onPlayInRegularGame = { lvl ->
+                    showLevelSelectDialog = false
+                    onPlayInRegularGame?.invoke(lvl)
+                },
                 onDismiss = { showLevelSelectDialog = false }
             )
         }
@@ -413,6 +419,7 @@ fun DevTestScreen(
 private fun LevelSelectorDialog(
     currentLevel: Int,
     onLevelSelected: (Int) -> Unit,
+    onPlayInRegularGame: ((Int) -> Unit)? = null,
     onDismiss: () -> Unit
 ) {
     var inputLevelText by remember { mutableStateOf(currentLevel.toString()) }
@@ -437,7 +444,7 @@ private fun LevelSelectorDialog(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Select Level to Test",
+                        text = "Dev Level Selector",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF0F172A)
@@ -448,7 +455,7 @@ private fun LevelSelectorDialog(
                 }
 
                 Text(
-                    text = "Choose an authentic original game puzzle (1 to 1001):",
+                    text = "Jump to any of the 150 curated levels without passing previous levels:",
                     fontSize = 13.sp,
                     color = Color(0xFF64748B),
                     modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
@@ -456,7 +463,7 @@ private fun LevelSelectorDialog(
 
                 // Quick presets for varied grid sizes and complexities
                 Text(
-                    text = "Curated Layout Complexities:",
+                    text = "Milestones & Key Shapes:",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF334155),
@@ -464,15 +471,15 @@ private fun LevelSelectorDialog(
                 )
 
                 val quickLevels = listOf(
-                    1 to "Intro (5x5)",
-                    5 to "Simple (5x5)",
-                    20 to "Medium (6x6)",
-                    50 to "Dense (20x24)",
-                    100 to "Labyrinth (45 arr)",
-                    500 to "Master (50+ arr)",
-                    999 to "Mega (37x53, 80+)",
-                    1000 to "Spiral Milestone",
-                    1001 to "Final Labyrinth (81)"
+                    1 to "Intro (4 arr)",
+                    5 to "🌴 Palm Tree (22)",
+                    10 to "🤖 Robot (52)",
+                    15 to "🐼 Panda (81)",
+                    20 to "🦢 Swan (99)",
+                    25 to "🍓 Strawberry (130)",
+                    50 to "Golden Breather (53)",
+                    100 to "🏛️ Century Boss (248)",
+                    150 to "🛋️ Sofa Finale (261)"
                 )
 
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -531,20 +538,32 @@ private fun LevelSelectorDialog(
                     OutlinedTextField(
                         value = inputLevelText,
                         onValueChange = { inputLevelText = it },
-                        label = { Text("Level # (1-1001)") },
+                        label = { Text("Level # (1-150)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
                     Button(
                         onClick = {
-                            val lvl = inputLevelText.toIntOrNull()?.coerceIn(1, 1001) ?: currentLevel
+                            val lvl = inputLevelText.toIntOrNull()?.coerceIn(1, 150) ?: currentLevel
                             onLevelSelected(lvl)
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4F46E5)),
                         modifier = Modifier.height(56.dp)
                     ) {
-                        Text("Load", fontWeight = FontWeight.Bold)
+                        Text("Test", fontWeight = FontWeight.Bold)
+                    }
+                    if (onPlayInRegularGame != null) {
+                        Button(
+                            onClick = {
+                                val lvl = inputLevelText.toIntOrNull()?.coerceIn(1, 150) ?: currentLevel
+                                onPlayInRegularGame(lvl)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF059669)),
+                            modifier = Modifier.height(56.dp)
+                        ) {
+                            Text("Play ▶", fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
             }

@@ -276,6 +276,11 @@ class MainActivity : ComponentActivity() {
                                     onBackToHomeClick = {
                                         currentScreen = AppScreen.HOME
                                     },
+                                    onPlayInRegularGame = { selectedLevel ->
+                                        gameViewModel.playClick()
+                                        gameViewModel.loadLevel(selectedLevel)
+                                        currentScreen = AppScreen.GAMEPLAY
+                                    },
                                     onThemeSelect = { selectedTheme ->
                                         gameViewModel.setTheme(selectedTheme)
                                     }
