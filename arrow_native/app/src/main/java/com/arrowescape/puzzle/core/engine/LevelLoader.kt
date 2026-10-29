@@ -15,6 +15,32 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
+enum class TestLevelCategory(
+    val title: String,
+    val subtitle: String,
+    val totalLevels: Int,
+    val folder: String
+) {
+    EXISTING_1K(
+        title = "Existing 1K Levels",
+        subtitle = "1,001 Levels (Sorted Smallest to Largest)",
+        totalLevels = 1001,
+        folder = "levels/test_existing_1k"
+    ),
+    UNITY_NORMAL(
+        title = "New Unity Normal Levels",
+        subtitle = "6,743 Normal Levels (Sorted Smallest to Largest)",
+        totalLevels = 6743,
+        folder = "levels/test_unity_normal"
+    ),
+    SHAPE_PUZZLES(
+        title = "Shape Puzzle Levels",
+        subtitle = "15,427 Shapes (Sorted Smallest to Largest)",
+        totalLevels = 15427,
+        folder = "levels/test_shape_puzzles"
+    )
+}
+
 object LevelLoader {
 
     const val TOTAL_LEVELS = 2000
@@ -29,6 +55,11 @@ object LevelLoader {
 
     // In-memory cache for daily challenge pack (300 levels)
     private var cachedDailyLevels: JSONArray? = null
+
+    // In-memory cache for test category packs
+    private var cachedTestCategory: TestLevelCategory? = null
+    private var cachedTestPackIndex: Int = -1
+    private var cachedTestPackLevels: JSONArray? = null
 
     /**
      * Loads an authentic level from the AES-256 encrypted binary packs (Levels 1 to 2,000).
@@ -74,6 +105,54 @@ object LevelLoader {
         }
 
         return loadLevel(context, dailyIndex)
+    }
+
+    /**
+     * Loads a test level from the dedicated test categories:
+     * - Existing 1K Levels (1,001 levels sorted smallest to largest)
+     * - New Unity Normal Levels (6,743 levels sorted smallest to largest)
+     * - Shape Puzzle Levels (15,427 levels sorted smallest to largest)
+     */
+    fun loadTestLevel(context: Context, category: TestLevelCategory, levelNumber: Int): LevelData {
+        val boundedLevel = ((levelNumber - 1) % category.totalLevels) + 1
+        val packIndex = (boundedLevel - 1) / CHUNK_SIZE
+        val indexInPack = (boundedLevel - 1) % CHUNK_SIZE
+
+        try {
+            val packArray = getOrLoadTestPack(context, category, packIndex)
+            if (packArray != null && indexInPack < packArray.length()) {
+                val levelJson = packArray.getJSONObject(indexInPack)
+                val level = parseLevelJsonObject(boundedLevel, levelJson)
+                if (level != null && level.arrows.isNotEmpty()) {
+                    return level
+                }
+            }
+        } catch (e: Exception) {
+            // Fallback handled below
+        }
+
+        return LevelGenerator.generateProceduralLevel(levelNumber, levelNumber.toLong())
+    }
+
+    @Synchronized
+    private fun getOrLoadTestPack(context: Context, category: TestLevelCategory, packIndex: Int): JSONArray? {
+        if (cachedTestCategory == category && cachedTestPackIndex == packIndex && cachedTestPackLevels != null) {
+            return cachedTestPackLevels
+        }
+
+        val fileName = String.format("%s/level_pack_%02d.dat", category.folder, packIndex)
+        return try {
+            context.assets.open(fileName).use { inputStream ->
+                val jsonStr = decryptAndDecompress(inputStream)
+                val array = JSONArray(jsonStr)
+                cachedTestCategory = category
+                cachedTestPackIndex = packIndex
+                cachedTestPackLevels = array
+                array
+            }
+        } catch (e: Exception) {
+            null
+        }
     }
 
     /**

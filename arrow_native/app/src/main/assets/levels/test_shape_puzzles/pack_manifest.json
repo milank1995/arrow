@@ -1,0 +1,136 @@
+{
+  "category": "test_shape_puzzles",
+  "totalLevels": 15427,
+  "chunkSize": 1000,
+  "totalPacks": 16,
+  "packs": [
+    {
+      "packIndex": 0,
+      "fileName": "level_pack_00.dat",
+      "startLevel": 1,
+      "endLevel": 1000,
+      "count": 1000,
+      "sizeBytes": 425440
+    },
+    {
+      "packIndex": 1,
+      "fileName": "level_pack_01.dat",
+      "startLevel": 1001,
+      "endLevel": 2000,
+      "count": 1000,
+      "sizeBytes": 489920
+    },
+    {
+      "packIndex": 2,
+      "fileName": "level_pack_02.dat",
+      "startLevel": 2001,
+      "endLevel": 3000,
+      "count": 1000,
+      "sizeBytes": 539072
+    },
+    {
+      "packIndex": 3,
+      "fileName": "level_pack_03.dat",
+      "startLevel": 3001,
+      "endLevel": 4000,
+      "count": 1000,
+      "sizeBytes": 605248
+    },
+    {
+      "packIndex": 4,
+      "fileName": "level_pack_04.dat",
+      "startLevel": 4001,
+      "endLevel": 5000,
+      "count": 1000,
+      "sizeBytes": 623808
+    },
+    {
+      "packIndex": 5,
+      "fileName": "level_pack_05.dat",
+      "startLevel": 5001,
+      "endLevel": 6000,
+      "count": 1000,
+      "sizeBytes": 696560
+    },
+    {
+      "packIndex": 6,
+      "fileName": "level_pack_06.dat",
+      "startLevel": 6001,
+      "endLevel": 7000,
+      "count": 1000,
+      "sizeBytes": 785344
+    },
+    {
+      "packIndex": 7,
+      "fileName": "level_pack_07.dat",
+      "startLevel": 7001,
+      "endLevel": 8000,
+      "count": 1000,
+      "sizeBytes": 886240
+    },
+    {
+      "packIndex": 8,
+      "fileName": "level_pack_08.dat",
+      "startLevel": 8001,
+      "endLevel": 9000,
+      "count": 1000,
+      "sizeBytes": 1090784
+    },
+    {
+      "packIndex": 9,
+      "fileName": "level_pack_09.dat",
+      "startLevel": 9001,
+      "endLevel": 10000,
+      "count": 1000,
+      "sizeBytes": 1244528
+    },
+    {
+      "packIndex": 10,
+      "fileName": "level_pack_10.dat",
+      "startLevel": 10001,
+      "endLevel": 11000,
+      "count": 1000,
+      "sizeBytes": 1362000
+    },
+    {
+      "packIndex": 11,
+      "fileName": "level_pack_11.dat",
+      "startLevel": 11001,
+      "endLevel": 12000,
+      "count": 1000,
+      "sizeBytes": 1591808
+    },
+    {
+      "packIndex": 12,
+      "fileName": "level_pack_12.dat",
+      "startLevel": 12001,
+      "endLevel": 13000,
+      "count": 1000,
+      "sizeBytes": 1706048
+    },
+    {
+      "packIndex": 13,
+      "fileName": "level_pack_13.dat",
+      "startLevel": 13001,
+      "endLevel": 14000,
+      "count": 1000,
+      "sizeBytes": 1995008
+    },
+    {
+      "packIndex": 14,
+      "fileName": "level_pack_14.dat",
+      "startLevel": 14001,
+      "endLevel": 15000,
+      "count": 1000,
+      "sizeBytes": 2172416
+    },
+    {
+      "packIndex": 15,
+      "fileName": "level_pack_15.dat",
+      "startLevel": 15001,
+      "endLevel": 15427,
+      "count": 427,
+      "sizeBytes": 1193584
+    }
+  ]
+}

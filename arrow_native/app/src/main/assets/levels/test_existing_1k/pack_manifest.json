@@ -1,0 +1,24 @@
+{
+  "category": "test_existing_1k",
+  "totalLevels": 1001,
+  "chunkSize": 1000,
+  "totalPacks": 2,
+  "packs": [
+    {
+      "packIndex": 0,
+      "fileName": "level_pack_00.dat",
+      "startLevel": 1,
+      "endLevel": 1000,
+      "count": 1000,
+      "sizeBytes": 2454080
+    },
+    {
+      "packIndex": 1,
+      "fileName": "level_pack_01.dat",
+      "startLevel": 1001,
+      "endLevel": 1001,
+      "count": 1,
+      "sizeBytes": 5936
+    }
+  ]
+}

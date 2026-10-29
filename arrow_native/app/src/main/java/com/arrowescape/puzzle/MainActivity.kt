@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
+import com.arrowescape.puzzle.core.engine.TestLevelCategory
 import com.arrowescape.puzzle.game.GameViewModel
 import com.arrowescape.puzzle.ui.components.DailyStartPromptDialog
 import com.arrowescape.puzzle.ui.components.SoundSettingsDialog
@@ -68,6 +69,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
             var currentScreen by remember { mutableStateOf(initialScreen) }
+            var devTestCategory by remember { mutableStateOf(TestLevelCategory.EXISTING_1K) }
             var showSoundSettingsDialog by remember { mutableStateOf(false) }
 
             val notificationPermissionLauncher = rememberLauncherForActivityResult(
@@ -144,8 +146,9 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.playClick()
                                         currentScreen = AppScreen.SETTINGS
                                     },
-                                    onDevTestClick = {
+                                    onDevTestClick = { category ->
                                         gameViewModel.playClick()
+                                        devTestCategory = category
                                         currentScreen = AppScreen.DEV_TEST
                                     }
                                 )
@@ -271,6 +274,7 @@ class MainActivity : ComponentActivity() {
                             }
                             AppScreen.DEV_TEST -> {
                                 DevTestScreen(
+                                    initialCategory = devTestCategory,
                                     theme = uiState.activeTheme,
                                     audioHapticManager = gameViewModel.audioHapticManager,
                                     onBackToHomeClick = {

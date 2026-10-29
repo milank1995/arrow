@@ -1,0 +1,64 @@
+{
+  "category": "test_unity_normal",
+  "totalLevels": 6743,
+  "chunkSize": 1000,
+  "totalPacks": 7,
+  "packs": [
+    {
+      "packIndex": 0,
+      "fileName": "level_pack_00.dat",
+      "startLevel": 1,
+      "endLevel": 1000,
+      "count": 1000,
+      "sizeBytes": 251312
+    },
+    {
+      "packIndex": 1,
+      "fileName": "level_pack_01.dat",
+      "startLevel": 1001,
+      "endLevel": 2000,
+      "count": 1000,
+      "sizeBytes": 363264
+    },
+    {
+      "packIndex": 2,
+      "fileName": "level_pack_02.dat",
+      "startLevel": 2001,
+      "endLevel": 3000,
+      "count": 1000,
+      "sizeBytes": 448384
+    },
+    {
+      "packIndex": 3,
+      "fileName": "level_pack_03.dat",
+      "startLevel": 3001,
+      "endLevel": 4000,
+      "count": 1000,
+      "sizeBytes": 541888
+    },
+    {
+      "packIndex": 4,
+      "fileName": "level_pack_04.dat",
+      "startLevel": 4001,
+      "endLevel": 5000,
+      "count": 1000,
+      "sizeBytes": 610608
+    },
+    {
+      "packIndex": 5,
+      "fileName": "level_pack_05.dat",
+      "startLevel": 5001,
+      "endLevel": 6000,
+      "count": 1000,
+      "sizeBytes": 873168
+    },
+    {
+      "packIndex": 6,
+      "fileName": "level_pack_06.dat",
+      "startLevel": 6001,
+      "endLevel": 6743,
+      "count": 743,
+      "sizeBytes": 925664
+    }
+  ]
+}

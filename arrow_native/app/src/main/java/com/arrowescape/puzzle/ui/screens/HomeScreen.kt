@@ -78,7 +78,7 @@ fun HomeScreen(
     onThemeClick: () -> Unit,
     onSoundToggle: () -> Unit,
     onSettingsClick: () -> Unit,
-    onDevTestClick: () -> Unit = {},
+    onDevTestClick: (com.arrowescape.puzzle.core.engine.TestLevelCategory) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "playPulse")
@@ -445,10 +445,34 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // Explore All 2,000 Curated Levels
+                // Testing Category 1: Existing 1K Levels
                 AppSecondaryButton(
-                    text = "🧪 New Levels (2,000 Curated Levels)",
-                    onClick = onDevTestClick,
+                    text = "📁 Existing 1K Levels (1,001 Levels)",
+                    onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.EXISTING_1K) },
+                    theme = theme,
+                    modifier = Modifier
+                        .widthIn(max = 380.dp)
+                        .fillMaxWidth(0.88f)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Testing Category 2: New Unity Normal Levels
+                AppSecondaryButton(
+                    text = "🎮 New Unity Normal Levels (6,743 Levels)",
+                    onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.UNITY_NORMAL) },
+                    theme = theme,
+                    modifier = Modifier
+                        .widthIn(max = 380.dp)
+                        .fillMaxWidth(0.88f)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Testing Category 3: Shape Puzzle Levels
+                AppSecondaryButton(
+                    text = "⭐ Shape Puzzle Levels (15,427 Shapes)",
+                    onClick = { onDevTestClick(com.arrowescape.puzzle.core.engine.TestLevelCategory.SHAPE_PUZZLES) },
                     theme = theme,
                     modifier = Modifier
                         .widthIn(max = 380.dp)

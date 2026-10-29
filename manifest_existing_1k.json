@@ -1,0 +1,8010 @@
+[
+  {
+    "level_number": 1,
+    "arrow_count": 3,
+    "width": 5,
+    "height": 6,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 2,
+    "arrow_count": 3,
+    "width": 7,
+    "height": 7,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 3,
+    "arrow_count": 5,
+    "width": 12,
+    "height": 12,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 4,
+    "arrow_count": 6,
+    "width": 10,
+    "height": 12,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 5,
+    "arrow_count": 9,
+    "width": 17,
+    "height": 17,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 6,
+    "arrow_count": 12,
+    "width": 10,
+    "height": 10,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 7,
+    "arrow_count": 19,
+    "width": 12,
+    "height": 12,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 8,
+    "arrow_count": 20,
+    "width": 20,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 9,
+    "arrow_count": 22,
+    "width": 19,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 10,
+    "arrow_count": 22,
+    "width": 18,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 11,
+    "arrow_count": 22,
+    "width": 23,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 12,
+    "arrow_count": 23,
+    "width": 18,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 13,
+    "arrow_count": 24,
+    "width": 19,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 14,
+    "arrow_count": 25,
+    "width": 17,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 15,
+    "arrow_count": 25,
+    "width": 19,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 16,
+    "arrow_count": 25,
+    "width": 18,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 17,
+    "arrow_count": 25,
+    "width": 20,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 18,
+    "arrow_count": 26,
+    "width": 20,
+    "height": 22,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 19,
+    "arrow_count": 26,
+    "width": 21,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 20,
+    "arrow_count": 27,
+    "width": 18,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 21,
+    "arrow_count": 28,
+    "width": 15,
+    "height": 15,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 22,
+    "arrow_count": 28,
+    "width": 20,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 23,
+    "arrow_count": 28,
+    "width": 27,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 24,
+    "arrow_count": 28,
+    "width": 27,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 25,
+    "arrow_count": 29,
+    "width": 19,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 26,
+    "arrow_count": 29,
+    "width": 17,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 27,
+    "arrow_count": 29,
+    "width": 20,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 28,
+    "arrow_count": 30,
+    "width": 21,
+    "height": 22,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 29,
+    "arrow_count": 30,
+    "width": 19,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 30,
+    "arrow_count": 30,
+    "width": 22,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 31,
+    "arrow_count": 30,
+    "width": 25,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 32,
+    "arrow_count": 30,
+    "width": 24,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 33,
+    "arrow_count": 31,
+    "width": 19,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 34,
+    "arrow_count": 31,
+    "width": 18,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 35,
+    "arrow_count": 31,
+    "width": 18,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 36,
+    "arrow_count": 31,
+    "width": 18,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 37,
+    "arrow_count": 31,
+    "width": 18,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 38,
+    "arrow_count": 32,
+    "width": 18,
+    "height": 22,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 39,
+    "arrow_count": 32,
+    "width": 18,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 40,
+    "arrow_count": 32,
+    "width": 17,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 41,
+    "arrow_count": 32,
+    "width": 18,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 42,
+    "arrow_count": 32,
+    "width": 19,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 43,
+    "arrow_count": 33,
+    "width": 18,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 44,
+    "arrow_count": 33,
+    "width": 18,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 45,
+    "arrow_count": 33,
+    "width": 19,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 46,
+    "arrow_count": 33,
+    "width": 21,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 47,
+    "arrow_count": 33,
+    "width": 23,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 48,
+    "arrow_count": 33,
+    "width": 20,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 49,
+    "arrow_count": 33,
+    "width": 28,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 50,
+    "arrow_count": 34,
+    "width": 18,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 51,
+    "arrow_count": 34,
+    "width": 18,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 52,
+    "arrow_count": 34,
+    "width": 19,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 53,
+    "arrow_count": 34,
+    "width": 20,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 54,
+    "arrow_count": 34,
+    "width": 20,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 55,
+    "arrow_count": 34,
+    "width": 24,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 56,
+    "arrow_count": 35,
+    "width": 18,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 57,
+    "arrow_count": 35,
+    "width": 20,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 58,
+    "arrow_count": 35,
+    "width": 20,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 59,
+    "arrow_count": 35,
+    "width": 19,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 60,
+    "arrow_count": 35,
+    "width": 19,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 61,
+    "arrow_count": 35,
+    "width": 20,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 62,
+    "arrow_count": 35,
+    "width": 22,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 63,
+    "arrow_count": 36,
+    "width": 18,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 64,
+    "arrow_count": 36,
+    "width": 20,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 65,
+    "arrow_count": 36,
+    "width": 19,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 66,
+    "arrow_count": 36,
+    "width": 21,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 67,
+    "arrow_count": 36,
+    "width": 19,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 68,
+    "arrow_count": 37,
+    "width": 18,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 69,
+    "arrow_count": 37,
+    "width": 23,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 70,
+    "arrow_count": 37,
+    "width": 24,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 71,
+    "arrow_count": 38,
+    "width": 19,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 72,
+    "arrow_count": 38,
+    "width": 21,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 73,
+    "arrow_count": 38,
+    "width": 22,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 74,
+    "arrow_count": 39,
+    "width": 18,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 75,
+    "arrow_count": 39,
+    "width": 18,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 76,
+    "arrow_count": 39,
+    "width": 20,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 77,
+    "arrow_count": 39,
+    "width": 23,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 78,
+    "arrow_count": 39,
+    "width": 28,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 79,
+    "arrow_count": 40,
+    "width": 20,
+    "height": 21,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 80,
+    "arrow_count": 40,
+    "width": 19,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 81,
+    "arrow_count": 40,
+    "width": 20,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 82,
+    "arrow_count": 40,
+    "width": 21,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 83,
+    "arrow_count": 40,
+    "width": 23,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 84,
+    "arrow_count": 40,
+    "width": 26,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 85,
+    "arrow_count": 41,
+    "width": 18,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 86,
+    "arrow_count": 41,
+    "width": 21,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 87,
+    "arrow_count": 41,
+    "width": 23,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 88,
+    "arrow_count": 41,
+    "width": 27,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 89,
+    "arrow_count": 42,
+    "width": 18,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 90,
+    "arrow_count": 42,
+    "width": 20,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 91,
+    "arrow_count": 42,
+    "width": 20,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 92,
+    "arrow_count": 42,
+    "width": 21,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 93,
+    "arrow_count": 42,
+    "width": 22,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 94,
+    "arrow_count": 42,
+    "width": 24,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 95,
+    "arrow_count": 42,
+    "width": 21,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 96,
+    "arrow_count": 42,
+    "width": 23,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 97,
+    "arrow_count": 42,
+    "width": 22,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 98,
+    "arrow_count": 43,
+    "width": 20,
+    "height": 21,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 99,
+    "arrow_count": 43,
+    "width": 21,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 100,
+    "arrow_count": 43,
+    "width": 20,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 101,
+    "arrow_count": 43,
+    "width": 25,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 102,
+    "arrow_count": 43,
+    "width": 26,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 103,
+    "arrow_count": 43,
+    "width": 28,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 104,
+    "arrow_count": 44,
+    "width": 18,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 105,
+    "arrow_count": 44,
+    "width": 18,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 106,
+    "arrow_count": 44,
+    "width": 19,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 107,
+    "arrow_count": 44,
+    "width": 18,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 108,
+    "arrow_count": 44,
+    "width": 18,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 109,
+    "arrow_count": 44,
+    "width": 23,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 110,
+    "arrow_count": 44,
+    "width": 24,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 111,
+    "arrow_count": 44,
+    "width": 21,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 112,
+    "arrow_count": 44,
+    "width": 25,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 113,
+    "arrow_count": 44,
+    "width": 29,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 114,
+    "arrow_count": 44,
+    "width": 29,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 115,
+    "arrow_count": 45,
+    "width": 18,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 116,
+    "arrow_count": 45,
+    "width": 18,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 117,
+    "arrow_count": 45,
+    "width": 19,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 118,
+    "arrow_count": 45,
+    "width": 21,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 119,
+    "arrow_count": 45,
+    "width": 20,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 120,
+    "arrow_count": 45,
+    "width": 20,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 121,
+    "arrow_count": 45,
+    "width": 25,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 122,
+    "arrow_count": 45,
+    "width": 27,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 123,
+    "arrow_count": 45,
+    "width": 33,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 124,
+    "arrow_count": 46,
+    "width": 19,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 125,
+    "arrow_count": 46,
+    "width": 20,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 126,
+    "arrow_count": 46,
+    "width": 20,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 127,
+    "arrow_count": 46,
+    "width": 19,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 128,
+    "arrow_count": 46,
+    "width": 23,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 129,
+    "arrow_count": 46,
+    "width": 23,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 130,
+    "arrow_count": 46,
+    "width": 21,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 131,
+    "arrow_count": 46,
+    "width": 22,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 132,
+    "arrow_count": 46,
+    "width": 23,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 133,
+    "arrow_count": 46,
+    "width": 28,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 134,
+    "arrow_count": 46,
+    "width": 34,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 135,
+    "arrow_count": 47,
+    "width": 18,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 136,
+    "arrow_count": 47,
+    "width": 20,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 137,
+    "arrow_count": 47,
+    "width": 22,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 138,
+    "arrow_count": 47,
+    "width": 23,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 139,
+    "arrow_count": 47,
+    "width": 22,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 140,
+    "arrow_count": 47,
+    "width": 23,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 141,
+    "arrow_count": 47,
+    "width": 28,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 142,
+    "arrow_count": 47,
+    "width": 29,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 143,
+    "arrow_count": 47,
+    "width": 31,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 144,
+    "arrow_count": 47,
+    "width": 31,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 145,
+    "arrow_count": 48,
+    "width": 19,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 146,
+    "arrow_count": 48,
+    "width": 19,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 147,
+    "arrow_count": 48,
+    "width": 19,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 148,
+    "arrow_count": 48,
+    "width": 25,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 149,
+    "arrow_count": 48,
+    "width": 22,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 150,
+    "arrow_count": 48,
+    "width": 23,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 151,
+    "arrow_count": 48,
+    "width": 27,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 152,
+    "arrow_count": 48,
+    "width": 22,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 153,
+    "arrow_count": 49,
+    "width": 18,
+    "height": 22,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 154,
+    "arrow_count": 49,
+    "width": 20,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 155,
+    "arrow_count": 49,
+    "width": 24,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 156,
+    "arrow_count": 49,
+    "width": 23,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 157,
+    "arrow_count": 49,
+    "width": 27,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 158,
+    "arrow_count": 49,
+    "width": 28,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 159,
+    "arrow_count": 50,
+    "width": 20,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 160,
+    "arrow_count": 50,
+    "width": 21,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 161,
+    "arrow_count": 50,
+    "width": 26,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 162,
+    "arrow_count": 50,
+    "width": 22,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 163,
+    "arrow_count": 50,
+    "width": 23,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 164,
+    "arrow_count": 50,
+    "width": 25,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 165,
+    "arrow_count": 50,
+    "width": 27,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 166,
+    "arrow_count": 50,
+    "width": 29,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 167,
+    "arrow_count": 50,
+    "width": 29,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 168,
+    "arrow_count": 50,
+    "width": 33,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 169,
+    "arrow_count": 51,
+    "width": 22,
+    "height": 23,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 170,
+    "arrow_count": 51,
+    "width": 21,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 171,
+    "arrow_count": 51,
+    "width": 21,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 172,
+    "arrow_count": 51,
+    "width": 25,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 173,
+    "arrow_count": 51,
+    "width": 23,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 174,
+    "arrow_count": 51,
+    "width": 29,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 175,
+    "arrow_count": 51,
+    "width": 37,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 176,
+    "arrow_count": 52,
+    "width": 18,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 177,
+    "arrow_count": 52,
+    "width": 20,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 178,
+    "arrow_count": 52,
+    "width": 20,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 179,
+    "arrow_count": 52,
+    "width": 20,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 180,
+    "arrow_count": 52,
+    "width": 23,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 181,
+    "arrow_count": 52,
+    "width": 25,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 182,
+    "arrow_count": 52,
+    "width": 22,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 183,
+    "arrow_count": 52,
+    "width": 22,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 184,
+    "arrow_count": 53,
+    "width": 20,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 185,
+    "arrow_count": 53,
+    "width": 20,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 186,
+    "arrow_count": 53,
+    "width": 23,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 187,
+    "arrow_count": 53,
+    "width": 25,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 188,
+    "arrow_count": 53,
+    "width": 25,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 189,
+    "arrow_count": 53,
+    "width": 23,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 190,
+    "arrow_count": 53,
+    "width": 29,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 191,
+    "arrow_count": 54,
+    "width": 18,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 192,
+    "arrow_count": 54,
+    "width": 21,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 193,
+    "arrow_count": 54,
+    "width": 21,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 194,
+    "arrow_count": 54,
+    "width": 23,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 195,
+    "arrow_count": 54,
+    "width": 22,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 196,
+    "arrow_count": 54,
+    "width": 27,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 197,
+    "arrow_count": 54,
+    "width": 32,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 198,
+    "arrow_count": 54,
+    "width": 33,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 199,
+    "arrow_count": 54,
+    "width": 47,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 200,
+    "arrow_count": 55,
+    "width": 20,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 201,
+    "arrow_count": 55,
+    "width": 20,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 202,
+    "arrow_count": 55,
+    "width": 23,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 203,
+    "arrow_count": 55,
+    "width": 28,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 204,
+    "arrow_count": 55,
+    "width": 33,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 205,
+    "arrow_count": 56,
+    "width": 20,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 206,
+    "arrow_count": 56,
+    "width": 24,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 207,
+    "arrow_count": 56,
+    "width": 29,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 208,
+    "arrow_count": 56,
+    "width": 29,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 209,
+    "arrow_count": 57,
+    "width": 22,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 210,
+    "arrow_count": 57,
+    "width": 21,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 211,
+    "arrow_count": 57,
+    "width": 22,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 212,
+    "arrow_count": 57,
+    "width": 24,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 213,
+    "arrow_count": 57,
+    "width": 26,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 214,
+    "arrow_count": 57,
+    "width": 24,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 215,
+    "arrow_count": 57,
+    "width": 30,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 216,
+    "arrow_count": 57,
+    "width": 31,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 217,
+    "arrow_count": 58,
+    "width": 18,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 218,
+    "arrow_count": 58,
+    "width": 22,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 219,
+    "arrow_count": 58,
+    "width": 21,
+    "height": 27,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 220,
+    "arrow_count": 59,
+    "width": 24,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 221,
+    "arrow_count": 59,
+    "width": 20,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 222,
+    "arrow_count": 59,
+    "width": 24,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 223,
+    "arrow_count": 59,
+    "width": 25,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 224,
+    "arrow_count": 59,
+    "width": 24,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 225,
+    "arrow_count": 59,
+    "width": 26,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 226,
+    "arrow_count": 59,
+    "width": 25,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 227,
+    "arrow_count": 59,
+    "width": 31,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 228,
+    "arrow_count": 59,
+    "width": 27,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 229,
+    "arrow_count": 59,
+    "width": 33,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 230,
+    "arrow_count": 59,
+    "width": 31,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 231,
+    "arrow_count": 60,
+    "width": 20,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 232,
+    "arrow_count": 60,
+    "width": 25,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 233,
+    "arrow_count": 60,
+    "width": 23,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 234,
+    "arrow_count": 60,
+    "width": 24,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 235,
+    "arrow_count": 60,
+    "width": 25,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 236,
+    "arrow_count": 60,
+    "width": 31,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 237,
+    "arrow_count": 60,
+    "width": 32,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 238,
+    "arrow_count": 60,
+    "width": 28,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 239,
+    "arrow_count": 60,
+    "width": 35,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 240,
+    "arrow_count": 60,
+    "width": 32,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 241,
+    "arrow_count": 60,
+    "width": 39,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 242,
+    "arrow_count": 61,
+    "width": 20,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 243,
+    "arrow_count": 61,
+    "width": 25,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 244,
+    "arrow_count": 61,
+    "width": 22,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 245,
+    "arrow_count": 61,
+    "width": 23,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 246,
+    "arrow_count": 61,
+    "width": 22,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 247,
+    "arrow_count": 61,
+    "width": 27,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 248,
+    "arrow_count": 61,
+    "width": 26,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 249,
+    "arrow_count": 61,
+    "width": 29,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 250,
+    "arrow_count": 62,
+    "width": 22,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 251,
+    "arrow_count": 62,
+    "width": 23,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 252,
+    "arrow_count": 62,
+    "width": 30,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 253,
+    "arrow_count": 62,
+    "width": 34,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 254,
+    "arrow_count": 62,
+    "width": 30,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 255,
+    "arrow_count": 62,
+    "width": 34,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 256,
+    "arrow_count": 62,
+    "width": 38,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 257,
+    "arrow_count": 63,
+    "width": 23,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 258,
+    "arrow_count": 63,
+    "width": 23,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 259,
+    "arrow_count": 63,
+    "width": 23,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 260,
+    "arrow_count": 63,
+    "width": 27,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 261,
+    "arrow_count": 63,
+    "width": 25,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 262,
+    "arrow_count": 63,
+    "width": 32,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 263,
+    "arrow_count": 63,
+    "width": 26,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 264,
+    "arrow_count": 63,
+    "width": 39,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 265,
+    "arrow_count": 64,
+    "width": 23,
+    "height": 26,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 266,
+    "arrow_count": 64,
+    "width": 31,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 267,
+    "arrow_count": 64,
+    "width": 30,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 268,
+    "arrow_count": 64,
+    "width": 33,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 269,
+    "arrow_count": 64,
+    "width": 35,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 270,
+    "arrow_count": 65,
+    "width": 22,
+    "height": 24,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 271,
+    "arrow_count": 65,
+    "width": 22,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 272,
+    "arrow_count": 65,
+    "width": 22,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 273,
+    "arrow_count": 65,
+    "width": 25,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 274,
+    "arrow_count": 65,
+    "width": 23,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 275,
+    "arrow_count": 65,
+    "width": 27,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 276,
+    "arrow_count": 65,
+    "width": 35,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 277,
+    "arrow_count": 66,
+    "width": 20,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 278,
+    "arrow_count": 66,
+    "width": 24,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 279,
+    "arrow_count": 66,
+    "width": 26,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 280,
+    "arrow_count": 66,
+    "width": 35,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 281,
+    "arrow_count": 66,
+    "width": 38,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 282,
+    "arrow_count": 67,
+    "width": 22,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 283,
+    "arrow_count": 67,
+    "width": 22,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 284,
+    "arrow_count": 67,
+    "width": 24,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 285,
+    "arrow_count": 67,
+    "width": 25,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 286,
+    "arrow_count": 67,
+    "width": 27,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 287,
+    "arrow_count": 67,
+    "width": 31,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 288,
+    "arrow_count": 67,
+    "width": 29,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 289,
+    "arrow_count": 68,
+    "width": 26,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 290,
+    "arrow_count": 68,
+    "width": 23,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 291,
+    "arrow_count": 68,
+    "width": 25,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 292,
+    "arrow_count": 68,
+    "width": 33,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 293,
+    "arrow_count": 68,
+    "width": 39,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 294,
+    "arrow_count": 68,
+    "width": 43,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 295,
+    "arrow_count": 69,
+    "width": 23,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 296,
+    "arrow_count": 69,
+    "width": 24,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 297,
+    "arrow_count": 69,
+    "width": 27,
+    "height": 28,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 298,
+    "arrow_count": 69,
+    "width": 24,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 299,
+    "arrow_count": 69,
+    "width": 27,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 300,
+    "arrow_count": 69,
+    "width": 29,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 301,
+    "arrow_count": 69,
+    "width": 28,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 302,
+    "arrow_count": 69,
+    "width": 27,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 303,
+    "arrow_count": 69,
+    "width": 29,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 304,
+    "arrow_count": 70,
+    "width": 31,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 305,
+    "arrow_count": 70,
+    "width": 26,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 306,
+    "arrow_count": 70,
+    "width": 29,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 307,
+    "arrow_count": 70,
+    "width": 35,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 308,
+    "arrow_count": 70,
+    "width": 39,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 309,
+    "arrow_count": 71,
+    "width": 19,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 310,
+    "arrow_count": 71,
+    "width": 25,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 311,
+    "arrow_count": 71,
+    "width": 26,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 312,
+    "arrow_count": 71,
+    "width": 30,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 313,
+    "arrow_count": 71,
+    "width": 34,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 314,
+    "arrow_count": 71,
+    "width": 37,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 315,
+    "arrow_count": 72,
+    "width": 30,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 316,
+    "arrow_count": 72,
+    "width": 33,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 317,
+    "arrow_count": 72,
+    "width": 37,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 318,
+    "arrow_count": 73,
+    "width": 24,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 319,
+    "arrow_count": 73,
+    "width": 26,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 320,
+    "arrow_count": 73,
+    "width": 24,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 321,
+    "arrow_count": 73,
+    "width": 25,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 322,
+    "arrow_count": 73,
+    "width": 31,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 323,
+    "arrow_count": 73,
+    "width": 37,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 324,
+    "arrow_count": 73,
+    "width": 39,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 325,
+    "arrow_count": 74,
+    "width": 25,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 326,
+    "arrow_count": 74,
+    "width": 25,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 327,
+    "arrow_count": 74,
+    "width": 29,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 328,
+    "arrow_count": 74,
+    "width": 28,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 329,
+    "arrow_count": 74,
+    "width": 27,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 330,
+    "arrow_count": 74,
+    "width": 28,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 331,
+    "arrow_count": 74,
+    "width": 36,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 332,
+    "arrow_count": 74,
+    "width": 37,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 333,
+    "arrow_count": 74,
+    "width": 32,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 334,
+    "arrow_count": 74,
+    "width": 40,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 335,
+    "arrow_count": 74,
+    "width": 50,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 336,
+    "arrow_count": 75,
+    "width": 19,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 337,
+    "arrow_count": 75,
+    "width": 30,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 338,
+    "arrow_count": 75,
+    "width": 38,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 339,
+    "arrow_count": 76,
+    "width": 24,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 340,
+    "arrow_count": 76,
+    "width": 27,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 341,
+    "arrow_count": 76,
+    "width": 32,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 342,
+    "arrow_count": 76,
+    "width": 30,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 343,
+    "arrow_count": 77,
+    "width": 23,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 344,
+    "arrow_count": 77,
+    "width": 23,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 345,
+    "arrow_count": 77,
+    "width": 26,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 346,
+    "arrow_count": 77,
+    "width": 35,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 347,
+    "arrow_count": 78,
+    "width": 23,
+    "height": 29,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 348,
+    "arrow_count": 78,
+    "width": 29,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 349,
+    "arrow_count": 78,
+    "width": 28,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 350,
+    "arrow_count": 78,
+    "width": 31,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 351,
+    "arrow_count": 79,
+    "width": 27,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 352,
+    "arrow_count": 79,
+    "width": 37,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 353,
+    "arrow_count": 79,
+    "width": 34,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 354,
+    "arrow_count": 80,
+    "width": 25,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 355,
+    "arrow_count": 80,
+    "width": 25,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 356,
+    "arrow_count": 80,
+    "width": 27,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 357,
+    "arrow_count": 80,
+    "width": 30,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 358,
+    "arrow_count": 80,
+    "width": 30,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 359,
+    "arrow_count": 80,
+    "width": 36,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 360,
+    "arrow_count": 80,
+    "width": 35,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 361,
+    "arrow_count": 81,
+    "width": 25,
+    "height": 25,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 362,
+    "arrow_count": 81,
+    "width": 22,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 363,
+    "arrow_count": 81,
+    "width": 26,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 364,
+    "arrow_count": 81,
+    "width": 26,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 365,
+    "arrow_count": 81,
+    "width": 29,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 366,
+    "arrow_count": 81,
+    "width": 30,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 367,
+    "arrow_count": 81,
+    "width": 39,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 368,
+    "arrow_count": 81,
+    "width": 39,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 369,
+    "arrow_count": 82,
+    "width": 23,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 370,
+    "arrow_count": 82,
+    "width": 24,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 371,
+    "arrow_count": 82,
+    "width": 25,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 372,
+    "arrow_count": 82,
+    "width": 25,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 373,
+    "arrow_count": 82,
+    "width": 25,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 374,
+    "arrow_count": 82,
+    "width": 26,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 375,
+    "arrow_count": 82,
+    "width": 27,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 376,
+    "arrow_count": 82,
+    "width": 28,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 377,
+    "arrow_count": 82,
+    "width": 40,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 378,
+    "arrow_count": 83,
+    "width": 25,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 379,
+    "arrow_count": 83,
+    "width": 26,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 380,
+    "arrow_count": 83,
+    "width": 25,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 381,
+    "arrow_count": 83,
+    "width": 23,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 382,
+    "arrow_count": 83,
+    "width": 25,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 383,
+    "arrow_count": 83,
+    "width": 30,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 384,
+    "arrow_count": 83,
+    "width": 37,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 385,
+    "arrow_count": 83,
+    "width": 38,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 386,
+    "arrow_count": 83,
+    "width": 33,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 387,
+    "arrow_count": 84,
+    "width": 26,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 388,
+    "arrow_count": 84,
+    "width": 25,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 389,
+    "arrow_count": 84,
+    "width": 26,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 390,
+    "arrow_count": 84,
+    "width": 26,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 391,
+    "arrow_count": 84,
+    "width": 39,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 392,
+    "arrow_count": 85,
+    "width": 26,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 393,
+    "arrow_count": 85,
+    "width": 27,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 394,
+    "arrow_count": 85,
+    "width": 34,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 395,
+    "arrow_count": 85,
+    "width": 36,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 396,
+    "arrow_count": 85,
+    "width": 37,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 397,
+    "arrow_count": 85,
+    "width": 36,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 398,
+    "arrow_count": 85,
+    "width": 38,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 399,
+    "arrow_count": 86,
+    "width": 28,
+    "height": 31,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 400,
+    "arrow_count": 86,
+    "width": 27,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 401,
+    "arrow_count": 86,
+    "width": 36,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 402,
+    "arrow_count": 86,
+    "width": 38,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 403,
+    "arrow_count": 86,
+    "width": 42,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 404,
+    "arrow_count": 87,
+    "width": 24,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 405,
+    "arrow_count": 87,
+    "width": 30,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 406,
+    "arrow_count": 87,
+    "width": 26,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 407,
+    "arrow_count": 87,
+    "width": 29,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 408,
+    "arrow_count": 87,
+    "width": 30,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 409,
+    "arrow_count": 87,
+    "width": 36,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 410,
+    "arrow_count": 87,
+    "width": 43,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 411,
+    "arrow_count": 88,
+    "width": 27,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 412,
+    "arrow_count": 88,
+    "width": 29,
+    "height": 32,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 413,
+    "arrow_count": 88,
+    "width": 31,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 414,
+    "arrow_count": 88,
+    "width": 35,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 415,
+    "arrow_count": 88,
+    "width": 35,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 416,
+    "arrow_count": 88,
+    "width": 40,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 417,
+    "arrow_count": 89,
+    "width": 26,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 418,
+    "arrow_count": 89,
+    "width": 29,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 419,
+    "arrow_count": 89,
+    "width": 29,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 420,
+    "arrow_count": 90,
+    "width": 27,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 421,
+    "arrow_count": 90,
+    "width": 30,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 422,
+    "arrow_count": 90,
+    "width": 28,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 423,
+    "arrow_count": 90,
+    "width": 37,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 424,
+    "arrow_count": 90,
+    "width": 32,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 425,
+    "arrow_count": 90,
+    "width": 43,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 426,
+    "arrow_count": 91,
+    "width": 27,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 427,
+    "arrow_count": 91,
+    "width": 26,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 428,
+    "arrow_count": 91,
+    "width": 25,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 429,
+    "arrow_count": 91,
+    "width": 40,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 430,
+    "arrow_count": 91,
+    "width": 39,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 431,
+    "arrow_count": 91,
+    "width": 33,
+    "height": 54,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 432,
+    "arrow_count": 91,
+    "width": 35,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 433,
+    "arrow_count": 92,
+    "width": 25,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 434,
+    "arrow_count": 92,
+    "width": 24,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 435,
+    "arrow_count": 92,
+    "width": 28,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 436,
+    "arrow_count": 92,
+    "width": 28,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 437,
+    "arrow_count": 92,
+    "width": 26,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 438,
+    "arrow_count": 92,
+    "width": 25,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 439,
+    "arrow_count": 92,
+    "width": 34,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 440,
+    "arrow_count": 92,
+    "width": 34,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 441,
+    "arrow_count": 92,
+    "width": 34,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 442,
+    "arrow_count": 92,
+    "width": 29,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 443,
+    "arrow_count": 92,
+    "width": 38,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 444,
+    "arrow_count": 92,
+    "width": 36,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 445,
+    "arrow_count": 92,
+    "width": 33,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 446,
+    "arrow_count": 93,
+    "width": 25,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 447,
+    "arrow_count": 93,
+    "width": 29,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 448,
+    "arrow_count": 93,
+    "width": 37,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 449,
+    "arrow_count": 93,
+    "width": 37,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 450,
+    "arrow_count": 93,
+    "width": 36,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 451,
+    "arrow_count": 94,
+    "width": 27,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 452,
+    "arrow_count": 94,
+    "width": 27,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 453,
+    "arrow_count": 94,
+    "width": 26,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 454,
+    "arrow_count": 94,
+    "width": 29,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 455,
+    "arrow_count": 94,
+    "width": 33,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 456,
+    "arrow_count": 94,
+    "width": 35,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 457,
+    "arrow_count": 94,
+    "width": 32,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 458,
+    "arrow_count": 94,
+    "width": 33,
+    "height": 54,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 459,
+    "arrow_count": 95,
+    "width": 25,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 460,
+    "arrow_count": 95,
+    "width": 31,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 461,
+    "arrow_count": 95,
+    "width": 29,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 462,
+    "arrow_count": 95,
+    "width": 46,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 463,
+    "arrow_count": 96,
+    "width": 23,
+    "height": 30,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 464,
+    "arrow_count": 96,
+    "width": 38,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 465,
+    "arrow_count": 96,
+    "width": 40,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 466,
+    "arrow_count": 97,
+    "width": 28,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 467,
+    "arrow_count": 97,
+    "width": 30,
+    "height": 33,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 468,
+    "arrow_count": 97,
+    "width": 25,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 469,
+    "arrow_count": 97,
+    "width": 35,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 470,
+    "arrow_count": 97,
+    "width": 31,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 471,
+    "arrow_count": 98,
+    "width": 27,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 472,
+    "arrow_count": 98,
+    "width": 24,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 473,
+    "arrow_count": 98,
+    "width": 25,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 474,
+    "arrow_count": 98,
+    "width": 29,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 475,
+    "arrow_count": 99,
+    "width": 26,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 476,
+    "arrow_count": 99,
+    "width": 32,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 477,
+    "arrow_count": 99,
+    "width": 34,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 478,
+    "arrow_count": 99,
+    "width": 28,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 479,
+    "arrow_count": 99,
+    "width": 34,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 480,
+    "arrow_count": 99,
+    "width": 34,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 481,
+    "arrow_count": 99,
+    "width": 30,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 482,
+    "arrow_count": 99,
+    "width": 39,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 483,
+    "arrow_count": 99,
+    "width": 40,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 484,
+    "arrow_count": 100,
+    "width": 25,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 485,
+    "arrow_count": 100,
+    "width": 26,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 486,
+    "arrow_count": 100,
+    "width": 29,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 487,
+    "arrow_count": 100,
+    "width": 30,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 488,
+    "arrow_count": 100,
+    "width": 30,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 489,
+    "arrow_count": 100,
+    "width": 31,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 490,
+    "arrow_count": 100,
+    "width": 33,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 491,
+    "arrow_count": 101,
+    "width": 27,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 492,
+    "arrow_count": 101,
+    "width": 27,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 493,
+    "arrow_count": 101,
+    "width": 30,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 494,
+    "arrow_count": 101,
+    "width": 30,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 495,
+    "arrow_count": 101,
+    "width": 33,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 496,
+    "arrow_count": 101,
+    "width": 31,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 497,
+    "arrow_count": 101,
+    "width": 32,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 498,
+    "arrow_count": 101,
+    "width": 32,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 499,
+    "arrow_count": 102,
+    "width": 26,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 500,
+    "arrow_count": 102,
+    "width": 26,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 501,
+    "arrow_count": 102,
+    "width": 29,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 502,
+    "arrow_count": 102,
+    "width": 30,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 503,
+    "arrow_count": 102,
+    "width": 28,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 504,
+    "arrow_count": 102,
+    "width": 36,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 505,
+    "arrow_count": 102,
+    "width": 31,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 506,
+    "arrow_count": 102,
+    "width": 37,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 507,
+    "arrow_count": 102,
+    "width": 32,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 508,
+    "arrow_count": 102,
+    "width": 36,
+    "height": 54,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 509,
+    "arrow_count": 102,
+    "width": 35,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 510,
+    "arrow_count": 103,
+    "width": 29,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 511,
+    "arrow_count": 103,
+    "width": 33,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 512,
+    "arrow_count": 103,
+    "width": 34,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 513,
+    "arrow_count": 103,
+    "width": 30,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 514,
+    "arrow_count": 103,
+    "width": 38,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 515,
+    "arrow_count": 103,
+    "width": 30,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 516,
+    "arrow_count": 103,
+    "width": 37,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 517,
+    "arrow_count": 103,
+    "width": 33,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 518,
+    "arrow_count": 103,
+    "width": 50,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 519,
+    "arrow_count": 104,
+    "width": 30,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 520,
+    "arrow_count": 104,
+    "width": 29,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 521,
+    "arrow_count": 104,
+    "width": 28,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 522,
+    "arrow_count": 104,
+    "width": 32,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 523,
+    "arrow_count": 104,
+    "width": 35,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 524,
+    "arrow_count": 104,
+    "width": 31,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 525,
+    "arrow_count": 104,
+    "width": 31,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 526,
+    "arrow_count": 104,
+    "width": 34,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 527,
+    "arrow_count": 104,
+    "width": 32,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 528,
+    "arrow_count": 104,
+    "width": 34,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 529,
+    "arrow_count": 105,
+    "width": 29,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 530,
+    "arrow_count": 105,
+    "width": 30,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 531,
+    "arrow_count": 105,
+    "width": 30,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 532,
+    "arrow_count": 105,
+    "width": 32,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 533,
+    "arrow_count": 105,
+    "width": 29,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 534,
+    "arrow_count": 105,
+    "width": 32,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 535,
+    "arrow_count": 105,
+    "width": 38,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 536,
+    "arrow_count": 106,
+    "width": 31,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 537,
+    "arrow_count": 106,
+    "width": 33,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 538,
+    "arrow_count": 106,
+    "width": 34,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 539,
+    "arrow_count": 106,
+    "width": 36,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 540,
+    "arrow_count": 106,
+    "width": 39,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 541,
+    "arrow_count": 106,
+    "width": 40,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 542,
+    "arrow_count": 106,
+    "width": 37,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 543,
+    "arrow_count": 106,
+    "width": 43,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 544,
+    "arrow_count": 107,
+    "width": 27,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 545,
+    "arrow_count": 107,
+    "width": 31,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 546,
+    "arrow_count": 107,
+    "width": 31,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 547,
+    "arrow_count": 107,
+    "width": 33,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 548,
+    "arrow_count": 107,
+    "width": 33,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 549,
+    "arrow_count": 107,
+    "width": 30,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 550,
+    "arrow_count": 107,
+    "width": 30,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 551,
+    "arrow_count": 107,
+    "width": 30,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 552,
+    "arrow_count": 108,
+    "width": 27,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 553,
+    "arrow_count": 108,
+    "width": 26,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 554,
+    "arrow_count": 108,
+    "width": 34,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 555,
+    "arrow_count": 108,
+    "width": 35,
+    "height": 35,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 556,
+    "arrow_count": 108,
+    "width": 30,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 557,
+    "arrow_count": 108,
+    "width": 34,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 558,
+    "arrow_count": 108,
+    "width": 40,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 559,
+    "arrow_count": 108,
+    "width": 47,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 560,
+    "arrow_count": 109,
+    "width": 30,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 561,
+    "arrow_count": 109,
+    "width": 31,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 562,
+    "arrow_count": 109,
+    "width": 40,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 563,
+    "arrow_count": 109,
+    "width": 35,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 564,
+    "arrow_count": 109,
+    "width": 45,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 565,
+    "arrow_count": 110,
+    "width": 28,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 566,
+    "arrow_count": 110,
+    "width": 35,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 567,
+    "arrow_count": 110,
+    "width": 30,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 568,
+    "arrow_count": 110,
+    "width": 32,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 569,
+    "arrow_count": 110,
+    "width": 33,
+    "height": 54,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 570,
+    "arrow_count": 111,
+    "width": 31,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 571,
+    "arrow_count": 111,
+    "width": 31,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 572,
+    "arrow_count": 111,
+    "width": 32,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 573,
+    "arrow_count": 111,
+    "width": 32,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 574,
+    "arrow_count": 111,
+    "width": 32,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 575,
+    "arrow_count": 111,
+    "width": 34,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 576,
+    "arrow_count": 111,
+    "width": 32,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 577,
+    "arrow_count": 111,
+    "width": 32,
+    "height": 53,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 578,
+    "arrow_count": 111,
+    "width": 34,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 579,
+    "arrow_count": 111,
+    "width": 34,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 580,
+    "arrow_count": 111,
+    "width": 37,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 581,
+    "arrow_count": 112,
+    "width": 34,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 582,
+    "arrow_count": 112,
+    "width": 34,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 583,
+    "arrow_count": 113,
+    "width": 32,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 584,
+    "arrow_count": 113,
+    "width": 34,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 585,
+    "arrow_count": 114,
+    "width": 33,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 586,
+    "arrow_count": 114,
+    "width": 31,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 587,
+    "arrow_count": 114,
+    "width": 29,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 588,
+    "arrow_count": 114,
+    "width": 32,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 589,
+    "arrow_count": 114,
+    "width": 33,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 590,
+    "arrow_count": 114,
+    "width": 34,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 591,
+    "arrow_count": 114,
+    "width": 35,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 592,
+    "arrow_count": 115,
+    "width": 25,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 593,
+    "arrow_count": 115,
+    "width": 27,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 594,
+    "arrow_count": 115,
+    "width": 30,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 595,
+    "arrow_count": 115,
+    "width": 32,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 596,
+    "arrow_count": 115,
+    "width": 32,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 597,
+    "arrow_count": 115,
+    "width": 35,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 598,
+    "arrow_count": 115,
+    "width": 30,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 599,
+    "arrow_count": 115,
+    "width": 32,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 600,
+    "arrow_count": 115,
+    "width": 33,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 601,
+    "arrow_count": 115,
+    "width": 36,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 602,
+    "arrow_count": 115,
+    "width": 34,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 603,
+    "arrow_count": 115,
+    "width": 45,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 604,
+    "arrow_count": 116,
+    "width": 32,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 605,
+    "arrow_count": 116,
+    "width": 30,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 606,
+    "arrow_count": 116,
+    "width": 33,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 607,
+    "arrow_count": 116,
+    "width": 29,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 608,
+    "arrow_count": 116,
+    "width": 37,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 609,
+    "arrow_count": 116,
+    "width": 31,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 610,
+    "arrow_count": 116,
+    "width": 34,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 611,
+    "arrow_count": 116,
+    "width": 34,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 612,
+    "arrow_count": 116,
+    "width": 35,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 613,
+    "arrow_count": 117,
+    "width": 32,
+    "height": 34,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 614,
+    "arrow_count": 117,
+    "width": 34,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 615,
+    "arrow_count": 117,
+    "width": 31,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 616,
+    "arrow_count": 117,
+    "width": 29,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 617,
+    "arrow_count": 117,
+    "width": 34,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 618,
+    "arrow_count": 117,
+    "width": 35,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 619,
+    "arrow_count": 118,
+    "width": 29,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 620,
+    "arrow_count": 118,
+    "width": 34,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 621,
+    "arrow_count": 118,
+    "width": 30,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 622,
+    "arrow_count": 118,
+    "width": 37,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 623,
+    "arrow_count": 118,
+    "width": 38,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 624,
+    "arrow_count": 118,
+    "width": 34,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 625,
+    "arrow_count": 119,
+    "width": 29,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 626,
+    "arrow_count": 119,
+    "width": 28,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 627,
+    "arrow_count": 119,
+    "width": 35,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 628,
+    "arrow_count": 119,
+    "width": 34,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 629,
+    "arrow_count": 119,
+    "width": 34,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 630,
+    "arrow_count": 119,
+    "width": 43,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 631,
+    "arrow_count": 120,
+    "width": 29,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 632,
+    "arrow_count": 120,
+    "width": 28,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 633,
+    "arrow_count": 120,
+    "width": 32,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 634,
+    "arrow_count": 120,
+    "width": 36,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 635,
+    "arrow_count": 120,
+    "width": 43,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 636,
+    "arrow_count": 120,
+    "width": 41,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 637,
+    "arrow_count": 120,
+    "width": 50,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 638,
+    "arrow_count": 121,
+    "width": 33,
+    "height": 36,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 639,
+    "arrow_count": 121,
+    "width": 36,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 640,
+    "arrow_count": 121,
+    "width": 32,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 641,
+    "arrow_count": 121,
+    "width": 32,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 642,
+    "arrow_count": 122,
+    "width": 31,
+    "height": 37,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 643,
+    "arrow_count": 122,
+    "width": 30,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 644,
+    "arrow_count": 122,
+    "width": 32,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 645,
+    "arrow_count": 122,
+    "width": 30,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 646,
+    "arrow_count": 122,
+    "width": 36,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 647,
+    "arrow_count": 122,
+    "width": 35,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 648,
+    "arrow_count": 122,
+    "width": 40,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 649,
+    "arrow_count": 122,
+    "width": 31,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 650,
+    "arrow_count": 122,
+    "width": 34,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 651,
+    "arrow_count": 122,
+    "width": 35,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 652,
+    "arrow_count": 123,
+    "width": 30,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 653,
+    "arrow_count": 123,
+    "width": 30,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 654,
+    "arrow_count": 123,
+    "width": 29,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 655,
+    "arrow_count": 123,
+    "width": 32,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 656,
+    "arrow_count": 123,
+    "width": 34,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 657,
+    "arrow_count": 123,
+    "width": 39,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 658,
+    "arrow_count": 123,
+    "width": 32,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 659,
+    "arrow_count": 123,
+    "width": 34,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 660,
+    "arrow_count": 123,
+    "width": 46,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 661,
+    "arrow_count": 123,
+    "width": 48,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 662,
+    "arrow_count": 124,
+    "width": 33,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 663,
+    "arrow_count": 124,
+    "width": 32,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 664,
+    "arrow_count": 124,
+    "width": 30,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 665,
+    "arrow_count": 124,
+    "width": 35,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 666,
+    "arrow_count": 124,
+    "width": 37,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 667,
+    "arrow_count": 124,
+    "width": 33,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 668,
+    "arrow_count": 124,
+    "width": 36,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 669,
+    "arrow_count": 124,
+    "width": 43,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 670,
+    "arrow_count": 125,
+    "width": 27,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 671,
+    "arrow_count": 125,
+    "width": 30,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 672,
+    "arrow_count": 125,
+    "width": 33,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 673,
+    "arrow_count": 125,
+    "width": 41,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 674,
+    "arrow_count": 125,
+    "width": 37,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 675,
+    "arrow_count": 125,
+    "width": 37,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 676,
+    "arrow_count": 126,
+    "width": 29,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 677,
+    "arrow_count": 126,
+    "width": 30,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 678,
+    "arrow_count": 126,
+    "width": 35,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 679,
+    "arrow_count": 126,
+    "width": 39,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 680,
+    "arrow_count": 126,
+    "width": 34,
+    "height": 57,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 681,
+    "arrow_count": 127,
+    "width": 33,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 682,
+    "arrow_count": 127,
+    "width": 33,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 683,
+    "arrow_count": 127,
+    "width": 37,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 684,
+    "arrow_count": 127,
+    "width": 38,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 685,
+    "arrow_count": 127,
+    "width": 31,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 686,
+    "arrow_count": 127,
+    "width": 36,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 687,
+    "arrow_count": 127,
+    "width": 35,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 688,
+    "arrow_count": 127,
+    "width": 37,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 689,
+    "arrow_count": 128,
+    "width": 28,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 690,
+    "arrow_count": 128,
+    "width": 45,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 691,
+    "arrow_count": 128,
+    "width": 42,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 692,
+    "arrow_count": 129,
+    "width": 30,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 693,
+    "arrow_count": 129,
+    "width": 31,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 694,
+    "arrow_count": 129,
+    "width": 32,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 695,
+    "arrow_count": 129,
+    "width": 35,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 696,
+    "arrow_count": 129,
+    "width": 35,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 697,
+    "arrow_count": 130,
+    "width": 33,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 698,
+    "arrow_count": 130,
+    "width": 30,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 699,
+    "arrow_count": 130,
+    "width": 37,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 700,
+    "arrow_count": 130,
+    "width": 35,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 701,
+    "arrow_count": 131,
+    "width": 29,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 702,
+    "arrow_count": 131,
+    "width": 30,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 703,
+    "arrow_count": 131,
+    "width": 36,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 704,
+    "arrow_count": 131,
+    "width": 32,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 705,
+    "arrow_count": 131,
+    "width": 34,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 706,
+    "arrow_count": 131,
+    "width": 37,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 707,
+    "arrow_count": 131,
+    "width": 45,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 708,
+    "arrow_count": 132,
+    "width": 29,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 709,
+    "arrow_count": 132,
+    "width": 35,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 710,
+    "arrow_count": 132,
+    "width": 31,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 711,
+    "arrow_count": 132,
+    "width": 33,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 712,
+    "arrow_count": 133,
+    "width": 31,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 713,
+    "arrow_count": 133,
+    "width": 37,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 714,
+    "arrow_count": 133,
+    "width": 31,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 715,
+    "arrow_count": 133,
+    "width": 33,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 716,
+    "arrow_count": 134,
+    "width": 39,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 717,
+    "arrow_count": 134,
+    "width": 35,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 718,
+    "arrow_count": 134,
+    "width": 34,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 719,
+    "arrow_count": 135,
+    "width": 32,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 720,
+    "arrow_count": 135,
+    "width": 32,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 721,
+    "arrow_count": 135,
+    "width": 34,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 722,
+    "arrow_count": 135,
+    "width": 30,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 723,
+    "arrow_count": 135,
+    "width": 33,
+    "height": 53,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 724,
+    "arrow_count": 135,
+    "width": 38,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 725,
+    "arrow_count": 136,
+    "width": 30,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 726,
+    "arrow_count": 136,
+    "width": 32,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 727,
+    "arrow_count": 136,
+    "width": 34,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 728,
+    "arrow_count": 136,
+    "width": 35,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 729,
+    "arrow_count": 136,
+    "width": 38,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 730,
+    "arrow_count": 136,
+    "width": 38,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 731,
+    "arrow_count": 137,
+    "width": 34,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 732,
+    "arrow_count": 137,
+    "width": 33,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 733,
+    "arrow_count": 137,
+    "width": 37,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 734,
+    "arrow_count": 137,
+    "width": 33,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 735,
+    "arrow_count": 137,
+    "width": 32,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 736,
+    "arrow_count": 137,
+    "width": 34,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 737,
+    "arrow_count": 137,
+    "width": 36,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 738,
+    "arrow_count": 137,
+    "width": 35,
+    "height": 57,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 739,
+    "arrow_count": 138,
+    "width": 36,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 740,
+    "arrow_count": 138,
+    "width": 39,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 741,
+    "arrow_count": 138,
+    "width": 32,
+    "height": 53,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 742,
+    "arrow_count": 138,
+    "width": 34,
+    "height": 57,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 743,
+    "arrow_count": 138,
+    "width": 48,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 744,
+    "arrow_count": 138,
+    "width": 50,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 745,
+    "arrow_count": 139,
+    "width": 36,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 746,
+    "arrow_count": 139,
+    "width": 31,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 747,
+    "arrow_count": 139,
+    "width": 41,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 748,
+    "arrow_count": 139,
+    "width": 35,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 749,
+    "arrow_count": 139,
+    "width": 37,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 750,
+    "arrow_count": 139,
+    "width": 37,
+    "height": 59,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 751,
+    "arrow_count": 140,
+    "width": 36,
+    "height": 38,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 752,
+    "arrow_count": 140,
+    "width": 35,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 753,
+    "arrow_count": 140,
+    "width": 30,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 754,
+    "arrow_count": 140,
+    "width": 35,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 755,
+    "arrow_count": 140,
+    "width": 31,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 756,
+    "arrow_count": 140,
+    "width": 38,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 757,
+    "arrow_count": 140,
+    "width": 49,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 758,
+    "arrow_count": 141,
+    "width": 38,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 759,
+    "arrow_count": 141,
+    "width": 33,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 760,
+    "arrow_count": 141,
+    "width": 36,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 761,
+    "arrow_count": 141,
+    "width": 38,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 762,
+    "arrow_count": 141,
+    "width": 37,
+    "height": 57,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 763,
+    "arrow_count": 142,
+    "width": 30,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 764,
+    "arrow_count": 142,
+    "width": 29,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 765,
+    "arrow_count": 142,
+    "width": 35,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 766,
+    "arrow_count": 142,
+    "width": 37,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 767,
+    "arrow_count": 142,
+    "width": 32,
+    "height": 53,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 768,
+    "arrow_count": 142,
+    "width": 37,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 769,
+    "arrow_count": 143,
+    "width": 32,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 770,
+    "arrow_count": 143,
+    "width": 30,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 771,
+    "arrow_count": 143,
+    "width": 33,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 772,
+    "arrow_count": 143,
+    "width": 33,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 773,
+    "arrow_count": 143,
+    "width": 34,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 774,
+    "arrow_count": 143,
+    "width": 37,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 775,
+    "arrow_count": 143,
+    "width": 48,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 776,
+    "arrow_count": 144,
+    "width": 34,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 777,
+    "arrow_count": 144,
+    "width": 35,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 778,
+    "arrow_count": 144,
+    "width": 33,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 779,
+    "arrow_count": 144,
+    "width": 35,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 780,
+    "arrow_count": 144,
+    "width": 43,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 781,
+    "arrow_count": 145,
+    "width": 31,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 782,
+    "arrow_count": 145,
+    "width": 34,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 783,
+    "arrow_count": 145,
+    "width": 35,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 784,
+    "arrow_count": 146,
+    "width": 32,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 785,
+    "arrow_count": 146,
+    "width": 35,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 786,
+    "arrow_count": 146,
+    "width": 38,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 787,
+    "arrow_count": 146,
+    "width": 34,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 788,
+    "arrow_count": 146,
+    "width": 47,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 789,
+    "arrow_count": 147,
+    "width": 32,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 790,
+    "arrow_count": 147,
+    "width": 30,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 791,
+    "arrow_count": 147,
+    "width": 35,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 792,
+    "arrow_count": 147,
+    "width": 32,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 793,
+    "arrow_count": 147,
+    "width": 34,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 794,
+    "arrow_count": 147,
+    "width": 33,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 795,
+    "arrow_count": 147,
+    "width": 39,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 796,
+    "arrow_count": 148,
+    "width": 33,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 797,
+    "arrow_count": 148,
+    "width": 35,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 798,
+    "arrow_count": 148,
+    "width": 35,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 799,
+    "arrow_count": 148,
+    "width": 34,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 800,
+    "arrow_count": 148,
+    "width": 47,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 801,
+    "arrow_count": 148,
+    "width": 47,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 802,
+    "arrow_count": 149,
+    "width": 32,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 803,
+    "arrow_count": 149,
+    "width": 39,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 804,
+    "arrow_count": 149,
+    "width": 33,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 805,
+    "arrow_count": 149,
+    "width": 35,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 806,
+    "arrow_count": 149,
+    "width": 37,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 807,
+    "arrow_count": 149,
+    "width": 39,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 808,
+    "arrow_count": 149,
+    "width": 37,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 809,
+    "arrow_count": 149,
+    "width": 34,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 810,
+    "arrow_count": 149,
+    "width": 37,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 811,
+    "arrow_count": 150,
+    "width": 34,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 812,
+    "arrow_count": 150,
+    "width": 33,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 813,
+    "arrow_count": 150,
+    "width": 36,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 814,
+    "arrow_count": 150,
+    "width": 33,
+    "height": 53,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 815,
+    "arrow_count": 150,
+    "width": 34,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 816,
+    "arrow_count": 150,
+    "width": 37,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 817,
+    "arrow_count": 150,
+    "width": 47,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 818,
+    "arrow_count": 151,
+    "width": 32,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 819,
+    "arrow_count": 151,
+    "width": 32,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 820,
+    "arrow_count": 151,
+    "width": 39,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 821,
+    "arrow_count": 151,
+    "width": 32,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 822,
+    "arrow_count": 151,
+    "width": 36,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 823,
+    "arrow_count": 151,
+    "width": 38,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 824,
+    "arrow_count": 151,
+    "width": 36,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 825,
+    "arrow_count": 151,
+    "width": 37,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 826,
+    "arrow_count": 152,
+    "width": 35,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 827,
+    "arrow_count": 152,
+    "width": 32,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 828,
+    "arrow_count": 152,
+    "width": 39,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 829,
+    "arrow_count": 152,
+    "width": 37,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 830,
+    "arrow_count": 152,
+    "width": 35,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 831,
+    "arrow_count": 152,
+    "width": 34,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 832,
+    "arrow_count": 152,
+    "width": 37,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 833,
+    "arrow_count": 153,
+    "width": 37,
+    "height": 39,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 834,
+    "arrow_count": 153,
+    "width": 32,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 835,
+    "arrow_count": 153,
+    "width": 37,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 836,
+    "arrow_count": 153,
+    "width": 37,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 837,
+    "arrow_count": 154,
+    "width": 32,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 838,
+    "arrow_count": 154,
+    "width": 35,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 839,
+    "arrow_count": 154,
+    "width": 35,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 840,
+    "arrow_count": 154,
+    "width": 32,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 841,
+    "arrow_count": 154,
+    "width": 36,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 842,
+    "arrow_count": 154,
+    "width": 36,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 843,
+    "arrow_count": 154,
+    "width": 38,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 844,
+    "arrow_count": 155,
+    "width": 36,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 845,
+    "arrow_count": 155,
+    "width": 39,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 846,
+    "arrow_count": 155,
+    "width": 35,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 847,
+    "arrow_count": 155,
+    "width": 37,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 848,
+    "arrow_count": 155,
+    "width": 37,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 849,
+    "arrow_count": 155,
+    "width": 46,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 850,
+    "arrow_count": 156,
+    "width": 35,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 851,
+    "arrow_count": 156,
+    "width": 33,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 852,
+    "arrow_count": 156,
+    "width": 35,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 853,
+    "arrow_count": 156,
+    "width": 32,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 854,
+    "arrow_count": 156,
+    "width": 32,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 855,
+    "arrow_count": 156,
+    "width": 37,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 856,
+    "arrow_count": 157,
+    "width": 35,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 857,
+    "arrow_count": 157,
+    "width": 33,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 858,
+    "arrow_count": 157,
+    "width": 38,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 859,
+    "arrow_count": 157,
+    "width": 34,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 860,
+    "arrow_count": 157,
+    "width": 36,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 861,
+    "arrow_count": 158,
+    "width": 34,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 862,
+    "arrow_count": 158,
+    "width": 36,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 863,
+    "arrow_count": 158,
+    "width": 36,
+    "height": 53,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 864,
+    "arrow_count": 158,
+    "width": 42,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 865,
+    "arrow_count": 158,
+    "width": 50,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 866,
+    "arrow_count": 159,
+    "width": 34,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 867,
+    "arrow_count": 159,
+    "width": 38,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 868,
+    "arrow_count": 159,
+    "width": 35,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 869,
+    "arrow_count": 159,
+    "width": 37,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 870,
+    "arrow_count": 159,
+    "width": 47,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 871,
+    "arrow_count": 159,
+    "width": 48,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 872,
+    "arrow_count": 160,
+    "width": 32,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 873,
+    "arrow_count": 160,
+    "width": 35,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 874,
+    "arrow_count": 160,
+    "width": 36,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 875,
+    "arrow_count": 160,
+    "width": 46,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 876,
+    "arrow_count": 160,
+    "width": 50,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 877,
+    "arrow_count": 161,
+    "width": 32,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 878,
+    "arrow_count": 161,
+    "width": 39,
+    "height": 41,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 879,
+    "arrow_count": 161,
+    "width": 35,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 880,
+    "arrow_count": 161,
+    "width": 35,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 881,
+    "arrow_count": 161,
+    "width": 33,
+    "height": 53,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 882,
+    "arrow_count": 161,
+    "width": 36,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 883,
+    "arrow_count": 161,
+    "width": 37,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 884,
+    "arrow_count": 161,
+    "width": 47,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 885,
+    "arrow_count": 162,
+    "width": 31,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 886,
+    "arrow_count": 162,
+    "width": 35,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 887,
+    "arrow_count": 162,
+    "width": 33,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 888,
+    "arrow_count": 162,
+    "width": 39,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 889,
+    "arrow_count": 162,
+    "width": 36,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 890,
+    "arrow_count": 162,
+    "width": 45,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 891,
+    "arrow_count": 162,
+    "width": 37,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 892,
+    "arrow_count": 162,
+    "width": 50,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 893,
+    "arrow_count": 163,
+    "width": 31,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 894,
+    "arrow_count": 163,
+    "width": 33,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 895,
+    "arrow_count": 163,
+    "width": 37,
+    "height": 53,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 896,
+    "arrow_count": 163,
+    "width": 47,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 897,
+    "arrow_count": 164,
+    "width": 35,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 898,
+    "arrow_count": 164,
+    "width": 36,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 899,
+    "arrow_count": 164,
+    "width": 37,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 900,
+    "arrow_count": 165,
+    "width": 31,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 901,
+    "arrow_count": 165,
+    "width": 32,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 902,
+    "arrow_count": 165,
+    "width": 39,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 903,
+    "arrow_count": 165,
+    "width": 37,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 904,
+    "arrow_count": 166,
+    "width": 36,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 905,
+    "arrow_count": 166,
+    "width": 35,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 906,
+    "arrow_count": 167,
+    "width": 32,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 907,
+    "arrow_count": 167,
+    "width": 36,
+    "height": 53,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 908,
+    "arrow_count": 167,
+    "width": 37,
+    "height": 53,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 909,
+    "arrow_count": 167,
+    "width": 37,
+    "height": 53,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 910,
+    "arrow_count": 167,
+    "width": 47,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 911,
+    "arrow_count": 168,
+    "width": 33,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 912,
+    "arrow_count": 168,
+    "width": 38,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 913,
+    "arrow_count": 169,
+    "width": 33,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 914,
+    "arrow_count": 169,
+    "width": 31,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 915,
+    "arrow_count": 169,
+    "width": 35,
+    "height": 54,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 916,
+    "arrow_count": 170,
+    "width": 37,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 917,
+    "arrow_count": 170,
+    "width": 31,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 918,
+    "arrow_count": 170,
+    "width": 34,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 919,
+    "arrow_count": 170,
+    "width": 39,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 920,
+    "arrow_count": 170,
+    "width": 36,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 921,
+    "arrow_count": 170,
+    "width": 35,
+    "height": 54,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 922,
+    "arrow_count": 170,
+    "width": 50,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 923,
+    "arrow_count": 171,
+    "width": 37,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 924,
+    "arrow_count": 171,
+    "width": 36,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 925,
+    "arrow_count": 171,
+    "width": 37,
+    "height": 53,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 926,
+    "arrow_count": 172,
+    "width": 35,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 927,
+    "arrow_count": 172,
+    "width": 38,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 928,
+    "arrow_count": 172,
+    "width": 37,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 929,
+    "arrow_count": 173,
+    "width": 37,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 930,
+    "arrow_count": 173,
+    "width": 38,
+    "height": 47,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 931,
+    "arrow_count": 173,
+    "width": 39,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 932,
+    "arrow_count": 173,
+    "width": 37,
+    "height": 53,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 933,
+    "arrow_count": 174,
+    "width": 35,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 934,
+    "arrow_count": 174,
+    "width": 35,
+    "height": 54,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 935,
+    "arrow_count": 174,
+    "width": 35,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 936,
+    "arrow_count": 174,
+    "width": 35,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 937,
+    "arrow_count": 175,
+    "width": 34,
+    "height": 54,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 938,
+    "arrow_count": 175,
+    "width": 34,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 939,
+    "arrow_count": 175,
+    "width": 35,
+    "height": 54,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 940,
+    "arrow_count": 176,
+    "width": 36,
+    "height": 60,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 941,
+    "arrow_count": 177,
+    "width": 36,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 942,
+    "arrow_count": 177,
+    "width": 39,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 943,
+    "arrow_count": 178,
+    "width": 37,
+    "height": 40,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 944,
+    "arrow_count": 178,
+    "width": 32,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 945,
+    "arrow_count": 178,
+    "width": 38,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 946,
+    "arrow_count": 178,
+    "width": 33,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 947,
+    "arrow_count": 178,
+    "width": 35,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 948,
+    "arrow_count": 178,
+    "width": 36,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 949,
+    "arrow_count": 178,
+    "width": 46,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 950,
+    "arrow_count": 179,
+    "width": 37,
+    "height": 42,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 951,
+    "arrow_count": 180,
+    "width": 35,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 952,
+    "arrow_count": 180,
+    "width": 36,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 953,
+    "arrow_count": 180,
+    "width": 35,
+    "height": 54,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 954,
+    "arrow_count": 181,
+    "width": 39,
+    "height": 43,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 955,
+    "arrow_count": 181,
+    "width": 39,
+    "height": 44,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 956,
+    "arrow_count": 181,
+    "width": 46,
+    "height": 46,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 957,
+    "arrow_count": 182,
+    "width": 38,
+    "height": 45,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 958,
+    "arrow_count": 182,
+    "width": 34,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 959,
+    "arrow_count": 182,
+    "width": 36,
+    "height": 60,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 960,
+    "arrow_count": 183,
+    "width": 32,
+    "height": 48,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 961,
+    "arrow_count": 183,
+    "width": 34,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 962,
+    "arrow_count": 184,
+    "width": 33,
+    "height": 53,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 963,
+    "arrow_count": 185,
+    "width": 36,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 964,
+    "arrow_count": 185,
+    "width": 38,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 965,
+    "arrow_count": 185,
+    "width": 38,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 966,
+    "arrow_count": 185,
+    "width": 39,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 967,
+    "arrow_count": 185,
+    "width": 37,
+    "height": 54,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 968,
+    "arrow_count": 186,
+    "width": 36,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 969,
+    "arrow_count": 186,
+    "width": 35,
+    "height": 57,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 970,
+    "arrow_count": 187,
+    "width": 38,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 971,
+    "arrow_count": 188,
+    "width": 34,
+    "height": 54,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 972,
+    "arrow_count": 188,
+    "width": 37,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 973,
+    "arrow_count": 189,
+    "width": 35,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 974,
+    "arrow_count": 189,
+    "width": 35,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 975,
+    "arrow_count": 189,
+    "width": 36,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 976,
+    "arrow_count": 189,
+    "width": 54,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 977,
+    "arrow_count": 190,
+    "width": 37,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 978,
+    "arrow_count": 191,
+    "width": 33,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 979,
+    "arrow_count": 192,
+    "width": 37,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 980,
+    "arrow_count": 192,
+    "width": 35,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 981,
+    "arrow_count": 194,
+    "width": 36,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 982,
+    "arrow_count": 194,
+    "width": 35,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 983,
+    "arrow_count": 194,
+    "width": 35,
+    "height": 58,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 984,
+    "arrow_count": 195,
+    "width": 36,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 985,
+    "arrow_count": 197,
+    "width": 37,
+    "height": 49,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 986,
+    "arrow_count": 197,
+    "width": 37,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 987,
+    "arrow_count": 198,
+    "width": 32,
+    "height": 52,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 988,
+    "arrow_count": 198,
+    "width": 36,
+    "height": 58,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 989,
+    "arrow_count": 199,
+    "width": 38,
+    "height": 51,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 990,
+    "arrow_count": 202,
+    "width": 36,
+    "height": 58,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 991,
+    "arrow_count": 202,
+    "width": 36,
+    "height": 58,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 992,
+    "arrow_count": 203,
+    "width": 37,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 993,
+    "arrow_count": 204,
+    "width": 37,
+    "height": 54,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 994,
+    "arrow_count": 207,
+    "width": 36,
+    "height": 56,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 995,
+    "arrow_count": 212,
+    "width": 35,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 996,
+    "arrow_count": 212,
+    "width": 37,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 997,
+    "arrow_count": 214,
+    "width": 37,
+    "height": 60,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 998,
+    "arrow_count": 216,
+    "width": 50,
+    "height": 50,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 999,
+    "arrow_count": 218,
+    "width": 37,
+    "height": 60,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 1000,
+    "arrow_count": 221,
+    "width": 35,
+    "height": 55,
+    "is_shape_level": false,
+    "shape_name": null
+  },
+  {
+    "level_number": 1001,
+    "arrow_count": 229,
+    "width": 35,
+    "height": 58,
+    "is_shape_level": false,
+    "shape_name": null
+  }
+]
