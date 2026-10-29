@@ -592,8 +592,11 @@ fun PuzzleBoardCanvas(
                                         val isTap = !isPinching && !isPanning && !isDrag && !rec.isLongPressTriggered && elapsed < 650L
 
                                         if (isTap) {
+                                            // Down-target: the arrow identified at touch-DOWN time.
+                                            // We intentionally allow WRONG_FLASH here — the VM will snap it to IDLE.
+                                            // We only exclude CLEARED since those truly no longer exist on the board.
                                             val downTarget = rec.candidateArrow?.let { cand ->
-                                                currentArrows.firstOrNull { it.id == cand.id && it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
+                                                currentArrows.firstOrNull { it.id == cand.id && it.state != ArrowState.CLEARED }
                                             }
 
                                             val upTarget = findClosestArrow(
@@ -628,7 +631,10 @@ fun PuzzleBoardCanvas(
                                                 )
                                             }
 
-                                            if (targetArrow != null && targetArrow.state != ArrowState.CLEARED && targetArrow.state != ArrowState.FLYING_OUT) {
+                                            // Only exclude truly CLEARED arrows. FLYING_OUT is handled by the VM guard.
+                                            // This prevents silent tap drops during the brief race between touch-up
+                                            // and state transition to FLYING_OUT.
+                                            if (targetArrow != null && targetArrow.state != ArrowState.CLEARED) {
                                                 if (introProgress.value < 1f) {
                                                     coroutineScope.launch { introProgress.snapTo(1f) }
                                                 }
@@ -1011,8 +1017,6 @@ private fun findClosestArrow(
     val activeArrows = arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
     if (activeArrows.isEmpty()) return null
 
-    val flyingArrows = arrows.filter { it.state == ArrowState.FLYING_OUT }
-
     val strokeWidth = (cellSize * 0.20f).coerceIn(1.0f, cellSize * 0.35f)
     val headWidth = (cellSize * 0.54f).coerceAtLeast(strokeWidth * 1.8f).coerceAtMost(cellSize * 0.68f)
     val headLength = headWidth * 0.88f
@@ -1047,8 +1051,8 @@ private fun findClosestArrow(
 
     // 2. DISCRETE CELL OCCUPANCY AUTHORITY (100% Infallible Hit Testing)
     // In Unity, each arrow collider occupies its respective grid cells.
-    // If the tap lands directly inside a cell owned by an active arrow, that arrow has 100% direct authority.
-    // Neighboring arrows (even if nearby or pointing toward this cell) can NEVER steal a tap inside an occupied cell.
+    // If the tap lands directly inside a cell owned by an active (non-flying) arrow, that arrow wins.
+    // Flying arrows are already excluded from activeArrows above, so they cannot steal taps here.
     val relX = touchPoint.x - origin.x
     val relY = touchPoint.y - origin.y
     val cellX = kotlin.math.floor(relX / cellSize).toInt()
@@ -1062,11 +1066,9 @@ private fun findClosestArrow(
     if (cellOccupant != null) {
         return cellOccupant
     }
-
-    // 3. Guard: If touch landed inside a cell currently being vacated by a flying arrow, absorb it
-    if (flyingArrows.any { it.isPointInside(touchedCoord) }) {
-        return null
-    }
+    // NOTE: Phase 3 (flying-cell absorption guard) has been removed.
+    // Flying arrows are already excluded from hit detection via Phase 1 and Phase 2.
+    // The old guard was incorrectly absorbing taps on neighboring arrows during flight.
 
     // 4. Proximity Search for Taps Near Arrows, in Margins, or Slightly Across Cell Borders:
     // Comfortable search radius: ensures single-tap responsiveness across all grid sizes

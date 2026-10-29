@@ -497,38 +497,43 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     private var autoReleaseJob: Job? = null
 
     /**
-     * Cascading auto-release queue:
-     * When blocking arrows exit or are cleared, any highlighted arrows waiting behind them
-     * are evaluated and smoothly released in sequence with a crisp 120ms stagger matching Unity.
+     * Simultaneous auto-release matching Unity behavior:
+     * When blocking arrows exit, ALL currently highlighted+unblocked arrows release at the same
+     * time — not one-by-one. This is more responsive, visually satisfying, and matches the
+     * Unity reference exactly.
+     *
+     * A brief 80ms delay is used to let the triggering arrow's occupancy release propagate,
+     * then all eligible arrows launch simultaneously.
      */
     private fun checkAndAutoReleaseHighlightedArrows() {
         autoReleaseJob?.cancel()
         autoReleaseJob = viewModelScope.launch {
-            while (isActive) {
-                // If any arrow is actively in flight, wait for it to clear so exits are cleanly sequential
-                while (_uiState.value.arrows.any { it.state == ArrowState.FLYING_OUT }) {
-                    delay(30)
-                }
+            // Brief pause to let the triggering arrow's occupancy release be visible to canMoveOut
+            delay(80)
 
-                // Brief natural pause between sequential exits matching Unity (120ms)
-                delay(120)
+            if (!isActive || _uiState.value.isLevelComplete || _uiState.value.isGameOver) return@launch
 
+            // Find ALL highlighted arrows that are now free to move simultaneously
+            val candidates = _uiState.value.arrows.filter {
+                it.isHighlighted && it.state == ArrowState.IDLE && PuzzleSolver.canMoveOut(it, occupancyMap)
+            }
+
+            // Launch all eligible arrows simultaneously (Unity behavior)
+            for (candidate in candidates) {
+                launchArrowFlight(candidate)
+            }
+
+            // After this batch, check again for any newly unblocked arrows (cascading)
+            // Wait for current flights to land before checking further
+            if (candidates.isNotEmpty()) {
+                delay(450) // Wait for 400ms flight + small buffer
                 if (!isActive || _uiState.value.isLevelComplete || _uiState.value.isGameOver) return@launch
-                if (_uiState.value.arrows.any { it.state == ArrowState.FLYING_OUT }) {
-                    continue
-                }
-
-                // Find the next highlighted arrow that is ready to move out
-                val candidate = _uiState.value.arrows.firstOrNull {
+                // Recursively check for the next cascade wave
+                val nextCandidates = _uiState.value.arrows.filter {
                     it.isHighlighted && it.state == ArrowState.IDLE && PuzzleSolver.canMoveOut(it, occupancyMap)
                 }
-
-                if (candidate != null) {
+                for (candidate in nextCandidates) {
                     launchArrowFlight(candidate)
-                    // Wait briefly for candidate flight to register in state before continuing queue loop
-                    delay(30)
-                } else {
-                    break
                 }
             }
         }
