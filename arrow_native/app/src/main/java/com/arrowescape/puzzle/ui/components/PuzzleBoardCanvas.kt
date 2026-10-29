@@ -411,9 +411,9 @@ fun PuzzleBoardCanvas(
                         settleJob?.cancel() // Stop ongoing inertia or animation immediately on new touch
 
                         val center = Offset(currentViewportWidth / 2f, currentViewportHeight / 2f)
-                        val dragThreshold = 14.dp.toPx()
-                        val pinchMotionThreshold = 22.dp.toPx()
-                        val panGestureThreshold = 18.dp.toPx()
+                        val dragThreshold = 22.dp.toPx()
+                        val pinchMotionThreshold = 26.dp.toPx()
+                        val panGestureThreshold = 22.dp.toPx()
 
                         var hadMultiTouch = false
                         var isPinching = false
@@ -582,21 +582,35 @@ fun PuzzleBoardCanvas(
                                         // Strict separation of tap from zooming, panning, and dragging:
                                         // A tap registers if pointer did not drag/pan, no pinch occurred,
                                         // not holding preview ray, and released within reasonable tap duration.
-                                        val isTap = !isPinching && !isPanning && !isDrag && !rec.isLongPressTriggered && elapsed < 550L
+                                        val isTap = !isPinching && !isPanning && !isDrag && !rec.isLongPressTriggered && elapsed < 650L
 
                                         if (isTap) {
-                                            // Down-Target Authority: Prioritize the candidate arrow determined at touch down.
-                                            // This prevents finger release jitter or thumb roll from reassigning selection to an unintended neighbor.
-                                            val targetArrow = if (rec.candidateArrow != null) {
-                                                currentArrows.firstOrNull { it.id == rec.candidateArrow!!.id && it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
-                                            } else {
-                                                // Only if touch-down landed in empty space/margin, evaluate at release position
-                                                val tapScreenPos = Offset(
+                                            val downTarget = rec.candidateArrow?.let { cand ->
+                                                currentArrows.firstOrNull { it.id == cand.id && it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
+                                            }
+
+                                            val upTarget = findClosestArrow(
+                                                screenToLocal(upChange.position),
+                                                currentBoardOrigin,
+                                                currentArrows,
+                                                currentCellSize,
+                                                currentHeadSize,
+                                                currentMinTouchTargetPx,
+                                                currentOccupancyMap,
+                                                currentClearedCells
+                                            )
+
+                                            // Down-Target Authority with Release & Midpoint Fallback:
+                                            // 1. If pointer hit an arrow at touch-down, use that arrow (prevents thumb roll drift).
+                                            // 2. If touch-down was in empty margin/gap, use release position (upTarget).
+                                            // 3. Fallback to midpoint if finger tapped quickly in small margin.
+                                            val targetArrow = downTarget ?: upTarget ?: run {
+                                                val midScreenPos = Offset(
                                                     (rec.downPos.x + upChange.position.x) / 2f,
                                                     (rec.downPos.y + upChange.position.y) / 2f
                                                 )
                                                 findClosestArrow(
-                                                    screenToLocal(tapScreenPos),
+                                                    screenToLocal(midScreenPos),
                                                     currentBoardOrigin,
                                                     currentArrows,
                                                     currentCellSize,
@@ -1042,18 +1056,14 @@ private fun findClosestArrow(
         return cellOccupant
     }
 
-    // 3. GUARD: Flying or Cleared Cells Must NEVER Trigger Neighbor Arrows
-    // If the player taps on an arrow that is currently escaping (FLYING_OUT) or has already cleared (with dot),
-    // absorb the tap as empty space. This prevents rapid double-taps or cleared cell clicks from stealing adjacent arrows.
-    val isFlyingCell = flyingArrows.any { it.isPointInside(touchedCoord) }
-    if (isFlyingCell || clearedCells.contains(touchedCoord)) {
+    // 3. Guard: If touch landed inside a cell currently being vacated by a flying arrow, absorb it
+    if (flyingArrows.any { it.isPointInside(touchedCoord) }) {
         return null
     }
 
-    // 4. BOUNDED PROXIMITY FALLBACK (Strictly for outer board margins and padding)
-    // Allows comfortable clicks right on the outer boundary edge of border arrows.
-    // Strictly bounded to cellSize * 0.48f so it can NEVER reach across empty space into a neighbor cell!
-    val maxSearchRadius = cellSize * 0.48f
+    // 4. Proximity Search for Taps Near Arrows, in Margins, or Slightly Across Cell Borders:
+    // Comfortable search radius: ensures single-tap responsiveness across all grid sizes
+    val maxSearchRadius = maxOf(cellSize * 0.90f, minTouchTargetPx)
 
     fun computeArrowDistance(arrow: Arrow): Float {
         val headCenter = Offset(
@@ -1098,18 +1108,23 @@ private fun findClosestArrow(
         return minOf(headDist, stemDist)
     }
 
-    var bestArrow: Arrow? = null
-    var minDistance = Float.MAX_VALUE
-
-    for (arrow in activeArrows) {
+    data class CandidateHit(val arrow: Arrow, val dist: Float, val isMovable: Boolean)
+    val candidates = activeArrows.mapNotNull { arrow ->
         val dist = computeArrowDistance(arrow)
-        if (dist < minDistance) {
-            minDistance = dist
-            bestArrow = arrow
-        }
+        if (dist <= maxSearchRadius) {
+            val isMovable = occupancy != null && PuzzleSolver.canMoveOut(arrow, occupancy)
+            CandidateHit(arrow, dist, isMovable)
+        } else null
     }
 
-    return if (minDistance <= maxSearchRadius) bestArrow else null
+    if (candidates.isEmpty()) return null
+
+    val sorted = candidates.sortedBy { it.dist }
+    val best = sorted.first()
+
+    // Tie-breaker: If two arrows are within 3.5px of each other, favor the movable arrow
+    val tieCandidates = sorted.filter { it.dist <= best.dist + 3.5f }
+    return tieCandidates.firstOrNull { it.isMovable }?.arrow ?: best.arrow
 }
 
 private fun distanceToSegment(p: Offset, a: Offset, b: Offset): Float {
