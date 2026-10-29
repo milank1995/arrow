@@ -56,6 +56,7 @@ data class GameUiState(
     val hammersAvailable: Int = 2,
     val wandsAvailable: Int = 2,
     val isDailyChallengeMode: Boolean = false,
+    val isLockPuzzleMode: Boolean = false,
     val activeDailyDate: String? = null,
     val activeDailyIndex: Int = 1,
     val completedDailyDates: Set<String> = emptySet(),
@@ -224,6 +225,40 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 isHammerModeActive = false,
                 previewRayArrowIds = emptySet(),
                 isDailyChallengeMode = false,
+                isLockPuzzleMode = false,
+                activeDailyDate = null,
+                activeDailyIndex = 1,
+                dailyComplimentaryHintsRemaining = 1,
+                showHintAdPrompt = false,
+                restartTrigger = System.currentTimeMillis()
+            )
+        }
+    }
+
+    fun startLockPuzzle() {
+        levelStartTime = 0L
+        hasGameplayStarted = false
+        levelMovesAttempted = 0
+        levelMistakesCount = 0
+        val level = LevelLoader.loadLockPuzzle(app)
+        occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
+            rebuild(level.arrows)
+        }
+
+        _uiState.update {
+            it.copy(
+                levelData = level,
+                arrows = level.arrows,
+                heartsRemaining = level.maxHearts,
+                maxHearts = level.maxHearts,
+                isLevelComplete = false,
+                isGameOver = false,
+                comboCount = 0,
+                cheerMessage = null,
+                isHammerModeActive = false,
+                previewRayArrowIds = emptySet(),
+                isDailyChallengeMode = false,
+                isLockPuzzleMode = true,
                 activeDailyDate = null,
                 activeDailyIndex = 1,
                 dailyComplimentaryHintsRemaining = 1,
@@ -263,6 +298,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 isHammerModeActive = false,
                 previewRayArrowIds = emptySet(),
                 isDailyChallengeMode = true,
+                isLockPuzzleMode = false,
                 activeDailyDate = date.toString(),
                 activeDailyIndex = dailyIndex,
                 dailyComplimentaryHintsRemaining = 1,
@@ -687,8 +723,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun nextLevel() {
-        if (_uiState.value.isDailyChallengeMode) {
-            // When completing a daily level, reload current campaign level so player returns to campaign
+        if (_uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode) {
+            // When completing a daily or special level, reload current campaign level so player returns to campaign
             loadLevel(_uiState.value.currentLevelNumber)
         } else {
             val nextLvl = _uiState.value.currentLevelNumber + 1
@@ -700,7 +736,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun onVictoryHomeClick() {
-        if (_uiState.value.isDailyChallengeMode) {
+        if (_uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode) {
             loadLevel(_uiState.value.currentLevelNumber)
         } else {
             val nextLvl = _uiState.value.currentLevelNumber + 1
@@ -725,6 +761,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         if (_uiState.value.isDailyChallengeMode) {
             val dateStr = _uiState.value.activeDailyDate ?: LocalDate.now().toString()
             startDailyChallenge(dateStr)
+        } else if (_uiState.value.isLockPuzzleMode) {
+            startLockPuzzle()
         } else {
             loadLevel(_uiState.value.currentLevelNumber)
         }
@@ -844,10 +882,12 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             else -> 1
         }
         viewModelScope.launch {
-            val baseCoins = if (_uiState.value.isDailyChallengeMode) 100 else 50 + (_uiState.value.comboCount * 5)
+            val baseCoins = if (_uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode) 100 else 50 + (_uiState.value.comboCount * 5)
             if (_uiState.value.isDailyChallengeMode) {
                 val dateStr = _uiState.value.activeDailyDate ?: LocalDate.now().toString()
                 repository.recordDailyCompletion(dateStr)
+            } else if (_uiState.value.isLockPuzzleMode) {
+                repository.recordLevelCompletion(151, stars)
             } else {
                 repository.recordLevelCompletion(completedLevel, stars)
             }

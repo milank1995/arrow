@@ -17,7 +17,7 @@ object LevelLoader {
      * ensuring every level displays the true intended handcrafted puzzle layout.
      */
     fun loadLevel(context: Context, levelNumber: Int): LevelData {
-        val totalHandcraftedLevels = 150
+        val totalHandcraftedLevels = 151
         val actualLevelNumber = ((levelNumber - 1) % totalHandcraftedLevels) + 1
         val assetName = "levels/Level_$actualLevelNumber.json"
         try {
@@ -37,6 +37,21 @@ object LevelLoader {
         } catch (e: Exception) {}
 
         return LevelGenerator.generateProceduralLevel(levelNumber, levelNumber.toLong())
+    }
+
+    /**
+     * Loads the featured Lock shape puzzle level.
+     */
+    fun loadLockPuzzle(context: Context): LevelData {
+        val assetName = "levels/Level_151.json"
+        try {
+            val jsonStr = context.assets.open(assetName).bufferedReader().use { it.readText() }
+            val level = parseLevelJson(151, jsonStr)
+            if (level != null && level.arrows.isNotEmpty()) {
+                return level
+            }
+        } catch (e: Exception) {}
+        return loadLevel(context, 151)
     }
 
     /**

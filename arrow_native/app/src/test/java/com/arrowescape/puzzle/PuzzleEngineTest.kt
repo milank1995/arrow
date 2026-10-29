@@ -205,7 +205,43 @@ class PuzzleEngineTest {
             rebuild(level.arrows)
         }
         val hint = PuzzleSolver.getBestHint(level.arrows, occupancy)
-        println("Best hint for daily 97: ${hint?.id} at head ${hint?.head}")
         assertNotNull("Daily challenge must have a valid movable hint", hint)
+    }
+
+    @Test
+    fun testLockPuzzleLevelSolvability() {
+        val file = java.io.File("src/main/assets/levels/Level_151.json")
+        assertTrue("Level_151.json must exist in assets", file.exists())
+        val json = file.readText()
+        val level = com.arrowescape.puzzle.core.engine.LevelLoader.parseLevelJson(151, json)
+        assertNotNull("Level 151 should parse successfully", level)
+        assertEquals("Lock shape puzzle must have 70 arrows", 70, level!!.arrows.size)
+        assertEquals("Lock shape puzzle must have 26 xSize", 26, level.xSize)
+        assertEquals("Lock shape puzzle must have 36 ySize", 36, level.ySize)
+        assertEquals("Lock shape puzzle shapeName", "Lock", level.shapeName)
+
+        val occupancy = GridOccupancyMap(level.xSize, level.ySize).apply {
+            rebuild(level.arrows)
+        }
+
+        val currentArrows = level.arrows.map { it.copy() }.toMutableList()
+        var steps = 0
+        val maxSteps = currentArrows.size + 5
+
+        while (currentArrows.any { it.state != ArrowState.CLEARED } && steps < maxSteps) {
+            steps++
+            val movable = PuzzleSolver.findAllMovableArrows(
+                currentArrows.filter { it.state != ArrowState.CLEARED },
+                occupancy
+            ).firstOrNull()
+
+            assertNotNull("Lock puzzle reached deadlock at step $steps with ${currentArrows.count { it.state != ArrowState.CLEARED }} arrows remaining", movable)
+            occupancy.release(movable!!)
+            val idx = currentArrows.indexOfFirst { it.id == movable.id }
+            currentArrows[idx] = movable.copyWithState(ArrowState.CLEARED)
+        }
+
+        assertTrue("All 70 arrows must be solved without deadlock", currentArrows.all { it.state == ArrowState.CLEARED })
+        assertEquals("Lock puzzle should be cleared in exactly 70 steps", 70, steps)
     }
 }

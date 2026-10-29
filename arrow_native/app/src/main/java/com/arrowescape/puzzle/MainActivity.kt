@@ -144,6 +144,11 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.playClick()
                                         currentScreen = AppScreen.SETTINGS
                                     },
+                                    onLockPuzzleClick = {
+                                        gameViewModel.playClick()
+                                        gameViewModel.startLockPuzzle()
+                                        currentScreen = AppScreen.GAMEPLAY
+                                    },
                                     onDevTestClick = {
                                         gameViewModel.playClick()
                                         currentScreen = AppScreen.DEV_TEST
@@ -189,9 +194,12 @@ class MainActivity : ComponentActivity() {
                                             gameViewModel.markDailyUnlockCelebrationSeen()
                                         }
                                         val wasDaily = uiState.isDailyChallengeMode
+                                        val wasLock = uiState.isLockPuzzleMode
                                         gameViewModel.nextLevel()
                                         if (wasDaily) {
                                             currentScreen = AppScreen.DAILY_CHALLENGE
+                                        } else if (wasLock) {
+                                            currentScreen = AppScreen.HOME
                                         }
                                     },
                                     onStartDailyChallengeClick = {
@@ -226,7 +234,7 @@ class MainActivity : ComponentActivity() {
                                         val wasDaily = uiState.isDailyChallengeMode
                                         if (uiState.isLevelComplete) {
                                             gameViewModel.onVictoryHomeClick()
-                                        } else if (uiState.isDailyChallengeMode) {
+                                        } else if (uiState.isDailyChallengeMode || uiState.isLockPuzzleMode) {
                                             gameViewModel.loadLevel(uiState.currentLevelNumber)
                                         } else if (uiState.isGameOver) {
                                             gameViewModel.loadLevel(uiState.currentLevelNumber)

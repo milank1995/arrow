@@ -76,6 +76,7 @@ fun HomeScreen(
     onThemeClick: () -> Unit,
     onSoundToggle: () -> Unit,
     onSettingsClick: () -> Unit,
+    onLockPuzzleClick: () -> Unit = {},
     onDevTestClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -434,7 +435,111 @@ fun HomeScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Lock Puzzle Card (Featured Custom Level: Lock)
+                val isLockCompleted = (uiState.levelStars[151] ?: 0) > 0 || uiState.lastCompletedLevelNumber >= 151
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = theme.surface,
+                    border = androidx.compose.foundation.BorderStroke(
+                        width = 1.2.dp,
+                        color = if (isLockCompleted) {
+                            if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
+                        } else {
+                            theme.gridLine
+                        }
+                    ),
+                    shadowElevation = if (!isLockCompleted) 2.dp else 1.dp,
+                    modifier = Modifier
+                        .widthIn(max = 380.dp)
+                        .fillMaxWidth(0.88f)
+                        .height(54.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickable(onClick = onLockPuzzleClick)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 14.dp)
+                    ) {
+                        // Dynamic Theme-Harmonized Icon Pod
+                        Box(
+                            modifier = Modifier
+                                .size(34.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(
+                                    if (isLockCompleted) {
+                                        (if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear).copy(alpha = 0.18f)
+                                    } else {
+                                        theme.arrowHint.copy(alpha = 0.18f)
+                                    }
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = if (isLockCompleted) Icons.Default.Check else Icons.Default.Lock,
+                                contentDescription = "Lock Puzzle",
+                                tint = if (isLockCompleted) {
+                                    if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
+                                } else {
+                                    theme.arrowHint
+                                },
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        // Text column
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                text = "Lock Puzzle",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = theme.textPrimary,
+                                style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = if (isLockCompleted) "✓ Mastered • 70 Arrows" else "Featured Shape Level • 70 Arrows",
+                                fontSize = 11.sp,
+                                color = if (isLockCompleted) {
+                                    if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
+                                } else {
+                                    theme.textSecondary
+                                },
+                                fontWeight = if (isLockCompleted) FontWeight.SemiBold else FontWeight.Medium,
+                                style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                            )
+                        }
+
+                        // Trailing Chip Badge
+                        Surface(
+                            shape = RoundedCornerShape(percent = 50),
+                            color = if (isLockCompleted) theme.arrowClear.copy(alpha = 0.16f) else theme.arrowHint.copy(alpha = 0.16f),
+                            border = androidx.compose.foundation.BorderStroke(
+                                1.dp,
+                                if (isLockCompleted) theme.arrowClear.copy(alpha = 0.4f) else theme.arrowHint.copy(alpha = 0.4f)
+                            )
+                        ) {
+                            Text(
+                                text = if (isLockCompleted) "DONE" else "PLAY",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = if (isLockCompleted) theme.arrowClear else theme.arrowHint,
+                                letterSpacing = 0.8.sp,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // Primary Play Flat Button
                 AppPrimaryButton(
@@ -468,7 +573,7 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         Text(
-                            text = "🛠️ Dev Test: Jump to Any Level (1–150)",
+                            text = "🛠️ Dev Test: Jump to Any Level (1–151)",
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = theme.textPrimary

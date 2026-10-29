@@ -1048,5 +1048,12 @@
     "difficulty": "Super Hard",
     "shapeName": "Sofa Grand Finale",
     "isShape": true
+  },
+  {
+    "level": 151,
+    "arrows": 70,
+    "difficulty": "Hard",
+    "shapeName": "Lock",
+    "isShape": true
   }
 ]
