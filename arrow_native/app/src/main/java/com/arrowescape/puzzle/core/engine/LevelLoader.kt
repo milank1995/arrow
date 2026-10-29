@@ -72,6 +72,47 @@ object LevelLoader {
         return loadLevel(context, dailyIndex)
     }
 
+    data class ManifestLevelItem(
+        val levelNumber: Int,
+        val arrowCount: Int,
+        val difficulty: String,
+        val shapeName: String?,
+        val isShape: Boolean,
+        val sourceCategory: String,
+        val xSize: Int,
+        val ySize: Int
+    )
+
+    private var cachedManifest: List<ManifestLevelItem>? = null
+
+    @Synchronized
+    fun getCuratedManifest(context: Context): List<ManifestLevelItem> {
+        cachedManifest?.let { return it }
+        val items = mutableListOf<ManifestLevelItem>()
+        try {
+            val jsonStr = context.assets.open("levels/manifest.json").bufferedReader().use { it.readText() }
+            val array = org.json.JSONArray(jsonStr)
+            for (i in 0 until array.length()) {
+                val obj = array.getJSONObject(i)
+                val sName = obj.optString("ShapeName").takeIf { it.isNotBlank() && it != "null" }
+                items.add(
+                    ManifestLevelItem(
+                        levelNumber = obj.getInt("LevelNumber"),
+                        arrowCount = obj.getInt("ArrowCount"),
+                        difficulty = obj.optString("Difficulty", "Medium"),
+                        shapeName = sName,
+                        isShape = obj.optBoolean("IsShape", sName != null),
+                        sourceCategory = obj.optString("SourceCategory", ""),
+                        xSize = obj.optInt("XSize", 0),
+                        ySize = obj.optInt("YSize", 0)
+                    )
+                )
+            }
+        } catch (_: Exception) {}
+        cachedManifest = items
+        return items
+    }
+
     fun parseLevelJson(levelNumber: Int, jsonStr: String): LevelData? {
         try {
             val root = JSONObject(jsonStr)
@@ -88,13 +129,40 @@ object LevelLoader {
                 val bendCount = arrowObj.optInt("BendCount", 0)
                 val indicesArray = arrowObj.getJSONArray("Indices")
 
+                val rawIndices = mutableListOf<Int>()
+                for (j in 0 until indicesArray.length()) {
+                    rawIndices.add(indicesArray.getInt(j))
+                }
+
+                // Expand vertices into continuous orthogonal cell paths if needed
+                val fullIndices = mutableListOf<Int>()
+                if (rawIndices.isNotEmpty()) {
+                    fullIndices.add(rawIndices[0])
+                    for (k in 0 until rawIndices.size - 1) {
+                        val idx1 = rawIndices[k]
+                        val idx2 = rawIndices[k + 1]
+                        val x1 = idx1 % xSize
+                        val y1 = idx1 / xSize
+                        val x2 = idx2 % xSize
+                        val y2 = idx2 / xSize
+                        val stepX = if (x2 > x1) 1 else if (x2 < x1) -1 else 0
+                        val stepY = if (y2 > y1) 1 else if (y2 < y1) -1 else 0
+                        var curX = x1
+                        var curY = y1
+                        while (curX != x2 || curY != y2) {
+                            if (curX != x2) curX += stepX
+                            else curY += stepY
+                            fullIndices.add(curY * xSize + curX)
+                        }
+                    }
+                }
+
                 // Map unity indices to canvas coordinates
                 // In Unity: index = Y * XSize + X
                 // Canvas X = UnityX, Canvas Y = (YSize - 1) - UnityY
                 // Canvas Dx = Dx, Canvas Dy = -Dy
                 val bodyPointsReversed = mutableListOf<GridCoordinate>()
-                for (j in 0 until indicesArray.length()) {
-                    val idx = indicesArray.getInt(j)
+                for (idx in fullIndices) {
                     val unityX = idx % xSize
                     val unityY = idx / xSize
                     val canvasX = unityX

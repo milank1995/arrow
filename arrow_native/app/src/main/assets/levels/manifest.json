@@ -1,1059 +1,1502 @@
 [
   {
-    "level": 1,
-    "arrows": 4,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 2,
-    "arrows": 6,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 3,
-    "arrows": 9,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 4,
-    "arrows": 12,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 5,
-    "arrows": 22,
-    "difficulty": "Medium",
-    "shapeName": "Palm Tree",
-    "isShape": true
-  },
-  {
-    "level": 6,
-    "arrows": 26,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 7,
-    "arrows": 32,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 8,
-    "arrows": 38,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 9,
-    "arrows": 44,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 10,
-    "arrows": 52,
-    "difficulty": "Hard",
-    "shapeName": "Robot",
-    "isShape": true
-  },
-  {
-    "level": 11,
-    "arrows": 45,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 12,
-    "arrows": 62,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 13,
-    "arrows": 80,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 14,
-    "arrows": 46,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 15,
-    "arrows": 81,
-    "difficulty": "Hard",
-    "shapeName": "Panda",
-    "isShape": true
-  },
-  {
-    "level": 16,
-    "arrows": 55,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 17,
-    "arrows": 59,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 18,
-    "arrows": 112,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 19,
-    "arrows": 68,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 20,
-    "arrows": 99,
-    "difficulty": "Super Hard",
-    "shapeName": "Swan",
-    "isShape": true
-  },
-  {
-    "level": 21,
-    "arrows": 75,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 22,
-    "arrows": 161,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 23,
-    "arrows": 83,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 24,
-    "arrows": 41,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 25,
-    "arrows": 130,
-    "difficulty": "Super Hard",
-    "shapeName": "Strawberry",
-    "isShape": true
-  },
-  {
-    "level": 26,
-    "arrows": 77,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 27,
-    "arrows": 158,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 28,
-    "arrows": 57,
-    "difficulty": "Medium",
-    "shapeName": "Black Cat",
-    "isShape": true
-  },
-  {
-    "level": 29,
-    "arrows": 55,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 30,
-    "arrows": 158,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 31,
-    "arrows": 107,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 32,
-    "arrows": 167,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 33,
-    "arrows": 60,
-    "difficulty": "Medium",
-    "shapeName": "Rainbow",
-    "isShape": true
-  },
-  {
-    "level": 34,
-    "arrows": 164,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 35,
-    "arrows": 70,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 36,
-    "arrows": 40,
-    "difficulty": "Medium",
-    "shapeName": "Jellyfish",
-    "isShape": true
-  },
-  {
-    "level": 37,
-    "arrows": 188,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 38,
-    "arrows": 102,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 39,
-    "arrows": 165,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 40,
-    "arrows": 135,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 41,
-    "arrows": 45,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 42,
-    "arrows": 221,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 43,
-    "arrows": 60,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 44,
-    "arrows": 192,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 45,
-    "arrows": 62,
-    "difficulty": "Medium",
-    "shapeName": "Squirrel",
-    "isShape": true
-  },
-  {
-    "level": 46,
-    "arrows": 131,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 47,
-    "arrows": 54,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 48,
-    "arrows": 94,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 49,
-    "arrows": 130,
-    "difficulty": "Super Hard",
-    "shapeName": "Cactus",
-    "isShape": true
-  },
-  {
-    "level": 50,
-    "arrows": 53,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 51,
-    "arrows": 180,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 52,
-    "arrows": 85,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 53,
-    "arrows": 45,
-    "difficulty": "Medium",
-    "shapeName": "Hourglass",
-    "isShape": true
-  },
-  {
-    "level": 54,
-    "arrows": 200,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 55,
-    "arrows": 124,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 56,
-    "arrows": 167,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 57,
-    "arrows": 114,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 58,
-    "arrows": 63,
-    "difficulty": "Hard",
-    "shapeName": "Magnolia",
-    "isShape": true
-  },
-  {
-    "level": 59,
-    "arrows": 42,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 60,
-    "arrows": 136,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 61,
-    "arrows": 177,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 62,
-    "arrows": 70,
-    "difficulty": "Medium",
-    "shapeName": "Flower Vase",
-    "isShape": true
-  },
-  {
-    "level": 63,
-    "arrows": 171,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 64,
-    "arrows": 88,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 65,
-    "arrows": 50,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 66,
-    "arrows": 203,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 67,
-    "arrows": 72,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 68,
-    "arrows": 194,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 69,
-    "arrows": 60,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 70,
-    "arrows": 77,
-    "difficulty": "Hard",
-    "shapeName": "Trophy",
-    "isShape": true
-  },
-  {
-    "level": 71,
-    "arrows": 90,
-    "difficulty": "Medium",
-    "shapeName": "Windmill",
-    "isShape": true
-  },
-  {
-    "level": 72,
-    "arrows": 88,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 73,
-    "arrows": 169,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 74,
-    "arrows": 28,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 75,
-    "arrows": 90,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 76,
-    "arrows": 40,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 77,
-    "arrows": 55,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 78,
-    "arrows": 194,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 79,
-    "arrows": 68,
-    "difficulty": "Medium",
-    "shapeName": "Snowflake",
-    "isShape": true
-  },
-  {
-    "level": 80,
-    "arrows": 167,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 81,
-    "arrows": 60,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 82,
-    "arrows": 138,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 83,
-    "arrows": 80,
-    "difficulty": "Medium",
-    "shapeName": "Sparrow",
-    "isShape": true
-  },
-  {
-    "level": 84,
-    "arrows": 55,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 85,
-    "arrows": 166,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 86,
-    "arrows": 63,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 87,
-    "arrows": 177,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 88,
-    "arrows": 80,
-    "difficulty": "Medium",
-    "shapeName": "Dog",
-    "isShape": true
-  },
-  {
-    "level": 89,
-    "arrows": 50,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 90,
-    "arrows": 167,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 91,
-    "arrows": 53,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 92,
-    "arrows": 180,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 93,
-    "arrows": 80,
-    "difficulty": "Medium",
-    "shapeName": "Seal",
-    "isShape": true
-  },
-  {
-    "level": 94,
-    "arrows": 170,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 95,
-    "arrows": 42,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 96,
-    "arrows": 64,
-    "difficulty": "Medium",
-    "shapeName": "Rabbit",
-    "isShape": true
-  },
-  {
-    "level": 97,
-    "arrows": 191,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 98,
-    "arrows": 55,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 99,
-    "arrows": 154,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 100,
-    "arrows": 248,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 101,
-    "arrows": 52,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 102,
-    "arrows": 227,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 103,
-    "arrows": 132,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 104,
-    "arrows": 145,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 105,
-    "arrows": 103,
-    "difficulty": "Medium",
-    "shapeName": "Owl",
-    "isShape": true
-  },
-  {
-    "level": 106,
-    "arrows": 121,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 107,
-    "arrows": 76,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 108,
-    "arrows": 75,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 109,
-    "arrows": 105,
-    "difficulty": "Super Hard",
-    "shapeName": "Spider",
-    "isShape": true
-  },
-  {
-    "level": 110,
-    "arrows": 88,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 111,
-    "arrows": 171,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 112,
-    "arrows": 93,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 113,
-    "arrows": 65,
-    "difficulty": "Medium",
-    "shapeName": "Cherry",
-    "isShape": true
-  },
-  {
-    "level": 114,
-    "arrows": 120,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 115,
-    "arrows": 60,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 116,
-    "arrows": 214,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 117,
-    "arrows": 43,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 118,
-    "arrows": 172,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 119,
-    "arrows": 82,
-    "difficulty": "Medium",
-    "shapeName": "Honeybee",
-    "isShape": true
-  },
-  {
-    "level": 120,
-    "arrows": 54,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 121,
-    "arrows": 202,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 122,
-    "arrows": 54,
-    "difficulty": "Medium",
-    "shapeName": "Star",
-    "isShape": true
-  },
-  {
-    "level": 123,
-    "arrows": 169,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 124,
-    "arrows": 140,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 125,
-    "arrows": 148,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 126,
-    "arrows": 120,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 127,
-    "arrows": 78,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 128,
-    "arrows": 67,
-    "difficulty": "Super Hard",
-    "shapeName": "Sunflower",
-    "isShape": true
-  },
-  {
-    "level": 129,
-    "arrows": 60,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 130,
-    "arrows": 182,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 131,
-    "arrows": 56,
-    "difficulty": "Medium",
-    "shapeName": "Beach Umbrella",
-    "isShape": true
-  },
-  {
-    "level": 132,
-    "arrows": 59,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 133,
-    "arrows": 182,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 134,
-    "arrows": 151,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 135,
-    "arrows": 142,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 136,
-    "arrows": 147,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 137,
-    "arrows": 59,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 138,
-    "arrows": 179,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 139,
-    "arrows": 85,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 140,
-    "arrows": 122,
-    "difficulty": "Super Hard",
-    "shapeName": "Truck",
-    "isShape": true
-  },
-  {
-    "level": 141,
-    "arrows": 158,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 142,
-    "arrows": 151,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 143,
-    "arrows": 75,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 144,
-    "arrows": 126,
-    "difficulty": "Medium",
-    "shapeName": "Catstar",
-    "isShape": true
-  },
-  {
-    "level": 145,
-    "arrows": 216,
-    "difficulty": "Super Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 146,
-    "arrows": 69,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 147,
-    "arrows": 187,
-    "difficulty": "Hard",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 148,
-    "arrows": 80,
-    "difficulty": "Medium",
-    "shapeName": "Airplane",
-    "isShape": true
-  },
-  {
-    "level": 149,
-    "arrows": 82,
-    "difficulty": "Medium",
-    "shapeName": null,
-    "isShape": false
-  },
-  {
-    "level": 150,
-    "arrows": 261,
-    "difficulty": "Super Hard",
-    "shapeName": "Sofa Grand Finale",
-    "isShape": true
-  },
-  {
-    "level": 151,
-    "arrows": 70,
-    "difficulty": "Hard",
-    "shapeName": "Lock",
-    "isShape": true
+    "LevelNumber": 1,
+    "ArrowCount": 4,
+    "Difficulty": "Easy",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "New Unity Normal Levels",
+    "XSize": 4,
+    "YSize": 5
+  },
+  {
+    "LevelNumber": 2,
+    "ArrowCount": 3,
+    "Difficulty": "Easy",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 7,
+    "YSize": 7
+  },
+  {
+    "LevelNumber": 3,
+    "ArrowCount": 5,
+    "Difficulty": "Easy",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 12,
+    "YSize": 12
+  },
+  {
+    "LevelNumber": 4,
+    "ArrowCount": 6,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 10,
+    "YSize": 12
+  },
+  {
+    "LevelNumber": 5,
+    "ArrowCount": 23,
+    "Difficulty": "Medium",
+    "ShapeName": "Palm Tree",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 47,
+    "YSize": 52
+  },
+  {
+    "LevelNumber": 6,
+    "ArrowCount": 21,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "New Unity Normal Levels",
+    "XSize": 11,
+    "YSize": 13
+  },
+  {
+    "LevelNumber": 7,
+    "ArrowCount": 22,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 19,
+    "YSize": 23
+  },
+  {
+    "LevelNumber": 8,
+    "ArrowCount": 24,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "New Unity Normal Levels",
+    "XSize": 11,
+    "YSize": 15
+  },
+  {
+    "LevelNumber": 9,
+    "ArrowCount": 25,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 17,
+    "YSize": 28
+  },
+  {
+    "LevelNumber": 10,
+    "ArrowCount": 33,
+    "Difficulty": "Medium",
+    "ShapeName": "Balloon",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 34,
+    "YSize": 60
+  },
+  {
+    "LevelNumber": 11,
+    "ArrowCount": 26,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "New Unity Normal Levels",
+    "XSize": 12,
+    "YSize": 18
+  },
+  {
+    "LevelNumber": 12,
+    "ArrowCount": 27,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 18,
+    "YSize": 25
+  },
+  {
+    "LevelNumber": 13,
+    "ArrowCount": 29,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "New Unity Normal Levels",
+    "XSize": 14,
+    "YSize": 15
+  },
+  {
+    "LevelNumber": 14,
+    "ArrowCount": 30,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 21,
+    "YSize": 22
+  },
+  {
+    "LevelNumber": 15,
+    "ArrowCount": 33,
+    "Difficulty": "Medium",
+    "ShapeName": "Umbrella Cat",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 63,
+    "YSize": 73
+  },
+  {
+    "LevelNumber": 16,
+    "ArrowCount": 31,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "New Unity Normal Levels",
+    "XSize": 12,
+    "YSize": 20
+  },
+  {
+    "LevelNumber": 17,
+    "ArrowCount": 33,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 19,
+    "YSize": 26
+  },
+  {
+    "LevelNumber": 18,
+    "ArrowCount": 32,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "New Unity Normal Levels",
+    "XSize": 14,
+    "YSize": 17
+  },
+  {
+    "LevelNumber": 19,
+    "ArrowCount": 36,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 18,
+    "YSize": 23
+  },
+  {
+    "LevelNumber": 20,
+    "ArrowCount": 35,
+    "Difficulty": "Medium",
+    "ShapeName": "Jellyfish",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 47,
+    "YSize": 66
+  },
+  {
+    "LevelNumber": 21,
+    "ArrowCount": 32,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "New Unity Normal Levels",
+    "XSize": 14,
+    "YSize": 18
+  },
+  {
+    "LevelNumber": 22,
+    "ArrowCount": 38,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 19,
+    "YSize": 27
+  },
+  {
+    "LevelNumber": 23,
+    "ArrowCount": 32,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "New Unity Normal Levels",
+    "XSize": 14,
+    "YSize": 18
+  },
+  {
+    "LevelNumber": 24,
+    "ArrowCount": 41,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 18,
+    "YSize": 25
+  },
+  {
+    "LevelNumber": 25,
+    "ArrowCount": 46,
+    "Difficulty": "Medium",
+    "ShapeName": "Flower Vase",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 56,
+    "YSize": 94
+  },
+  {
+    "LevelNumber": 26,
+    "ArrowCount": 32,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "New Unity Normal Levels",
+    "XSize": 14,
+    "YSize": 18
+  },
+  {
+    "LevelNumber": 27,
+    "ArrowCount": 43,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 21,
+    "YSize": 29
+  },
+  {
+    "LevelNumber": 28,
+    "ArrowCount": 32,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "New Unity Normal Levels",
+    "XSize": 14,
+    "YSize": 18
+  },
+  {
+    "LevelNumber": 29,
+    "ArrowCount": 46,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 19,
+    "YSize": 24
+  },
+  {
+    "LevelNumber": 30,
+    "ArrowCount": 48,
+    "Difficulty": "Medium",
+    "ShapeName": "Apple",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 28,
+    "YSize": 39
+  },
+  {
+    "LevelNumber": 31,
+    "ArrowCount": 47,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 18,
+    "YSize": 28
+  },
+  {
+    "LevelNumber": 32,
+    "ArrowCount": 48,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 19,
+    "YSize": 29
+  },
+  {
+    "LevelNumber": 33,
+    "ArrowCount": 50,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 20,
+    "YSize": 25
+  },
+  {
+    "LevelNumber": 34,
+    "ArrowCount": 51,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 22,
+    "YSize": 23
+  },
+  {
+    "LevelNumber": 35,
+    "ArrowCount": 50,
+    "Difficulty": "Medium",
+    "ShapeName": "Kitten Sharky",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 60,
+    "YSize": 60
+  },
+  {
+    "LevelNumber": 36,
+    "ArrowCount": 52,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 18,
+    "YSize": 27
+  },
+  {
+    "LevelNumber": 37,
+    "ArrowCount": 53,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 20,
+    "YSize": 24
+  },
+  {
+    "LevelNumber": 38,
+    "ArrowCount": 55,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 20,
+    "YSize": 30
+  },
+  {
+    "LevelNumber": 39,
+    "ArrowCount": 56,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 20,
+    "YSize": 28
+  },
+  {
+    "LevelNumber": 40,
+    "ArrowCount": 52,
+    "Difficulty": "Medium",
+    "ShapeName": "Robot",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 35,
+    "YSize": 40
+  },
+  {
+    "LevelNumber": 41,
+    "ArrowCount": 57,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 22,
+    "YSize": 25
+  },
+  {
+    "LevelNumber": 42,
+    "ArrowCount": 59,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 24,
+    "YSize": 25
+  },
+  {
+    "LevelNumber": 43,
+    "ArrowCount": 60,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 20,
+    "YSize": 31
+  },
+  {
+    "LevelNumber": 44,
+    "ArrowCount": 62,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 22,
+    "YSize": 29
+  },
+  {
+    "LevelNumber": 45,
+    "ArrowCount": 54,
+    "Difficulty": "Hard",
+    "ShapeName": "Wine Cat",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 40,
+    "YSize": 61
+  },
+  {
+    "LevelNumber": 46,
+    "ArrowCount": 62,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 23,
+    "YSize": 33
+  },
+  {
+    "LevelNumber": 47,
+    "ArrowCount": 64,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 23,
+    "YSize": 26
+  },
+  {
+    "LevelNumber": 48,
+    "ArrowCount": 65,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 22,
+    "YSize": 24
+  },
+  {
+    "LevelNumber": 49,
+    "ArrowCount": 67,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 22,
+    "YSize": 32
+  },
+  {
+    "LevelNumber": 50,
+    "ArrowCount": 57,
+    "Difficulty": "Hard",
+    "ShapeName": "Black Cat",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 35,
+    "YSize": 49
+  },
+  {
+    "LevelNumber": 51,
+    "ArrowCount": 68,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 26,
+    "YSize": 30
+  },
+  {
+    "LevelNumber": 52,
+    "ArrowCount": 69,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 23,
+    "YSize": 31
+  },
+  {
+    "LevelNumber": 53,
+    "ArrowCount": 71,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 19,
+    "YSize": 29
+  },
+  {
+    "LevelNumber": 54,
+    "ArrowCount": 72,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 33,
+    "YSize": 33
+  },
+  {
+    "LevelNumber": 55,
+    "ArrowCount": 58,
+    "Difficulty": "Hard",
+    "ShapeName": "Eiffel Tower",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 49,
+    "YSize": 75
+  },
+  {
+    "LevelNumber": 56,
+    "ArrowCount": 73,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 24,
+    "YSize": 29
+  },
+  {
+    "LevelNumber": 57,
+    "ArrowCount": 74,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 25,
+    "YSize": 32
+  },
+  {
+    "LevelNumber": 58,
+    "ArrowCount": 76,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 27,
+    "YSize": 35
+  },
+  {
+    "LevelNumber": 59,
+    "ArrowCount": 77,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 23,
+    "YSize": 36
+  },
+  {
+    "LevelNumber": 60,
+    "ArrowCount": 55,
+    "Difficulty": "Hard",
+    "ShapeName": "Magnolia Flower",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 60,
+    "YSize": 74
+  },
+  {
+    "LevelNumber": 61,
+    "ArrowCount": 78,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 29,
+    "YSize": 39
+  },
+  {
+    "LevelNumber": 62,
+    "ArrowCount": 79,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 27,
+    "YSize": 39
+  },
+  {
+    "LevelNumber": 63,
+    "ArrowCount": 81,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 25,
+    "YSize": 25
+  },
+  {
+    "LevelNumber": 64,
+    "ArrowCount": 82,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 23,
+    "YSize": 35
+  },
+  {
+    "LevelNumber": 65,
+    "ArrowCount": 67,
+    "Difficulty": "Hard",
+    "ShapeName": "Sunflower",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 46,
+    "YSize": 66
+  },
+  {
+    "LevelNumber": 66,
+    "ArrowCount": 83,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 25,
+    "YSize": 32
+  },
+  {
+    "LevelNumber": 67,
+    "ArrowCount": 85,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 27,
+    "YSize": 37
+  },
+  {
+    "LevelNumber": 68,
+    "ArrowCount": 86,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 28,
+    "YSize": 31
+  },
+  {
+    "LevelNumber": 69,
+    "ArrowCount": 88,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 27,
+    "YSize": 30
+  },
+  {
+    "LevelNumber": 70,
+    "ArrowCount": 74,
+    "Difficulty": "Hard",
+    "ShapeName": "Conch",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 45,
+    "YSize": 55
+  },
+  {
+    "LevelNumber": 71,
+    "ArrowCount": 88,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 31,
+    "YSize": 34
+  },
+  {
+    "LevelNumber": 72,
+    "ArrowCount": 90,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 30,
+    "YSize": 37
+  },
+  {
+    "LevelNumber": 73,
+    "ArrowCount": 91,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 26,
+    "YSize": 37
+  },
+  {
+    "LevelNumber": 74,
+    "ArrowCount": 93,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 29,
+    "YSize": 45
+  },
+  {
+    "LevelNumber": 75,
+    "ArrowCount": 78,
+    "Difficulty": "Hard",
+    "ShapeName": "Sitting Cat",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 48,
+    "YSize": 50
+  },
+  {
+    "LevelNumber": 76,
+    "ArrowCount": 94,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 27,
+    "YSize": 36
+  },
+  {
+    "LevelNumber": 77,
+    "ArrowCount": 95,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 25,
+    "YSize": 37
+  },
+  {
+    "LevelNumber": 78,
+    "ArrowCount": 97,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 28,
+    "YSize": 34
+  },
+  {
+    "LevelNumber": 79,
+    "ArrowCount": 98,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 27,
+    "YSize": 35
+  },
+  {
+    "LevelNumber": 80,
+    "ArrowCount": 81,
+    "Difficulty": "Hard",
+    "ShapeName": "Panda",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 45,
+    "YSize": 54
+  },
+  {
+    "LevelNumber": 81,
+    "ArrowCount": 99,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 26,
+    "YSize": 43
+  },
+  {
+    "LevelNumber": 82,
+    "ArrowCount": 100,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 25,
+    "YSize": 38
+  },
+  {
+    "LevelNumber": 83,
+    "ArrowCount": 102,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 26,
+    "YSize": 42
+  },
+  {
+    "LevelNumber": 84,
+    "ArrowCount": 103,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 29,
+    "YSize": 34
+  },
+  {
+    "LevelNumber": 85,
+    "ArrowCount": 86,
+    "Difficulty": "Hard",
+    "ShapeName": "Windowview",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 80,
+    "YSize": 80
+  },
+  {
+    "LevelNumber": 86,
+    "ArrowCount": 104,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 30,
+    "YSize": 41
+  },
+  {
+    "LevelNumber": 87,
+    "ArrowCount": 105,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 29,
+    "YSize": 37
+  },
+  {
+    "LevelNumber": 88,
+    "ArrowCount": 107,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 27,
+    "YSize": 42
+  },
+  {
+    "LevelNumber": 89,
+    "ArrowCount": 108,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 27,
+    "YSize": 37
+  },
+  {
+    "LevelNumber": 90,
+    "ArrowCount": 90,
+    "Difficulty": "Hard",
+    "ShapeName": "Butterfly",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 90,
+    "YSize": 90
+  },
+  {
+    "LevelNumber": 91,
+    "ArrowCount": 109,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 30,
+    "YSize": 43
+  },
+  {
+    "LevelNumber": 92,
+    "ArrowCount": 111,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 32,
+    "YSize": 40
+  },
+  {
+    "LevelNumber": 93,
+    "ArrowCount": 112,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 34,
+    "YSize": 40
+  },
+  {
+    "LevelNumber": 94,
+    "ArrowCount": 114,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 33,
+    "YSize": 34
+  },
+  {
+    "LevelNumber": 95,
+    "ArrowCount": 99,
+    "Difficulty": "Hard",
+    "ShapeName": "Swan",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 45,
+    "YSize": 63
+  },
+  {
+    "LevelNumber": 96,
+    "ArrowCount": 114,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 31,
+    "YSize": 38
+  },
+  {
+    "LevelNumber": 97,
+    "ArrowCount": 116,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 32,
+    "YSize": 34
+  },
+  {
+    "LevelNumber": 98,
+    "ArrowCount": 117,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 32,
+    "YSize": 34
+  },
+  {
+    "LevelNumber": 99,
+    "ArrowCount": 119,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 28,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 100,
+    "ArrowCount": 110,
+    "Difficulty": "Hard",
+    "ShapeName": "Winter Bird",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 49,
+    "YSize": 79
+  },
+  {
+    "LevelNumber": 101,
+    "ArrowCount": 120,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 29,
+    "YSize": 39
+  },
+  {
+    "LevelNumber": 102,
+    "ArrowCount": 121,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 33,
+    "YSize": 36
+  },
+  {
+    "LevelNumber": 103,
+    "ArrowCount": 123,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 30,
+    "YSize": 44
+  },
+  {
+    "LevelNumber": 104,
+    "ArrowCount": 124,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 33,
+    "YSize": 38
+  },
+  {
+    "LevelNumber": 105,
+    "ArrowCount": 115,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Tropical Waterfall Elephant",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 51,
+    "YSize": 62
+  },
+  {
+    "LevelNumber": 106,
+    "ArrowCount": 125,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 27,
+    "YSize": 44
+  },
+  {
+    "LevelNumber": 107,
+    "ArrowCount": 126,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 29,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 108,
+    "ArrowCount": 128,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 28,
+    "YSize": 47
+  },
+  {
+    "LevelNumber": 109,
+    "ArrowCount": 129,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 30,
+    "YSize": 47
+  },
+  {
+    "LevelNumber": 110,
+    "ArrowCount": 136,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Whale",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 60,
+    "YSize": 60
+  },
+  {
+    "LevelNumber": 111,
+    "ArrowCount": 130,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 33,
+    "YSize": 42
+  },
+  {
+    "LevelNumber": 112,
+    "ArrowCount": 131,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 29,
+    "YSize": 47
+  },
+  {
+    "LevelNumber": 113,
+    "ArrowCount": 133,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 37,
+    "YSize": 43
+  },
+  {
+    "LevelNumber": 114,
+    "ArrowCount": 134,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 39,
+    "YSize": 39
+  },
+  {
+    "LevelNumber": 115,
+    "ArrowCount": 139,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Strawberry",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 61,
+    "YSize": 66
+  },
+  {
+    "LevelNumber": 116,
+    "ArrowCount": 135,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 32,
+    "YSize": 41
+  },
+  {
+    "LevelNumber": 117,
+    "ArrowCount": 137,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 34,
+    "YSize": 38
+  },
+  {
+    "LevelNumber": 118,
+    "ArrowCount": 138,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 36,
+    "YSize": 38
+  },
+  {
+    "LevelNumber": 119,
+    "ArrowCount": 140,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 36,
+    "YSize": 38
+  },
+  {
+    "LevelNumber": 120,
+    "ArrowCount": 141,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Lion",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 50,
+    "YSize": 80
+  },
+  {
+    "LevelNumber": 121,
+    "ArrowCount": 140,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 30,
+    "YSize": 49
+  },
+  {
+    "LevelNumber": 122,
+    "ArrowCount": 142,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 30,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 123,
+    "ArrowCount": 143,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 30,
+    "YSize": 47
+  },
+  {
+    "LevelNumber": 124,
+    "ArrowCount": 145,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 31,
+    "YSize": 47
+  },
+  {
+    "LevelNumber": 125,
+    "ArrowCount": 156,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Crab",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 64,
+    "YSize": 98
+  },
+  {
+    "LevelNumber": 126,
+    "ArrowCount": 146,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 35,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 127,
+    "ArrowCount": 147,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 30,
+    "YSize": 47
+  },
+  {
+    "LevelNumber": 128,
+    "ArrowCount": 149,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 32,
+    "YSize": 49
+  },
+  {
+    "LevelNumber": 129,
+    "ArrowCount": 150,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 34,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 130,
+    "ArrowCount": 167,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Chameleon",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 100,
+    "YSize": 70
+  },
+  {
+    "LevelNumber": 131,
+    "ArrowCount": 151,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 32,
+    "YSize": 47
+  },
+  {
+    "LevelNumber": 132,
+    "ArrowCount": 152,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 35,
+    "YSize": 40
+  },
+  {
+    "LevelNumber": 133,
+    "ArrowCount": 154,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 32,
+    "YSize": 44
+  },
+  {
+    "LevelNumber": 134,
+    "ArrowCount": 155,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 36,
+    "YSize": 50
+  },
+  {
+    "LevelNumber": 135,
+    "ArrowCount": 170,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Stargazer Cat",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 55,
+    "YSize": 83
+  },
+  {
+    "LevelNumber": 136,
+    "ArrowCount": 156,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 35,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 137,
+    "ArrowCount": 157,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 35,
+    "YSize": 48
+  },
+  {
+    "LevelNumber": 138,
+    "ArrowCount": 159,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 34,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 139,
+    "ArrowCount": 160,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 36,
+    "YSize": 55
+  },
+  {
+    "LevelNumber": 140,
+    "ArrowCount": 186,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Lucky Cat",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 64,
+    "YSize": 75
+  },
+  {
+    "LevelNumber": 141,
+    "ArrowCount": 161,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 32,
+    "YSize": 42
+  },
+  {
+    "LevelNumber": 142,
+    "ArrowCount": 163,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 31,
+    "YSize": 44
+  },
+  {
+    "LevelNumber": 143,
+    "ArrowCount": 164,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 35,
+    "YSize": 49
+  },
+  {
+    "LevelNumber": 144,
+    "ArrowCount": 166,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 36,
+    "YSize": 50
+  },
+  {
+    "LevelNumber": 145,
+    "ArrowCount": 190,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Rose",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 50,
+    "YSize": 92
+  },
+  {
+    "LevelNumber": 146,
+    "ArrowCount": 166,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 35,
+    "YSize": 52
+  },
+  {
+    "LevelNumber": 147,
+    "ArrowCount": 168,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 33,
+    "YSize": 50
+  },
+  {
+    "LevelNumber": 148,
+    "ArrowCount": 169,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 35,
+    "YSize": 54
+  },
+  {
+    "LevelNumber": 149,
+    "ArrowCount": 171,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 37,
+    "YSize": 43
+  },
+  {
+    "LevelNumber": 150,
+    "ArrowCount": 262,
+    "Difficulty": "Super Hard",
+    "ShapeName": "The Thinker",
+    "IsShape": true,
+    "SourceCategory": "Large Puzzles",
+    "XSize": 64,
+    "YSize": 99
   }
 ]

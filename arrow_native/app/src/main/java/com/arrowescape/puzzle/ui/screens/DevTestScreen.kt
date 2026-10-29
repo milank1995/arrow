@@ -312,6 +312,8 @@ fun DevTestScreen(
                         isCelebrationBurstActive = isCelebrationBurstActive,
                         restartTrigger = restartTrigger,
                         previewRayArrowIds = previewRayArrowIds,
+                        currentLevelNumber = currentLevelNumber,
+                        showTutorialHand = false,
                         onArrowClick = { arrow ->
                             onArrowClicked(arrow)
                         },
@@ -422,7 +424,43 @@ private fun LevelSelectorDialog(
     onPlayInRegularGame: ((Int) -> Unit)? = null,
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
     var inputLevelText by remember { mutableStateOf(currentLevel.toString()) }
+    var isShapesOnly by remember { mutableStateOf(false) }
+
+    val manifest = remember { LevelLoader.getCuratedManifest(context) }
+    val shapeLevels = remember(manifest) { manifest.filter { it.isShape } }
+
+    fun getShapeEmoji(name: String): String {
+        return when {
+            name.contains("Palm", ignoreCase = true) -> "🌴"
+            name.contains("Balloon", ignoreCase = true) -> "🎈"
+            name.contains("Cat", ignoreCase = true) -> "🐱"
+            name.contains("Jellyfish", ignoreCase = true) -> "🪼"
+            name.contains("Vase", ignoreCase = true) -> "🏺"
+            name.contains("Apple", ignoreCase = true) -> "🍎"
+            name.contains("Shark", ignoreCase = true) -> "🦈"
+            name.contains("Robot", ignoreCase = true) -> "🤖"
+            name.contains("Tower", ignoreCase = true) -> "🗼"
+            name.contains("Sunflower", ignoreCase = true) -> "🌻"
+            name.contains("Magnolia", ignoreCase = true) -> "🌸"
+            name.contains("Conch", ignoreCase = true) -> "🐚"
+            name.contains("Panda", ignoreCase = true) -> "🐼"
+            name.contains("Butterfly", ignoreCase = true) -> "🦋"
+            name.contains("Swan", ignoreCase = true) -> "🦢"
+            name.contains("Bird", ignoreCase = true) -> "🐦"
+            name.contains("Elephant", ignoreCase = true) -> "🐘"
+            name.contains("Whale", ignoreCase = true) -> "🐋"
+            name.contains("Strawberry", ignoreCase = true) -> "🍓"
+            name.contains("Lion", ignoreCase = true) -> "🦁"
+            name.contains("Crab", ignoreCase = true) -> "🦀"
+            name.contains("Chameleon", ignoreCase = true) -> "🦎"
+            name.contains("Rose", ignoreCase = true) -> "🌹"
+            name.contains("Thinker", ignoreCase = true) -> "🧠"
+            name.contains("Window", ignoreCase = true) -> "🪟"
+            else -> "🐾"
+        }
+    }
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -431,7 +469,7 @@ private fun LevelSelectorDialog(
             shadowElevation = 8.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = 4.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -454,80 +492,197 @@ private fun LevelSelectorDialog(
                     }
                 }
 
-                Text(
-                    text = "Jump to any of the 150 curated levels without passing previous levels:",
-                    fontSize = 13.sp,
-                    color = Color(0xFF64748B),
-                    modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
-                )
+                Spacer(modifier = Modifier.height(10.dp))
 
-                // Quick presets for varied grid sizes and complexities
-                Text(
-                    text = "Milestones & Key Shapes:",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF334155),
-                    modifier = Modifier.padding(bottom = 6.dp)
-                )
-
-                val quickLevels = listOf(
-                    1 to "Intro (4 arr)",
-                    5 to "🌴 Palm Tree (22)",
-                    10 to "🤖 Robot (52)",
-                    15 to "🐼 Panda (81)",
-                    20 to "🦢 Swan (99)",
-                    25 to "🍓 Strawberry (130)",
-                    50 to "Golden Breather (53)",
-                    100 to "🏛️ Century Boss (248)",
-                    150 to "🛋️ Sofa Finale (261)"
-                )
-
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    quickLevels.chunked(2).forEach { rowPair ->
+                // FILTER BUTTONS ROW (All Levels vs Shape Puzzles Only)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // 1. All Levels Button
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = if (!isShapesOnly) Color(0xFF4F46E5) else Color(0xFFF1F5F9),
+                        border = if (!isShapesOnly) null else androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { isShapesOnly = false }
+                    ) {
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.fillMaxWidth()
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(vertical = 8.dp)
                         ) {
-                            rowPair.forEach { (lvl, desc) ->
-                                val isCurrent = (lvl == currentLevel)
-                                Surface(
-                                    shape = RoundedCornerShape(10.dp),
-                                    color = if (isCurrent) Color(0xFFEEF2FF) else Color(0xFFF8FAFC),
-                                    border = androidx.compose.foundation.BorderStroke(
-                                        1.dp,
-                                        if (isCurrent) Color(0xFF6366F1) else Color(0xFFE2E8F0)
-                                    ),
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clickable { onLevelSelected(lvl) }
+                            Text(
+                                text = "📋 All (150)",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (!isShapesOnly) Color.White else Color(0xFF334155)
+                            )
+                        }
+                    }
+
+                    // 2. Shape Puzzles Only Button
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = if (isShapesOnly) Color(0xFF4F46E5) else Color(0xFFF1F5F9),
+                        border = if (isShapesOnly) null else androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { isShapesOnly = true }
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = "🧩 Shapes Only (30)",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isShapesOnly) Color.White else Color(0xFF334155)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                if (isShapesOnly) {
+                    Text(
+                        text = "Authentic Shape Puzzle Levels (Every 5 Levels):",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF334155),
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+
+                    androidx.compose.foundation.lazy.LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(280.dp)
+                    ) {
+                        items(shapeLevels.size) { i ->
+                            val item = shapeLevels[i]
+                            val isCurrent = (item.levelNumber == currentLevel)
+                            val emoji = getShapeEmoji(item.shapeName ?: "")
+                            Surface(
+                                shape = RoundedCornerShape(10.dp),
+                                color = if (isCurrent) Color(0xFFEEF2FF) else Color(0xFFF8FAFC),
+                                border = androidx.compose.foundation.BorderStroke(
+                                    1.dp,
+                                    if (isCurrent) Color(0xFF6366F1) else Color(0xFFE2E8F0)
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onLevelSelected(item.levelNumber) }
+                            ) {
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 9.dp)
                                 ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)
-                                    ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
                                         Text(
-                                            text = "L$lvl",
+                                            text = "L${item.levelNumber}",
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 13.sp,
                                             color = if (isCurrent) Color(0xFF4338CA) else Color(0xFF1E293B)
                                         )
-                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Spacer(modifier = Modifier.width(8.dp))
                                         Text(
-                                            text = desc,
-                                            fontSize = 11.sp,
-                                            color = Color(0xFF64748B)
+                                            text = "$emoji ${item.shapeName}",
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 12.sp,
+                                            color = Color(0xFF334155)
                                         )
                                     }
+                                    Text(
+                                        text = "${item.arrowCount} arr",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color(0xFF64748B)
+                                    )
                                 }
                             }
-                            if (rowPair.size == 1) {
-                                Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                } else {
+                    // Quick presets for milestones
+                    Text(
+                        text = "Milestones & Key Shapes:",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF334155),
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+
+                    val quickLevels = listOf(
+                        1 to "Intro (4 arr)",
+                        5 to "🌴 Palm Tree (23)",
+                        10 to "🎈 Balloon (33)",
+                        15 to "🐱 Umbrella Cat (33)",
+                        20 to "🪼 Jellyfish (35)",
+                        25 to "🏺 Flower Vase (46)",
+                        30 to "🍎 Apple (48)",
+                        35 to "🦈 Kitten Shark (50)",
+                        40 to "🤖 Robot (52)",
+                        45 to "🍷 Wine Cat (54)",
+                        50 to "🐈‍⬛ Black Cat (57)",
+                        100 to "🐦 Winter Bird (110)",
+                        150 to "🧠 The Thinker (262)"
+                    )
+
+                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        quickLevels.chunked(2).forEach { rowPair ->
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                rowPair.forEach { (lvl, desc) ->
+                                    val isCurrent = (lvl == currentLevel)
+                                    Surface(
+                                        shape = RoundedCornerShape(10.dp),
+                                        color = if (isCurrent) Color(0xFFEEF2FF) else Color(0xFFF8FAFC),
+                                        border = androidx.compose.foundation.BorderStroke(
+                                            1.dp,
+                                            if (isCurrent) Color(0xFF6366F1) else Color(0xFFE2E8F0)
+                                        ),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .clickable { onLevelSelected(lvl) }
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp)
+                                        ) {
+                                            Text(
+                                                text = "L$lvl",
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 12.sp,
+                                                color = if (isCurrent) Color(0xFF4338CA) else Color(0xFF1E293B)
+                                            )
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text(
+                                                text = desc,
+                                                fontSize = 11.sp,
+                                                color = Color(0xFF64748B),
+                                                maxLines = 1
+                                            )
+                                        }
+                                    }
+                                }
+                                if (rowPair.size == 1) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
                             }
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 // Custom Level Number Input
                 Row(

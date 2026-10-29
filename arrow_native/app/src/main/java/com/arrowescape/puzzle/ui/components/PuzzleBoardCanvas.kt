@@ -124,8 +124,9 @@ fun PuzzleBoardCanvas(
     restartTrigger: Long = 0L,
     previewRayArrowIds: Set<String> = emptySet(),
     activeBoosterAnimation: BoosterEffectAnimation? = null,
-    currentLevelNumber: Int = 1,
+    currentLevelNumber: Int = 0,
     isDailyChallengeMode: Boolean = false,
+    showTutorialHand: Boolean = (currentLevelNumber == 1 && !isDailyChallengeMode),
     onArrowClick: (Arrow) -> Unit,
     onArrowLongPress: (Arrow, isPressed: Boolean) -> Unit,
     onDismissPreviewRays: () -> Unit = {},
@@ -363,15 +364,15 @@ fun PuzzleBoardCanvas(
         val hasUnclearedArrows = arrows.any { it.state != ArrowState.CLEARED }
 
         // Tutorial hand indicator: active strictly during Level 1 until all arrows are cleared
-        val tutorialTargetArrow = remember(arrows, currentLevelNumber, isDailyChallengeMode, occupancyMap) {
-            if (currentLevelNumber == 1 && !isDailyChallengeMode) {
+        val tutorialTargetArrow = remember(arrows, currentLevelNumber, isDailyChallengeMode, showTutorialHand, occupancyMap) {
+            if (showTutorialHand && currentLevelNumber == 1 && !isDailyChallengeMode) {
                 arrows.firstOrNull { it.state == ArrowState.IDLE && PuzzleSolver.canMoveOut(it, occupancyMap) }
                     ?: arrows.firstOrNull { it.state == ArrowState.IDLE }
             } else null
         }
 
-        LaunchedEffect(isCelebrationBurstActive, activeBoosterAnimation, currentLevelNumber, isDailyChallengeMode, hasUnclearedArrows) {
-            while (isCelebrationBurstActive || (confettiPieces.isNotEmpty() && confettiStartTime > 0L) || activeBoosterAnimation != null || (currentLevelNumber == 1 && !isDailyChallengeMode && hasUnclearedArrows)) {
+        LaunchedEffect(isCelebrationBurstActive, activeBoosterAnimation, showTutorialHand, hasUnclearedArrows) {
+            while (isCelebrationBurstActive || (confettiPieces.isNotEmpty() && confettiStartTime > 0L) || activeBoosterAnimation != null || (showTutorialHand && hasUnclearedArrows)) {
                 withFrameNanos { frameTimeNanos ->
                     animTick = frameTimeNanos
                 }
@@ -719,36 +720,50 @@ fun PuzzleBoardCanvas(
 
                 }
 
-                // 2. Cleared Area Silhouette Dots:
-                // Only become visible once an arrow has moved out of the gameplay area.
-                // Delicate pinpoints with tactile pop-in matching New Unity One pixel-for-pixel
-                if (clearedCells.isNotEmpty()) {
-                    val dotColor = theme.gridDot
-                    val minDotPx = 0.85.dp.toPx()
-                    val maxDotPx = 2.0.dp.toPx()
-                    val dotRadius = (cellSize * 0.055f).coerceIn(minDotPx, maxDotPx)
-                    val now = System.currentTimeMillis()
+                // 2. Grid Alignment & Silhouette Dots:
+                // Subtle architectural grid dots across the board eliminate "random blank gaps" and unify the UI.
+                // When an arrow is cleared, its dot dynamically pops in with tactile feedback matching New Unity One.
+                val dotColor = theme.gridDot
+                val dotRadius = (cellSize * 0.052f).coerceIn(0.85.dp.toPx(), 2.2.dp.toPx())
+                val now = System.currentTimeMillis()
 
-                    for (coord in clearedCells) {
-                        val spawnTime = clearedCellTimestamps[coord] ?: 0L
-                        val elapsed = (now - spawnTime).coerceAtLeast(0L)
-                        val animDuration = 220f
-                        val animProgress = if (spawnTime == 0L || elapsed >= animDuration) 1.0f else (elapsed / animDuration).coerceIn(0f, 1f)
-                        val popScale = when {
-                            animProgress >= 1f -> 1.0f
-                            animProgress < 0.65f -> (animProgress / 0.65f) * 1.15f
-                            else -> 1.15f - ((animProgress - 0.65f) / 0.35f) * 0.15f
-                        }
-                        val alpha = (animProgress * 0.45f).coerceIn(0f, 0.45f)
+                for (cy in 0 until ySize) {
+                    for (cx in 0 until xSize) {
+                        val coord = GridCoordinate(cx, cy)
+                        val isCleared = clearedCells.contains(coord)
+                        val isOccupied = !occupancyMap.isCellFree(coord)
 
-                        drawCircle(
-                            color = dotColor.copy(alpha = alpha),
-                            radius = dotRadius * popScale,
-                            center = Offset(
-                                boardOrigin.x + (coord.x + 0.5f) * cellSize,
-                                boardOrigin.y + (coord.y + 0.5f) * cellSize
+                        if (isCleared) {
+                            val spawnTime = clearedCellTimestamps[coord] ?: 0L
+                            val elapsed = (now - spawnTime).coerceAtLeast(0L)
+                            val animDuration = 220f
+                            val animProgress = if (spawnTime == 0L || elapsed >= animDuration) 1.0f else (elapsed / animDuration).coerceIn(0f, 1f)
+                            val popScale = when {
+                                animProgress >= 1f -> 1.0f
+                                animProgress < 0.65f -> (animProgress / 0.65f) * 1.15f
+                                else -> 1.15f - ((animProgress - 0.65f) / 0.35f) * 0.15f
+                            }
+                            val alpha = (animProgress * 0.45f).coerceIn(0f, 0.45f)
+
+                            drawCircle(
+                                color = dotColor.copy(alpha = alpha),
+                                radius = dotRadius * popScale,
+                                center = Offset(
+                                    boardOrigin.x + (cx + 0.5f) * cellSize,
+                                    boardOrigin.y + (cy + 0.5f) * cellSize
+                                )
                             )
-                        )
+                        } else if (!isOccupied) {
+                            // Subtle background corridor alignment dot gives elegant structure to the board
+                            drawCircle(
+                                color = dotColor.copy(alpha = 0.15f),
+                                radius = dotRadius * 0.85f,
+                                center = Offset(
+                                    boardOrigin.x + (cx + 0.5f) * cellSize,
+                                    boardOrigin.y + (cy + 0.5f) * cellSize
+                                )
+                            )
+                        }
                     }
                 }
 
@@ -807,7 +822,7 @@ fun PuzzleBoardCanvas(
                 }
 
                 // 4C. Interactive Tutorial Guidance Hand (Level 1 only, matching Unity)
-                if (tutorialTargetArrow != null && introProgress.value >= 1f) {
+                if (showTutorialHand && tutorialTargetArrow != null && introProgress.value >= 1f) {
                     drawTutorialGuidance(boardOrigin, tutorialTargetArrow, cellSize, theme)
                 }
             }
@@ -910,7 +925,7 @@ fun PuzzleBoardCanvas(
         }
 
         // Prominent "Tap to move" banner positioned directly above the puzzle grid with a dynamic responsive gap
-        if (currentLevelNumber == 1 && !isDailyChallengeMode && hasUnclearedArrows && introProgress.value >= 1f) {
+        if (showTutorialHand && currentLevelNumber == 1 && !isDailyChallengeMode && hasUnclearedArrows && introProgress.value >= 1f) {
             val density = LocalDensity.current
             val dynamicGapPx = with(density) {
                 (boardHeight * 0.20f).coerceIn(28.dp.toPx(), 46.dp.toPx())
@@ -1140,22 +1155,23 @@ private fun DrawScope.drawArrowEntity(
         else -> theme.arrowDefault
     }
 
-    // Exact Unity One stroke: slender, crisp lines (20% of cell size, 1.6dp .. 4.5dp)
-    // Guarantees generous 3x-4x gap between parallel channels matching Image 2 perfectly
-    val minStroke = 2.0.dp.toPx()
-    val maxStroke = 5.0.dp.toPx()
+    // Exact Unity One stroke: slender, crisp lines (20% of cell size, bounded for all grid scales)
+    // Guarantees generous gap between parallel channels matching Image 2 perfectly
+    val minStroke = 1.0f
+    val maxStroke = 4.5.dp.toPx()
     val scaleMultiplier = when {
-        isPreviewHold -> 1.10f * (1f + (hintPulseScale - 1f) * 0.35f)
+        isPreviewHold -> 1.0f
         isFlying -> 1.08f
         arrow.state == ArrowState.WRONG_FLASH -> 1.0f + sin(arrow.flightProgress * PI.toFloat()) * 0.16f
-        arrow.state == ArrowState.HINTED -> hintPulseScale
+        arrow.state == ArrowState.HINTED -> 1.0f
         else -> 1.0f
     }
-    val strokeWidth = (cellSize * 0.23f).coerceIn(minStroke, maxStroke) * scaleMultiplier
+    val strokeWidth = (cellSize * 0.20f).coerceIn(minStroke, maxStroke) * scaleMultiplier
 
-    // Exact Unity One arrowhead proportions (2.0x stroke width, 1.05x aspect ratio)
-    val headWidth = strokeWidth * 2.0f * (if (isPreviewHold) 1.08f else if (isFlying) 1.10f else 1.0f)
-    val headLength = headWidth * 1.05f
+    // Exact Unity One arrowhead proportions bounded strictly within the cell (never overlaps neighbor cells)
+    val headWidth = (cellSize * 0.54f).coerceAtLeast(strokeWidth * 1.8f).coerceAtMost(cellSize * 0.68f) *
+        (if (isPreviewHold) 1.08f else if (isFlying) 1.10f else 1.0f)
+    val headLength = headWidth * 0.88f
 
     // Build the full motion track: body points + escape extension along arrow.direction
     val track = mutableListOf<Offset>()
@@ -1216,11 +1232,11 @@ private fun DrawScope.drawArrowEntity(
         originalBodyLen.toFloat()
     }
 
-    // Symmetrical head tip and tail reach: both extend by exactly 0.32 * cellSize from cell center
-    val tipForward = (cellSize * 0.32f).coerceAtLeast(headLength * 0.55f)
-    val tailOffset = (tipForward - strokeWidth * 0.50f).coerceAtLeast(0f)
-    // Stem enters slightly past the base into the widest part of the triangle (no gap, no notch, no tip bulb)
-    val stemHeadOffset = tipForward - headLength + (strokeWidth * 0.25f)
+    // Symmetrical head tip and tail reach: both extend cleanly from cell center
+    val tipForward = (cellSize * 0.35f)
+    val tailOffset = (cellSize * 0.32f).coerceAtLeast(strokeWidth * 0.45f)
+    // Stem enters smoothly into the interior of the triangular arrowhead base
+    val stemHeadOffset = (tipForward - headLength * 0.65f).coerceAtLeast(0f)
 
     val startDist = displacement
     val endDist = visibleBodyLen + displacement
