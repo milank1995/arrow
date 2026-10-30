@@ -76,6 +76,7 @@ import com.arrowescape.puzzle.core.model.Direction
 import com.arrowescape.puzzle.core.model.GridCoordinate
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.PI
@@ -294,16 +295,37 @@ fun PuzzleBoardCanvas(
         }
 
         var hasInteractedWithBoard by remember(restartTrigger, arrows.size, currentLevelNumber) { mutableStateOf(false) }
+        var lastLevelKey by remember { mutableStateOf<String?>(null) }
 
-        // Level Initial Load & Restart Animation:
-        // 1. Board is held strictly at 1.0x (full overview) while arrows draw smoothly across the board
-        // 2. Brief settle pause (120ms) so player can clearly see the complete puzzle shape
-        // 3. ONLY after arrow rendering finishes, camera smoothly glides and zooms into defaultScale for medium/large grids
-        LaunchedEffect(xSize, ySize, arrows.size, arrows.firstOrNull()?.id, restartTrigger) {
+        // Unified Camera Zoom & Arrow Orchestration across Initial Load & Level Restart:
+        // 1. On Level Restart: if currently zoomed in or panned, camera smoothly glides back to 1.0x overview (380ms)
+        // 2. Full Overview Draw: arrows draw smoothly across the board at full 1.0x overview (1450ms)
+        // 3. Settle Pause (120ms): player clearly sees the full completed silhouette/shape
+        // 4. Auto Zoom-In: ONLY after drawing completes, smoothly zooms into defaultScale for medium/large grids (750ms)
+        LaunchedEffect(currentLevelNumber, restartTrigger, xSize, ySize, arrows.size, arrows.firstOrNull()?.id) {
+            val currentLevelKey = "${currentLevelNumber}_${xSize}_${ySize}_${arrows.firstOrNull()?.id}"
+            val isRestart = (lastLevelKey != null && lastLevelKey == currentLevelKey)
+            lastLevelKey = currentLevelKey
+
             settleJob?.cancel()
-            panX = 0f
-            panY = 0f
-            scale = 1.0f
+
+            // If restarting while zoomed in or panned, smoothly zoom out to overview before redrawing
+            val isZoomedOrPanned = scale > 1.02f || kotlin.math.abs(panX) > 2f || kotlin.math.abs(panY) > 2f
+            if (isRestart && isZoomedOrPanned) {
+                val sAnim = Animatable(scale)
+                val pxAnim = Animatable(panX)
+                val pyAnim = Animatable(panY)
+                coroutineScope {
+                    launch { sAnim.animateTo(1.0f, tween(durationMillis = 380, easing = FastOutSlowInEasing)) { scale = value } }
+                    launch { pxAnim.animateTo(0f, tween(durationMillis = 380, easing = FastOutSlowInEasing)) { panX = value } }
+                    launch { pyAnim.animateTo(0f, tween(durationMillis = 380, easing = FastOutSlowInEasing)) { panY = value } }
+                }
+            } else {
+                scale = 1.0f
+                panX = 0f
+                panY = 0f
+            }
+
             introProgress.snapTo(0f)
 
             // Step 1: Smoothly render all arrows at full overview (1.0x) so user sees entire puzzle
