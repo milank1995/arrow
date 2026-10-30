@@ -238,10 +238,10 @@ fun PuzzleBoardCanvas(
         val currentOnDismissPreviewRays by rememberUpdatedState(onDismissPreviewRays)
         val minTouchTargetPx = with(LocalDensity.current) { 15.dp.toPx() }
         val currentMinTouchTargetPx by rememberUpdatedState(minTouchTargetPx)
-        val minStrokePx = with(LocalDensity.current) { 2.0.dp.toPx() }
-        val maxStrokePx = with(LocalDensity.current) { 10.5.dp.toPx() }
-        val baseStrokeWidth = (cellSize * 0.23f).coerceIn(minStrokePx, maxStrokePx)
-        val baseHeadWidth = (cellSize * 0.54f).coerceAtLeast(baseStrokeWidth * 2.1f).coerceAtMost(cellSize * 0.70f)
+        val minStrokePx = 1.0f
+        val maxStrokePx = with(LocalDensity.current) { 4.8.dp.toPx() }
+        val baseStrokeWidth = (cellSize * 0.20f).coerceIn(minStrokePx, maxStrokePx)
+        val baseHeadWidth = (cellSize * 0.52f).coerceIn(baseStrokeWidth * 2.2f, baseStrokeWidth * 3.2f)
         val currentHeadSize by rememberUpdatedState(baseHeadWidth)
 
         // Smooth Auto-Framing: gently glides zoom and pan to center the hinted arrow if off-screen
@@ -1057,12 +1057,13 @@ private fun findClosestArrow(
         return cellOccupant
     }
 
-    val strokeWidth = (cellSize * 0.23f).coerceIn(1.5f, cellSize * 0.35f)
-    val headWidth = headSize.coerceAtLeast(strokeWidth * 2.1f).coerceAtMost(cellSize * 0.70f)
-    val headLength = headWidth * 0.82f
-    val tipForward = cellSize * 0.33f
+    val strokeWidth = (cellSize * 0.20f).coerceIn(1.0f, minOf(cellSize * 0.35f, headSize / 2.2f))
+    val headWidth = headSize.coerceIn(strokeWidth * 2.2f, strokeWidth * 3.2f)
+    val headLength = headWidth * 0.88f
+    val tipForward = cellSize * 0.35f
     val tailOffset = (cellSize * 0.32f).coerceAtLeast(strokeWidth * 0.45f)
-    val stemHeadOffset = (tipForward - headLength * 0.65f).coerceAtLeast(0f)
+    val stemOverlap = minOf(headLength * 0.20f, strokeWidth * 0.40f)
+    val stemHeadOffset = (tipForward - headLength + stemOverlap).coerceAtLeast(0f)
 
     // 2. Direct Arrowhead Triangle Hit Test (for forward spearhead reaching into empty space)
     for (arrow in activeArrows) {
@@ -1216,14 +1217,8 @@ private fun computeStaticArrowGeometry(
         Offset(-dir.dx.toFloat(), -dir.dy.toFloat())
     }
 
-    val forwardAtHead = if (track.size >= 2) {
-        val eVec = track.last() - track[track.size - 2]
-        val eLen = hypot(eVec.x, eVec.y).coerceAtLeast(0.001f)
-        Offset(eVec.x / eLen, eVec.y / eLen)
-    } else {
-        val dir = arrow.direction
-        Offset(dir.dx.toFloat(), dir.dy.toFloat())
-    }
+    val headDir = Offset(arrow.direction.dx.toFloat(), arrow.direction.dy.toFloat())
+    val forwardAtHead = headDir
 
     val sampledPoints = ArrayList<Offset>(track.size + 1)
     if (originalBodyLen == 0) {
@@ -1290,8 +1285,8 @@ private fun DrawScope.drawArrowEntity(
         else -> theme.arrowDefault
     }
 
-    val minStroke = 2.0.dp.toPx()
-    val maxStroke = 10.5.dp.toPx()
+    val minStroke = 1.0f
+    val maxStroke = 4.8.dp.toPx()
     val scaleMultiplier = when {
         isPreviewHold -> 1.0f
         isFlying -> 1.08f
@@ -1299,17 +1294,18 @@ private fun DrawScope.drawArrowEntity(
         arrow.state == ArrowState.HINTED -> 1.0f
         else -> 1.0f
     }
-    val strokeWidth = (cellSize * 0.23f).coerceIn(minStroke, maxStroke) * scaleMultiplier
+    val strokeWidth = (cellSize * 0.20f).coerceIn(minStroke, maxStroke) * scaleMultiplier
 
-    val headWidth = (cellSize * 0.54f).coerceAtLeast(strokeWidth * 2.1f).coerceAtMost(cellSize * 0.70f) *
+    val headWidth = (cellSize * 0.52f).coerceIn(strokeWidth * 2.2f, strokeWidth * 3.2f) *
         (if (isPreviewHold) 1.08f else if (isFlying) 1.10f else 1.0f)
-    val headLength = headWidth * 0.82f
+    val headLength = headWidth * 0.88f
 
     // Symmetrical head tip and tail reach: both extend cleanly from cell center
-    val tipForward = (cellSize * 0.33f)
+    val tipForward = (cellSize * 0.35f)
     val tailOffset = (cellSize * 0.32f).coerceAtLeast(strokeWidth * 0.45f)
+    val stemOverlap = minOf(headLength * 0.20f, strokeWidth * 0.40f)
     // Stem enters smoothly into the interior of the triangular arrowhead base
-    val stemHeadOffset = (tipForward - headLength * 0.65f).coerceAtLeast(0f)
+    val stemHeadOffset = (tipForward - headLength + stemOverlap).coerceAtLeast(0f)
 
     // ZERO-ALLOCATION FAST PATH FOR STATIC IDLE ARROWS:
     if (arrow.state == ArrowState.IDLE && drawProgress >= 1f && !isPreviewHold && activeBoosterAnimation == null) {
@@ -1430,10 +1426,15 @@ private fun DrawScope.drawArrowEntity(
     val dynamicTailDir = Offset(-forwardAtTail.x, -forwardAtTail.y)
 
     // Dynamically compute the tangent vector along track at the sampled head position
-    val eIdx = endDist.toInt().coerceIn(0, track.size - 2)
-    val eVec = track[eIdx + 1] - track[eIdx]
-    val eLen = hypot(eVec.x, eVec.y).coerceAtLeast(0.001f)
-    val forwardAtHead = Offset(eVec.x / eLen, eVec.y / eLen)
+    val headDir = Offset(arrow.direction.dx.toFloat(), arrow.direction.dy.toFloat())
+    val forwardAtHead = if (arrow.state == ArrowState.FLYING_OUT) {
+        val eIdx = endDist.toInt().coerceIn(0, track.size - 2)
+        val eVec = track[eIdx + 1] - track[eIdx]
+        val eLen = hypot(eVec.x, eVec.y).coerceAtLeast(0.001f)
+        Offset(eVec.x / eLen, eVec.y / eLen)
+    } else {
+        headDir
+    }
 
     // Clean, continuous polyline without backtracking, tail blending or tip bulb artifacts:
     // First point starts at extended tail; last point terminates inside the wide arrowhead base
