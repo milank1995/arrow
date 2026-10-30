@@ -91,8 +91,11 @@ fun DevTestScreen(
     var comboCount by remember { mutableIntStateOf(0) }
     var isLevelComplete by remember { mutableStateOf(false) }
     var restartTrigger by remember { mutableLongStateOf(0L) }
+    var milestone25Fired by remember { mutableStateOf(false) }
     var milestone50Fired by remember { mutableStateOf(false) }
-    var milestone80Fired by remember { mutableStateOf(false) }
+    var milestone70Fired by remember { mutableStateOf(false) }
+    var milestone90Fired by remember { mutableStateOf(false) }
+    var lastMilestoneTimestamp by remember { mutableLongStateOf(0L) }
     var cheerDismissJob by remember { mutableStateOf<Job?>(null) }
 
     var showLevelSelectDialog by remember { mutableStateOf(false) }
@@ -111,8 +114,11 @@ fun DevTestScreen(
         isCelebrationBurstActive = false
         comboCount = 0
         cheerMessage = null
+        milestone25Fired = false
         milestone50Fired = false
-        milestone80Fired = false
+        milestone70Fired = false
+        milestone90Fired = false
+        lastMilestoneTimestamp = 0L
         cheerDismissJob?.cancel()
         previewRayArrowIds = emptySet()
         restartTrigger = System.currentTimeMillis()
@@ -135,48 +141,45 @@ fun DevTestScreen(
         } + 1
 
         var milestoneCheer: String? = null
-        if (clearedCount < totalArrows && totalArrows > 0 && currentLevelNumber > 2) {
-            // 50% Milestone: Only for levels with >= 14 arrows
-            if (totalArrows >= 14) {
-                val threshold50 = ceil(totalArrows * 0.50f).toInt()
-                if (!milestone50Fired && clearedCount >= threshold50) {
-                    milestone50Fired = true
-                    milestoneCheer = listOf(
-                        "50% · Halfway Landmark",
-                        "50% · Downhill Run",
-                        "50% · Halfway There!"
-                    ).random()
-                }
-            }
-            // 80% Milestone: Only for large levels with >= 30 arrows
-            if (milestoneCheer == null && totalArrows >= 30) {
-                val threshold80 = ceil(totalArrows * 0.80f).toInt()
-                if (!milestone80Fired && clearedCount >= threshold80) {
-                    milestone80Fired = true
-                    milestoneCheer = listOf(
-                        "80% · Home Stretch",
-                        "80% · Victory in Sight",
-                        "80% · Final Clean Up"
-                    ).random()
-                }
+        val now = System.currentTimeMillis()
+        if (clearedCount < totalArrows && totalArrows >= 6 && currentLevelNumber > 2 && (now - lastMilestoneTimestamp >= 3500L)) {
+            val threshold90 = ceil(totalArrows * 0.90f).toInt()
+            val threshold70 = ceil(totalArrows * 0.70f).toInt()
+            val threshold50 = ceil(totalArrows * 0.50f).toInt()
+            val threshold25 = ceil(totalArrows * 0.25f).toInt()
+
+            if (!milestone90Fired && clearedCount >= threshold90) {
+                milestone25Fired = true
+                milestone50Fired = true
+                milestone70Fired = true
+                milestone90Fired = true
+                lastMilestoneTimestamp = now
+                milestoneCheer = "90% · Puzzle Complete"
+            } else if (!milestone70Fired && clearedCount >= threshold70) {
+                milestone25Fired = true
+                milestone50Fired = true
+                milestone70Fired = true
+                lastMilestoneTimestamp = now
+                milestoneCheer = "70% · Puzzle Complete"
+            } else if (!milestone50Fired && clearedCount >= threshold50) {
+                milestone25Fired = true
+                milestone50Fired = true
+                lastMilestoneTimestamp = now
+                milestoneCheer = "50% · Puzzle Complete"
+            } else if (!milestone25Fired && clearedCount >= threshold25) {
+                milestone25Fired = true
+                lastMilestoneTimestamp = now
+                milestoneCheer = "25% · Puzzle Complete"
             }
         }
 
-        val comboCheer = when (newCombo) {
-            5 -> listOf("Combo x5 · On Fire!", "Combo x5 · In the Flow!", "Combo x5 · Pure Rhythm!").random()
-            10 -> listOf("Combo x10 · Arrow Maestro!", "Combo x10 · Laser Focus!", "Combo x10 · Brilliant!").random()
-            15 -> listOf("Combo x15 · Galaxy Brain!", "Combo x15 · Flawless!", "Combo x15 · Untouchable!").random()
-            20 -> listOf("Combo x20 · Living Legend!", "Combo x20 · Perfection!", "Combo x20 · Supreme Flow!").random()
-            else -> null
-        }
-
-        val cheer = milestoneCheer ?: comboCheer
+        val cheer = milestoneCheer
         if (cheer != null) {
             cheerMessage = cheer
             cheerFromLeft = !cheerFromLeft
             cheerDismissJob?.cancel()
             cheerDismissJob = coroutineScope.launch {
-                delay(2000L)
+                delay(2200L)
                 cheerMessage = null
             }
         }
@@ -384,7 +387,7 @@ fun DevTestScreen(
                     fromLeft = cheerFromLeft,
                     modifier = Modifier
                         .align(Alignment.TopCenter)
-                        .padding(top = 8.dp)
+                        .padding(top = 4.dp)
                 )
             }
 

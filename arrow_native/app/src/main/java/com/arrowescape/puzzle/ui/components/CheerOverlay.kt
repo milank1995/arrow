@@ -156,15 +156,29 @@ private fun parseCheerInfo(rawMessage: String): CheerTier {
         badge = parts[0]
         text = parts[1]
     } else {
-        badge = null
-        text = trimmed
+        val match = Regex("^([0-9]+%)\\s*(.*)$").find(trimmed)
+        if (match != null) {
+            badge = match.groupValues[1]
+            text = match.groupValues[2].ifEmpty { "Puzzle Complete" }
+        } else {
+            badge = null
+            text = trimmed
+        }
     }
 
     val upperBadge = badge?.uppercase() ?: ""
-    val upperText = text.uppercase()
 
     return when {
-        // Milestone 50% (Warm Luminous Gold / Amber)
+        // Milestone 25% (Fresh Emerald Green)
+        upperBadge.contains("25%") -> CheerTier(
+            icon = "🌱",
+            badge = badge,
+            text = text,
+            accentColor = Color(0xFF34D399),
+            lightAccentColor = Color(0xFF059669)
+        )
+
+        // Milestone 50% (Luminous Gold / Amber)
         upperBadge.contains("50%") -> CheerTier(
             icon = "👑",
             badge = badge,
@@ -173,40 +187,22 @@ private fun parseCheerInfo(rawMessage: String): CheerTier {
             lightAccentColor = Color(0xFFD97706)
         )
 
-        // Milestone 80% (Royal Violet)
-        upperBadge.contains("80%") || upperBadge.contains("75%") -> CheerTier(
+        // Milestone 70% (Electric Cyan / Sky Blue)
+        upperBadge.contains("70%") || upperBadge.contains("75%") -> CheerTier(
             icon = "⚡",
-            badge = badge,
-            text = text,
-            accentColor = Color(0xFFC084FC),
-            lightAccentColor = Color(0xFF7C3AED)
-        )
-
-        // Combo x15+ (Royal Purple / Magenta)
-        upperBadge.contains("15") || upperBadge.contains("20") || upperText.contains("GALAXY") || upperText.contains("UNTOUCHABLE") -> CheerTier(
-            icon = "💥",
-            badge = badge,
-            text = text,
-            accentColor = Color(0xFFA855F7),
-            lightAccentColor = Color(0xFF7C3AED)
-        )
-
-        // Combo x10 (Electric Sky Blue / Cyan)
-        upperBadge.contains("10") || upperText.contains("MAESTRO") || upperText.contains("BRILLIANT") -> CheerTier(
-            icon = "⭐",
             badge = badge,
             text = text,
             accentColor = Color(0xFF38BDF8),
             lightAccentColor = Color(0xFF0284C7)
         )
 
-        // Combo x5 (Emerald Fire)
-        upperBadge.contains("5") || upperText.contains("ON FIRE") || upperText.contains("FLOW") -> CheerTier(
-            icon = "🔥",
+        // Milestone 90% (Royal Violet / Magenta)
+        upperBadge.contains("90%") || upperBadge.contains("80%") -> CheerTier(
+            icon = "🎯",
             badge = badge,
             text = text,
-            accentColor = Color(0xFF34D399),
-            lightAccentColor = Color(0xFF059669)
+            accentColor = Color(0xFFA855F7),
+            lightAccentColor = Color(0xFF7C3AED)
         )
 
         // Fallback default

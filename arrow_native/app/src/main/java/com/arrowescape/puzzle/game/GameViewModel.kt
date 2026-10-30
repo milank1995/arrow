@@ -96,12 +96,18 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     private var levelMovesAttempted: Int = 0
     private var levelMistakesCount: Int = 0
     private var hasDismissedDailyLaunchPromptThisSession: Boolean = false
+    private var milestone25Fired: Boolean = false
     private var milestone50Fired: Boolean = false
-    private var milestone80Fired: Boolean = false
+    private var milestone70Fired: Boolean = false
+    private var milestone90Fired: Boolean = false
+    private var lastMilestoneTimestamp: Long = 0L
 
     private fun resetMilestoneFlags() {
+        milestone25Fired = false
         milestone50Fired = false
-        milestone80Fired = false
+        milestone70Fired = false
+        milestone90Fired = false
+        lastMilestoneTimestamp = 0L
     }
 
     init {
@@ -454,9 +460,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         val currentLvl = _uiState.value.currentLevelNumber
         val isSpecialMode = _uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode
 
+        // Milestone-only notifications (Combo / fire notifications removed)
         val milestoneCheer = evaluateMilestone(clearedCount, totalArrows, currentLvl, isSpecialMode)
-        val comboCheer = calculateCheerMessage(newCombo)
-        val cheer = milestoneCheer ?: comboCheer
+        val cheer = milestoneCheer
 
         _uiState.update { state ->
             val updatedArrows = state.arrows.map {
@@ -470,12 +476,12 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             )
         }
 
-        // Auto-dismiss in-app cheer notification after 2.0 seconds (clean & subtle)
+        // Auto-dismiss milestone notification after 2.2 seconds (clean & subtle)
         // If rapid taps occur without a new cheer, the existing notification stays visible for its full duration
         if (cheer != null) {
             cheerDismissJob?.cancel()
             cheerDismissJob = viewModelScope.launch {
-                delay(2000L)
+                delay(2200L)
                 _uiState.update { it.copy(cheerMessage = null) }
             }
         }
@@ -962,55 +968,53 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         levelNumber: Int,
         isSpecialMode: Boolean
     ): String? {
-        if (clearedCount >= totalArrows || totalArrows <= 0) return null
+        // Do not fire if puzzle is complete or board has too few arrows
+        if (clearedCount >= totalArrows || totalArrows < 6) return null
 
         // Skip initial tutorial levels where only a handful of arrows are required (Levels 1 & 2)
         if (!isSpecialMode && levelNumber in 1..2) return null
 
-        // 50% Milestone: Only for levels with >= 14 arrows to keep it meaningful & rewarding
-        if (totalArrows >= 14) {
-            val threshold50 = ceil(totalArrows * 0.50f).toInt()
-            if (!milestone50Fired && clearedCount >= threshold50) {
-                milestone50Fired = true
-                return getRandomMilestone50()
-            }
+        val now = System.currentTimeMillis()
+        // Prevent any overlapping notifications for a few moments before and after (3.5s cooldown buffer)
+        if (now - lastMilestoneTimestamp < 3500L) {
+            return null
         }
 
-        // 80% Home Stretch Milestone: Only for large levels with >= 30 arrows
-        if (totalArrows >= 30) {
-            val threshold80 = ceil(totalArrows * 0.80f).toInt()
-            if (!milestone80Fired && clearedCount >= threshold80) {
-                milestone80Fired = true
-                return getRandomMilestone80()
-            }
+        val threshold90 = ceil(totalArrows * 0.90f).toInt()
+        val threshold70 = ceil(totalArrows * 0.70f).toInt()
+        val threshold50 = ceil(totalArrows * 0.50f).toInt()
+        val threshold25 = ceil(totalArrows * 0.25f).toInt()
+
+        if (!milestone90Fired && clearedCount >= threshold90) {
+            milestone25Fired = true
+            milestone50Fired = true
+            milestone70Fired = true
+            milestone90Fired = true
+            lastMilestoneTimestamp = now
+            return "90% · Puzzle Complete"
+        }
+
+        if (!milestone70Fired && clearedCount >= threshold70) {
+            milestone25Fired = true
+            milestone50Fired = true
+            milestone70Fired = true
+            lastMilestoneTimestamp = now
+            return "70% · Puzzle Complete"
+        }
+
+        if (!milestone50Fired && clearedCount >= threshold50) {
+            milestone25Fired = true
+            milestone50Fired = true
+            lastMilestoneTimestamp = now
+            return "50% · Puzzle Complete"
+        }
+
+        if (!milestone25Fired && clearedCount >= threshold25) {
+            milestone25Fired = true
+            lastMilestoneTimestamp = now
+            return "25% · Puzzle Complete"
         }
 
         return null
-    }
-
-    private fun getRandomMilestone50(): String {
-        return listOf(
-            "50% · Halfway Landmark",
-            "50% · Downhill Run",
-            "50% · Halfway There!"
-        ).random()
-    }
-
-    private fun getRandomMilestone80(): String {
-        return listOf(
-            "80% · Home Stretch",
-            "80% · Victory in Sight",
-            "80% · Final Clean Up"
-        ).random()
-    }
-
-    private fun calculateCheerMessage(combo: Int): String? {
-        return when (combo) {
-            5 -> listOf("Combo x5 · On Fire!", "Combo x5 · In the Flow!", "Combo x5 · Pure Rhythm!").random()
-            10 -> listOf("Combo x10 · Arrow Maestro!", "Combo x10 · Laser Focus!", "Combo x10 · Brilliant!").random()
-            15 -> listOf("Combo x15 · Galaxy Brain!", "Combo x15 · Flawless!", "Combo x15 · Untouchable!").random()
-            20 -> listOf("Combo x20 · Living Legend!", "Combo x20 · Perfection!", "Combo x20 · Supreme Flow!").random()
-            else -> null
-        }
     }
 }

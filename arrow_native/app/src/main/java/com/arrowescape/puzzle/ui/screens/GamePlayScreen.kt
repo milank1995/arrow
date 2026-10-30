@@ -268,14 +268,14 @@ fun GamePlayScreen(
                             )
                         }
 
-                        // Running-style combo praise notification banner positioned below header
+                        // Milestone notification banner positioned directly below milestone indicator
                         CheerOverlay(
                             message = uiState.cheerMessage,
                             theme = uiState.activeTheme,
                             fromLeft = uiState.cheerFromLeft,
                             modifier = Modifier
                                 .align(Alignment.TopCenter)
-                                .padding(top = 8.dp)
+                                .padding(top = 4.dp)
                         )
                     }
 
