@@ -201,13 +201,17 @@ fun DevTestScreen(
         }
 
         coroutineScope.launch {
-            val durationMs = 400L
+            val durationMs = 560L
             val startTime = System.currentTimeMillis()
             while (true) {
                 val elapsed = System.currentTimeMillis() - startTime
                 val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
-                val inv = 1f - rawProgress
-                val easedProgress = 1f - inv * inv * inv
+                val easedProgress = if (rawProgress < 0.5f) {
+                    2f * rawProgress * rawProgress
+                } else {
+                    val t = rawProgress - 1f
+                    1f - 2f * t * t
+                }
                 arrows = arrows.map {
                     if (it.id == arrow.id && it.state == ArrowState.FLYING_OUT) {
                         it.copy(flightProgress = easedProgress)

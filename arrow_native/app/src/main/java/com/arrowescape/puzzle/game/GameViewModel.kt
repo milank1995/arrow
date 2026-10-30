@@ -491,16 +491,20 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             }
         }
 
-        // Animate flight at 60fps — 400ms OutCubic ease-out for snappy, responsive arrow movement
+        // Animate flight at 60fps — 560ms InOutQuad: visible arc with responsive speed
         viewModelScope.launch {
-            val durationMs = 400L
+            val durationMs = 560L
             val startTime = System.currentTimeMillis()
             while (true) {
                 val elapsed = System.currentTimeMillis() - startTime
                 val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
-                // OutCubic: fast launch, gentle settle — matches original game's snappy feel
-                val inv = 1f - rawProgress
-                val easedProgress = 1f - inv * inv * inv
+                // InOutQuad: smooth ramp-up, visible travel, smooth settle — arrow clearly flies
+                val easedProgress = if (rawProgress < 0.5f) {
+                    2f * rawProgress * rawProgress
+                } else {
+                    val t = rawProgress - 1f
+                    1f - 2f * t * t
+                }
                 _uiState.update { state ->
                     val updated = state.arrows.map {
                         if (it.id == arrow.id && it.state == ArrowState.FLYING_OUT) {
