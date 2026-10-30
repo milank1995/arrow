@@ -213,7 +213,10 @@ fun GamePlayScreen(
                                 theme = theme,
                                 isDailyChallenge = uiState.isDailyChallengeMode,
                                 dailyDateString = uiState.activeDailyDate,
-                                shapeName = level?.shapeName,
+                                shapeName = null,
+                                isTestMode = false,
+                                showArrowCount = false,
+                                showHearts = false,
                                 onPauseClick = {
                                     onPlayClickSound()
                                     showPauseDialog = true
@@ -229,7 +232,7 @@ fun GamePlayScreen(
                                     showSoundDialog = true
                                 },
                                 isSoundOn = uiState.isSoundEnabled,
-                                modifier = Modifier.widthIn(max = 540.dp)
+                                modifier = Modifier.widthIn(max = 480.dp)
                             )
                         }
                     }
@@ -297,6 +300,8 @@ fun GamePlayScreen(
                                 isGridLinesActive = uiState.isGridLinesActive,
                                 isFreeHintLevel = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode),
                                 isIdlePromptActive = isIdlePromptActive,
+                                heartsRemaining = uiState.heartsRemaining,
+                                maxHearts = uiState.maxHearts,
                                 theme = theme,
                                 onHintClick = {
                                     lastInteractionTime = System.currentTimeMillis()
@@ -308,7 +313,7 @@ fun GamePlayScreen(
                                     isIdlePromptActive = false
                                     onGridClick()
                                 },
-                                modifier = Modifier.widthIn(max = 540.dp)
+                                modifier = Modifier.widthIn(max = 440.dp)
                             )
                         }
                     }

@@ -84,6 +84,8 @@ fun GameHeader(
     onThemeClick: (() -> Unit)? = null,
     onSettingsClick: (() -> Unit)? = null,
     isSoundOn: Boolean = true,
+    showArrowCount: Boolean = isTestMode,
+    showHearts: Boolean = isTestMode,
     modifier: Modifier = Modifier
 ) {
     val clearedCount = (totalArrowsCount - remainingArrowsCount).coerceAtLeast(0)
@@ -110,7 +112,7 @@ fun GameHeader(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                // LEFT: Clean, minimal HUD pods (Pause || + Dual-Action Sound 🔊/🔇)
+                // LEFT: Pause button (and optional Dev Theme button in test mode)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -134,33 +136,6 @@ fun GameHeader(
                                 imageVector = Icons.Default.Pause,
                                 contentDescription = "Pause Game",
                                 tint = theme.textPrimary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
-
-                    // 2. Dual-action Sound button: Quick tap toggles audio, Hold for settings
-                    Surface(
-                        shape = RoundedCornerShape(14.dp),
-                        color = theme.boosterBg,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
-                        shadowElevation = 1.dp,
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(14.dp))
-                            .combinedClickable(
-                                onClick = effectiveSoundToggle,
-                                onLongClick = effectiveSoundLongPress
-                            )
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Icon(
-                                imageVector = if (isSoundOn) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeMute,
-                                contentDescription = if (isSoundOn) "Mute Sound (Hold for Settings)" else "Unmute Sound (Hold for Settings)",
-                                tint = if (isSoundOn) theme.textPrimary else theme.textSecondary.copy(alpha = 0.5f),
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -193,49 +168,51 @@ fun GameHeader(
                     }
                 }
 
-                // CENTER: 3 Red Hearts + "Level X"
+                // CENTER: Level Title (and optional hearts in dev test mode)
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    var prevHearts by remember { mutableIntStateOf(heartsRemaining) }
-                    var brokenHeartIndex by remember { mutableStateOf<Int?>(null) }
+                    if (showHearts) {
+                        var prevHearts by remember { mutableIntStateOf(heartsRemaining) }
+                        var brokenHeartIndex by remember { mutableStateOf<Int?>(null) }
 
-                    LaunchedEffect(heartsRemaining) {
-                        if (heartsRemaining < prevHearts) {
-                            brokenHeartIndex = heartsRemaining
-                        } else if (heartsRemaining >= maxHearts) {
-                            brokenHeartIndex = null
+                        LaunchedEffect(heartsRemaining) {
+                            if (heartsRemaining < prevHearts) {
+                                brokenHeartIndex = heartsRemaining
+                            } else if (heartsRemaining >= maxHearts) {
+                                brokenHeartIndex = null
+                            }
+                            prevHearts = heartsRemaining
                         }
-                        prevHearts = heartsRemaining
-                    }
 
-                    // 3 Hearts Row with rich coral-red tint and depth + animated break explosion
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        for (i in 0 until maxHearts) {
-                            val isAlive = i < heartsRemaining
-                            val isBreaking = (i == brokenHeartIndex)
-                            AnimatedHeart(
-                                isAlive = isAlive,
-                                isBreaking = isBreaking,
-                                onBreakFinished = {
-                                    if (brokenHeartIndex == i) {
-                                        brokenHeartIndex = null
+                        // 3 Hearts Row with animated break explosion
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            for (i in 0 until maxHearts) {
+                                val isAlive = i < heartsRemaining
+                                val isBreaking = (i == brokenHeartIndex)
+                                AnimatedHeart(
+                                    isAlive = isAlive,
+                                    isBreaking = isBreaking,
+                                    onBreakFinished = {
+                                        if (brokenHeartIndex == i) {
+                                            brokenHeartIndex = null
+                                        }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
                     }
 
-                    // Level text directly below hearts
+                    // Level text: Simple and clean (no shape name)
                     if (isTestMode) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(2.dp),
-                            modifier = Modifier.padding(top = 2.dp)
+                            modifier = Modifier.padding(top = if (showHearts) 2.dp else 0.dp)
                         ) {
                             if (onPrevLevelClick != null) {
                                 IconButton(
@@ -295,66 +272,90 @@ fun GameHeader(
                         }
                     } else {
                         Text(
-                            text = when {
-                                isDailyChallenge -> "Daily Challenge"
-                                !shapeName.isNullOrBlank() -> "Level $levelNumber • $shapeName"
-                                else -> "Level $levelNumber"
-                            },
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = theme.textPrimary,
-                            modifier = Modifier.padding(top = 3.dp)
-                        )
-                    }
-                }
-
-                // RIGHT: Remaining Arrows Goal Badge
-                val badgeScale = remember { Animatable(1f) }
-                var prevRemainingCount by remember { mutableIntStateOf(remainingArrowsCount) }
-
-                LaunchedEffect(remainingArrowsCount) {
-                    if (remainingArrowsCount < prevRemainingCount) {
-                        badgeScale.animateTo(1.18f, tween(65, easing = FastOutSlowInEasing))
-                        badgeScale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
-                    }
-                    prevRemainingCount = remainingArrowsCount
-                }
-
-                Surface(
-                    shape = RoundedCornerShape(14.dp),
-                    color = theme.boosterBg,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
-                    shadowElevation = 1.dp,
-                    modifier = Modifier
-                        .height(40.dp)
-                        .scale(badgeScale.value)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
-                    ) {
-                        // Bold solid directional arrow icon matching Screenshot 1
-                        androidx.compose.foundation.Canvas(modifier = Modifier.size(15.dp)) {
-                            val path = androidx.compose.ui.graphics.Path().apply {
-                                moveTo(size.width * 0.95f, size.height * 0.05f)
-                                lineTo(size.width * 0.95f, size.height * 0.65f)
-                                lineTo(size.width * 0.72f, size.height * 0.42f)
-                                lineTo(size.width * 0.22f, size.height * 0.92f)
-                                lineTo(size.width * 0.08f, size.height * 0.78f)
-                                lineTo(size.width * 0.58f, size.height * 0.28f)
-                                lineTo(size.width * 0.35f, size.height * 0.05f)
-                                close()
-                            }
-                            drawPath(path = path, color = theme.textPrimary)
-                        }
-
-                        Text(
-                            text = "$remainingArrowsCount",
-                            fontSize = 16.sp,
+                            text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
+                            fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
                             color = theme.textPrimary
                         )
+                    }
+                }
+
+                // RIGHT: Dual-Action Sound pod (Production) OR Remaining Arrows Goal Badge (Test Mode)
+                if (showArrowCount) {
+                    val badgeScale = remember { Animatable(1f) }
+                    var prevRemainingCount by remember { mutableIntStateOf(remainingArrowsCount) }
+
+                    LaunchedEffect(remainingArrowsCount) {
+                        if (remainingArrowsCount < prevRemainingCount) {
+                            badgeScale.animateTo(1.18f, tween(65, easing = FastOutSlowInEasing))
+                            badgeScale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+                        }
+                        prevRemainingCount = remainingArrowsCount
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(14.dp),
+                        color = theme.boosterBg,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
+                        shadowElevation = 1.dp,
+                        modifier = Modifier
+                            .height(40.dp)
+                            .scale(badgeScale.value)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                        ) {
+                            androidx.compose.foundation.Canvas(modifier = Modifier.size(15.dp)) {
+                                val path = androidx.compose.ui.graphics.Path().apply {
+                                    moveTo(size.width * 0.95f, size.height * 0.05f)
+                                    lineTo(size.width * 0.95f, size.height * 0.65f)
+                                    lineTo(size.width * 0.72f, size.height * 0.42f)
+                                    lineTo(size.width * 0.22f, size.height * 0.92f)
+                                    lineTo(size.width * 0.08f, size.height * 0.78f)
+                                    lineTo(size.width * 0.58f, size.height * 0.28f)
+                                    lineTo(size.width * 0.35f, size.height * 0.05f)
+                                    close()
+                                }
+                                drawPath(path = path, color = theme.textPrimary)
+                            }
+
+                            Text(
+                                text = "$remainingArrowsCount",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = theme.textPrimary
+                            )
+                        }
+                    }
+                } else {
+                    // Symmetrical Dual-action Sound button matching Pause pod on left:
+                    // Quick tap toggles audio, Hold for settings dialog
+                    Surface(
+                        shape = RoundedCornerShape(14.dp),
+                        color = theme.boosterBg,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
+                        shadowElevation = 1.dp,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .combinedClickable(
+                                onClick = effectiveSoundToggle,
+                                onLongClick = effectiveSoundLongPress
+                            )
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Icon(
+                                imageVector = if (isSoundOn) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeMute,
+                                contentDescription = if (isSoundOn) "Mute Sound (Hold for Settings)" else "Unmute Sound (Hold for Settings)",
+                                tint = if (isSoundOn) theme.textPrimary else theme.textSecondary.copy(alpha = 0.5f),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -389,14 +390,65 @@ fun GameHeader(
     }
 }
 
-private data class HeartShard(
+/**
+ * Sleek, tactile floating heart indicator pill for the bottom gameplay dock.
+ */
+@Composable
+fun HeartIndicatorPill(
+    heartsRemaining: Int,
+    maxHearts: Int = 3,
+    theme: ThemePreset,
+    modifier: Modifier = Modifier
+) {
+    var prevHearts by remember { mutableIntStateOf(heartsRemaining) }
+    var brokenHeartIndex by remember { mutableStateOf<Int?>(null) }
+
+    LaunchedEffect(heartsRemaining) {
+        if (heartsRemaining < prevHearts) {
+            brokenHeartIndex = heartsRemaining
+        } else if (heartsRemaining >= maxHearts) {
+            brokenHeartIndex = null
+        }
+        prevHearts = heartsRemaining
+    }
+
+    Surface(
+        shape = RoundedCornerShape(percent = 50),
+        color = theme.boosterBg,
+        border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
+        shadowElevation = 1.dp,
+        modifier = modifier
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp)
+        ) {
+            for (i in 0 until maxHearts) {
+                val isAlive = i < heartsRemaining
+                val isBreaking = (i == brokenHeartIndex)
+                AnimatedHeart(
+                    isAlive = isAlive,
+                    isBreaking = isBreaking,
+                    onBreakFinished = {
+                        if (brokenHeartIndex == i) {
+                            brokenHeartIndex = null
+                        }
+                    }
+                )
+            }
+        }
+    }
+}
+
+internal data class HeartShard(
     val vx: Float,
     val vy: Float,
     val size: Float
 )
 
 @Composable
-private fun AnimatedHeart(
+internal fun AnimatedHeart(
     isAlive: Boolean,
     isBreaking: Boolean,
     onBreakFinished: () -> Unit

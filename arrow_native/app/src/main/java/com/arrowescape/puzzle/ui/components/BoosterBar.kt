@@ -73,6 +73,8 @@ fun BoosterBar(
     isGridLinesActive: Boolean,
     isFreeHintLevel: Boolean = false,
     isIdlePromptActive: Boolean = false,
+    heartsRemaining: Int? = null,
+    maxHearts: Int = 3,
     theme: ThemePreset,
     onHintClick: () -> Unit,
     onGridClick: () -> Unit,
@@ -120,8 +122,13 @@ fun BoosterBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 26.dp),
-            horizontalArrangement = Arrangement.spacedBy(if (onRestartClick != null) 36.dp else 52.dp, Alignment.CenterHorizontally),
+                .padding(top = 8.dp, bottom = 22.dp)
+                .padding(horizontal = if (heartsRemaining != null) 20.dp else 0.dp),
+            horizontalArrangement = if (heartsRemaining != null && onRestartClick == null) {
+                Arrangement.SpaceBetween
+            } else {
+                Arrangement.spacedBy(if (onRestartClick != null) 36.dp else 52.dp, Alignment.CenterHorizontally)
+            },
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 1. REFINED MODERN HINT ICON (Inactive White vs Active Glowing Yellow)
@@ -198,7 +205,16 @@ fun BoosterBar(
                 }
             }
 
-            // 2. GRID GUIDE ICON (Clean, borderless, floating with miniature eye badge)
+            // 2. CENTER: HEARTS INDICATOR PILL (when heartsRemaining is provided)
+            if (heartsRemaining != null) {
+                HeartIndicatorPill(
+                    heartsRemaining = heartsRemaining,
+                    maxHearts = maxHearts,
+                    theme = theme
+                )
+            }
+
+            // 3. GRID GUIDE ICON (Clean, borderless, floating with miniature eye badge)
             val gridColor = if (isGridLinesActive) theme.arrowDefault else theme.textSecondary.copy(alpha = 0.75f)
 
             Box(
