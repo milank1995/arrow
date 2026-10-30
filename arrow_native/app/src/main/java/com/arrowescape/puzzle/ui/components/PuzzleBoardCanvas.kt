@@ -375,10 +375,10 @@ fun PuzzleBoardCanvas(
         }
 
         // Build occupancy map live from the current arrows, excluding FLYING_OUT and CLEARED arrows.
-        val occupancyMap = remember(arrows, xSize, ySize) {
-            GridOccupancyMap(xSize, ySize).apply {
-                rebuild(arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT })
-            }
+        // NOTE: We intentionally do NOT cache this with remember() to avoid the frame-lag race condition
+        // where the VM has already released a flying arrow's cells but the Canvas still sees them as occupied.
+        val occupancyMap = GridOccupancyMap(xSize, ySize).apply {
+            rebuild(arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT })
         }
         val currentOccupancyMap by rememberUpdatedState(occupancyMap)
 
@@ -423,9 +423,10 @@ fun PuzzleBoardCanvas(
                         panInertiaJob?.cancel() // Stop ongoing pan inertia immediately on new touch
 
                         val center = Offset(currentViewportWidth / 2f, currentViewportHeight / 2f)
-                        val dragThreshold = with(density) { 10.dp.toPx() }
-                        val pinchMotionThreshold = with(density) { 20.dp.toPx() }
-                        val panGestureThreshold = with(density) { 14.dp.toPx() }
+                        // 20dp threshold prevents natural thumb taps from falsely registering as drags
+                        val dragThreshold = with(density) { 20.dp.toPx() }
+                        val pinchMotionThreshold = with(density) { 24.dp.toPx() }
+                        val panGestureThreshold = with(density) { 20.dp.toPx() }
 
                         var hadMultiTouch = false
                         var isPinching = false
@@ -1020,14 +1021,11 @@ private fun isPointInTriangle(p: Offset, a: Offset, b: Offset, c: Offset): Boole
  * 1. Cell Authority (Primary): In a grid puzzle, each arrow's body and head occupy discrete cells.
  *    If the touch lands inside cell (cellX, cellY) occupied by an active arrow, THAT EXACT ARROW
  *    is returned immediately. Neighboring arrows can NEVER steal a tap inside an occupied cell.
- * 2. Absorption Guard: If the touched cell is inside grid bounds and is already cleared (has a dot)
- *    or belongs to an escaping flying arrow, the tap is absorbed (returns null). Tapping empty cleared
- *    space never triggers adjacent arrows.
- * 3. Arrowhead Tip Direct Hit: If the touch lands within an active arrowhead triangle protruding
- *    forward into unowned space, select that arrow.
- * 4. Bounded Margin Proximity: Strictly for outer board margins and padding borders (radius = cellSize * 0.42f).
- *    Pure Euclidean proximity, zero "movable stealing". If the user taps a blocked arrow, that blocked
- *    arrow is selected and triggers its collision recoil.
+ * 2. Arrowhead Direct Hit: If the touch lands within an active arrowhead triangle, select that arrow.
+ * 3. Bounded Proximity Search: For taps in outer margins, cell borders, or adjacent empty gaps.
+ *    Evaluates pure Euclidean minimum distance to exact visual geometry (arrowhead + stem segments).
+ *    Strictly NO "isMovable" tie-breaker or priority swapping.
+ *    If the user taps a blocked arrow, that blocked arrow is selected and triggers its collision recoil.
  */
 private fun findClosestArrow(
     touchPoint: Offset,
@@ -1049,9 +1047,6 @@ private fun findClosestArrow(
     val cellX = kotlin.math.floor(relX / cellSize).toInt()
     val cellY = kotlin.math.floor(relY / cellSize).toInt()
     val touchedCoord = GridCoordinate(cellX, cellY)
-    val isInsideGrid = if (xSize > 0 && ySize > 0) {
-        cellX in 0 until xSize && cellY in 0 until ySize
-    } else true
 
     // 1. DISCRETE CELL OCCUPANCY AUTHORITY (100% Infallible Hit Testing)
     val cellOccupant = occupancy?.get(touchedCoord)?.takeIf {
@@ -1062,18 +1057,14 @@ private fun findClosestArrow(
         return cellOccupant
     }
 
-    // 2. ABSORPTION GUARD: Cleared cells and flying arrows must NEVER trigger neighbor arrows
-    val isFlyingCell = arrows.any { it.state == ArrowState.FLYING_OUT && it.isPointInside(touchedCoord) }
-    if (isInsideGrid && (clearedCells.contains(touchedCoord) || isFlyingCell)) {
-        return null
-    }
-
-    // 3. Arrowhead Tip Hit Test (for forward spearhead tip reaching into empty unowned space)
     val strokeWidth = (cellSize * 0.23f).coerceIn(1.5f, cellSize * 0.35f)
     val headWidth = headSize.coerceAtLeast(strokeWidth * 2.1f).coerceAtMost(cellSize * 0.70f)
     val headLength = headWidth * 0.82f
     val tipForward = cellSize * 0.33f
+    val tailOffset = (cellSize * 0.32f).coerceAtLeast(strokeWidth * 0.45f)
+    val stemHeadOffset = (tipForward - headLength * 0.65f).coerceAtLeast(0f)
 
+    // 2. Direct Arrowhead Triangle Hit Test (for forward spearhead reaching into empty space)
     for (arrow in activeArrows) {
         val headCenter = Offset(
             origin.x + (arrow.head.x + 0.5f) * cellSize,
@@ -1099,8 +1090,9 @@ private fun findClosestArrow(
         }
     }
 
-    // 4. Bounded Proximity Fallback (strictly for outer board margins)
-    val maxSearchRadius = cellSize * 0.42f
+    // 3. Bounded Proximity Search (for taps in outer margins, cell borders, or adjacent empty gaps)
+    // Comfortable search radius ensures single-tap responsiveness across all grid sizes and screen densities
+    val maxSearchRadius = maxOf(cellSize * 0.75f, minTouchTargetPx)
     var bestArrow: Arrow? = null
     var minDistance = Float.MAX_VALUE
 
@@ -1132,17 +1124,20 @@ private fun findClosestArrow(
         )
 
         val body = arrow.body
-        var stemDist = Float.MAX_VALUE
-        if (body.size == 1) {
-            val pt = Offset(origin.x + (body[0].x + 0.5f) * cellSize, origin.y + (body[0].y + 0.5f) * cellSize)
-            stemDist = (touchPoint - pt).getDistance()
+        val stemDist = if (body.size <= 1) {
+            val centerPt = Offset(origin.x + (arrow.head.x + 0.5f) * cellSize, origin.y + (arrow.head.y + 0.5f) * cellSize)
+            val firstPt = centerPt + Offset(-dirX, -dirY) * tailOffset
+            val lastPt = centerPt + Offset(dirX, dirY) * stemHeadOffset
+            distanceToSegment(touchPoint, firstPt, lastPt)
         } else {
+            var minSeg = Float.MAX_VALUE
             for (i in 0 until body.size - 1) {
                 val a = Offset(origin.x + (body[i].x + 0.5f) * cellSize, origin.y + (body[i].y + 0.5f) * cellSize)
                 val b = Offset(origin.x + (body[i + 1].x + 0.5f) * cellSize, origin.y + (body[i + 1].y + 0.5f) * cellSize)
                 val d = distanceToSegment(touchPoint, a, b)
-                if (d < stemDist) stemDist = d
+                if (d < minSeg) minSeg = d
             }
+            minSeg
         }
 
         val dist = minOf(headDist, stemDist)
