@@ -1342,7 +1342,8 @@ private fun DrawScope.drawArrowEntity(
         Direction.LEFT -> (arrow.head.x + 1).toFloat()
         Direction.RIGHT -> (xSize - arrow.head.x).toFloat()
     }
-    val exitDistance = (distToEdge + arrow.body.size + 3.0f).coerceAtLeast(6f)
+    // Full clear exit distance: arrow travels until its tail is comfortably off-board
+    val exitDistance = (distToEdge + arrow.body.size + 4.5f).coerceAtLeast(8f)
 
     val stepsToBlocker = if (arrow.collisionDistance > 0f) {
         arrow.collisionDistance
@@ -1350,14 +1351,14 @@ private fun DrawScope.drawArrowEntity(
         getStepsToBlocker(arrow, allArrows, xSize, ySize)
     } else 0f
 
-    // Build the motion track: only extend if actually moving
-    val track = ArrayList<Offset>(arrow.body.size + 8)
+    // Build the motion track: provide generous runway so the head is never clamped during flight
+    val track = ArrayList<Offset>(arrow.body.size + 16)
     for (coord in arrow.body) {
         track.add(Offset(origin.x + (coord.x + 0.5f) * cellSize, origin.y + (coord.y + 0.5f) * cellSize))
     }
     val headPt = track.last()
     val extSteps = when (arrow.state) {
-        ArrowState.FLYING_OUT -> (distToEdge + 4).toInt().coerceAtLeast(4)
+        ArrowState.FLYING_OUT -> (distToEdge + arrow.body.size * 2 + 10).toInt().coerceAtLeast(12)
         ArrowState.WRONG_FLASH -> (stepsToBlocker + 3).toInt().coerceAtLeast(3)
         else -> 0
     }
@@ -1394,8 +1395,8 @@ private fun DrawScope.drawArrowEntity(
     }
 
     // Keep arrow solid during flight across grid; subtle fade-out at very end when off-board
-    val alpha = if (arrow.state == ArrowState.FLYING_OUT && arrow.flightProgress > 0.94f) {
-        ((1f - arrow.flightProgress) / 0.06f).coerceIn(0f, 1f)
+    val alpha = if (arrow.state == ArrowState.FLYING_OUT && arrow.flightProgress > 0.88f) {
+        ((1f - arrow.flightProgress) / 0.12f).coerceIn(0f, 1f)
     } else {
         1.0f
     }

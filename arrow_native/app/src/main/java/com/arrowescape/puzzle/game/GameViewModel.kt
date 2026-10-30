@@ -457,15 +457,15 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             }
         }
 
-        // Animate flight smoothly at 60fps matching Unity (snappy 400ms duration) and transition to CLEARED
+        // Animate flight smoothly at 60fps matching Unity (smooth 780ms duration) and transition to CLEARED
         viewModelScope.launch {
-            val durationMs = 400L
+            val durationMs = 780L
             val startTime = System.currentTimeMillis()
             while (true) {
                 val elapsed = System.currentTimeMillis() - startTime
                 val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
-                // Smooth continuous unified flight easing (smooth acceleration matching Unity)
-                val easedProgress = rawProgress * rawProgress * (3f - 2f * rawProgress)
+                // Smooth continuous unified flight easing with natural acceleration matching Unity
+                val easedProgress = rawProgress * rawProgress * (0.22f + 0.78f * rawProgress)
                 _uiState.update { state ->
                     val updated = state.arrows.map {
                         if (it.id == arrow.id && it.state == ArrowState.FLYING_OUT) {
