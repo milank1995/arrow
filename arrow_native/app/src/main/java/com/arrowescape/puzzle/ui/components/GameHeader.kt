@@ -359,7 +359,7 @@ fun GameHeader(
                 }
             }
 
-            // Sleek continuous HUD progress bar under header with milestone indicators
+            // Sleek continuous HUD progress bar under header
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -383,28 +383,6 @@ fun GameHeader(
                                 )
                             )
                     )
-                }
-
-                // Subtle milestone indicator tick marks at 25%, 50%, 70%, and 90%
-                androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
-                    val milestones = listOf(0.25f, 0.50f, 0.70f, 0.90f)
-                    val barWidth = size.width
-                    val barHeight = size.height
-                    for (m in milestones) {
-                        val x = barWidth * m
-                        val isReached = animatedProgress >= m
-                        val tickColor = if (isReached) {
-                            Color.White.copy(alpha = 0.70f)
-                        } else {
-                            theme.surface.copy(alpha = 0.85f)
-                        }
-                        drawLine(
-                            color = tickColor,
-                            start = Offset(x, 0f),
-                            end = Offset(x, barHeight),
-                            strokeWidth = 1.5.dp.toPx()
-                        )
-                    }
                 }
             }
         }

@@ -167,6 +167,7 @@ private fun parseCheerInfo(rawMessage: String): CheerTier {
     }
 
     val upperBadge = badge?.uppercase() ?: ""
+    val upperText = text.uppercase()
 
     return when {
         // Milestone 25% (Fresh Emerald Green)
@@ -200,6 +201,33 @@ private fun parseCheerInfo(rawMessage: String): CheerTier {
         upperBadge.contains("90%") || upperBadge.contains("80%") -> CheerTier(
             icon = "🎯",
             badge = badge,
+            text = text,
+            accentColor = Color(0xFFA855F7),
+            lightAccentColor = Color(0xFF7C3AED)
+        )
+
+        // Combo Praise: Fire / Heat / Energy (e.g. "On Fire!", "In the Flow!")
+        upperText.contains("FIRE") || upperText.contains("FLOW") || upperText.contains("RHYTHM") || upperText.contains("GROOVING") -> CheerTier(
+            icon = "🔥",
+            badge = null,
+            text = text,
+            accentColor = Color(0xFFF97316),
+            lightAccentColor = Color(0xFFEA580C)
+        )
+
+        // Combo Praise: Focus / Precision (e.g. "Laser Focus!", "Arrow Maestro!", "Brilliant!")
+        upperText.contains("MAESTRO") || upperText.contains("FOCUS") || upperText.contains("BRILLIANT") || upperText.contains("SHARP") -> CheerTier(
+            icon = "⭐",
+            badge = null,
+            text = text,
+            accentColor = Color(0xFF38BDF8),
+            lightAccentColor = Color(0xFF0284C7)
+        )
+
+        // Combo Praise: Master / Flawless (e.g. "Flawless!", "Untouchable!", "Perfection!", "Legend")
+        upperText.contains("FLAWLESS") || upperText.contains("UNTOUCHABLE") || upperText.contains("PERFECTION") || upperText.contains("GALAXY") || upperText.contains("LEGEND") -> CheerTier(
+            icon = "💥",
+            badge = null,
             text = text,
             accentColor = Color(0xFFA855F7),
             lightAccentColor = Color(0xFF7C3AED)

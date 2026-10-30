@@ -460,9 +460,14 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         val currentLvl = _uiState.value.currentLevelNumber
         val isSpecialMode = _uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode
 
-        // Milestone-only notifications (Combo / fire notifications removed)
         val milestoneCheer = evaluateMilestone(clearedCount, totalArrows, currentLvl, isSpecialMode)
-        val cheer = milestoneCheer
+        // Combo praise appears with no "Combo x5" label, silenced around milestones to avoid overlap
+        val comboCheer = if (milestoneCheer == null && (System.currentTimeMillis() - lastMilestoneTimestamp >= 2500L)) {
+            calculateComboPraise(newCombo)
+        } else null
+
+        val cheer = milestoneCheer ?: comboCheer
+        val isMilestone = (cheer != null && cheer == milestoneCheer)
 
         _uiState.update { state ->
             val updatedArrows = state.arrows.map {
@@ -476,12 +481,12 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             )
         }
 
-        // Auto-dismiss milestone notification after 2.2 seconds (clean & subtle)
-        // If rapid taps occur without a new cheer, the existing notification stays visible for its full duration
+        // Auto-dismiss: Snappy 1000ms for combo praise so it disappears quickly; 1800ms for milestones
         if (cheer != null) {
+            val displayDurationMs = if (isMilestone) 1800L else 1000L
             cheerDismissJob?.cancel()
             cheerDismissJob = viewModelScope.launch {
-                delay(2200L)
+                delay(displayDurationMs)
                 _uiState.update { it.copy(cheerMessage = null) }
             }
         }
@@ -1016,5 +1021,15 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
 
         return null
+    }
+
+    private fun calculateComboPraise(combo: Int): String? {
+        return when (combo) {
+            5 -> listOf("On Fire!", "In the Flow!", "Pure Rhythm!", "Grooving!").random()
+            10 -> listOf("Arrow Maestro!", "Laser Focus!", "Brilliant!", "Spectacular!").random()
+            15 -> listOf("Galaxy Brain!", "Flawless!", "Untouchable!", "Masterful!").random()
+            20 -> listOf("Living Legend!", "Perfection!", "Supreme Flow!").random()
+            else -> null
+        }
     }
 }

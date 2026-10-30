@@ -173,13 +173,25 @@ fun DevTestScreen(
             }
         }
 
-        val cheer = milestoneCheer
+        val comboPraise = if (milestoneCheer == null && (now - lastMilestoneTimestamp >= 2500L)) {
+            when (newCombo) {
+                5 -> listOf("On Fire!", "In the Flow!", "Pure Rhythm!", "Grooving!").random()
+                10 -> listOf("Arrow Maestro!", "Laser Focus!", "Brilliant!", "Spectacular!").random()
+                15 -> listOf("Galaxy Brain!", "Flawless!", "Untouchable!", "Masterful!").random()
+                20 -> listOf("Living Legend!", "Perfection!", "Supreme Flow!").random()
+                else -> null
+            }
+        } else null
+
+        val cheer = milestoneCheer ?: comboPraise
+        val isMilestone = (cheer != null && cheer == milestoneCheer)
         if (cheer != null) {
             cheerMessage = cheer
             cheerFromLeft = !cheerFromLeft
             cheerDismissJob?.cancel()
+            val displayDuration = if (isMilestone) 1800L else 1000L
             cheerDismissJob = coroutineScope.launch {
-                delay(2200L)
+                delay(displayDuration)
                 cheerMessage = null
             }
         }
