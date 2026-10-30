@@ -297,11 +297,11 @@ fun PuzzleBoardCanvas(
         var hasInteractedWithBoard by remember(restartTrigger, arrows.size, currentLevelNumber) { mutableStateOf(false) }
         var lastLevelKey by remember { mutableStateOf<String?>(null) }
 
-        // Unified Camera Zoom & Arrow Orchestration across Initial Load & Level Restart:
-        // 1. On Level Restart: if currently zoomed in or panned, camera smoothly glides back to 1.0x overview (380ms)
-        // 2. Full Overview Draw: arrows draw smoothly across the board at full 1.0x overview (1450ms)
-        // 3. Settle Pause (120ms): player clearly sees the full completed silhouette/shape
-        // 4. Auto Zoom-In: ONLY after drawing completes, smoothly zooms into defaultScale for medium/large grids (750ms)
+        // Initial Render & Restart Zoom Behavior (Matching New Unity implementation):
+        // 1. When the puzzle loads, it initially appears ZOOMED IN (entryScale = defaultScale * 1.30f)
+        // 2. Camera smoothly ZOOMS OUT to defaultScale (over 850ms with FastOutSlowInEasing)
+        // 3. Arrow rendering animation runs across 1450ms (concurrent with camera zoom-out)
+        // 4. On Restart: camera smoothly re-centers to entry view and zooms out to defaultScale while arrows redraw
         LaunchedEffect(currentLevelNumber, restartTrigger, xSize, ySize, arrows.size, arrows.firstOrNull()?.id) {
             val currentLevelKey = "${currentLevelNumber}_${xSize}_${ySize}_${arrows.firstOrNull()?.id}"
             val isRestart = (lastLevelKey != null && lastLevelKey == currentLevelKey)
@@ -309,44 +309,49 @@ fun PuzzleBoardCanvas(
 
             settleJob?.cancel()
 
-            // If restarting while zoomed in or panned, smoothly zoom out to overview before redrawing
-            val isZoomedOrPanned = scale > 1.02f || kotlin.math.abs(panX) > 2f || kotlin.math.abs(panY) > 2f
-            if (isRestart && isZoomedOrPanned) {
-                val sAnim = Animatable(scale)
-                val pxAnim = Animatable(panX)
-                val pyAnim = Animatable(panY)
-                coroutineScope {
-                    launch { sAnim.animateTo(1.0f, tween(durationMillis = 380, easing = FastOutSlowInEasing)) { scale = value } }
-                    launch { pxAnim.animateTo(0f, tween(durationMillis = 380, easing = FastOutSlowInEasing)) { panX = value } }
-                    launch { pyAnim.animateTo(0f, tween(durationMillis = 380, easing = FastOutSlowInEasing)) { panY = value } }
+            val entryScale = (currentDefaultScale * 1.30f).coerceIn(1.25f, 3.20f)
+
+            if (isRestart) {
+                // If restarting while panned or zoomed away from entryScale, glide smoothly back to entry view
+                val isPannedOrOff = kotlin.math.abs(scale - entryScale) > 0.05f || kotlin.math.abs(panX) > 2f || kotlin.math.abs(panY) > 2f
+                if (isPannedOrOff) {
+                    val sAnim = Animatable(scale)
+                    val pxAnim = Animatable(panX)
+                    val pyAnim = Animatable(panY)
+                    coroutineScope {
+                        launch { sAnim.animateTo(entryScale, tween(durationMillis = 280, easing = FastOutSlowInEasing)) { scale = value } }
+                        launch { pxAnim.animateTo(0f, tween(durationMillis = 280, easing = FastOutSlowInEasing)) { panX = value } }
+                        launch { pyAnim.animateTo(0f, tween(durationMillis = 280, easing = FastOutSlowInEasing)) { panY = value } }
+                    }
+                } else {
+                    scale = entryScale
+                    panX = 0f
+                    panY = 0f
                 }
             } else {
-                scale = 1.0f
+                scale = entryScale
                 panX = 0f
                 panY = 0f
             }
 
             introProgress.snapTo(0f)
 
-            // Step 1: Smoothly render all arrows at full overview (1.0x) so user sees entire puzzle
+            // Step 1: Smoothly zoom OUT from zoomed-in entry view to defaultScale (matching Unity)
+            if (!hasInteractedWithBoard) {
+                val sAnim = Animatable(entryScale)
+                settleJob = coroutineScope.launch {
+                    sAnim.animateTo(
+                        targetValue = currentDefaultScale,
+                        animationSpec = tween(durationMillis = 850, easing = FastOutSlowInEasing)
+                    ) { scale = value }
+                }
+            }
+
+            // Step 2: Concurrently render all arrows at full smoothness (1450ms, untouched)
             introProgress.animateTo(
                 targetValue = 1f,
                 animationSpec = tween(durationMillis = 1450, easing = LinearEasing)
             )
-
-            // Step 2: Brief natural settle pause to allow player to absorb the full puzzle shape
-            delay(120L)
-
-            // Step 3: ONLY after arrow rendering finishes, trigger smooth zoom-in for medium/large grids
-            if (currentDefaultScale > 1.02f && !hasInteractedWithBoard) {
-                val sAnim = Animatable(scale)
-                settleJob = coroutineScope.launch {
-                    sAnim.animateTo(
-                        targetValue = currentDefaultScale,
-                        animationSpec = tween(durationMillis = 750, easing = FastOutSlowInEasing)
-                    ) { scale = value }
-                }
-            }
         }
 
         var animTick by remember { mutableLongStateOf(0L) }
@@ -439,9 +444,9 @@ fun PuzzleBoardCanvas(
                         settleJob?.cancel() // Stop ongoing inertia or animation immediately on new touch
 
                         val center = Offset(currentViewportWidth / 2f, currentViewportHeight / 2f)
-                        val dragThreshold = 22.dp.toPx()
-                        val pinchMotionThreshold = 26.dp.toPx()
-                        val panGestureThreshold = 22.dp.toPx()
+                        val dragThreshold = with(density) { 10.dp.toPx() }
+                        val pinchMotionThreshold = with(density) { 20.dp.toPx() }
+                        val panGestureThreshold = with(density) { 14.dp.toPx() }
 
                         var hadMultiTouch = false
                         var isPinching = false
@@ -570,8 +575,8 @@ fun PuzzleBoardCanvas(
 
                                         event.changes.forEach { it.consume() }
                                     }
-                                } else if (pressedList.size == 1 && scale > 1.05f) {
-                                    // Single-finger panning when zoomed in
+                                } else if (pressedList.size == 1) {
+                                    // Single-finger dragging and repositioning in any direction at any scale (matching Unity)
                                     val change = pressedList.first()
                                     val rec = activeTouches[change.id.value]
                                     if (rec != null && rec.hasDragged(dragThreshold)) {
@@ -583,8 +588,8 @@ fun PuzzleBoardCanvas(
 
                                     if (isPanning) {
                                         val delta = change.positionChange()
-                                        val maxPanX = (currentBoardWidth * (scale - 1f) / 2f) + (currentViewportWidth * 0.35f)
-                                        val maxPanY = (currentBoardHeight * (scale - 1f) / 2f) + (currentViewportHeight * 0.35f)
+                                        val maxPanX = (currentBoardWidth * scale / 2f) + (currentViewportWidth * 0.45f)
+                                        val maxPanY = (currentBoardHeight * scale / 2f) + (currentViewportHeight * 0.45f)
 
                                         panX = (panX + delta.x).coerceIn(-maxPanX, maxPanX)
                                         panY = (panY + delta.y).coerceIn(-maxPanY, maxPanY)
@@ -716,16 +721,16 @@ fun PuzzleBoardCanvas(
                                     }
                                 }
                             }
-                        } else if (inertiaVel != Offset.Zero && scale > 1.02f) {
-                            // Inertia momentum coasting with friction decay
+                        } else if (inertiaVel != Offset.Zero) {
+                            // Inertia momentum coasting with friction decay (matching Unity's SwipeInertia)
                             settleJob = coroutineScope.launch {
                                 var vx = inertiaVel.x * 0.75f
                                 var vy = inertiaVel.y * 0.75f
-                                while (hypot(vx, vy) > 30f) {
+                                val maxPX = (currentBoardWidth * scale / 2f) + (currentViewportWidth * 0.45f)
+                                val maxPY = (currentBoardHeight * scale / 2f) + (currentViewportHeight * 0.45f)
+                                while (hypot(vx, vy) > 25f) {
                                     val curPX = panX + vx * 0.016f
                                     val curPY = panY + vy * 0.016f
-                                    val maxPX = (currentBoardWidth * (scale - 1f) / 2f) + (currentViewportWidth * 0.35f)
-                                    val maxPY = (currentBoardHeight * (scale - 1f) / 2f) + (currentViewportHeight * 0.35f)
 
                                     if (curPX !in -maxPX..maxPX) vx = -vx * 0.25f
                                     if (curPY !in -maxPY..maxPY) vy = -vy * 0.25f
@@ -733,8 +738,8 @@ fun PuzzleBoardCanvas(
                                     panX = curPX.coerceIn(-maxPX, maxPX)
                                     panY = curPY.coerceIn(-maxPY, maxPY)
 
-                                    vx *= 0.91f
-                                    vy *= 0.91f
+                                    vx *= 0.92f
+                                    vy *= 0.92f
                                     delay(16L)
                                 }
                             }
