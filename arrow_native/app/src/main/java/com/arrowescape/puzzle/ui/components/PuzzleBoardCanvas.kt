@@ -28,7 +28,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -235,9 +239,9 @@ fun PuzzleBoardCanvas(
         val minTouchTargetPx = with(LocalDensity.current) { 15.dp.toPx() }
         val currentMinTouchTargetPx by rememberUpdatedState(minTouchTargetPx)
         val minStrokePx = with(LocalDensity.current) { 2.0.dp.toPx() }
-        val maxStrokePx = with(LocalDensity.current) { 5.5.dp.toPx() }
-        val baseStrokeWidth = (cellSize * 0.24f).coerceIn(minStrokePx, maxStrokePx)
-        val baseHeadWidth = baseStrokeWidth * 2.05f
+        val maxStrokePx = with(LocalDensity.current) { 10.5.dp.toPx() }
+        val baseStrokeWidth = (cellSize * 0.23f).coerceIn(minStrokePx, maxStrokePx)
+        val baseHeadWidth = (cellSize * 0.54f).coerceAtLeast(baseStrokeWidth * 2.1f).coerceAtMost(cellSize * 0.70f)
         val currentHeadSize by rememberUpdatedState(baseHeadWidth)
 
         // Smooth Auto-Framing: gently glides zoom and pan to center the hinted arrow if off-screen
@@ -371,8 +375,10 @@ fun PuzzleBoardCanvas(
         }
 
         // Build occupancy map live from the current arrows, excluding FLYING_OUT and CLEARED arrows.
-        val occupancyMap = GridOccupancyMap(xSize, ySize).apply {
-            rebuild(arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT })
+        val occupancyMap = remember(arrows, xSize, ySize) {
+            GridOccupancyMap(xSize, ySize).apply {
+                rebuild(arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT })
+            }
         }
         val currentOccupancyMap by rememberUpdatedState(occupancyMap)
 
@@ -386,12 +392,21 @@ fun PuzzleBoardCanvas(
             } else null
         }
 
-        LaunchedEffect(isCelebrationBurstActive, celebrationWaveProgress.isRunning, activeBoosterAnimation, showTutorialHand, hasUnclearedArrows) {
-            while (isCelebrationBurstActive || celebrationWaveProgress.isRunning || activeBoosterAnimation != null || (showTutorialHand && hasUnclearedArrows)) {
+        val isTutorialHandActive = showTutorialHand && tutorialTargetArrow != null && introProgress.value >= 1f
+        val hasWrongFlash = arrows.any { it.state == ArrowState.WRONG_FLASH }
+
+        LaunchedEffect(isCelebrationBurstActive, celebrationWaveProgress.isRunning, activeBoosterAnimation, isTutorialHandActive, hasWrongFlash) {
+            while (isCelebrationBurstActive || celebrationWaveProgress.isRunning || activeBoosterAnimation != null || isTutorialHandActive || hasWrongFlash) {
                 withFrameNanos { frameTimeNanos ->
                     animTick = frameTimeNanos
                 }
             }
+        }
+
+        // Cache static visual geometry (body Path and head Path) for all IDLE arrows
+        // Zero-allocation rendering for resting arrows; persistent across pans and zooms.
+        val staticGeometryCache = remember(currentLevelNumber, restartTrigger, cellSize, boardOrigin) {
+            HashMap<String, CachedArrowGeometry>()
         }
 
         // Board scale is held strictly at 1.0f during initial arrow rendering overview
@@ -430,14 +445,16 @@ fun PuzzleBoardCanvas(
 
                         // Preview ray on long-press (holding down on an arrow without dragging)
                         val downArrow = findClosestArrow(
-                            screenToLocal(down.position),
-                            currentBoardOrigin,
-                            currentArrows,
-                            currentCellSize,
-                            currentHeadSize,
-                            currentMinTouchTargetPx,
-                            currentOccupancyMap,
-                            currentClearedCells
+                            touchPoint = screenToLocal(down.position),
+                            origin = currentBoardOrigin,
+                            arrows = currentArrows,
+                            cellSize = currentCellSize,
+                            headSize = currentHeadSize,
+                            minTouchTargetPx = currentMinTouchTargetPx,
+                            occupancy = currentOccupancyMap,
+                            clearedCells = currentClearedCells,
+                            xSize = currentXSize,
+                            ySize = currentYSize
                         )
                         val firstRecord = TouchRecord(
                             downPos = down.position,
@@ -465,14 +482,16 @@ fun PuzzleBoardCanvas(
                                 for (change in event.changes) {
                                     if (change.changedToDown() && !activeTouches.containsKey(change.id.value)) {
                                         val cand = findClosestArrow(
-                                            screenToLocal(change.position),
-                                            currentBoardOrigin,
-                                            currentArrows,
-                                            currentCellSize,
-                                            currentHeadSize,
-                                            currentMinTouchTargetPx,
-                                            currentOccupancyMap,
-                                            currentClearedCells
+                                            touchPoint = screenToLocal(change.position),
+                                            origin = currentBoardOrigin,
+                                            arrows = currentArrows,
+                                            cellSize = currentCellSize,
+                                            headSize = currentHeadSize,
+                                            minTouchTargetPx = currentMinTouchTargetPx,
+                                            occupancy = currentOccupancyMap,
+                                            clearedCells = currentClearedCells,
+                                            xSize = currentXSize,
+                                            ySize = currentYSize
                                         )
                                         val rec = TouchRecord(
                                             downPos = change.position,
@@ -592,14 +611,16 @@ fun PuzzleBoardCanvas(
                                             }
 
                                             val upTarget = findClosestArrow(
-                                                screenToLocal(upChange.position),
-                                                currentBoardOrigin,
-                                                currentArrows,
-                                                currentCellSize,
-                                                currentHeadSize,
-                                                currentMinTouchTargetPx,
-                                                currentOccupancyMap,
-                                                currentClearedCells
+                                                touchPoint = screenToLocal(upChange.position),
+                                                origin = currentBoardOrigin,
+                                                arrows = currentArrows,
+                                                cellSize = currentCellSize,
+                                                headSize = currentHeadSize,
+                                                minTouchTargetPx = currentMinTouchTargetPx,
+                                                occupancy = currentOccupancyMap,
+                                                clearedCells = currentClearedCells,
+                                                xSize = currentXSize,
+                                                ySize = currentYSize
                                             )
 
                                             // Down-Target Authority with Release & Midpoint Fallback:
@@ -612,14 +633,16 @@ fun PuzzleBoardCanvas(
                                                     (rec.downPos.y + upChange.position.y) / 2f
                                                 )
                                                 findClosestArrow(
-                                                    screenToLocal(midScreenPos),
-                                                    currentBoardOrigin,
-                                                    currentArrows,
-                                                    currentCellSize,
-                                                    currentHeadSize,
-                                                    currentMinTouchTargetPx,
-                                                    currentOccupancyMap,
-                                                    currentClearedCells
+                                                    touchPoint = screenToLocal(midScreenPos),
+                                                    origin = currentBoardOrigin,
+                                                    arrows = currentArrows,
+                                                    cellSize = currentCellSize,
+                                                    headSize = currentHeadSize,
+                                                    minTouchTargetPx = currentMinTouchTargetPx,
+                                                    occupancy = currentOccupancyMap,
+                                                    clearedCells = currentClearedCells,
+                                                    xSize = currentXSize,
+                                                    ySize = currentYSize
                                                 )
                                             }
 
@@ -759,68 +782,63 @@ fun PuzzleBoardCanvas(
                 val dotsCenterY = (ySize - 1) / 2f
                 val maxDotsDist = hypot(dotsCenterX, dotsCenterY).coerceAtLeast(1f)
 
-                for (cy in 0 until ySize) {
-                    for (cx in 0 until xSize) {
-                        val coord = GridCoordinate(cx, cy)
-                        val isCleared = clearedCells.contains(coord)
+                for (coord in clearedCells) {
+                    val cx = coord.x
+                    val cy = coord.y
+                    val dotCenter = Offset(
+                        boardOrigin.x + (cx + 0.5f) * cellSize,
+                        boardOrigin.y + (cy + 0.5f) * cellSize
+                    )
 
-                        if (isCleared) {
-                            val dotCenter = Offset(
-                                boardOrigin.x + (cx + 0.5f) * cellSize,
-                                boardOrigin.y + (cy + 0.5f) * cellSize
+                    if (isWaveActive) {
+                        // AnimateDots_CenterOut: circular ripple wave spreading from center outward
+                        val dotDist = hypot(cx - dotsCenterX, cy - dotsCenterY)
+                        val normDist = (dotDist / maxDotsDist).coerceIn(0f, 1f)
+                        val waveProg = celebrationWaveProgress.value
+                        val dotHitTime = normDist * 0.65f
+                        val dotLocalProg = ((waveProg - dotHitTime) / 0.35f).coerceIn(0f, 1f)
+
+                        if (dotLocalProg in 0.001f..0.999f) {
+                            val waveCurve = sin(dotLocalProg * PI.toFloat())
+                            val popScale = 1.0f + 1.25f * waveCurve
+                            val waveColor = Color(0xFFFFB800) // Golden celebration highlight
+
+                            // Radiant halo
+                            drawCircle(
+                                color = waveColor.copy(alpha = waveCurve * 0.35f),
+                                radius = dotRadius * (1.2f + 2.4f * waveCurve),
+                                center = dotCenter
                             )
-
-                            if (isWaveActive) {
-                                // AnimateDots_CenterOut: circular ripple wave spreading from center outward
-                                val dotDist = hypot(cx - dotsCenterX, cy - dotsCenterY)
-                                val normDist = (dotDist / maxDotsDist).coerceIn(0f, 1f)
-                                val waveProg = celebrationWaveProgress.value
-                                val dotHitTime = normDist * 0.65f
-                                val dotLocalProg = ((waveProg - dotHitTime) / 0.35f).coerceIn(0f, 1f)
-
-                                if (dotLocalProg in 0.001f..0.999f) {
-                                    val waveCurve = sin(dotLocalProg * PI.toFloat())
-                                    val popScale = 1.0f + 1.25f * waveCurve
-                                    val waveColor = Color(0xFFFFB800) // Golden celebration highlight
-
-                                    // Radiant halo
-                                    drawCircle(
-                                        color = waveColor.copy(alpha = waveCurve * 0.35f),
-                                        radius = dotRadius * (1.2f + 2.4f * waveCurve),
-                                        center = dotCenter
-                                    )
-                                    // Golden popping dot
-                                    drawCircle(
-                                        color = androidx.compose.ui.graphics.lerp(dotColor.copy(alpha = 0.45f), waveColor, waveCurve),
-                                        radius = dotRadius * popScale,
-                                        center = dotCenter
-                                    )
-                                } else {
-                                    drawCircle(
-                                        color = dotColor.copy(alpha = 0.45f),
-                                        radius = dotRadius,
-                                        center = dotCenter
-                                    )
-                                }
-                            } else {
-                                val spawnTime = clearedCellTimestamps[coord] ?: 0L
-                                val elapsed = (now - spawnTime).coerceAtLeast(0L)
-                                val animDuration = 220f
-                                val animProgress = if (spawnTime == 0L || elapsed >= animDuration) 1.0f else (elapsed / animDuration).coerceIn(0f, 1f)
-                                val popScale = when {
-                                    animProgress >= 1f -> 1.0f
-                                    animProgress < 0.65f -> (animProgress / 0.65f) * 1.15f
-                                    else -> 1.15f - ((animProgress - 0.65f) / 0.35f) * 0.15f
-                                }
-                                val alpha = (animProgress * 0.45f).coerceIn(0f, 0.45f)
-
-                                drawCircle(
-                                    color = dotColor.copy(alpha = alpha),
-                                    radius = dotRadius * popScale,
-                                    center = dotCenter
-                                )
-                            }
+                            // Golden popping dot
+                            drawCircle(
+                                color = androidx.compose.ui.graphics.lerp(dotColor.copy(alpha = 0.45f), waveColor, waveCurve),
+                                radius = dotRadius * popScale,
+                                center = dotCenter
+                            )
+                        } else {
+                            drawCircle(
+                                color = dotColor.copy(alpha = 0.45f),
+                                radius = dotRadius,
+                                center = dotCenter
+                            )
                         }
+                    } else {
+                        val spawnTime = clearedCellTimestamps[coord] ?: 0L
+                        val elapsed = (now - spawnTime).coerceAtLeast(0L)
+                        val animDuration = 220f
+                        val animProgress = if (spawnTime == 0L || elapsed >= animDuration) 1.0f else (elapsed / animDuration).coerceIn(0f, 1f)
+                        val popScale = when {
+                            animProgress >= 1f -> 1.0f
+                            animProgress < 0.65f -> (animProgress / 0.65f) * 1.15f
+                            else -> 1.15f - ((animProgress - 0.65f) / 0.35f) * 0.15f
+                        }
+                        val alpha = (animProgress * 0.45f).coerceIn(0f, 0.45f)
+
+                        drawCircle(
+                            color = dotColor.copy(alpha = alpha),
+                            radius = dotRadius * popScale,
+                            center = dotCenter
+                        )
                     }
                 }
 
@@ -835,26 +853,34 @@ fun PuzzleBoardCanvas(
                 val boardCenterX = xSize / 2f
                 val boardCenterY = ySize / 2f
                 val maxBoardDist = hypot(boardCenterX, boardCenterY).coerceAtLeast(1f)
+                val isIntroActive = introProgress.value < 1f
+                val hasHintedArrow = arrows.any { it.state == ArrowState.HINTED }
+                val effectiveHintPulseScale = if (hasHintedArrow) hintPulseScale else 1.0f
+                val effectiveHintGlowAlpha = if (hasHintedArrow) hintGlowAlpha else 0.5f
 
                 for (arrow in arrows) {
                     if (arrow.state == ArrowState.CLEARED) continue
 
-                    val arrowHead = arrow.head
-                    val arrowTail = arrow.body.firstOrNull() ?: arrowHead
-                    val arrowCenterX = (arrowHead.x + arrowTail.x) / 2f
-                    val arrowCenterY = (arrowHead.y + arrowTail.y) / 2f
-                    val dx = arrowCenterX - boardCenterX
-                    val dy = arrowCenterY - boardCenterY
-                    val distFromCenter = hypot(dx, dy)
-                    val normDist = (distFromCenter / maxBoardDist).coerceIn(0f, 1f)
+                    val (easedDraw, introAlpha) = if (isIntroActive) {
+                        val arrowHead = arrow.head
+                        val arrowTail = arrow.body.firstOrNull() ?: arrowHead
+                        val arrowCenterX = (arrowHead.x + arrowTail.x) / 2f
+                        val arrowCenterY = (arrowHead.y + arrowTail.y) / 2f
+                        val dx = arrowCenterX - boardCenterX
+                        val dy = arrowCenterY - boardCenterY
+                        val distFromCenter = hypot(dx, dy)
+                        val normDist = (distFromCenter / maxBoardDist).coerceIn(0f, 1f)
 
-                    // Staggered cascade: center arrows start drawing first, outer arrows follow
-                    val startTime = normDist * 0.40f
-                    val drawWindow = 0.58f
-                    val localProg = if (introProgress.value >= 1f) 1f else ((introProgress.value - startTime) / drawWindow).coerceIn(0f, 1f)
-
-                    val easedDraw = if (localProg >= 1f) 1f else CubicBezierEasing(0.35f, 0.0f, 0.25f, 1.0f).transform(localProg)
-                    val introAlpha = if (localProg >= 1f) 1f else (localProg / 0.12f).coerceIn(0f, 1f)
+                        // Staggered cascade: center arrows start drawing first, outer arrows follow
+                        val startTime = normDist * 0.40f
+                        val drawWindow = 0.58f
+                        val localProg = ((introProgress.value - startTime) / drawWindow).coerceIn(0f, 1f)
+                        val eased = CubicBezierEasing(0.35f, 0.0f, 0.25f, 1.0f).transform(localProg)
+                        val alpha = (localProg / 0.12f).coerceIn(0f, 1f)
+                        eased to alpha
+                    } else {
+                        1f to 1f
+                    }
 
                     drawArrowEntity(
                         origin = boardOrigin,
@@ -864,12 +890,13 @@ fun PuzzleBoardCanvas(
                         ySize = ySize,
                         cellSize = cellSize,
                         theme = theme,
-                        hintPulseScale = hintPulseScale,
-                        hintGlowAlpha = hintGlowAlpha,
+                        hintPulseScale = effectiveHintPulseScale,
+                        hintGlowAlpha = effectiveHintGlowAlpha,
                         previewRayArrowIds = previewRayArrowIds,
                         activeBoosterAnimation = activeBoosterAnimation,
                         drawProgress = easedDraw,
-                        introAlpha = introAlpha
+                        introAlpha = introAlpha,
+                        staticGeometryCache = staticGeometryCache
                     )
                 }
 
@@ -926,11 +953,11 @@ fun PuzzleBoardCanvas(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Text(
-                        text = "\u21BA",
-                        color = Color.White,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Reset Zoom",
+                        tint = Color.White,
+                        modifier = Modifier.size(13.dp)
                     )
                     Text(
                         text = "Reset %.1fx".format(scale),
@@ -987,15 +1014,20 @@ private fun isPointInTriangle(p: Offset, a: Offset, b: Offset, c: Offset): Boole
 }
 
 /**
- * Pure Geometric Hit Detection matching both Unity versions (RaycastTry2D & ConfigurableLineFinderStrategy).
- * Evaluates exact physical Euclidean proximity to each arrow's rendered visual shape (arrowhead and stem).
+ * Deterministic Hit Detection matching Unity's Raycast2D / Cell-Based Architecture.
  *
  * Guarantees:
- * 1. The arrow physically closest to the finger ALWAYS wins. Zero distance distortion.
- * 2. Zero "movable stealing": Blocked and movable arrows are treated with absolute geometric fairness.
- *    A blocked arrow tapped by the user will ALWAYS respond with its wobble feedback.
- * 3. Accurate response for all arrow sizes (including 1-cell arrows) without neighbor interference.
- * 4. Taps far away in empty space (> maxSearchRadius) return null, preventing phantom clicks.
+ * 1. Cell Authority (Primary): In a grid puzzle, each arrow's body and head occupy discrete cells.
+ *    If the touch lands inside cell (cellX, cellY) occupied by an active arrow, THAT EXACT ARROW
+ *    is returned immediately. Neighboring arrows can NEVER steal a tap inside an occupied cell.
+ * 2. Absorption Guard: If the touched cell is inside grid bounds and is already cleared (has a dot)
+ *    or belongs to an escaping flying arrow, the tap is absorbed (returns null). Tapping empty cleared
+ *    space never triggers adjacent arrows.
+ * 3. Arrowhead Tip Direct Hit: If the touch lands within an active arrowhead triangle protruding
+ *    forward into unowned space, select that arrow.
+ * 4. Bounded Margin Proximity: Strictly for outer board margins and padding borders (radius = cellSize * 0.42f).
+ *    Pure Euclidean proximity, zero "movable stealing". If the user taps a blocked arrow, that blocked
+ *    arrow is selected and triggers its collision recoil.
  */
 private fun findClosestArrow(
     touchPoint: Offset,
@@ -1005,18 +1037,43 @@ private fun findClosestArrow(
     headSize: Float,
     minTouchTargetPx: Float,
     occupancy: GridOccupancyMap? = null,
-    clearedCells: Set<GridCoordinate> = emptySet()
+    clearedCells: Set<GridCoordinate> = emptySet(),
+    xSize: Int = 0,
+    ySize: Int = 0
 ): Arrow? {
     val activeArrows = arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
     if (activeArrows.isEmpty()) return null
 
-    val strokeWidth = (cellSize * 0.20f).coerceIn(1.0f, cellSize * 0.35f)
-    val headWidth = (cellSize * 0.54f).coerceAtLeast(strokeWidth * 1.8f).coerceAtMost(cellSize * 0.68f)
-    val headLength = headWidth * 0.88f
-    val tipForward = cellSize * 0.35f
+    val relX = touchPoint.x - origin.x
+    val relY = touchPoint.y - origin.y
+    val cellX = kotlin.math.floor(relX / cellSize).toInt()
+    val cellY = kotlin.math.floor(relY / cellSize).toInt()
+    val touchedCoord = GridCoordinate(cellX, cellY)
+    val isInsideGrid = if (xSize > 0 && ySize > 0) {
+        cellX in 0 until xSize && cellY in 0 until ySize
+    } else true
 
-    // 1. Direct Arrowhead Hit Priority:
-    // If the touch lands inside an active arrowhead triangle, select it with top priority!
+    // 1. DISCRETE CELL OCCUPANCY AUTHORITY (100% Infallible Hit Testing)
+    val cellOccupant = occupancy?.get(touchedCoord)?.takeIf {
+        it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT
+    } ?: activeArrows.firstOrNull { it.isPointInside(touchedCoord) }
+
+    if (cellOccupant != null) {
+        return cellOccupant
+    }
+
+    // 2. ABSORPTION GUARD: Cleared cells and flying arrows must NEVER trigger neighbor arrows
+    val isFlyingCell = arrows.any { it.state == ArrowState.FLYING_OUT && it.isPointInside(touchedCoord) }
+    if (isInsideGrid && (clearedCells.contains(touchedCoord) || isFlyingCell)) {
+        return null
+    }
+
+    // 3. Arrowhead Tip Hit Test (for forward spearhead tip reaching into empty unowned space)
+    val strokeWidth = (cellSize * 0.23f).coerceIn(1.5f, cellSize * 0.35f)
+    val headWidth = headSize.coerceAtLeast(strokeWidth * 2.1f).coerceAtMost(cellSize * 0.70f)
+    val headLength = headWidth * 0.82f
+    val tipForward = cellSize * 0.33f
+
     for (arrow in activeArrows) {
         val headCenter = Offset(
             origin.x + (arrow.head.x + 0.5f) * cellSize,
@@ -1042,32 +1099,12 @@ private fun findClosestArrow(
         }
     }
 
-    // 2. DISCRETE CELL OCCUPANCY AUTHORITY (100% Infallible Hit Testing)
-    // In Unity, each arrow collider occupies its respective grid cells.
-    // If the tap lands directly inside a cell owned by an active (non-flying) arrow, that arrow wins.
-    // Flying arrows are already excluded from activeArrows above, so they cannot steal taps here.
-    val relX = touchPoint.x - origin.x
-    val relY = touchPoint.y - origin.y
-    val cellX = kotlin.math.floor(relX / cellSize).toInt()
-    val cellY = kotlin.math.floor(relY / cellSize).toInt()
-    val touchedCoord = GridCoordinate(cellX, cellY)
+    // 4. Bounded Proximity Fallback (strictly for outer board margins)
+    val maxSearchRadius = cellSize * 0.42f
+    var bestArrow: Arrow? = null
+    var minDistance = Float.MAX_VALUE
 
-    val cellOccupant = occupancy?.get(touchedCoord)?.takeIf {
-        it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT
-    } ?: activeArrows.firstOrNull { it.isPointInside(touchedCoord) }
-
-    if (cellOccupant != null) {
-        return cellOccupant
-    }
-    // NOTE: Phase 3 (flying-cell absorption guard) has been removed.
-    // Flying arrows are already excluded from hit detection via Phase 1 and Phase 2.
-    // The old guard was incorrectly absorbing taps on neighboring arrows during flight.
-
-    // 4. Proximity Search for Taps Near Arrows, in Margins, or Slightly Across Cell Borders:
-    // Comfortable search radius: ensures single-tap responsiveness across all grid sizes
-    val maxSearchRadius = maxOf(cellSize * 0.90f, minTouchTargetPx)
-
-    fun computeArrowDistance(arrow: Arrow): Float {
+    for (arrow in activeArrows) {
         val headCenter = Offset(
             origin.x + (arrow.head.x + 0.5f) * cellSize,
             origin.y + (arrow.head.y + 0.5f) * cellSize
@@ -1094,39 +1131,28 @@ private fun findClosestArrow(
             distanceToSegment(touchPoint, wingLeft, wingRight)
         )
 
-        val bodyPts = arrow.allPoints.map { coord ->
-            Offset(origin.x + (coord.x + 0.5f) * cellSize, origin.y + (coord.y + 0.5f) * cellSize)
-        }
+        val body = arrow.body
         var stemDist = Float.MAX_VALUE
-        if (bodyPts.size == 1) {
-            stemDist = (touchPoint - bodyPts[0]).getDistance()
+        if (body.size == 1) {
+            val pt = Offset(origin.x + (body[0].x + 0.5f) * cellSize, origin.y + (body[0].y + 0.5f) * cellSize)
+            stemDist = (touchPoint - pt).getDistance()
         } else {
-            for (i in 0 until bodyPts.size - 1) {
-                val d = distanceToSegment(touchPoint, bodyPts[i], bodyPts[i + 1])
+            for (i in 0 until body.size - 1) {
+                val a = Offset(origin.x + (body[i].x + 0.5f) * cellSize, origin.y + (body[i].y + 0.5f) * cellSize)
+                val b = Offset(origin.x + (body[i + 1].x + 0.5f) * cellSize, origin.y + (body[i + 1].y + 0.5f) * cellSize)
+                val d = distanceToSegment(touchPoint, a, b)
                 if (d < stemDist) stemDist = d
             }
         }
 
-        return minOf(headDist, stemDist)
+        val dist = minOf(headDist, stemDist)
+        if (dist < minDistance && dist <= maxSearchRadius) {
+            minDistance = dist
+            bestArrow = arrow
+        }
     }
 
-    data class CandidateHit(val arrow: Arrow, val dist: Float, val isMovable: Boolean)
-    val candidates = activeArrows.mapNotNull { arrow ->
-        val dist = computeArrowDistance(arrow)
-        if (dist <= maxSearchRadius) {
-            val isMovable = occupancy != null && PuzzleSolver.canMoveOut(arrow, occupancy)
-            CandidateHit(arrow, dist, isMovable)
-        } else null
-    }
-
-    if (candidates.isEmpty()) return null
-
-    val sorted = candidates.sortedBy { it.dist }
-    val best = sorted.first()
-
-    // Tie-breaker: If two arrows are within 3.5px of each other, favor the movable arrow
-    val tieCandidates = sorted.filter { it.dist <= best.dist + 3.5f }
-    return tieCandidates.firstOrNull { it.isMovable }?.arrow ?: best.arrow
+    return bestArrow
 }
 
 private fun distanceToSegment(p: Offset, a: Offset, b: Offset): Float {
@@ -1161,6 +1187,81 @@ private fun getStepsToBlocker(arrow: Arrow, arrows: List<Arrow>, xSize: Int, ySi
     return steps.toFloat().coerceAtLeast(1f)
 }
 
+private class CachedArrowGeometry(
+    val bodyPath: Path,
+    val headPath: Path,
+    val headCenter: Offset
+)
+
+private fun computeStaticArrowGeometry(
+    arrow: Arrow,
+    origin: Offset,
+    cellSize: Float,
+    strokeWidth: Float,
+    headWidth: Float,
+    headLength: Float,
+    tipForward: Float,
+    tailOffset: Float,
+    stemHeadOffset: Float
+): CachedArrowGeometry {
+    val bodyCoords = arrow.body
+    val originalBodyLen = (bodyCoords.size - 1).coerceAtLeast(0)
+
+    val track = ArrayList<Offset>(bodyCoords.size)
+    for (coord in bodyCoords) {
+        track.add(Offset(origin.x + (coord.x + 0.5f) * cellSize, origin.y + (coord.y + 0.5f) * cellSize))
+    }
+
+    val dynamicTailDir = if (track.size >= 2) {
+        val sVec = track[1] - track[0]
+        val sLen = hypot(sVec.x, sVec.y).coerceAtLeast(0.001f)
+        Offset(-sVec.x / sLen, -sVec.y / sLen)
+    } else {
+        val dir = arrow.direction
+        Offset(-dir.dx.toFloat(), -dir.dy.toFloat())
+    }
+
+    val forwardAtHead = if (track.size >= 2) {
+        val eVec = track.last() - track[track.size - 2]
+        val eLen = hypot(eVec.x, eVec.y).coerceAtLeast(0.001f)
+        Offset(eVec.x / eLen, eVec.y / eLen)
+    } else {
+        val dir = arrow.direction
+        Offset(dir.dx.toFloat(), dir.dy.toFloat())
+    }
+
+    val sampledPoints = ArrayList<Offset>(track.size + 1)
+    if (originalBodyLen == 0) {
+        val centerPt = track.first()
+        val firstPt = centerPt + dynamicTailDir * tailOffset
+        val fullLastPt = centerPt + forwardAtHead * stemHeadOffset
+        sampledPoints.add(firstPt)
+        sampledPoints.add(fullLastPt)
+    } else {
+        val firstPt = track.first() + dynamicTailDir * tailOffset
+        val lastPt = track.last() + forwardAtHead * stemHeadOffset
+        sampledPoints.add(firstPt)
+        if (track.size > 2) {
+            for (i in 1 until track.size - 1) {
+                sampledPoints.add(track[i])
+            }
+        }
+        sampledPoints.add(lastPt)
+    }
+
+    val bodyPath = buildRoundedCornerPath(sampledPoints, radius = cellSize * 0.18f)
+
+    val currentHead = track.last()
+    val headPath = Path().apply {
+        moveTo(currentHead.x, currentHead.y - tipForward)
+        lineTo(currentHead.x + headWidth * 0.50f, currentHead.y - tipForward + headLength)
+        lineTo(currentHead.x - headWidth * 0.50f, currentHead.y - tipForward + headLength)
+        close()
+    }
+
+    return CachedArrowGeometry(bodyPath, headPath, currentHead)
+}
+
 private fun DrawScope.drawArrowEntity(
     origin: Offset,
     arrow: Arrow,
@@ -1174,7 +1275,8 @@ private fun DrawScope.drawArrowEntity(
     previewRayArrowIds: Set<String>,
     activeBoosterAnimation: BoosterEffectAnimation? = null,
     drawProgress: Float = 1.0f,
-    introAlpha: Float = 1.0f
+    introAlpha: Float = 1.0f,
+    staticGeometryCache: MutableMap<String, CachedArrowGeometry>? = null
 ) {
     // If shattered by hammer, hide standard arrow geometry during explosion
     if (activeBoosterAnimation is BoosterEffectAnimation.Hammer && activeBoosterAnimation.targetArrow.id == arrow.id && activeBoosterAnimation.progress >= 0.40f) {
@@ -1193,10 +1295,8 @@ private fun DrawScope.drawArrowEntity(
         else -> theme.arrowDefault
     }
 
-    // Exact Unity One stroke: slender, crisp lines (24% of cell size, bounded for all grid scales)
-    // Guarantees generous gap between parallel channels matching Image 2 perfectly
     val minStroke = 2.0.dp.toPx()
-    val maxStroke = 5.5.dp.toPx()
+    val maxStroke = 10.5.dp.toPx()
     val scaleMultiplier = when {
         isPreviewHold -> 1.0f
         isFlying -> 1.08f
@@ -1204,32 +1304,47 @@ private fun DrawScope.drawArrowEntity(
         arrow.state == ArrowState.HINTED -> 1.0f
         else -> 1.0f
     }
-    val strokeWidth = (cellSize * 0.24f).coerceIn(minStroke, maxStroke) * scaleMultiplier
+    val strokeWidth = (cellSize * 0.23f).coerceIn(minStroke, maxStroke) * scaleMultiplier
 
-    // Exact Unity One arrowhead proportions bounded strictly within the cell (never overlaps neighbor cells)
-    val headWidth = (cellSize * 0.52f).coerceAtLeast(strokeWidth * 1.9f).coerceAtMost(cellSize * 0.68f) *
+    val headWidth = (cellSize * 0.54f).coerceAtLeast(strokeWidth * 2.1f).coerceAtMost(cellSize * 0.70f) *
         (if (isPreviewHold) 1.08f else if (isFlying) 1.10f else 1.0f)
-    val headLength = headWidth * 0.90f
+    val headLength = headWidth * 0.82f
 
-    // Build the full motion track: body points + escape extension along arrow.direction
-    val track = mutableListOf<Offset>()
-    for (coord in arrow.body) {
-        track.add(Offset(origin.x + (coord.x + 0.5f) * cellSize, origin.y + (coord.y + 0.5f) * cellSize))
-    }
-    val headPt = track.last()
-    val extSteps = maxOf(xSize, ySize) * 2 + arrow.body.size + 12
-    for (s in 1..extSteps) {
-        track.add(
-            Offset(
-                headPt.x + arrow.direction.dx * s * cellSize,
-                headPt.y + arrow.direction.dy * s * cellSize
+    // Symmetrical head tip and tail reach: both extend cleanly from cell center
+    val tipForward = (cellSize * 0.33f)
+    val tailOffset = (cellSize * 0.32f).coerceAtLeast(strokeWidth * 0.45f)
+    // Stem enters smoothly into the interior of the triangular arrowhead base
+    val stemHeadOffset = (tipForward - headLength * 0.65f).coerceAtLeast(0f)
+
+    // ZERO-ALLOCATION FAST PATH FOR STATIC IDLE ARROWS:
+    if (arrow.state == ArrowState.IDLE && drawProgress >= 1f && !isPreviewHold && activeBoosterAnimation == null) {
+        val cached = staticGeometryCache?.getOrPut(arrow.id) {
+            computeStaticArrowGeometry(arrow, origin, cellSize, strokeWidth, headWidth, headLength, tipForward, tailOffset, stemHeadOffset)
+        }
+        if (cached != null) {
+            drawPath(
+                path = cached.bodyPath,
+                color = baseColor,
+                style = Stroke(
+                    width = strokeWidth,
+                    cap = StrokeCap.Round,
+                    join = StrokeJoin.Round
+                )
             )
-        )
+            rotate(
+                degrees = arrow.direction.angleDegrees,
+                pivot = cached.headCenter
+            ) {
+                drawPath(
+                    path = cached.headPath,
+                    color = baseColor
+                )
+            }
+            return
+        }
     }
 
-    val originalBodyLen = (arrow.body.size - 1).coerceAtLeast(0)
-
-    // Smooth exit flight distance: calculates distance to board edge plus full arrow clearance
+    // Dynamic flight / collision / write-on path:
     val distToEdge = when (arrow.direction) {
         Direction.UP -> (arrow.head.y + 1).toFloat()
         Direction.DOWN -> (ySize - arrow.head.y).toFloat()
@@ -1240,9 +1355,31 @@ private fun DrawScope.drawArrowEntity(
 
     val stepsToBlocker = if (arrow.collisionDistance > 0f) {
         arrow.collisionDistance
-    } else {
+    } else if (arrow.state == ArrowState.WRONG_FLASH) {
         getStepsToBlocker(arrow, allArrows, xSize, ySize)
+    } else 0f
+
+    // Build the motion track: only extend if actually moving
+    val track = ArrayList<Offset>(arrow.body.size + 8)
+    for (coord in arrow.body) {
+        track.add(Offset(origin.x + (coord.x + 0.5f) * cellSize, origin.y + (coord.y + 0.5f) * cellSize))
     }
+    val headPt = track.last()
+    val extSteps = when (arrow.state) {
+        ArrowState.FLYING_OUT -> (distToEdge + 4).toInt().coerceAtLeast(4)
+        ArrowState.WRONG_FLASH -> (stepsToBlocker + 3).toInt().coerceAtLeast(3)
+        else -> 0
+    }
+    for (s in 1..extSteps) {
+        track.add(
+            Offset(
+                headPt.x + arrow.direction.dx * s * cellSize,
+                headPt.y + arrow.direction.dy * s * cellSize
+            )
+        )
+    }
+
+    val originalBodyLen = (arrow.body.size - 1).coerceAtLeast(0)
 
     val displacement = when (arrow.state) {
         ArrowState.FLYING_OUT -> arrow.flightProgress * exitDistance
@@ -1277,12 +1414,6 @@ private fun DrawScope.drawArrowEntity(
     } else {
         originalBodyLen.toFloat()
     }
-
-    // Symmetrical head tip and tail reach: both extend cleanly from cell center
-    val tipForward = (cellSize * 0.35f)
-    val tailOffset = (cellSize * 0.32f).coerceAtLeast(strokeWidth * 0.45f)
-    // Stem enters smoothly into the interior of the triangular arrowhead base
-    val stemHeadOffset = (tipForward - headLength * 0.65f).coerceAtLeast(0f)
 
     val startDist = displacement
     val endDist = visibleBodyLen + displacement
@@ -1345,7 +1476,7 @@ private fun DrawScope.drawArrowEntity(
 
     // 0. Draw Radiant Multi-Theme Glow Aura when Hinted (supports all themes dynamically)
     if (arrow.state == ArrowState.HINTED && sampledPoints.size > 1) {
-        val haloPath = buildRoundedCornerPath(sampledPoints, radius = cellSize * 0.16f)
+        val haloPath = buildRoundedCornerPath(sampledPoints, radius = cellSize * 0.18f)
         // Outer soft radiant aura
         drawPath(
             path = haloPath,
@@ -1371,7 +1502,7 @@ private fun DrawScope.drawArrowEntity(
     // 1. Draw body stroke along the polyline with crisp, architectural corner fillets (16% of cell)
     // Seamlessly bridges right into the interior of the arrowhead
     if (sampledPoints.size > 1) {
-        val path = buildRoundedCornerPath(sampledPoints, radius = cellSize * 0.16f)
+        val path = buildRoundedCornerPath(sampledPoints, radius = cellSize * 0.18f)
         drawPath(
             path = path,
             color = renderColor,
