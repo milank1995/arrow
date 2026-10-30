@@ -491,15 +491,16 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             }
         }
 
-        // Animate flight smoothly at 60fps matching Unity (smooth 780ms duration) and transition to CLEARED
+        // Animate flight at 60fps — 400ms OutCubic ease-out for snappy, responsive arrow movement
         viewModelScope.launch {
-            val durationMs = 780L
+            val durationMs = 400L
             val startTime = System.currentTimeMillis()
             while (true) {
                 val elapsed = System.currentTimeMillis() - startTime
                 val rawProgress = (elapsed.toFloat() / durationMs).coerceIn(0f, 1f)
-                // Smooth continuous unified flight easing with natural acceleration matching Unity
-                val easedProgress = rawProgress * rawProgress * (0.22f + 0.78f * rawProgress)
+                // OutCubic: fast launch, gentle settle — matches original game's snappy feel
+                val inv = 1f - rawProgress
+                val easedProgress = 1f - inv * inv * inv
                 _uiState.update { state ->
                     val updated = state.arrows.map {
                         if (it.id == arrow.id && it.state == ArrowState.FLYING_OUT) {
@@ -543,7 +544,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         autoReleaseJob?.cancel()
         autoReleaseJob = viewModelScope.launch {
             // Brief pause to let the triggering arrow's occupancy release be visible to canMoveOut
-            delay(80)
+            delay(50)
 
             if (!isActive || _uiState.value.isLevelComplete || _uiState.value.isGameOver) return@launch
 

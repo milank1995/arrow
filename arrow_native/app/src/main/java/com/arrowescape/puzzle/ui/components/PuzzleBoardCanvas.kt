@@ -294,10 +294,10 @@ fun PuzzleBoardCanvas(
             }
         }
 
-        // Initial Render & Restart Zoom Behavior (Matching New Unity implementation):
+        // Initial Render & Restart Zoom Behavior (Matching original game's snappy feel):
         // 1. When the puzzle loads or restarts, it initially appears ZOOMED IN at entryScale (1.38f)
-        // 2. Camera smoothly ZOOMS OUT to defaultScale (1.0f) over 850ms with FastOutSlowInEasing
-        // 3. Arrow rendering animation runs across 1450ms (concurrent with camera zoom-out)
+        // 2. Camera smoothly ZOOMS OUT to defaultScale (1.0f) over 550ms with FastOutSlowInEasing
+        // 3. Arrow rendering animation runs across 850ms (concurrent with camera zoom-out)
         LaunchedEffect(currentLevelNumber, restartTrigger) {
             panInertiaJob?.cancel()
             panX = 0f
@@ -310,17 +310,17 @@ fun PuzzleBoardCanvas(
                 val sAnim = Animatable(1.38f)
                 sAnim.animateTo(
                     targetValue = 1.0f,
-                    animationSpec = tween(durationMillis = 850, easing = FastOutSlowInEasing)
+                    animationSpec = tween(durationMillis = 550, easing = FastOutSlowInEasing)
                 ) {
                     scale = value
                 }
             }
 
-            // Step 2: Concurrently render all arrows at full smoothness (1450ms, untouched)
+            // Step 2: Concurrently render all arrows with snappy draw-on (850ms)
             launch {
                 introProgress.animateTo(
                     targetValue = 1f,
-                    animationSpec = tween(durationMillis = 1450, easing = LinearEasing)
+                    animationSpec = tween(durationMillis = 850, easing = LinearEasing)
                 )
             }
         }
