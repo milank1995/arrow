@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.math.ceil
 
 sealed class BoosterEffectAnimation {
     data class Hammer(val targetArrow: Arrow, val progress: Float) : BoosterEffectAnimation()
@@ -95,6 +96,17 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     private var levelMovesAttempted: Int = 0
     private var levelMistakesCount: Int = 0
     private var hasDismissedDailyLaunchPromptThisSession: Boolean = false
+    private var milestone25Fired: Boolean = false
+    private var milestone50Fired: Boolean = false
+    private var milestone75Fired: Boolean = false
+    private var milestone90Fired: Boolean = false
+
+    private fun resetMilestoneFlags() {
+        milestone25Fired = false
+        milestone50Fired = false
+        milestone75Fired = false
+        milestone90Fired = false
+    }
 
     init {
         viewModelScope.launch {
@@ -207,6 +219,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         hasGameplayStarted = false
         levelMovesAttempted = 0
         levelMistakesCount = 0
+        resetMilestoneFlags()
         val level = LevelLoader.loadLevel(app, levelNumber)
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)
@@ -241,6 +254,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         hasGameplayStarted = false
         levelMovesAttempted = 0
         levelMistakesCount = 0
+        resetMilestoneFlags()
         val level = LevelLoader.loadLockPuzzle(app)
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)
@@ -274,6 +288,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         hasGameplayStarted = false
         levelMovesAttempted = 0
         levelMistakesCount = 0
+        resetMilestoneFlags()
         val date = try {
             LocalDate.parse(dateString)
         } catch (e: Exception) {
@@ -431,10 +446,21 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     private fun launchArrowFlight(arrow: Arrow) {
         val newCombo = _uiState.value.comboCount + 1
         audioHapticManager.playArrowFly(newCombo)
-        val cheer = calculateCheerMessage(newCombo)
 
         // Release grid occupancy immediately so following arrows can move
         occupancyMap.release(arrow)
+
+        val totalArrows = _uiState.value.arrows.size
+        val clearedCount = _uiState.value.arrows.count {
+            it.state == ArrowState.CLEARED || it.state == ArrowState.FLYING_OUT
+        } + 1
+
+        val currentLvl = _uiState.value.currentLevelNumber
+        val isSpecialMode = _uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode
+
+        val milestoneCheer = evaluateMilestone(clearedCount, totalArrows, currentLvl, isSpecialMode)
+        val comboCheer = calculateCheerMessage(newCombo)
+        val cheer = milestoneCheer ?: comboCheer
 
         _uiState.update { state ->
             val updatedArrows = state.arrows.map {
@@ -448,11 +474,11 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             )
         }
 
-        // Auto-dismiss in-app cheer notification after 1.8 seconds
+        // Auto-dismiss in-app cheer notification after 1.6 seconds (clean & subtle)
         cheerDismissJob?.cancel()
         if (cheer != null) {
             cheerDismissJob = viewModelScope.launch {
-                delay(1800)
+                delay(1600)
                 _uiState.update { it.copy(cheerMessage = null) }
             }
         }
@@ -933,13 +959,93 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
+    private fun evaluateMilestone(
+        clearedCount: Int,
+        totalArrows: Int,
+        levelNumber: Int,
+        isSpecialMode: Boolean
+    ): String? {
+        if (clearedCount >= totalArrows || totalArrows <= 0) return null
+
+        // Staggered Onboarding Ramp:
+        // - Levels 1 & 2: Skip milestones completely (clean, distraction-free tutorial)
+        // - Levels 3 & 4: Introduce 50% Halfway landmark only
+        // - Level 5+ / Special Modes: Full milestone progression (25%, 50%, 75%, 90%)
+        val allowAllMilestones = isSpecialMode || levelNumber >= 5 || totalArrows >= 20
+        val allowHalfwayOnly = !allowAllMilestones && (levelNumber in 3..4 || totalArrows in 12..19)
+
+        if (allowAllMilestones) {
+            val threshold25 = ceil(totalArrows * 0.25f).toInt()
+            val threshold50 = ceil(totalArrows * 0.50f).toInt()
+            val threshold75 = ceil(totalArrows * 0.75f).toInt()
+            val threshold90 = ceil(totalArrows * 0.90f).toInt()
+
+            if (!milestone25Fired && clearedCount >= threshold25) {
+                milestone25Fired = true
+                return getRandomMilestone25()
+            }
+            if (!milestone50Fired && clearedCount >= threshold50) {
+                milestone50Fired = true
+                return getRandomMilestone50()
+            }
+            if (!milestone75Fired && clearedCount >= threshold75) {
+                milestone75Fired = true
+                return getRandomMilestone75()
+            }
+            if (!milestone90Fired && totalArrows >= 10 && clearedCount >= threshold90) {
+                milestone90Fired = true
+                return getRandomMilestone90()
+            }
+        } else if (allowHalfwayOnly) {
+            val threshold50 = ceil(totalArrows * 0.50f).toInt()
+            if (!milestone50Fired && clearedCount >= threshold50) {
+                milestone50Fired = true
+                return getRandomMilestone50()
+            }
+        }
+
+        return null
+    }
+
+    private fun getRandomMilestone25(): String {
+        return listOf(
+            "25% · In the Flow",
+            "25% · Rhythm Unlocked",
+            "25% · Smooth Start"
+        ).random()
+    }
+
+    private fun getRandomMilestone50(): String {
+        return listOf(
+            "50% · Halfway Legend",
+            "50% · Downhill Run",
+            "50% · Halfway There!"
+        ).random()
+    }
+
+    private fun getRandomMilestone75(): String {
+        return listOf(
+            "75% · Victory in Sight",
+            "75% · Home Stretch",
+            "75% · Final Countdown"
+        ).random()
+    }
+
+    private fun getRandomMilestone90(): String {
+        return listOf(
+            "90% · Finish Strong!",
+            "90% · One Last Path",
+            "90% · Final Touch"
+        ).random()
+    }
+
     private fun calculateCheerMessage(combo: Int): String? {
         return when (combo) {
-            3 -> "Nice!"
-            5 -> "Great!"
-            8 -> "Awesome!"
-            12 -> "Unstoppable!"
-            16 -> "Masterful!"
+            3 -> listOf("3x · Sharp!", "3x · Smooth!", "3x · Crisp!", "3x · Quick Read!").random()
+            5 -> listOf("5x · On Fire!", "5x · In the Flow!", "5x · Pure Rhythm!", "5x · Grooving!").random()
+            8 -> listOf("8x · Arrow Maestro!", "8x · Brilliant!", "8x · Laser Focus!", "8x · Pure Genius!").random()
+            12 -> listOf("12x · Galaxy Brain!", "12x · Flawless!", "12x · Untouchable!", "12x · Mastermind!").random()
+            16 -> listOf("16x · Ascended Master!", "16x · Living Legend!", "16x · Perfection!", "16x · Supreme Flow!").random()
             else -> null
         }
     }
