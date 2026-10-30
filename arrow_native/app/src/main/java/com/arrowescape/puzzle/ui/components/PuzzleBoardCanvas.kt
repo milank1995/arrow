@@ -343,8 +343,45 @@ fun PuzzleBoardCanvas(
                     )
                 }
                 confettiPieces.addAll(pieces)
+
+                // DOPunchScale equivalent: zoom-in then zoom-out punch matching Unity's board completion beat.
+                // Phase 1 (zoom in 210ms): board quickly pops up to 106.5% — same FastOutSlowIn as intro.
+                // Phase 2 (zoom out 490ms): board gently settles back to 100% — satisfying weight.
+                settleJob?.cancel()
+                settleJob = coroutineScope.launch {
+                    val startScale = scale
+                    val peakScale = (startScale * 1.065f).coerceAtMost(1.5f)
+                    val zoomAnim = Animatable(startScale)
+                    zoomAnim.animateTo(
+                        targetValue = peakScale,
+                        animationSpec = tween(durationMillis = 210, easing = FastOutSlowInEasing)
+                    ) { scale = value }
+                    zoomAnim.animateTo(
+                        targetValue = 1.0f,
+                        animationSpec = tween(durationMillis = 490, easing = FastOutSlowInEasing)
+                    ) { scale = value }
+                }
             } else {
                 confettiPieces.clear()
+            }
+        }
+
+        // DOColor golden highlight flash on level complete: α 0→0.52→0 over 680ms.
+        // Matches Unity's board-wide golden glow played when the last arrow exits.
+        var victoryFlashAlpha by remember { mutableFloatStateOf(0f) }
+        LaunchedEffect(isCelebrationBurstActive) {
+            if (isCelebrationBurstActive) {
+                val flashAnim = Animatable(0f)
+                // Rapid flash-in (130ms linear — snappy, punchy)
+                flashAnim.animateTo(0.52f, tween(130, easing = LinearEasing)) {
+                    victoryFlashAlpha = value
+                }
+                // Slow fade-out (550ms — warm, satisfying glow dissolve)
+                flashAnim.animateTo(0f, tween(550, easing = FastOutSlowInEasing)) {
+                    victoryFlashAlpha = value
+                }
+            } else {
+                victoryFlashAlpha = 0f
             }
         }
 
@@ -391,19 +428,17 @@ fun PuzzleBoardCanvas(
             }
         }
 
-        // Tactile zoom-in and zoom-out breathing during level intro (0.88x -> 1.045x -> 1.0x)
+        // DOTween Ease.OutBack equivalent: board springs in from 0.86x, overshoots to ~1.045x, settles to 1.0x.
+        // Single smooth continuous arc — no abrupt midpoint velocity change like the old two-phase approach.
         val introZoom = if (introProgress.value >= 1f) 1.0f else {
-            val t = introProgress.value
-            when {
-                t < 0.65f -> {
-                    val p = FastOutSlowInEasing.transform(t / 0.65f)
-                    0.88f + 0.165f * p
-                }
-                else -> {
-                    val p = FastOutSlowInEasing.transform((t - 0.65f) / 0.35f)
-                    1.045f - 0.045f * p
-                }
-            }
+            val t = introProgress.value.coerceIn(0f, 1f)
+            // OutBack easing formula: overshoots past 1.0 before settling (c1 = overshoot tension)
+            val c1 = 1.70158f
+            val c3 = c1 + 1f
+            val t1 = t - 1f
+            val outBack = 1f + c3 * t1 * t1 * t1 + c1 * t1 * t1
+            // Map eased value (0→1 with ~7% overshoot) to scale range (0.86→1.0 with ~4.5% overshoot)
+            (0.86f + 0.14f * outBack).coerceIn(0.80f, 1.10f)
         }
         val currentIntroZoom by rememberUpdatedState(introZoom)
 
@@ -849,6 +884,15 @@ fun PuzzleBoardCanvas(
                 // 4C. Interactive Tutorial Guidance Hand (Level 1 only, matching Unity)
                 if (showTutorialHand && tutorialTargetArrow != null && introProgress.value >= 1f) {
                     drawTutorialGuidance(boardOrigin, tutorialTargetArrow, cellSize, theme)
+                }
+
+                // 4D. Victory golden flash overlay (DOColor equivalent — warm gold sheen over board on level complete)
+                if (victoryFlashAlpha > 0.01f) {
+                    drawRect(
+                        color = Color(0xFFFFD700).copy(alpha = victoryFlashAlpha * 0.48f),
+                        topLeft = boardOrigin,
+                        size = androidx.compose.ui.geometry.Size(cellSize * xSize, cellSize * ySize)
+                    )
                 }
             }
 
