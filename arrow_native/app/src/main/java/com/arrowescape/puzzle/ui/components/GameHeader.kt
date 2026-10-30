@@ -85,7 +85,7 @@ fun GameHeader(
     onSettingsClick: (() -> Unit)? = null,
     isSoundOn: Boolean = true,
     showArrowCount: Boolean = isTestMode,
-    showHearts: Boolean = isTestMode,
+    showHearts: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val clearedCount = (totalArrowsCount - remainingArrowsCount).coerceAtLeast(0)
@@ -168,46 +168,20 @@ fun GameHeader(
                     }
                 }
 
-                // CENTER: Level Title (and optional hearts in dev test mode)
+                // CENTER: Floating Hearts Indicator Pill Pod (and dev level switcher in test mode)
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     if (showHearts) {
-                        var prevHearts by remember { mutableIntStateOf(heartsRemaining) }
-                        var brokenHeartIndex by remember { mutableStateOf<Int?>(null) }
-
-                        LaunchedEffect(heartsRemaining) {
-                            if (heartsRemaining < prevHearts) {
-                                brokenHeartIndex = heartsRemaining
-                            } else if (heartsRemaining >= maxHearts) {
-                                brokenHeartIndex = null
-                            }
-                            prevHearts = heartsRemaining
-                        }
-
-                        // 3 Hearts Row with animated break explosion
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(5.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            for (i in 0 until maxHearts) {
-                                val isAlive = i < heartsRemaining
-                                val isBreaking = (i == brokenHeartIndex)
-                                AnimatedHeart(
-                                    isAlive = isAlive,
-                                    isBreaking = isBreaking,
-                                    onBreakFinished = {
-                                        if (brokenHeartIndex == i) {
-                                            brokenHeartIndex = null
-                                        }
-                                    }
-                                )
-                            }
-                        }
+                        HeartIndicatorPill(
+                            heartsRemaining = heartsRemaining,
+                            maxHearts = maxHearts,
+                            theme = theme
+                        )
                     }
 
-                    // Level text: Simple and clean (no shape name)
+                    // In dev test mode: show level switch buttons directly under hearts
                     if (isTestMode) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -270,13 +244,6 @@ fun GameHeader(
                                 }
                             }
                         }
-                    } else {
-                        Text(
-                            text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = theme.textPrimary
-                        )
                     }
                 }
 
@@ -360,21 +327,21 @@ fun GameHeader(
                 }
             }
 
-            // Sleek continuous HUD progress bar under header
+            // Sleek continuous HUD progress bar under header with clean 3dp rounded track
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 2.dp)
-                    .height(6.dp)
-                    .clip(RoundedCornerShape(3.dp))
-                    .background(theme.gridLine)
+                    .height(3.dp)
+                    .clip(RoundedCornerShape(1.5.dp))
+                    .background(theme.gridLine.copy(alpha = 0.35f))
             ) {
                 if (animatedProgress > 0f) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(animatedProgress)
                             .fillMaxHeight()
-                            .clip(RoundedCornerShape(3.dp))
+                            .clip(RoundedCornerShape(1.5.dp))
                             .background(
                                 Brush.horizontalGradient(
                                     colors = listOf(

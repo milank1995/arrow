@@ -216,7 +216,7 @@ fun GamePlayScreen(
                                 shapeName = null,
                                 isTestMode = false,
                                 showArrowCount = false,
-                                showHearts = false,
+                                showHearts = true,
                                 onPauseClick = {
                                     onPlayClickSound()
                                     showPauseDialog = true
@@ -300,8 +300,8 @@ fun GamePlayScreen(
                                 isGridLinesActive = uiState.isGridLinesActive,
                                 isFreeHintLevel = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode),
                                 isIdlePromptActive = isIdlePromptActive,
-                                heartsRemaining = uiState.heartsRemaining,
-                                maxHearts = uiState.maxHearts,
+                                levelNumber = uiState.currentLevelNumber,
+                                isDailyChallenge = uiState.isDailyChallengeMode,
                                 theme = theme,
                                 onHintClick = {
                                     lastInteractionTime = System.currentTimeMillis()

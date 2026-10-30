@@ -73,6 +73,8 @@ fun BoosterBar(
     isGridLinesActive: Boolean,
     isFreeHintLevel: Boolean = false,
     isIdlePromptActive: Boolean = false,
+    levelNumber: Int? = null,
+    isDailyChallenge: Boolean = false,
     heartsRemaining: Int? = null,
     maxHearts: Int = 3,
     theme: ThemePreset,
@@ -119,12 +121,13 @@ fun BoosterBar(
         color = Color.Transparent,
         modifier = modifier.fillMaxWidth()
     ) {
+        val hasCenterItem = (levelNumber != null || heartsRemaining != null)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp, bottom = 22.dp)
-                .padding(horizontal = if (heartsRemaining != null) 20.dp else 0.dp),
-            horizontalArrangement = if (heartsRemaining != null && onRestartClick == null) {
+                .padding(horizontal = if (hasCenterItem) 24.dp else 0.dp),
+            horizontalArrangement = if (hasCenterItem && onRestartClick == null) {
                 Arrangement.SpaceBetween
             } else {
                 Arrangement.spacedBy(if (onRestartClick != null) 36.dp else 52.dp, Alignment.CenterHorizontally)
@@ -205,8 +208,25 @@ fun BoosterBar(
                 }
             }
 
-            // 2. CENTER: HEARTS INDICATOR PILL (when heartsRemaining is provided)
-            if (heartsRemaining != null) {
+            // 2. CENTER: CLEAN LEVEL INDICATOR BADGE (Or Hearts if explicitly configured)
+            if (levelNumber != null) {
+                Surface(
+                    shape = RoundedCornerShape(percent = 50),
+                    color = theme.textPrimary.copy(alpha = 0.05f),
+                    border = BorderStroke(1.dp, theme.gridLine.copy(alpha = 0.45f)),
+                    shadowElevation = 0.dp,
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                ) {
+                    Text(
+                        text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = theme.textPrimary.copy(alpha = 0.80f),
+                        letterSpacing = 0.4.sp,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                    )
+                }
+            } else if (heartsRemaining != null) {
                 HeartIndicatorPill(
                     heartsRemaining = heartsRemaining,
                     maxHearts = maxHearts,
