@@ -195,9 +195,9 @@ fun PuzzleBoardCanvas(
         val viewportWidth = constraints.maxWidth.toFloat()
         val viewportHeight = constraints.maxHeight.toFloat()
 
-        // Fit board into viewport with comfortable margin matching New Unity One (82% width, 80% height)
-        val availableWidth = viewportWidth * 0.82f
-        val availableHeight = viewportHeight * 0.80f
+        // Fit board into viewport with comfortable margin matching Old Unity (88% width, 78% height)
+        val availableWidth = viewportWidth * 0.88f
+        val availableHeight = viewportHeight * 0.78f
         val maxCellPx = with(LocalDensity.current) { 50.dp.toPx() }
         val cellSize = minOf(availableWidth / xSize, availableHeight / ySize).coerceAtMost(maxCellPx)
         val boardWidth = cellSize * xSize
@@ -212,11 +212,11 @@ fun PuzzleBoardCanvas(
         val targetMaxCellPx = maxOf(viewportWidth * 0.50f, 450f)
         val maxScale = (targetMaxCellPx / cellSize).coerceIn(5.0f, 18.0f)
 
-        // Automatic zoom-in for medium and large grids matching old Unity's minCellScreenPx (~27dp)
+        // Automatic zoom-in for medium and large grids matching old Unity's minCellScreenPx (~28dp)
         val density = LocalDensity.current
-        val comfortableCellPx = with(density) { 27.dp.toPx() }
+        val comfortableCellPx = with(density) { 28.dp.toPx() }
         val defaultScale = if (cellSize < comfortableCellPx) {
-            (comfortableCellPx / cellSize).coerceIn(1.0f, 2.25f)
+            (comfortableCellPx / cellSize).coerceIn(1.0f, 2.35f)
         } else {
             1.0f
         }
@@ -238,9 +238,9 @@ fun PuzzleBoardCanvas(
         val minTouchTargetPx = with(LocalDensity.current) { 15.dp.toPx() }
         val currentMinTouchTargetPx by rememberUpdatedState(minTouchTargetPx)
         val minStrokePx = with(LocalDensity.current) { 2.0.dp.toPx() }
-        val maxStrokePx = with(LocalDensity.current) { 5.0.dp.toPx() }
-        val baseStrokeWidth = (cellSize * 0.23f).coerceIn(minStrokePx, maxStrokePx)
-        val baseHeadWidth = baseStrokeWidth * 2.0f
+        val maxStrokePx = with(LocalDensity.current) { 5.5.dp.toPx() }
+        val baseStrokeWidth = (cellSize * 0.24f).coerceIn(minStrokePx, maxStrokePx)
+        val baseHeadWidth = baseStrokeWidth * 2.05f
         val currentHeadSize by rememberUpdatedState(baseHeadWidth)
 
         // Smooth Auto-Framing: gently glides zoom and pan to center the hinted arrow if off-screen
@@ -293,29 +293,38 @@ fun PuzzleBoardCanvas(
             }
         }
 
+        var hasInteractedWithBoard by remember(restartTrigger, arrows.size, currentLevelNumber) { mutableStateOf(false) }
+
         // Level Initial Load & Restart Animation:
-        // Automatically smoothly zooms in to defaultScale for medium and large grids, while arrows cascade in
+        // 1. Board is held strictly at 1.0x (full overview) while arrows draw smoothly across the board
+        // 2. Brief settle pause (120ms) so player can clearly see the complete puzzle shape
+        // 3. ONLY after arrow rendering finishes, camera smoothly glides and zooms into defaultScale for medium/large grids
         LaunchedEffect(xSize, ySize, arrows.size, arrows.firstOrNull()?.id, restartTrigger) {
             settleJob?.cancel()
             panX = 0f
             panY = 0f
+            scale = 1.0f
             introProgress.snapTo(0f)
-            if (currentDefaultScale > 1.02f) {
-                scale = 1.0f
-                coroutineScope.launch {
-                    val sAnim = Animatable(1.0f)
-                    sAnim.animateTo(
-                        targetValue = currentDefaultScale,
-                        animationSpec = tween(durationMillis = 850, easing = FastOutSlowInEasing)
-                    ) { scale = value }
-                }
-            } else {
-                scale = 1.0f
-            }
+
+            // Step 1: Smoothly render all arrows at full overview (1.0x) so user sees entire puzzle
             introProgress.animateTo(
                 targetValue = 1f,
-                animationSpec = tween(durationMillis = 850, easing = FastOutSlowInEasing)
+                animationSpec = tween(durationMillis = 1450, easing = LinearEasing)
             )
+
+            // Step 2: Brief natural settle pause to allow player to absorb the full puzzle shape
+            delay(120L)
+
+            // Step 3: ONLY after arrow rendering finishes, trigger smooth zoom-in for medium/large grids
+            if (currentDefaultScale > 1.02f && !hasInteractedWithBoard) {
+                val sAnim = Animatable(scale)
+                settleJob = coroutineScope.launch {
+                    sAnim.animateTo(
+                        targetValue = currentDefaultScale,
+                        animationSpec = tween(durationMillis = 750, easing = FastOutSlowInEasing)
+                    ) { scale = value }
+                }
+            }
         }
 
         var animTick by remember { mutableLongStateOf(0L) }
@@ -369,8 +378,6 @@ fun PuzzleBoardCanvas(
             }
         }
 
-        var hasInteractedWithBoard by remember(restartTrigger, arrows.size, currentLevelNumber) { mutableStateOf(false) }
-
         // Build occupancy map live from the current arrows, excluding FLYING_OUT and CLEARED arrows.
         val occupancyMap = GridOccupancyMap(xSize, ySize).apply {
             rebuild(arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT })
@@ -395,15 +402,8 @@ fun PuzzleBoardCanvas(
             }
         }
 
-        // Tactile OutBack curve for small grids; for medium/large grids, scale itself animates smoothly
-        val introZoom = if (defaultScale > 1.02f || introProgress.value >= 1f) 1.0f else {
-            val t = introProgress.value.coerceIn(0f, 1f)
-            val c1 = 1.70158f
-            val c3 = c1 + 1f
-            val t1 = t - 1f
-            val outBack = 1f + c3 * t1 * t1 * t1 + c1 * t1 * t1
-            (0.88f + 0.12f * outBack).coerceIn(0.80f, 1.08f)
-        }
+        // Board scale is held strictly at 1.0f during initial arrow rendering overview
+        val introZoom = 1.0f
         val currentIntroZoom by rememberUpdatedState(introZoom)
 
         Canvas(
@@ -856,12 +856,12 @@ fun PuzzleBoardCanvas(
                     val normDist = (distFromCenter / maxBoardDist).coerceIn(0f, 1f)
 
                     // Staggered cascade: center arrows start drawing first, outer arrows follow
-                    val startTime = normDist * 0.28f
-                    val drawWindow = 0.64f
+                    val startTime = normDist * 0.40f
+                    val drawWindow = 0.58f
                     val localProg = if (introProgress.value >= 1f) 1f else ((introProgress.value - startTime) / drawWindow).coerceIn(0f, 1f)
 
-                    val easedDraw = if (localProg >= 1f) 1f else FastOutSlowInEasing.transform(localProg)
-                    val introAlpha = if (localProg >= 1f) 1f else (localProg / 0.15f).coerceIn(0f, 1f)
+                    val easedDraw = if (localProg >= 1f) 1f else CubicBezierEasing(0.35f, 0.0f, 0.25f, 1.0f).transform(localProg)
+                    val introAlpha = if (localProg >= 1f) 1f else (localProg / 0.12f).coerceIn(0f, 1f)
 
                     drawArrowEntity(
                         origin = boardOrigin,
@@ -1200,10 +1200,10 @@ private fun DrawScope.drawArrowEntity(
         else -> theme.arrowDefault
     }
 
-    // Exact Unity One stroke: slender, crisp lines (20% of cell size, bounded for all grid scales)
+    // Exact Unity One stroke: slender, crisp lines (24% of cell size, bounded for all grid scales)
     // Guarantees generous gap between parallel channels matching Image 2 perfectly
-    val minStroke = 1.0f
-    val maxStroke = 4.5.dp.toPx()
+    val minStroke = 2.0.dp.toPx()
+    val maxStroke = 5.5.dp.toPx()
     val scaleMultiplier = when {
         isPreviewHold -> 1.0f
         isFlying -> 1.08f
@@ -1211,12 +1211,12 @@ private fun DrawScope.drawArrowEntity(
         arrow.state == ArrowState.HINTED -> 1.0f
         else -> 1.0f
     }
-    val strokeWidth = (cellSize * 0.20f).coerceIn(minStroke, maxStroke) * scaleMultiplier
+    val strokeWidth = (cellSize * 0.24f).coerceIn(minStroke, maxStroke) * scaleMultiplier
 
     // Exact Unity One arrowhead proportions bounded strictly within the cell (never overlaps neighbor cells)
-    val headWidth = (cellSize * 0.54f).coerceAtLeast(strokeWidth * 1.8f).coerceAtMost(cellSize * 0.68f) *
+    val headWidth = (cellSize * 0.52f).coerceAtLeast(strokeWidth * 1.9f).coerceAtMost(cellSize * 0.68f) *
         (if (isPreviewHold) 1.08f else if (isFlying) 1.10f else 1.0f)
-    val headLength = headWidth * 0.88f
+    val headLength = headWidth * 0.90f
 
     // Build the full motion track: body points + escape extension along arrow.direction
     val track = mutableListOf<Offset>()
@@ -1323,9 +1323,14 @@ private fun DrawScope.drawArrowEntity(
         // Single cell arrow: solid unified line from extended tail to arrowhead stem base
         val centerPt = sampledTrackPoints.first()
         val firstPt = centerPt + dynamicTailDir * tailOffset
-        val lastPt = centerPt + forwardAtHead * stemHeadOffset
+        val fullLastPt = centerPt + forwardAtHead * stemHeadOffset
+        val targetLastPt = if (arrow.state == ArrowState.IDLE && drawProgress < 1f) {
+            firstPt + (fullLastPt - firstPt) * drawProgress
+        } else {
+            fullLastPt
+        }
         sampledPoints.add(firstPt)
-        sampledPoints.add(lastPt)
+        sampledPoints.add(targetLastPt)
     } else {
         // Multi-cell arrow: clean continuous polyline through all sampled track points
         val firstPt = sampledTrackPoints.first() + dynamicTailDir * tailOffset
@@ -1389,12 +1394,13 @@ private fun DrawScope.drawArrowEntity(
     val headPopScale = when {
         drawProgress >= 1f -> 1.0f
         originalBodyLen == 0 -> {
-            if (drawProgress < 0.80f) (drawProgress / 0.80f) * 1.10f
-            else 1.0f + sin(((drawProgress - 0.80f) / 0.20f) * PI.toFloat()) * 0.10f
+            if (drawProgress < 0.45f) 0.0f
+            else if (drawProgress < 0.85f) ((drawProgress - 0.45f) / 0.40f) * 1.10f
+            else 1.10f - ((drawProgress - 0.85f) / 0.15f) * 0.10f
         }
-        drawProgress < 0.62f -> 0.0f
-        drawProgress < 0.85f -> ((drawProgress - 0.62f) / 0.23f) * 1.12f
-        else -> 1.0f + sin(((drawProgress - 0.85f) / 0.15f) * PI.toFloat()) * 0.12f
+        drawProgress < 0.30f -> 0.0f
+        drawProgress < 0.85f -> ((drawProgress - 0.30f) / 0.55f) * 1.10f
+        else -> 1.10f - ((drawProgress - 0.85f) / 0.15f) * 0.10f
     }
 
     // Physical squash-and-stretch on blocked obstacle collision impact:
@@ -1411,7 +1417,18 @@ private fun DrawScope.drawArrowEntity(
     val effectiveHeadWidth = headWidth * headPopScale * (2.0f - squashFactor)
 
     // Current Head Position
-    val currentHead = if (originalBodyLen == 0) sampledTrackPoints.first() else sampledTrackPoints.last()
+    val currentHead = if (originalBodyLen == 0) {
+        if (arrow.state == ArrowState.IDLE && drawProgress < 1f) {
+            val centerPt = sampledTrackPoints.first()
+            val firstPt = centerPt + dynamicTailDir * tailOffset
+            val fullHead = centerPt
+            firstPt + (fullHead - firstPt) * drawProgress
+        } else {
+            sampledTrackPoints.first()
+        }
+    } else {
+        sampledTrackPoints.last()
+    }
 
     // 2. Draw clean, crisp Unity One triangular spearhead seamlessly covering the stem extension
     if (effectiveHeadWidth > 0.5f) {
