@@ -1167,7 +1167,7 @@ private fun distanceToSegment(p: Offset, a: Offset, b: Offset): Float {
 private fun getStepsToBlocker(arrow: Arrow, arrows: List<Arrow>, xSize: Int, ySize: Int): Float {
     val occupiedCoords = mutableSetOf<GridCoordinate>()
     for (a in arrows) {
-        if (a.id != arrow.id && a.state != ArrowState.CLEARED && a.state != ArrowState.FLYING_OUT) {
+        if (a.state != ArrowState.CLEARED && a.state != ArrowState.FLYING_OUT) {
             occupiedCoords.addAll(a.allPoints)
         }
     }

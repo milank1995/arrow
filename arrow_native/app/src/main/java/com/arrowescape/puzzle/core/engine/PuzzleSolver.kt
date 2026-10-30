@@ -17,8 +17,8 @@ object PuzzleSolver {
         var rayCoord = arrow.head.step(arrow.direction)
         while (occupancy.isInside(rayCoord)) {
             val blockingArrow = occupancy.get(rayCoord)
-            // If the ray hits a cell that belongs to another uncleared arrow, the path is blocked
-            if (blockingArrow != null && blockingArrow.id != arrow.id && 
+            // If the ray hits any uncleared arrow cell (including its own loop), the path is blocked
+            if (blockingArrow != null && 
                 blockingArrow.state != ArrowState.CLEARED && 
                 blockingArrow.state != ArrowState.FLYING_OUT) {
                 return false
@@ -35,7 +35,7 @@ object PuzzleSolver {
         var rayCoord = arrow.head.step(arrow.direction)
         while (occupancy.isInside(rayCoord)) {
             val blocker = occupancy.get(rayCoord)
-            if (blocker != null && blocker.id != arrow.id &&
+            if (blocker != null &&
                 blocker.state != ArrowState.CLEARED &&
                 blocker.state != ArrowState.FLYING_OUT) {
                 return blocker
@@ -54,7 +54,7 @@ object PuzzleSolver {
         var rayCoord = arrow.head.step(arrow.direction)
         while (occupancy.isInside(rayCoord)) {
             val blocker = occupancy.get(rayCoord)
-            if (blocker != null && blocker.id != arrow.id &&
+            if (blocker != null &&
                 blocker.state != ArrowState.CLEARED &&
                 blocker.state != ArrowState.FLYING_OUT) {
                 return steps.toFloat()
