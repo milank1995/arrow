@@ -25,14 +25,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.arrowescape.puzzle.ui.theme.ThemePreset
 
 /**
- * Minimalist, elegant floating glass capsule for milestone celebrations and combo praise.
- * Designed to be clean, subtle, and non-distracting while providing positive gameplay feedback.
+ * Minimalist, theme-adaptive floating glass capsule for milestone celebrations and combo praise.
+ * - In Light & Sepia themes: Renders as a crisp, warm, elevated surface with high-contrast text.
+ * - In Dark themes: Renders as a sleek, luminous frosted slate capsule.
+ * - Non-blocking, smooth vertical slide-in and gentle exit.
  */
 @Composable
 fun CheerOverlay(
     message: String?,
+    theme: ThemePreset,
     fromLeft: Boolean = false,
     modifier: Modifier = Modifier
 ) {
@@ -52,19 +56,40 @@ fun CheerOverlay(
             val tier = parseCheerInfo(message)
             val pillShape = CircleShape
 
+            // Compute theme-harmonic background, border, and typography colors
+            val isDarkTheme = theme.isDark
+            val capsuleBg = if (isDarkTheme) {
+                Color(0xEE1E293B) // Frosted slate-800 glass in dark mode
+            } else {
+                theme.surface.copy(alpha = 0.96f) // Crisp elevated surface in light/sepia
+            }
+
+            val capsuleBorder = if (isDarkTheme) {
+                tier.accentColor.copy(alpha = 0.35f)
+            } else {
+                tier.lightAccentColor.copy(alpha = 0.30f)
+            }
+
+            val badgeTextColor = if (isDarkTheme) tier.accentColor else tier.lightAccentColor
+            val mainTextColor = if (isDarkTheme) Color(0xFFF8FAFC) else theme.textPrimary
+            val dotColor = if (isDarkTheme) Color(0xFF64748B) else theme.textSecondary.copy(alpha = 0.55f)
+
+            val shadowAmbient = if (isDarkTheme) tier.accentColor.copy(alpha = 0.25f) else Color(0x14000000)
+            val shadowSpot = if (isDarkTheme) tier.accentColor.copy(alpha = 0.35f) else tier.lightAccentColor.copy(alpha = 0.20f)
+
             Box(
                 modifier = Modifier
                     .shadow(
                         elevation = 4.dp,
                         shape = pillShape,
-                        ambientColor = tier.glowColor.copy(alpha = 0.30f),
-                        spotColor = tier.glowColor.copy(alpha = 0.40f)
+                        ambientColor = shadowAmbient,
+                        spotColor = shadowSpot
                     )
                     .clip(pillShape)
-                    .background(Color(0xE60F172A)) // Sleek dark slate frosted glass (~90% opacity)
+                    .background(capsuleBg)
                     .border(
                         width = 1.dp,
-                        color = tier.borderColor,
+                        color = capsuleBorder,
                         shape = pillShape
                     )
                     .padding(horizontal = 14.dp, vertical = 6.dp),
@@ -74,27 +99,27 @@ fun CheerOverlay(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    // Small contextual icon
+                    // Contextual emoji icon
                     Text(
                         text = tier.icon,
                         fontSize = 12.sp,
                         lineHeight = 12.sp
                     )
 
-                    // Optional milestone / combo prefix (e.g. "50%" or "5x")
+                    // Clear multiplier / milestone badge (e.g. "COMBO x5" or "50%")
                     if (tier.badge != null) {
                         Text(
                             text = tier.badge,
-                            color = tier.accentColor,
-                            fontSize = 12.sp,
+                            color = badgeTextColor,
+                            fontSize = 11.sp,
                             fontWeight = FontWeight.ExtraBold,
                             letterSpacing = 0.4.sp
                         )
 
                         Text(
                             text = "·",
-                            color = Color(0xFF64748B),
-                            fontSize = 12.sp,
+                            color = dotColor,
+                            fontSize = 11.sp,
                             fontWeight = FontWeight.Normal
                         )
                     }
@@ -102,7 +127,7 @@ fun CheerOverlay(
                     // Main crisp praise message
                     Text(
                         text = tier.text,
-                        color = Color.White,
+                        color = mainTextColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         letterSpacing = 0.2.sp
@@ -117,9 +142,8 @@ private data class CheerTier(
     val icon: String,
     val badge: String?,
     val text: String,
-    val borderColor: Color,
-    val glowColor: Color,
-    val accentColor: Color
+    val accentColor: Color,
+    val lightAccentColor: Color
 )
 
 private fun parseCheerInfo(rawMessage: String): CheerTier {
@@ -140,94 +164,49 @@ private fun parseCheerInfo(rawMessage: String): CheerTier {
     val upperText = text.uppercase()
 
     return when {
-        // Milestone 25% (Emerald)
-        upperBadge.contains("25%") -> CheerTier(
-            icon = "🌱",
-            badge = badge,
-            text = text,
-            borderColor = Color(0x6610B981),
-            glowColor = Color(0xFF10B981),
-            accentColor = Color(0xFF34D399)
-        )
-
-        // Milestone 50% (Luminous Gold / Amber)
+        // Milestone 50% (Warm Luminous Gold / Amber)
         upperBadge.contains("50%") -> CheerTier(
             icon = "👑",
             badge = badge,
             text = text,
-            borderColor = Color(0x88F59E0B),
-            glowColor = Color(0xFFF59E0B),
-            accentColor = Color(0xFFFBBF24)
+            accentColor = Color(0xFFFBBF24),
+            lightAccentColor = Color(0xFFD97706)
         )
 
-        // Milestone 75% (Royal Violet / Fuchsia)
-        upperBadge.contains("75%") -> CheerTier(
+        // Milestone 80% (Royal Violet)
+        upperBadge.contains("80%") || upperBadge.contains("75%") -> CheerTier(
             icon = "⚡",
             badge = badge,
             text = text,
-            borderColor = Color(0x66A855F7),
-            glowColor = Color(0xFFA855F7),
-            accentColor = Color(0xFFC084FC)
+            accentColor = Color(0xFFC084FC),
+            lightAccentColor = Color(0xFF7C3AED)
         )
 
-        // Milestone 90% (Soft Coral / Rose)
-        upperBadge.contains("90%") -> CheerTier(
-            icon = "🎯",
-            badge = badge,
-            text = text,
-            borderColor = Color(0x66F43F5E),
-            glowColor = Color(0xFFF43F5E),
-            accentColor = Color(0xFFFB7185)
-        )
-
-        // Combo 3x (Sky Azure)
-        upperBadge.contains("3X") || upperText.contains("NICE") -> CheerTier(
-            icon = "⚡",
-            badge = badge,
-            text = text,
-            borderColor = Color(0x550284C7),
-            glowColor = Color(0xFF0284C7),
-            accentColor = Color(0xFF38BDF8)
-        )
-
-        // Combo 5x (Emerald Energy)
-        upperBadge.contains("5X") || upperText.contains("GREAT") || upperText.contains("ON FIRE") -> CheerTier(
-            icon = "🔥",
-            badge = badge,
-            text = text,
-            borderColor = Color(0x66059669),
-            glowColor = Color(0xFF059669),
-            accentColor = Color(0xFF34D399)
-        )
-
-        // Combo 8x (Luminous Amber)
-        upperBadge.contains("8X") || upperText.contains("AWESOME") || upperText.contains("MAESTRO") -> CheerTier(
-            icon = "⭐",
-            badge = badge,
-            text = text,
-            borderColor = Color(0x66F59E0B),
-            glowColor = Color(0xFFF59E0B),
-            accentColor = Color(0xFFFBBF24)
-        )
-
-        // Combo 12x (Royal Purple)
-        upperBadge.contains("12X") || upperText.contains("GALAXY") || upperText.contains("UNSTOPPABLE") -> CheerTier(
+        // Combo x15+ (Royal Purple / Magenta)
+        upperBadge.contains("15") || upperBadge.contains("20") || upperText.contains("GALAXY") || upperText.contains("UNTOUCHABLE") -> CheerTier(
             icon = "💥",
             badge = badge,
             text = text,
-            borderColor = Color(0x667C3AED),
-            glowColor = Color(0xFF7C3AED),
-            accentColor = Color(0xFFA855F7)
+            accentColor = Color(0xFFA855F7),
+            lightAccentColor = Color(0xFF7C3AED)
         )
 
-        // Combo 16x+ (Legendary Crimson / Rose)
-        upperBadge.contains("16X") || upperText.contains("MASTERFUL") || upperText.contains("ASCENDED") -> CheerTier(
-            icon = "👑",
+        // Combo x10 (Electric Sky Blue / Cyan)
+        upperBadge.contains("10") || upperText.contains("MAESTRO") || upperText.contains("BRILLIANT") -> CheerTier(
+            icon = "⭐",
             badge = badge,
             text = text,
-            borderColor = Color(0x66E11D48),
-            glowColor = Color(0xFFE11D48),
-            accentColor = Color(0xFFF43F5E)
+            accentColor = Color(0xFF38BDF8),
+            lightAccentColor = Color(0xFF0284C7)
+        )
+
+        // Combo x5 (Emerald Fire)
+        upperBadge.contains("5") || upperText.contains("ON FIRE") || upperText.contains("FLOW") -> CheerTier(
+            icon = "🔥",
+            badge = badge,
+            text = text,
+            accentColor = Color(0xFF34D399),
+            lightAccentColor = Color(0xFF059669)
         )
 
         // Fallback default
@@ -235,9 +214,8 @@ private fun parseCheerInfo(rawMessage: String): CheerTier {
             icon = "✨",
             badge = badge,
             text = text,
-            borderColor = Color(0x550088F5),
-            glowColor = Color(0xFF0088F5),
-            accentColor = Color(0xFF38BDF8)
+            accentColor = Color(0xFF38BDF8),
+            lightAccentColor = Color(0xFF0284C7)
         )
     }
 }

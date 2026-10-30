@@ -96,16 +96,12 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     private var levelMovesAttempted: Int = 0
     private var levelMistakesCount: Int = 0
     private var hasDismissedDailyLaunchPromptThisSession: Boolean = false
-    private var milestone25Fired: Boolean = false
     private var milestone50Fired: Boolean = false
-    private var milestone75Fired: Boolean = false
-    private var milestone90Fired: Boolean = false
+    private var milestone80Fired: Boolean = false
 
     private fun resetMilestoneFlags() {
-        milestone25Fired = false
         milestone50Fired = false
-        milestone75Fired = false
-        milestone90Fired = false
+        milestone80Fired = false
     }
 
     init {
@@ -469,16 +465,17 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             state.copy(
                 arrows = updatedArrows,
                 comboCount = newCombo,
-                cheerMessage = cheer,
+                cheerMessage = cheer ?: state.cheerMessage,
                 cheerFromLeft = if (cheer != null) !state.cheerFromLeft else state.cheerFromLeft
             )
         }
 
-        // Auto-dismiss in-app cheer notification after 1.6 seconds (clean & subtle)
-        cheerDismissJob?.cancel()
+        // Auto-dismiss in-app cheer notification after 2.0 seconds (clean & subtle)
+        // If rapid taps occur without a new cheer, the existing notification stays visible for its full duration
         if (cheer != null) {
+            cheerDismissJob?.cancel()
             cheerDismissJob = viewModelScope.launch {
-                delay(1600)
+                delay(2000L)
                 _uiState.update { it.copy(cheerMessage = null) }
             }
         }
@@ -967,36 +964,11 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     ): String? {
         if (clearedCount >= totalArrows || totalArrows <= 0) return null
 
-        // Staggered Onboarding Ramp:
-        // - Levels 1 & 2: Skip milestones completely (clean, distraction-free tutorial)
-        // - Levels 3 & 4: Introduce 50% Halfway landmark only
-        // - Level 5+ / Special Modes: Full milestone progression (25%, 50%, 75%, 90%)
-        val allowAllMilestones = isSpecialMode || levelNumber >= 5 || totalArrows >= 20
-        val allowHalfwayOnly = !allowAllMilestones && (levelNumber in 3..4 || totalArrows in 12..19)
+        // Skip initial tutorial levels where only a handful of arrows are required (Levels 1 & 2)
+        if (!isSpecialMode && levelNumber in 1..2) return null
 
-        if (allowAllMilestones) {
-            val threshold25 = ceil(totalArrows * 0.25f).toInt()
-            val threshold50 = ceil(totalArrows * 0.50f).toInt()
-            val threshold75 = ceil(totalArrows * 0.75f).toInt()
-            val threshold90 = ceil(totalArrows * 0.90f).toInt()
-
-            if (!milestone25Fired && clearedCount >= threshold25) {
-                milestone25Fired = true
-                return getRandomMilestone25()
-            }
-            if (!milestone50Fired && clearedCount >= threshold50) {
-                milestone50Fired = true
-                return getRandomMilestone50()
-            }
-            if (!milestone75Fired && clearedCount >= threshold75) {
-                milestone75Fired = true
-                return getRandomMilestone75()
-            }
-            if (!milestone90Fired && totalArrows >= 10 && clearedCount >= threshold90) {
-                milestone90Fired = true
-                return getRandomMilestone90()
-            }
-        } else if (allowHalfwayOnly) {
+        // 50% Milestone: Only for levels with >= 14 arrows to keep it meaningful & rewarding
+        if (totalArrows >= 14) {
             val threshold50 = ceil(totalArrows * 0.50f).toInt()
             if (!milestone50Fired && clearedCount >= threshold50) {
                 milestone50Fired = true
@@ -1004,48 +976,40 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             }
         }
 
-        return null
-    }
+        // 80% Home Stretch Milestone: Only for large levels with >= 30 arrows
+        if (totalArrows >= 30) {
+            val threshold80 = ceil(totalArrows * 0.80f).toInt()
+            if (!milestone80Fired && clearedCount >= threshold80) {
+                milestone80Fired = true
+                return getRandomMilestone80()
+            }
+        }
 
-    private fun getRandomMilestone25(): String {
-        return listOf(
-            "25% · In the Flow",
-            "25% · Rhythm Unlocked",
-            "25% · Smooth Start"
-        ).random()
+        return null
     }
 
     private fun getRandomMilestone50(): String {
         return listOf(
-            "50% · Halfway Legend",
+            "50% · Halfway Landmark",
             "50% · Downhill Run",
             "50% · Halfway There!"
         ).random()
     }
 
-    private fun getRandomMilestone75(): String {
+    private fun getRandomMilestone80(): String {
         return listOf(
-            "75% · Victory in Sight",
-            "75% · Home Stretch",
-            "75% · Final Countdown"
-        ).random()
-    }
-
-    private fun getRandomMilestone90(): String {
-        return listOf(
-            "90% · Finish Strong!",
-            "90% · One Last Path",
-            "90% · Final Touch"
+            "80% · Home Stretch",
+            "80% · Victory in Sight",
+            "80% · Final Clean Up"
         ).random()
     }
 
     private fun calculateCheerMessage(combo: Int): String? {
         return when (combo) {
-            3 -> listOf("3x · Sharp!", "3x · Smooth!", "3x · Crisp!", "3x · Quick Read!").random()
-            5 -> listOf("5x · On Fire!", "5x · In the Flow!", "5x · Pure Rhythm!", "5x · Grooving!").random()
-            8 -> listOf("8x · Arrow Maestro!", "8x · Brilliant!", "8x · Laser Focus!", "8x · Pure Genius!").random()
-            12 -> listOf("12x · Galaxy Brain!", "12x · Flawless!", "12x · Untouchable!", "12x · Mastermind!").random()
-            16 -> listOf("16x · Ascended Master!", "16x · Living Legend!", "16x · Perfection!", "16x · Supreme Flow!").random()
+            5 -> listOf("Combo x5 · On Fire!", "Combo x5 · In the Flow!", "Combo x5 · Pure Rhythm!").random()
+            10 -> listOf("Combo x10 · Arrow Maestro!", "Combo x10 · Laser Focus!", "Combo x10 · Brilliant!").random()
+            15 -> listOf("Combo x15 · Galaxy Brain!", "Combo x15 · Flawless!", "Combo x15 · Untouchable!").random()
+            20 -> listOf("Combo x20 · Living Legend!", "Combo x20 · Perfection!", "Combo x20 · Supreme Flow!").random()
             else -> null
         }
     }
