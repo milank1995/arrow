@@ -101,18 +101,6 @@ private data class TouchRecord(
     fun hasDragged(threshold: Float): Boolean = maxDisplacement > threshold
 }
 
-private data class ConfettiPiece(
-    val x: Float,
-    val y: Float,
-    val vx: Float,
-    val vy: Float,
-    val color: Color,
-    val width: Float,
-    val height: Float,
-    val rotation: Float,
-    val rotSpeed: Float,
-    val isRibbon: Boolean
-)
 
 @Composable
 fun PuzzleBoardCanvas(
@@ -163,19 +151,8 @@ fun PuzzleBoardCanvas(
     }
     val currentClearedCells by rememberUpdatedState(clearedCells)
 
-    // Reset zoom and pan, and launch cascading write-on path assembly animation whenever a new level is loaded or restarted
+    // Cascading write-on path assembly animation progress
     val introProgress = remember { Animatable(0f) }
-    LaunchedEffect(xSize, ySize, arrows.size, arrows.firstOrNull()?.id, restartTrigger) {
-        settleJob?.cancel()
-        scale = 1f
-        panX = 0f
-        panY = 0f
-        introProgress.snapTo(0f)
-        introProgress.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(durationMillis = 920, easing = LinearEasing)
-        )
-    }
 
     // Hint pulse and radiant glow animation
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
@@ -234,6 +211,16 @@ fun PuzzleBoardCanvas(
         val minScale = 0.75f
         val targetMaxCellPx = maxOf(viewportWidth * 0.50f, 450f)
         val maxScale = (targetMaxCellPx / cellSize).coerceIn(5.0f, 18.0f)
+
+        // Automatic zoom-in for medium and large grids matching old Unity's minCellScreenPx (~27dp)
+        val density = LocalDensity.current
+        val comfortableCellPx = with(density) { 27.dp.toPx() }
+        val defaultScale = if (cellSize < comfortableCellPx) {
+            (comfortableCellPx / cellSize).coerceIn(1.0f, 2.25f)
+        } else {
+            1.0f
+        }
+        val currentDefaultScale by rememberUpdatedState(defaultScale)
 
         val currentXSize by rememberUpdatedState(xSize)
         val currentYSize by rememberUpdatedState(ySize)
@@ -306,82 +293,68 @@ fun PuzzleBoardCanvas(
             }
         }
 
-        val confettiPieces = remember { mutableStateListOf<ConfettiPiece>() }
-        var confettiStartTime by remember { mutableLongStateOf(0L) }
-        var animTick by remember { mutableLongStateOf(0L) }
-
-        LaunchedEffect(isCelebrationBurstActive) {
-            if (isCelebrationBurstActive) {
-                confettiStartTime = System.currentTimeMillis()
-                val festiveColors = listOf(
-                    Color(0xFFFF4B4B), // Coral Red
-                    Color(0xFFFFB800), // Golden Amber
-                    Color(0xFF10B981), // Emerald
-                    Color(0xFF3B82F6), // Electric Blue
-                    Color(0xFF8B5CF6), // Royal Violet
-                    Color(0xFFEC4899), // Hot Pink
-                    Color(0xFF00E5FF)  // Cyan
-                )
-                val centerX = viewportWidth / 2f
-                val centerY = viewportHeight * 0.45f
-                confettiPieces.clear()
-                val pieces = (0 until 65).map { i ->
-                    val angle = (kotlin.random.Random.nextFloat() * 360f) * (PI.toFloat() / 180f)
-                    val speed = 250f + kotlin.random.Random.nextFloat() * 520f
-                    val isRibbon = (i % 3 != 0)
-                    ConfettiPiece(
-                        x = centerX + (kotlin.random.Random.nextFloat() - 0.5f) * 60f,
-                        y = centerY + (kotlin.random.Random.nextFloat() - 0.5f) * 40f,
-                        vx = kotlin.math.cos(angle) * speed * 0.85f,
-                        vy = -kotlin.math.abs(kotlin.math.sin(angle)) * speed - 160f,
-                        color = festiveColors[i % festiveColors.size],
-                        width = if (isRibbon) 10f + kotlin.random.Random.nextFloat() * 6f else 6f,
-                        height = if (isRibbon) 5f + kotlin.random.Random.nextFloat() * 3f else 6f,
-                        rotation = kotlin.random.Random.nextFloat() * 360f,
-                        rotSpeed = (kotlin.random.Random.nextFloat() - 0.5f) * 720f,
-                        isRibbon = isRibbon
-                    )
-                }
-                confettiPieces.addAll(pieces)
-
-                // DOPunchScale equivalent: zoom-in then zoom-out punch matching Unity's board completion beat.
-                // Phase 1 (zoom in 210ms): board quickly pops up to 106.5% — same FastOutSlowIn as intro.
-                // Phase 2 (zoom out 490ms): board gently settles back to 100% — satisfying weight.
-                settleJob?.cancel()
-                settleJob = coroutineScope.launch {
-                    val startScale = scale
-                    val peakScale = (startScale * 1.065f).coerceAtMost(1.5f)
-                    val zoomAnim = Animatable(startScale)
-                    zoomAnim.animateTo(
-                        targetValue = peakScale,
-                        animationSpec = tween(durationMillis = 210, easing = FastOutSlowInEasing)
-                    ) { scale = value }
-                    zoomAnim.animateTo(
-                        targetValue = 1.0f,
-                        animationSpec = tween(durationMillis = 490, easing = FastOutSlowInEasing)
+        // Level Initial Load & Restart Animation:
+        // Automatically smoothly zooms in to defaultScale for medium and large grids, while arrows cascade in
+        LaunchedEffect(xSize, ySize, arrows.size, arrows.firstOrNull()?.id, restartTrigger) {
+            settleJob?.cancel()
+            panX = 0f
+            panY = 0f
+            introProgress.snapTo(0f)
+            if (currentDefaultScale > 1.02f) {
+                scale = 1.0f
+                coroutineScope.launch {
+                    val sAnim = Animatable(1.0f)
+                    sAnim.animateTo(
+                        targetValue = currentDefaultScale,
+                        animationSpec = tween(durationMillis = 850, easing = FastOutSlowInEasing)
                     ) { scale = value }
                 }
             } else {
-                confettiPieces.clear()
+                scale = 1.0f
             }
+            introProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 850, easing = FastOutSlowInEasing)
+            )
         }
 
-        // DOColor golden highlight flash on level complete: α 0→0.52→0 over 680ms.
-        // Matches Unity's board-wide golden glow played when the last arrow exits.
-        var victoryFlashAlpha by remember { mutableFloatStateOf(0f) }
+        var animTick by remember { mutableLongStateOf(0L) }
+        val celebrationWaveProgress = remember { Animatable(0f) }
+
+        // Level Completion Animation:
+        // 1. MoveGridToCenterAndResetScale: Camera smoothly zooms OUT to 1.0f and centers the complete puzzle
+        // 2. AnimateDots_CenterOut: Circular wave ripples outward from center across all dots
         LaunchedEffect(isCelebrationBurstActive) {
             if (isCelebrationBurstActive) {
-                val flashAnim = Animatable(0f)
-                // Rapid flash-in (130ms linear — snappy, punchy)
-                flashAnim.animateTo(0.52f, tween(130, easing = LinearEasing)) {
-                    victoryFlashAlpha = value
-                }
-                // Slow fade-out (550ms — warm, satisfying glow dissolve)
-                flashAnim.animateTo(0f, tween(550, easing = FastOutSlowInEasing)) {
-                    victoryFlashAlpha = value
+                settleJob?.cancel()
+                settleJob = coroutineScope.launch {
+                    // Zoom out to overview (1.0f) and re-center
+                    launch {
+                        val sAnim = Animatable(scale)
+                        sAnim.animateTo(
+                            targetValue = 1.0f,
+                            animationSpec = tween(durationMillis = 650, easing = FastOutSlowInEasing)
+                        ) { scale = value }
+                    }
+                    launch {
+                        val pxAnim = Animatable(panX)
+                        pxAnim.animateTo(0f, tween(durationMillis = 650, easing = FastOutSlowInEasing)) { panX = value }
+                    }
+                    launch {
+                        val pyAnim = Animatable(panY)
+                        pyAnim.animateTo(0f, tween(durationMillis = 650, easing = FastOutSlowInEasing)) { panY = value }
+                    }
+                    // Dot ripple wave spreading outward
+                    launch {
+                        celebrationWaveProgress.snapTo(0f)
+                        celebrationWaveProgress.animateTo(
+                            targetValue = 1f,
+                            animationSpec = tween(durationMillis = 850, easing = LinearEasing)
+                        )
+                    }
                 }
             } else {
-                victoryFlashAlpha = 0f
+                celebrationWaveProgress.snapTo(0f)
             }
         }
 
@@ -399,8 +372,6 @@ fun PuzzleBoardCanvas(
         var hasInteractedWithBoard by remember(restartTrigger, arrows.size, currentLevelNumber) { mutableStateOf(false) }
 
         // Build occupancy map live from the current arrows, excluding FLYING_OUT and CLEARED arrows.
-        // NOTE: We intentionally do NOT cache this with remember() to avoid the frame-lag race condition
-        // where the VM has already released a flying arrow's cells but the Canvas still sees them as occupied.
         val occupancyMap = GridOccupancyMap(xSize, ySize).apply {
             rebuild(arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT })
         }
@@ -416,29 +387,22 @@ fun PuzzleBoardCanvas(
             } else null
         }
 
-        LaunchedEffect(isCelebrationBurstActive, activeBoosterAnimation, showTutorialHand, hasUnclearedArrows) {
-            while (isCelebrationBurstActive || (confettiPieces.isNotEmpty() && confettiStartTime > 0L) || activeBoosterAnimation != null || (showTutorialHand && hasUnclearedArrows)) {
+        LaunchedEffect(isCelebrationBurstActive, celebrationWaveProgress.isRunning, activeBoosterAnimation, showTutorialHand, hasUnclearedArrows) {
+            while (isCelebrationBurstActive || celebrationWaveProgress.isRunning || activeBoosterAnimation != null || (showTutorialHand && hasUnclearedArrows)) {
                 withFrameNanos { frameTimeNanos ->
                     animTick = frameTimeNanos
-                }
-                val tNow = System.currentTimeMillis()
-                if (tNow - confettiStartTime > 1100L) {
-                    confettiPieces.clear()
                 }
             }
         }
 
-        // DOTween Ease.OutBack equivalent: board springs in from 0.86x, overshoots to ~1.045x, settles to 1.0x.
-        // Single smooth continuous arc — no abrupt midpoint velocity change like the old two-phase approach.
-        val introZoom = if (introProgress.value >= 1f) 1.0f else {
+        // Tactile OutBack curve for small grids; for medium/large grids, scale itself animates smoothly
+        val introZoom = if (defaultScale > 1.02f || introProgress.value >= 1f) 1.0f else {
             val t = introProgress.value.coerceIn(0f, 1f)
-            // OutBack easing formula: overshoots past 1.0 before settling (c1 = overshoot tension)
             val c1 = 1.70158f
             val c3 = c1 + 1f
             val t1 = t - 1f
             val outBack = 1f + c3 * t1 * t1 * t1 + c1 * t1 * t1
-            // Map eased value (0→1 with ~7% overshoot) to scale range (0.86→1.0 with ~4.5% overshoot)
-            (0.86f + 0.14f * outBack).coerceIn(0.80f, 1.10f)
+            (0.88f + 0.12f * outBack).coerceIn(0.80f, 1.08f)
         }
         val currentIntroZoom by rememberUpdatedState(introZoom)
 
@@ -792,37 +756,77 @@ fun PuzzleBoardCanvas(
 
                 // 2. Grid Alignment & Silhouette Dots:
                 // Subtle architectural grid dots across the board eliminate "random blank gaps" and unify the UI.
-                // When an arrow is cleared, its dot dynamically pops in with tactile feedback matching New Unity One.
+                // On level completion, dots ripple outward in a brilliant celebration wave (AnimateDots_CenterOut).
                 val dotColor = theme.gridDot
                 val dotRadius = (cellSize * 0.052f).coerceIn(0.85.dp.toPx(), 2.2.dp.toPx())
                 val now = System.currentTimeMillis()
+                val isWaveActive = celebrationWaveProgress.value > 0f
+
+                val dotsCenterX = (xSize - 1) / 2f
+                val dotsCenterY = (ySize - 1) / 2f
+                val maxDotsDist = hypot(dotsCenterX, dotsCenterY).coerceAtLeast(1f)
 
                 for (cy in 0 until ySize) {
                     for (cx in 0 until xSize) {
                         val coord = GridCoordinate(cx, cy)
                         val isCleared = clearedCells.contains(coord)
-                        val isOccupied = !occupancyMap.isCellFree(coord)
 
                         if (isCleared) {
-                            val spawnTime = clearedCellTimestamps[coord] ?: 0L
-                            val elapsed = (now - spawnTime).coerceAtLeast(0L)
-                            val animDuration = 220f
-                            val animProgress = if (spawnTime == 0L || elapsed >= animDuration) 1.0f else (elapsed / animDuration).coerceIn(0f, 1f)
-                            val popScale = when {
-                                animProgress >= 1f -> 1.0f
-                                animProgress < 0.65f -> (animProgress / 0.65f) * 1.15f
-                                else -> 1.15f - ((animProgress - 0.65f) / 0.35f) * 0.15f
-                            }
-                            val alpha = (animProgress * 0.45f).coerceIn(0f, 0.45f)
-
-                            drawCircle(
-                                color = dotColor.copy(alpha = alpha),
-                                radius = dotRadius * popScale,
-                                center = Offset(
-                                    boardOrigin.x + (cx + 0.5f) * cellSize,
-                                    boardOrigin.y + (cy + 0.5f) * cellSize
-                                )
+                            val dotCenter = Offset(
+                                boardOrigin.x + (cx + 0.5f) * cellSize,
+                                boardOrigin.y + (cy + 0.5f) * cellSize
                             )
+
+                            if (isWaveActive) {
+                                // AnimateDots_CenterOut: circular ripple wave spreading from center outward
+                                val dotDist = hypot(cx - dotsCenterX, cy - dotsCenterY)
+                                val normDist = (dotDist / maxDotsDist).coerceIn(0f, 1f)
+                                val waveProg = celebrationWaveProgress.value
+                                val dotHitTime = normDist * 0.65f
+                                val dotLocalProg = ((waveProg - dotHitTime) / 0.35f).coerceIn(0f, 1f)
+
+                                if (dotLocalProg in 0.001f..0.999f) {
+                                    val waveCurve = sin(dotLocalProg * PI.toFloat())
+                                    val popScale = 1.0f + 1.25f * waveCurve
+                                    val waveColor = Color(0xFFFFB800) // Golden celebration highlight
+
+                                    // Radiant halo
+                                    drawCircle(
+                                        color = waveColor.copy(alpha = waveCurve * 0.35f),
+                                        radius = dotRadius * (1.2f + 2.4f * waveCurve),
+                                        center = dotCenter
+                                    )
+                                    // Golden popping dot
+                                    drawCircle(
+                                        color = androidx.compose.ui.graphics.lerp(dotColor.copy(alpha = 0.45f), waveColor, waveCurve),
+                                        radius = dotRadius * popScale,
+                                        center = dotCenter
+                                    )
+                                } else {
+                                    drawCircle(
+                                        color = dotColor.copy(alpha = 0.45f),
+                                        radius = dotRadius,
+                                        center = dotCenter
+                                    )
+                                }
+                            } else {
+                                val spawnTime = clearedCellTimestamps[coord] ?: 0L
+                                val elapsed = (now - spawnTime).coerceAtLeast(0L)
+                                val animDuration = 220f
+                                val animProgress = if (spawnTime == 0L || elapsed >= animDuration) 1.0f else (elapsed / animDuration).coerceIn(0f, 1f)
+                                val popScale = when {
+                                    animProgress >= 1f -> 1.0f
+                                    animProgress < 0.65f -> (animProgress / 0.65f) * 1.15f
+                                    else -> 1.15f - ((animProgress - 0.65f) / 0.35f) * 0.15f
+                                }
+                                val alpha = (animProgress * 0.45f).coerceIn(0f, 0.45f)
+
+                                drawCircle(
+                                    color = dotColor.copy(alpha = alpha),
+                                    radius = dotRadius * popScale,
+                                    center = dotCenter
+                                )
+                            }
                         }
                     }
                 }
@@ -886,60 +890,12 @@ fun PuzzleBoardCanvas(
                     drawTutorialGuidance(boardOrigin, tutorialTargetArrow, cellSize, theme)
                 }
 
-                // 4D. Victory golden flash overlay (DOColor equivalent — warm gold sheen over board on level complete)
-                if (victoryFlashAlpha > 0.01f) {
-                    drawRect(
-                        color = Color(0xFFFFD700).copy(alpha = victoryFlashAlpha * 0.48f),
-                        topLeft = boardOrigin,
-                        size = androidx.compose.ui.geometry.Size(cellSize * xSize, cellSize * ySize)
-                    )
-                }
-            }
-
-            // 5. Draw Confetti Celebration Burst (PlayLastArrowBurstDelayed matching Unity)
-            if (confettiPieces.isNotEmpty() && confettiStartTime > 0L) {
-                val now = System.currentTimeMillis()
-                val canvasDensity = this.density
-                val elapsedSec = ((now - confettiStartTime).toFloat() / 1000f).coerceAtLeast(0f)
-                val celebrationDuration = 0.95f
-                val progress = (elapsedSec / celebrationDuration).coerceIn(0f, 1f)
-                val alpha = if (progress < 0.70f) 1.0f else ((1.0f - progress) / 0.30f).coerceIn(0f, 1f)
-                val gravity = 980f // px/s^2
-
-                for (piece in confettiPieces) {
-                    val curX = piece.x + piece.vx * elapsedSec
-                    val curY = piece.y + piece.vy * elapsedSec + 0.5f * gravity * elapsedSec * elapsedSec
-                    val curRot = piece.rotation + piece.rotSpeed * elapsedSec
-
-                    if (piece.isRibbon) {
-                        // Flutter ribbon: simulate 3D rotation with cosine width scaling
-                        val flutterScale = kotlin.math.abs(kotlin.math.cos(curRot * (PI.toFloat() / 180f)))
-                        val ribbonWidth = (piece.width * flutterScale).coerceAtLeast(1.5f) * canvasDensity
-                        val ribbonHeight = piece.height * canvasDensity
-
-                        rotate(curRot, pivot = Offset(curX, curY)) {
-                            drawRoundRect(
-                                color = piece.color.copy(alpha = alpha),
-                                topLeft = Offset(curX - ribbonWidth / 2f, curY - ribbonHeight / 2f),
-                                size = Size(ribbonWidth, ribbonHeight),
-                                cornerRadius = CornerRadius(1.8f * canvasDensity)
-                            )
-                        }
-                    } else {
-                        // Star sparkle particle
-                        val starRadius = (piece.width * 0.5f * (1f - progress * 0.3f)) * canvasDensity
-                        drawCircle(
-                            color = piece.color.copy(alpha = alpha),
-                            radius = starRadius,
-                            center = Offset(curX, curY)
-                        )
-                    }
-                }
             }
         }
 
-        // Floating Reset Zoom pill button shown whenever zoomed in
-        if (scale > 1.05f) {
+        // Floating Reset Zoom pill button shown whenever zoomed in or panned away from default
+        val isZoomedOrPanned = kotlin.math.abs(scale - defaultScale) > 0.08f || kotlin.math.abs(panX) > 20f || kotlin.math.abs(panY) > 20f
+        if (!isCelebrationBurstActive && isZoomedOrPanned && introProgress.value >= 1f) {
             Surface(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -949,19 +905,19 @@ fun PuzzleBoardCanvas(
                         settleJob = coroutineScope.launch {
                             launch {
                                 val sAnim = Animatable(scale)
-                                sAnim.animateTo(1.0f, tween(240, easing = FastOutSlowInEasing)) {
+                                sAnim.animateTo(defaultScale, tween(260, easing = FastOutSlowInEasing)) {
                                     scale = value
                                 }
                             }
                             launch {
                                 val pxAnim = Animatable(panX)
-                                pxAnim.animateTo(0f, tween(240, easing = FastOutSlowInEasing)) {
+                                pxAnim.animateTo(0f, tween(260, easing = FastOutSlowInEasing)) {
                                     panX = value
                                 }
                             }
                             launch {
                                 val pyAnim = Animatable(panY)
-                                pyAnim.animateTo(0f, tween(240, easing = FastOutSlowInEasing)) {
+                                pyAnim.animateTo(0f, tween(260, easing = FastOutSlowInEasing)) {
                                     panY = value
                                 }
                             }
@@ -978,7 +934,7 @@ fun PuzzleBoardCanvas(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
-                        text = "â†º",
+                        text = "\u21BA",
                         color = Color.White,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
