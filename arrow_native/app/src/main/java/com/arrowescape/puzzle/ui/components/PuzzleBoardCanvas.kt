@@ -124,11 +124,12 @@ fun PuzzleBoardCanvas(
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-    // Smooth scale and pan states
-    var scale by remember { mutableFloatStateOf(1f) }
+    // Smooth scale and pan states (starts initially zoomed in at 1.38f entry scale)
+    var scale by remember { mutableFloatStateOf(1.38f) }
     var panX by remember { mutableFloatStateOf(0f) }
     var panY by remember { mutableFloatStateOf(0f) }
-    var settleJob by remember { mutableStateOf<Job?>(null) }
+    var panInertiaJob by remember { mutableStateOf<Job?>(null) }
+    var introZoomJob by remember { mutableStateOf<Job?>(null) }
 
     // Remember the initial level silhouette cells to render subtle cell dots for cleared areas
     val initialLevelCells = remember(xSize, ySize, arrows.size, arrows.firstOrNull()?.id, restartTrigger) {
@@ -213,14 +214,9 @@ fun PuzzleBoardCanvas(
         val targetMaxCellPx = maxOf(viewportWidth * 0.50f, 450f)
         val maxScale = (targetMaxCellPx / cellSize).coerceIn(5.0f, 18.0f)
 
-        // Automatic zoom-in for medium and large grids matching old Unity's minCellScreenPx (~28dp)
+        // Default overview fit scale is strictly 1.0f (full puzzle visible) matching New Unity
         val density = LocalDensity.current
-        val comfortableCellPx = with(density) { 28.dp.toPx() }
-        val defaultScale = if (cellSize < comfortableCellPx) {
-            (comfortableCellPx / cellSize).coerceIn(1.0f, 2.35f)
-        } else {
-            1.0f
-        }
+        val defaultScale = 1.0f
         val currentDefaultScale by rememberUpdatedState(defaultScale)
 
         val currentXSize by rememberUpdatedState(xSize)
@@ -263,7 +259,7 @@ fun PuzzleBoardCanvas(
                     currentScreenY in (viewportHeight * 0.18f..viewportHeight * 0.82f)
 
             if (!isVisibleInViewport || scale > 1.6f) {
-                settleJob?.cancel()
+                panInertiaJob?.cancel()
                 val targetScale = scale.coerceIn(1.0f, 1.40f)
 
                 var targetPanX = -(arrowBoardX - center.x) * targetScale
@@ -280,7 +276,7 @@ fun PuzzleBoardCanvas(
                 val startPanY = panY
 
                 val anim = Animatable(0f)
-                settleJob = coroutineScope.launch {
+                panInertiaJob = coroutineScope.launch {
                     anim.animateTo(
                         targetValue = 1f,
                         animationSpec = tween(durationMillis = 440, easing = FastOutSlowInEasing)
@@ -294,64 +290,35 @@ fun PuzzleBoardCanvas(
             }
         }
 
-        var hasInteractedWithBoard by remember(restartTrigger, arrows.size, currentLevelNumber) { mutableStateOf(false) }
-        var lastLevelKey by remember { mutableStateOf<String?>(null) }
-
         // Initial Render & Restart Zoom Behavior (Matching New Unity implementation):
-        // 1. When the puzzle loads, it initially appears ZOOMED IN (entryScale = defaultScale * 1.30f)
-        // 2. Camera smoothly ZOOMS OUT to defaultScale (over 850ms with FastOutSlowInEasing)
+        // 1. When the puzzle loads or restarts, it initially appears ZOOMED IN at entryScale (1.38f)
+        // 2. Camera smoothly ZOOMS OUT to defaultScale (1.0f) over 850ms with FastOutSlowInEasing
         // 3. Arrow rendering animation runs across 1450ms (concurrent with camera zoom-out)
-        // 4. On Restart: camera smoothly re-centers to entry view and zooms out to defaultScale while arrows redraw
-        LaunchedEffect(currentLevelNumber, restartTrigger, xSize, ySize, arrows.size, arrows.firstOrNull()?.id) {
-            val currentLevelKey = "${currentLevelNumber}_${xSize}_${ySize}_${arrows.firstOrNull()?.id}"
-            val isRestart = (lastLevelKey != null && lastLevelKey == currentLevelKey)
-            lastLevelKey = currentLevelKey
-
-            settleJob?.cancel()
-
-            val entryScale = (currentDefaultScale * 1.30f).coerceIn(1.25f, 3.20f)
-
-            if (isRestart) {
-                // If restarting while panned or zoomed away from entryScale, glide smoothly back to entry view
-                val isPannedOrOff = kotlin.math.abs(scale - entryScale) > 0.05f || kotlin.math.abs(panX) > 2f || kotlin.math.abs(panY) > 2f
-                if (isPannedOrOff) {
-                    val sAnim = Animatable(scale)
-                    val pxAnim = Animatable(panX)
-                    val pyAnim = Animatable(panY)
-                    coroutineScope {
-                        launch { sAnim.animateTo(entryScale, tween(durationMillis = 280, easing = FastOutSlowInEasing)) { scale = value } }
-                        launch { pxAnim.animateTo(0f, tween(durationMillis = 280, easing = FastOutSlowInEasing)) { panX = value } }
-                        launch { pyAnim.animateTo(0f, tween(durationMillis = 280, easing = FastOutSlowInEasing)) { panY = value } }
-                    }
-                } else {
-                    scale = entryScale
-                    panX = 0f
-                    panY = 0f
-                }
-            } else {
-                scale = entryScale
-                panX = 0f
-                panY = 0f
-            }
-
+        LaunchedEffect(currentLevelNumber, restartTrigger) {
+            panInertiaJob?.cancel()
+            panX = 0f
+            panY = 0f
+            scale = 1.38f
             introProgress.snapTo(0f)
 
-            // Step 1: Smoothly zoom OUT from zoomed-in entry view to defaultScale (matching Unity)
-            if (!hasInteractedWithBoard) {
-                val sAnim = Animatable(entryScale)
-                settleJob = coroutineScope.launch {
-                    sAnim.animateTo(
-                        targetValue = currentDefaultScale,
-                        animationSpec = tween(durationMillis = 850, easing = FastOutSlowInEasing)
-                    ) { scale = value }
+            // Step 1: Smoothly zoom OUT from zoomed-in entry scale (1.38f) to default fit scale (1.0f)
+            introZoomJob = launch {
+                val sAnim = Animatable(1.38f)
+                sAnim.animateTo(
+                    targetValue = 1.0f,
+                    animationSpec = tween(durationMillis = 850, easing = FastOutSlowInEasing)
+                ) {
+                    scale = value
                 }
             }
 
             // Step 2: Concurrently render all arrows at full smoothness (1450ms, untouched)
-            introProgress.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(durationMillis = 1450, easing = LinearEasing)
-            )
+            launch {
+                introProgress.animateTo(
+                    targetValue = 1f,
+                    animationSpec = tween(durationMillis = 1450, easing = LinearEasing)
+                )
+            }
         }
 
         var animTick by remember { mutableLongStateOf(0L) }
@@ -362,32 +329,30 @@ fun PuzzleBoardCanvas(
         // 2. AnimateDots_CenterOut: Circular wave ripples outward from center across all dots
         LaunchedEffect(isCelebrationBurstActive) {
             if (isCelebrationBurstActive) {
-                settleJob?.cancel()
-                settleJob = coroutineScope.launch {
-                    // Zoom out to overview (1.0f) and re-center
-                    launch {
-                        val sAnim = Animatable(scale)
-                        sAnim.animateTo(
-                            targetValue = 1.0f,
-                            animationSpec = tween(durationMillis = 650, easing = FastOutSlowInEasing)
-                        ) { scale = value }
-                    }
-                    launch {
-                        val pxAnim = Animatable(panX)
-                        pxAnim.animateTo(0f, tween(durationMillis = 650, easing = FastOutSlowInEasing)) { panX = value }
-                    }
-                    launch {
-                        val pyAnim = Animatable(panY)
-                        pyAnim.animateTo(0f, tween(durationMillis = 650, easing = FastOutSlowInEasing)) { panY = value }
-                    }
-                    // Dot ripple wave spreading outward
-                    launch {
-                        celebrationWaveProgress.snapTo(0f)
-                        celebrationWaveProgress.animateTo(
-                            targetValue = 1f,
-                            animationSpec = tween(durationMillis = 850, easing = LinearEasing)
-                        )
-                    }
+                panInertiaJob?.cancel()
+                introZoomJob?.cancel()
+                launch {
+                    val sAnim = Animatable(scale)
+                    sAnim.animateTo(
+                        targetValue = 1.0f,
+                        animationSpec = tween(durationMillis = 650, easing = FastOutSlowInEasing)
+                    ) { scale = value }
+                }
+                launch {
+                    val pxAnim = Animatable(panX)
+                    pxAnim.animateTo(0f, tween(durationMillis = 650, easing = FastOutSlowInEasing)) { panX = value }
+                }
+                launch {
+                    val pyAnim = Animatable(panY)
+                    pyAnim.animateTo(0f, tween(durationMillis = 650, easing = FastOutSlowInEasing)) { panY = value }
+                }
+                // Dot ripple wave spreading outward
+                launch {
+                    celebrationWaveProgress.snapTo(0f)
+                    celebrationWaveProgress.animateTo(
+                        targetValue = 1f,
+                        animationSpec = tween(durationMillis = 850, easing = LinearEasing)
+                    )
                 }
             } else {
                 celebrationWaveProgress.snapTo(0f)
@@ -437,11 +402,10 @@ fun PuzzleBoardCanvas(
             modifier = Modifier
                 .fillMaxSize()
                 .clipToBounds() // Prevents drawing over top bar or bottom booster bar
-                .pointerInput(xSize, ySize, arrows.size, arrows.firstOrNull()?.id) {
+                .pointerInput(xSize, ySize) {
                     awaitEachGesture {
                         val down = awaitFirstDown(requireUnconsumed = false)
-                        hasInteractedWithBoard = true
-                        settleJob?.cancel() // Stop ongoing inertia or animation immediately on new touch
+                        panInertiaJob?.cancel() // Stop ongoing pan inertia immediately on new touch
 
                         val center = Offset(currentViewportWidth / 2f, currentViewportHeight / 2f)
                         val dragThreshold = with(density) { 10.dp.toPx() }
@@ -553,6 +517,8 @@ fun PuzzleBoardCanvas(
                                     }
 
                                     if (isPinching) {
+                                        introZoomJob?.cancel()
+                                        panInertiaJob?.cancel()
                                         val centroid = event.calculateCentroid()
                                         val effectiveZoom = 1f + (zoomChange - 1f) * 1.15f
                                         val newScale = (scale * effectiveZoom).coerceIn(minScale, currentMaxScale)
@@ -701,7 +667,7 @@ fun PuzzleBoardCanvas(
 
                         // Rubber-band settle back to 1.0x when released below normal scale
                         if (scale < 1.0f) {
-                            settleJob = coroutineScope.launch {
+                            panInertiaJob = coroutineScope.launch {
                                 launch {
                                     val sAnim = Animatable(scale)
                                     sAnim.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy)) {
@@ -723,7 +689,7 @@ fun PuzzleBoardCanvas(
                             }
                         } else if (inertiaVel != Offset.Zero) {
                             // Inertia momentum coasting with friction decay (matching Unity's SwipeInertia)
-                            settleJob = coroutineScope.launch {
+                            panInertiaJob = coroutineScope.launch {
                                 var vx = inertiaVel.x * 0.75f
                                 var vy = inertiaVel.y * 0.75f
                                 val maxPX = (currentBoardWidth * scale / 2f) + (currentViewportWidth * 0.45f)
@@ -928,8 +894,8 @@ fun PuzzleBoardCanvas(
                     .align(Alignment.TopEnd)
                     .padding(12.dp)
                     .clickable {
-                        settleJob?.cancel()
-                        settleJob = coroutineScope.launch {
+                        panInertiaJob?.cancel()
+                        panInertiaJob = coroutineScope.launch {
                             launch {
                                 val sAnim = Animatable(scale)
                                 sAnim.animateTo(defaultScale, tween(260, easing = FastOutSlowInEasing)) {
