@@ -90,7 +90,9 @@ class MainActivity : ComponentActivity() {
             val uiState by gameViewModel.uiState.collectAsState()
             val initialScreen = remember {
                 if (intent.getStringExtra("EXTRA_NAVIGATE_TO") == "daily_challenge") {
-                    AppScreen.DAILY_CHALLENGE
+                    intent.removeExtra("EXTRA_NAVIGATE_TO")
+                    gameViewModel.startDailyChallenge()
+                    AppScreen.GAMEPLAY
                 } else if (gameViewModel.hasPlayedBeforeSynchronous()) {
                     AppScreen.HOME
                 } else {
@@ -108,7 +110,9 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(intent) {
                 if (intent.getStringExtra("EXTRA_NAVIGATE_TO") == "daily_challenge") {
-                    currentScreen = AppScreen.DAILY_CHALLENGE
+                    intent.removeExtra("EXTRA_NAVIGATE_TO")
+                    gameViewModel.startDailyChallenge()
+                    currentScreen = AppScreen.GAMEPLAY
                 }
             }
 
@@ -283,7 +287,7 @@ class MainActivity : ComponentActivity() {
                                         } else if (uiState.isGameOver) {
                                             gameViewModel.loadLevel(uiState.currentLevelNumber)
                                         }
-                                        currentScreen = AppScreen.HOME
+                                        currentScreen = if (wasDaily) AppScreen.DAILY_CHALLENGE else AppScreen.HOME
                                     },
                                     onClaimFreeLives = {
                                         gameViewModel.claimFreeLives(3)
