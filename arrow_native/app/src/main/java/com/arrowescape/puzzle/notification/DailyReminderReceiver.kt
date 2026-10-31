@@ -32,7 +32,7 @@ class DailyReminderReceiver : BroadcastReceiver() {
         val todayStr = LocalDate.now().toString()
         val alreadyCompletedToday = repository.isDailyCompletedTodaySynchronous(todayStr)
 
-        if (remindersEnabled && currentLevel > 5 && !alreadyCompletedToday) {
+        if (remindersEnabled && currentLevel > 10 && !alreadyCompletedToday) {
             val streak = repository.getStreakDaysSynchronous()
             NotificationHelper.postDailyChallengeNotification(context, streak)
         }

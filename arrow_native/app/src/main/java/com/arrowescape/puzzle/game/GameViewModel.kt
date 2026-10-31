@@ -48,7 +48,7 @@ data class GameUiState(
     val isSoundEnabled: Boolean = true,
     val isVibrationEnabled: Boolean = true,
     val previewRayArrowIds: Set<String> = emptySet(),
-    val activeTheme: ThemePreset = ThemePresets.CleanLight,
+    val activeTheme: ThemePreset = ThemePresets.WarmSepia,
     val currentLevelNumber: Int = 1,
     val lastCompletedLevelNumber: Int = 1,
     val coins: Int = 100,
@@ -118,7 +118,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     init {
         viewModelScope.launch {
             repository.userGameData.collect { data ->
-                val theme = ThemePresets.all.getOrElse(data.themeIndex) { ThemePresets.CleanLight }
+                val theme = ThemePresets.all.getOrElse(data.themeIndex) { ThemePresets.WarmSepia }
                 audioHapticManager.isSoundEnabled = data.soundEnabled
                 audioHapticManager.isVibrationEnabled = data.vibrationEnabled
 
