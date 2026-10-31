@@ -155,7 +155,7 @@ fun BoosterBar(
                         onHintClick()
                     }
             ) {
-                // Layer 1: Refined Modern Lightbulb Art (Centered for starting levels; offset when badge is present)
+                // Layer 1: Refined Modern Lightbulb Art (Clean & perfectly centered)
                 ModernLightbulbArt(
                     activeProgress = activeProgress,
                     auraGlow = auraGlow,
@@ -163,49 +163,64 @@ fun BoosterBar(
                     modifier = Modifier
                         .size(width = 46.dp, height = 52.dp)
                         .align(Alignment.Center)
-                        .offset(y = if (isFreeHintLevel) 0.dp else (-5).dp)
                 )
 
-                // Layer 2: Badge (Shown ONLY when NOT on free hint starting levels)
-                // - Shows count (e.g. "1") when free hint(s) available
-                // - Shows clean, professional "AD" text badge when free hints are exhausted
+                // Layer 2: Top-Right Badge (Symmetrically matches the Grid button's Eye badge placement)
+                // - Hidden on Levels 1-10 (unlimited hints, clean original design)
+                // - Shows count (e.g. "1") when free hint is available
+                // - Shows professional "AD" pill when free hints are exhausted
                 if (!isFreeHintLevel) {
                     val isAdState = (hintsCount <= 0)
-                    val badgeBgColor = if (isAdState) Color(0xFFD97706) else theme.surface
-                    val badgeBorderColor = if (isAdState) Color(0xFFFBBF24) else theme.gridLine
-
-                    Surface(
-                        shape = RoundedCornerShape(percent = 50),
-                        color = badgeBgColor,
-                        border = BorderStroke(1.2.dp, badgeBorderColor),
-                        shadowElevation = if (isAdState) 2.dp else 1.dp,
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .offset(y = (-4).dp)
-                    ) {
-                        Box(
+                    if (isAdState) {
+                        // Symmetrical Sleek "AD" Badge positioned at top-right
+                        Surface(
+                            shape = RoundedCornerShape(percent = 50),
+                            color = Color(0xFFD97706),
+                            border = BorderStroke(1.dp, Color(0xFFFDE68A).copy(alpha = 0.85f)),
+                            shadowElevation = 1.dp,
                             modifier = Modifier
-                                .height(18.dp)
-                                .widthIn(min = 28.dp)
-                            .padding(horizontal = 6.dp),
-                            contentAlignment = Alignment.Center
+                                .align(Alignment.TopEnd)
+                                .offset(x = 2.dp, y = 4.dp)
                         ) {
-                            if (hintsCount > 0) {
-                                // Limited Hints balance: 1, 2, 3
-                                Text(
-                                    text = "$hintsCount",
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = theme.textPrimary
-                                )
-                            } else {
-                                // Free hints exhausted: Professional "AD" text badge
+                            Box(
+                                modifier = Modifier
+                                    .height(16.dp)
+                                    .widthIn(min = 22.dp)
+                                    .padding(horizontal = 4.5.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
                                 Text(
                                     text = "AD",
-                                    fontSize = 10.sp,
+                                    fontSize = 9.sp,
                                     fontWeight = FontWeight.Black,
-                                    letterSpacing = 0.6.sp,
+                                    letterSpacing = 0.5.sp,
                                     color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    } else {
+                        // Symmetrical Circular Count Badge (e.g. "1") matching the eye badge geometry
+                        Surface(
+                            shape = CircleShape,
+                            color = theme.surface,
+                            border = BorderStroke(1.dp, theme.gridLine),
+                            shadowElevation = 1.dp,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .offset(x = 2.dp, y = 4.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .padding(2.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "$hintsCount",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = theme.textPrimary,
                                     textAlign = TextAlign.Center
                                 )
                             }
