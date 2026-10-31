@@ -79,7 +79,8 @@ data class GameUiState(
     val dailyRemindersEnabled: Boolean = true,
     val hasRequestedNotificationPermission: Boolean = false,
     val showDailyLaunchPrompt: Boolean = false,
-    val restartTrigger: Long = 0L
+    val restartTrigger: Long = 0L,
+    val isAutoSolving: Boolean = false
 ) {
     val previewRayArrowId: String? get() = previewRayArrowIds.firstOrNull()
 }
@@ -222,6 +223,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun loadLevel(levelNumber: Int) {
+        stopAutoSolve()
         levelStartTime = 0L
         hasGameplayStarted = false
         levelMovesAttempted = 0
@@ -295,6 +297,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun startDailyChallenge(dateString: String = LocalDate.now().toString()) {
+        stopAutoSolve()
         levelStartTime = 0L
         hasGameplayStarted = false
         levelMovesAttempted = 0
@@ -792,7 +795,55 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
+    
+    // ==========================================
+    // DEVELOPER / TESTING AUTO-SOLVE CONTROLS
+    // ==========================================
+    private var autoSolveJob: Job? = null
+
+    fun toggleAutoSolve() {
+        if (_uiState.value.isAutoSolving) {
+            stopAutoSolve()
+        } else {
+            startAutoSolve()
+        }
+    }
+
+    fun stopAutoSolve() {
+        autoSolveJob?.cancel()
+        autoSolveJob = null
+        if (_uiState.value.isAutoSolving) {
+            _uiState.update { it.copy(isAutoSolving = false) }
+        }
+    }
+
+    fun startAutoSolve() {
+        if (_uiState.value.isLevelComplete || _uiState.value.isGameOver) return
+        stopAutoSolve()
+        _uiState.update { it.copy(isAutoSolving = true) }
+
+        autoSolveJob = viewModelScope.launch {
+            while (_uiState.value.isAutoSolving && !_uiState.value.isLevelComplete && !_uiState.value.isGameOver) {
+                val currentArrows = _uiState.value.arrows
+                val uncleared = currentArrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
+                if (uncleared.isEmpty()) break
+
+                val movable = PuzzleSolver.findAllMovableArrows(currentArrows, occupancyMap)
+                val nextArrow = PuzzleSolver.getBestHint(currentArrows, occupancyMap) ?: movable.firstOrNull()
+
+                if (nextArrow != null) {
+                    onArrowClicked(nextArrow)
+                    delay(220) // Smooth interval between taps for responsive cascading flight
+                } else {
+                    delay(60)
+                }
+            }
+            _uiState.update { it.copy(isAutoSolving = false) }
+        }
+    }
+
     fun onVictoryHomeClick() {
+        stopAutoSolve()
         if (_uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode) {
             loadLevel(_uiState.value.currentLevelNumber)
         } else {
@@ -815,6 +866,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun restartLevel() {
+        stopAutoSolve()
         if (_uiState.value.isDailyChallengeMode) {
             val dateStr = _uiState.value.activeDailyDate ?: LocalDate.now().toString()
             startDailyChallenge(dateStr)

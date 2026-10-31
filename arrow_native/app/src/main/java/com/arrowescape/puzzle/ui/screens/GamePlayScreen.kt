@@ -1,5 +1,8 @@
 package com.arrowescape.puzzle.ui.screens
 
+import com.arrowescape.puzzle.BuildConfig
+import com.arrowescape.puzzle.ui.components.AutoSolveButton
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -78,6 +81,7 @@ fun GamePlayScreen(
     onPlayCoinSound: () -> Unit = {},
     onPlayClickSound: () -> Unit = {},
     onDismissPreviewRays: () -> Unit = {},
+    onAutoSolveClick: () -> Unit = {},
     onGameplayStarted: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -282,6 +286,20 @@ fun GamePlayScreen(
                                 .align(Alignment.TopCenter)
                                 .padding(top = 4.dp)
                         )
+
+                        // Developer Auto-Solve Testing Tool (Debug builds only)
+                        if (BuildConfig.DEBUG) {
+                            AutoSolveButton(
+                                isAutoSolving = uiState.isAutoSolving,
+                                onClick = {
+                                    onPlayClickSound()
+                                    onAutoSolveClick()
+                                },
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(top = 10.dp, end = 12.dp)
+                            )
+                        }
                     }
 
                     // 3. BOTTOM BOOSTER CONTROLS (Hidden on initial Level 1 to keep gameplay focused & clean)

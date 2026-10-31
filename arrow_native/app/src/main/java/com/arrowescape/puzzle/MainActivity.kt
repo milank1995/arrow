@@ -301,6 +301,9 @@ class MainActivity : ComponentActivity() {
                                     onPlayClickSound = {
                                         gameViewModel.playClick()
                                     },
+                                    onAutoSolveClick = {
+                                        gameViewModel.toggleAutoSolve()
+                                    },
                                     onGameplayStarted = {
                                         gameViewModel.onGameplayStarted()
                                     }

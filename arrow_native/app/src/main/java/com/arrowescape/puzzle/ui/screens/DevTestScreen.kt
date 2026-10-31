@@ -1,5 +1,8 @@
 package com.arrowescape.puzzle.ui.screens
 
+import com.arrowescape.puzzle.BuildConfig
+import com.arrowescape.puzzle.ui.components.AutoSolveButton
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -100,8 +103,13 @@ fun DevTestScreen(
 
     var showLevelSelectDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
+    var isAutoSolving by remember { mutableStateOf(false) }
+    var autoSolveJob by remember { mutableStateOf<Job?>(null) }
 
     fun loadLevel(levelNum: Int) {
+        autoSolveJob?.cancel()
+        autoSolveJob = null
+        isAutoSolving = false
         val boundedLevel = levelNum.coerceIn(1, 150)
         val level = LevelLoader.loadLevel(context, boundedLevel)
         levelData = level
@@ -309,6 +317,34 @@ fun DevTestScreen(
         }
     }
 
+    fun toggleAutoSolve() {
+        if (isAutoSolving) {
+            autoSolveJob?.cancel()
+            autoSolveJob = null
+            isAutoSolving = false
+        } else {
+            if (isLevelComplete) return
+            isAutoSolving = true
+            autoSolveJob = coroutineScope.launch {
+                while (isAutoSolving && !isLevelComplete) {
+                    val uncleared = arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
+                    if (uncleared.isEmpty()) break
+
+                    val movable = PuzzleSolver.findAllMovableArrows(arrows, occupancyMap)
+                    val nextArrow = PuzzleSolver.getBestHint(arrows, occupancyMap) ?: movable.firstOrNull()
+
+                    if (nextArrow != null) {
+                        onArrowClicked(nextArrow)
+                        delay(220)
+                    } else {
+                        delay(60)
+                    }
+                }
+                isAutoSolving = false
+            }
+        }
+    }
+
     val remainingArrowsCount = arrows.count { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
     val totalArrowsCount = levelData?.arrows?.size ?: arrows.size
     val currentLevel = levelData
@@ -406,6 +442,20 @@ fun DevTestScreen(
                         .align(Alignment.TopCenter)
                         .padding(top = 4.dp)
                 )
+
+                // Developer Auto-Solve Testing Tool (Debug builds only)
+                if (BuildConfig.DEBUG) {
+                    AutoSolveButton(
+                        isAutoSolving = isAutoSolving,
+                        onClick = {
+                            audioHapticManager.playClick()
+                            toggleAutoSolve()
+                        },
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 10.dp, end = 12.dp)
+                    )
+                }
             }
 
             // 3. BOTTOM BOOSTER CONTROLS (Identical to original game, plus instant restart)
