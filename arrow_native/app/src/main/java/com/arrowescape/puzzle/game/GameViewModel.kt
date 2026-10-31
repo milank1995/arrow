@@ -72,6 +72,8 @@ data class GameUiState(
     val levelMovesCount: Int = 0,
     val levelFinalScore: Int = 0,
     val levelAccuracyPercent: Int = 100,
+    val levelMistakesCount: Int = 0,
+    val levelHintsUsedCount: Int = 0,
     val levelStarsEarned: Int = 3,
     val hasSeenDailyUnlockCelebration: Boolean = false,
     val dailyRemindersEnabled: Boolean = true,
@@ -96,6 +98,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     private var hasGameplayStarted: Boolean = false
     private var levelMovesAttempted: Int = 0
     private var levelMistakesCount: Int = 0
+    private var levelHintsUsedCount: Int = 0
     private var hasDismissedDailyLaunchPromptThisSession: Boolean = false
     private var milestone25Fired: Boolean = false
     private var milestone50Fired: Boolean = false
@@ -215,6 +218,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         hasGameplayStarted = true
         levelMovesAttempted = 0
         levelMistakesCount = 0
+        levelHintsUsedCount = 0
     }
 
     fun loadLevel(levelNumber: Int) {
@@ -222,6 +226,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         hasGameplayStarted = false
         levelMovesAttempted = 0
         levelMistakesCount = 0
+        levelHintsUsedCount = 0
         resetMilestoneFlags()
         val level = LevelLoader.loadLevel(app, levelNumber)
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
@@ -258,6 +263,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         hasGameplayStarted = false
         levelMovesAttempted = 0
         levelMistakesCount = 0
+        levelHintsUsedCount = 0
         resetMilestoneFlags()
         val level = LevelLoader.loadLockPuzzle(app)
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
@@ -293,6 +299,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         hasGameplayStarted = false
         levelMovesAttempted = 0
         levelMistakesCount = 0
+        levelHintsUsedCount = 0
         resetMilestoneFlags()
         val date = try {
             LocalDate.parse(dateString)
@@ -619,6 +626,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     fun useHint() {
         viewModelScope.launch(Dispatchers.Default) {
             val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap) ?: return@launch
+            levelHintsUsedCount++
             if (isFreeHintLevel) {
                 // Unlimited free hints for starting levels (1-10) in campaign mode
                 audioHapticManager.playBoosterUse("hint")
@@ -868,6 +876,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 levelMovesCount = totalMoves,
                 levelFinalScore = finalScore,
                 levelAccuracyPercent = accuracy,
+                levelMistakesCount = mistakes,
+                levelHintsUsedCount = levelHintsUsedCount,
                 levelStarsEarned = stars
             )
         }

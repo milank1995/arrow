@@ -33,10 +33,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material3.Icon
@@ -45,9 +43,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -65,7 +61,6 @@ import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -78,7 +73,10 @@ import com.arrowescape.puzzle.ui.components.SculptedStar3D
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
+import java.util.Locale
 import kotlin.math.cos
+import kotlin.math.hypot
 import kotlin.math.sin
 
 /**
@@ -125,16 +123,14 @@ class ArchedPodiumCardShape(
 }
 
 /**
- * Modern, clean, and highly engaging Victory Screen matching the New Unity benchmark.
+ * Modern, clean, and highly engaging Victory Screen matching the Unity reference benchmark.
  * Features:
+ * - Full-bleed radiating top sunburst & luminous ambient glow.
  * - Triumphant 3D sculpted star podium crowning an arched crest card.
- * - Gentle revolving sunburst + festive drifting confetti particles.
- * - Meaningful gameplay performance metrics with rank badge (S/A/B).
- * - Engaging social benchmark ("Faster than 84.7% of players!").
- * - Horizontal level progression track with completed, active, and upcoming nodes.
- * - Prominent hero CTA button with docked floating streak win badge ("👑 x5 Win").
- * - Minimalist "Home" text link eliminating duplicate button clutter.
- * - 100% theme-adaptive & fully responsive across all device sizes.
+ * - Restored clean Score metric and performance counters strip (🎯 Accuracy | ✕ Mistakes | 💡 Hints).
+ * - Enhanced 5-node level progression stepper road.
+ * - Large, prominent action buttons (Next Level + Home) placed directly below the level number.
+ * - 100% theme-adaptive & fully responsive across all device sizes with ZERO scrolling.
  */
 @Composable
 fun VictoryScreen(
@@ -151,6 +147,8 @@ fun VictoryScreen(
     movesCount: Int = 0,
     score: Int = 0,
     accuracyPercent: Int = 100,
+    mistakesCount: Int = 0,
+    hintsUsed: Int = 0,
     starsEarned: Int = 3,
     isDailyUnlockMilestone: Boolean = false,
     onStartDailyChallengeClick: () -> Unit = {},
@@ -214,7 +212,7 @@ fun VictoryScreen(
         initialValue = 0f,
         targetValue = 360f,
         animationSpec = infiniteRepeatable(
-            animation = tween(18000, easing = LinearEasing),
+            animation = tween(22000, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
         ),
         label = "sunburstRotation"
@@ -228,7 +226,7 @@ fun VictoryScreen(
             contentAlpha.animateTo(1.0f, tween(200))
         }
         launch {
-            sunburstAlpha.animateTo(0.85f, tween(500))
+            sunburstAlpha.animateTo(0.95f, tween(500))
         }
 
         // Staggered star drops with authentic audio feedback
@@ -262,30 +260,6 @@ fun VictoryScreen(
         else -> "Level Complete!"
     }
 
-    // Engaging Social Benchmark Percentile (Unity Reference)
-    val playerPercentile = remember(accuracyPercent, completionTimeSeconds, starsEarned) {
-        when (starsEarned) {
-            3 -> {
-                val timeBonus = ((90 - completionTimeSeconds).coerceIn(0, 60) * 0.15f)
-                val accBonus = ((accuracyPercent - 70).coerceIn(0, 30) * 0.22f)
-                (80.0f + timeBonus + accBonus).coerceIn(82.4f, 98.9f)
-            }
-            2 -> {
-                val accBonus = ((accuracyPercent - 50).coerceIn(0, 40) * 0.35f)
-                (58.0f + accBonus).coerceIn(60.2f, 79.8f)
-            }
-            else -> {
-                (40.0f + (accuracyPercent.coerceIn(30, 80) * 0.25f)).coerceIn(42.0f, 58.5f)
-            }
-        }
-    }
-
-    val subtitleText = when {
-        isDailyChallenge -> "Daily puzzle mastered!"
-        starsEarned >= 2 -> String.format(java.util.Locale.US, "Faster than %.1f%% of players!", playerPercentile)
-        else -> "Level complete! Keep sharpening your skills!"
-    }
-
     // Dynamic stats derived from authentic gameplay results
     val difficultyText = when {
         isDailyChallenge -> "Hard"
@@ -293,7 +267,8 @@ fun VictoryScreen(
         levelNumber > 10 -> "Medium"
         else -> "Normal"
     }
-    val timeFormatted = String.format(java.util.Locale.US, "%02d:%02d", completionTimeSeconds / 60, completionTimeSeconds % 60)
+    val timeFormatted = String.format(Locale.US, "%02d:%02d", completionTimeSeconds / 60, completionTimeSeconds % 60)
+    val scoreFormatted = NumberFormat.getNumberInstance(Locale.US).format(score)
 
     Surface(
         color = theme.background,
@@ -305,19 +280,35 @@ fun VictoryScreen(
     ) {
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             val availableHeight = maxHeight
-            val requiresScroll = availableHeight < 640.dp
+            val isVeryCompact = availableHeight < 640.dp
             val isCompact = availableHeight < 720.dp
 
-            // Ambient Radiant Sunburst Layer
+            // Full-Bleed Radiant Sunburst Layer (Reaching all the way to top edges & corners)
             Canvas(
                 modifier = Modifier
                     .fillMaxSize()
                     .scale(sunburstAlpha.value)
             ) {
-                val center = Offset(size.width / 2f, size.height * 0.26f)
+                val center = Offset(size.width / 2f, size.height * 0.22f)
                 val rayCount = 14
-                val maxRadius = size.width * 0.95f
+                val maxRadius = hypot(size.width.toDouble(), size.height.toDouble()).toFloat() * 0.88f
 
+                // Luminous top ambient glow circle behind the stars
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            ctaGrad1.copy(alpha = 0.35f),
+                            ctaGrad2.copy(alpha = 0.12f),
+                            Color.Transparent
+                        ),
+                        center = center,
+                        radius = maxRadius * 0.65f
+                    ),
+                    center = center,
+                    radius = maxRadius * 0.65f
+                )
+
+                // Revolving radiant sunburst rays
                 rotate(sunburstRotation, pivot = center) {
                     for (i in 0 until rayCount) {
                         val angle = (i * 360f / rayCount) * (Math.PI.toFloat() / 180f)
@@ -340,8 +331,8 @@ fun VictoryScreen(
                             path = path,
                             brush = Brush.radialGradient(
                                 colors = listOf(
-                                    ctaGrad1.copy(alpha = 0.22f),
-                                    ctaGrad2.copy(alpha = 0.08f),
+                                    ctaGrad1.copy(alpha = 0.26f),
+                                    ctaGrad2.copy(alpha = 0.09f),
                                     Color.Transparent
                                 ),
                                 center = center,
@@ -355,30 +346,30 @@ fun VictoryScreen(
             // Drifting Confetti Particles Layer
             ConfettiBurstEffect(modifier = Modifier.fillMaxSize(), particleCount = 26)
 
-            // Content Container with responsive vertical constraints
-            val scrollState = rememberScrollState()
-            val contentModifier = if (requiresScroll) {
-                Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 24.dp, vertical = 12.dp)
-                    .verticalScroll(scrollState)
-            } else {
-                Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 24.dp, vertical = if (isCompact) 14.dp else 22.dp)
-            }
+            // Responsive Scaling Parameters for Zero-Scroll Guarantee
+            val cardArchHeight = if (isVeryCompact) 12.dp else 16.dp
+            val starPodiumHeight = if (isVeryCompact) 68.dp else 78.dp
+            val centerStarSize = if (isVeryCompact) 58.dp else 68.dp
+            val sideStarSize = if (isVeryCompact) 42.dp else 48.dp
+            val cardPaddingTop = if (isVeryCompact) 26.dp else 34.dp
+            val cardInnerTopSpacer = if (isVeryCompact) 18.dp else 24.dp
+            val headlineFontSize = if (isVeryCompact) 25.sp else 28.sp
+            val primaryBtnHeight = if (isVeryCompact) 50.dp else 56.dp
+            val secBtnHeight = if (isVeryCompact) 44.dp else 50.dp
+            val contentPadHoriz = if (isVeryCompact) 18.dp else 22.dp
 
+            // Main Screen Content: Perfectly Centered & Compact with Zero-Scroll Guarantee
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = if (requiresScroll) Arrangement.spacedBy(16.dp) else Arrangement.SpaceBetween,
-                modifier = contentModifier
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = contentPadHoriz, vertical = 12.dp)
             ) {
-                // Top breathing clearance
-                if (!requiresScroll) {
-                    Spacer(modifier = Modifier.height(if (isCompact) 6.dp else 14.dp))
-                }
+                // Top flexible breathing room
+                Spacer(modifier = Modifier.weight(if (isCompact) 0.5f else 1.0f))
 
-                // 1. HERO SECTION: Crowning 3D Star Arch + Arched Card (Unity Reference)
+                // 1. HERO SECTION: Crowning 3D Star Arch + Arched Card
                 Box(
                     contentAlignment = Alignment.TopCenter,
                     modifier = Modifier
@@ -386,15 +377,15 @@ fun VictoryScreen(
                         .widthIn(max = 380.dp)
                         .scale(contentScale.value)
                 ) {
-                    // Arched Card Surface Container
+                    // Arched Card Container
                     Surface(
-                        shape = ArchedPodiumCardShape(archHeight = 16.dp, cornerRadius = 28.dp),
+                        shape = ArchedPodiumCardShape(archHeight = cardArchHeight, cornerRadius = 26.dp),
                         color = theme.surface,
                         shadowElevation = if (theme.isDark) 6.dp else 10.dp,
                         border = BorderStroke(1.2.dp, theme.gridLine),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 38.dp)
+                            .padding(top = cardPaddingTop)
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -407,46 +398,35 @@ fun VictoryScreen(
                                         )
                                     )
                                 )
-                                .padding(horizontal = 22.dp, vertical = 22.dp)
+                                .padding(horizontal = 20.dp, vertical = if (isVeryCompact) 14.dp else 18.dp)
                         ) {
-                            // Clearance space for the overlapping top star podium arch
-                            Spacer(modifier = Modifier.height(28.dp))
+                            // Top clearance space for overlapping stars arch
+                            Spacer(modifier = Modifier.height(cardInnerTopSpacer))
 
-                            // Praise Headline ("Flawless!")
+                            // Praise Headline ("Flawless!" / "Great Job!" / "Level Complete!")
                             Text(
                                 text = headlineText,
-                                fontSize = 28.sp,
+                                fontSize = headlineFontSize,
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 0.3.sp,
                                 color = theme.textPrimary,
                                 textAlign = TextAlign.Center
                             )
 
-                            Spacer(modifier = Modifier.height(6.dp))
+                            Spacer(modifier = Modifier.height(if (isVeryCompact) 10.dp else 14.dp))
 
-                            // Social benchmark subtitle ("Faster than 84.7% of players!")
-                            Text(
-                                text = subtitleText,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = if (theme.isDark) Color(0xFFFBBF24) else Color(0xFFC57B22),
-                                textAlign = TextAlign.Center
-                            )
-
-                            Spacer(modifier = Modifier.height(18.dp))
-
-                            // Inner Performance Metrics Card (Unity Clean Key-Value List)
+                            // Inner Key-Value Performance Panel (Difficulty | Time | Score)
                             Column(
-                                verticalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(if (isVeryCompact) 8.dp else 11.dp),
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(20.dp))
+                                    .clip(RoundedCornerShape(18.dp))
                                     .background(
                                         if (theme.isDark) theme.background.copy(alpha = 0.65f)
                                         else theme.background.copy(alpha = 0.45f)
                                     )
-                                    .border(1.dp, theme.gridLine.copy(alpha = 0.5f), RoundedCornerShape(20.dp))
-                                    .padding(horizontal = 20.dp, vertical = 16.dp)
+                                    .border(1.dp, theme.gridLine.copy(alpha = 0.5f), RoundedCornerShape(18.dp))
+                                    .padding(horizontal = 18.dp, vertical = if (isVeryCompact) 10.dp else 13.dp)
                             ) {
                                 // Row 1: Difficulty
                                 PerformanceMetricRow(
@@ -455,125 +435,163 @@ fun VictoryScreen(
                                     theme = theme
                                 )
 
-                                // Row 2: Time with S/A/B Gold Rank Badge
+                                // Row 2: Time (Clean formatted time without S rank badge)
+                                PerformanceMetricRow(
+                                    label = "Time",
+                                    value = timeFormatted,
+                                    theme = theme
+                                )
+
+                                // Row 3: Score (Restored clean Score metric)
+                                PerformanceMetricRow(
+                                    label = "Score",
+                                    value = scoreFormatted,
+                                    theme = theme
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(if (isVeryCompact) 8.dp else 11.dp))
+
+                            // Performance Counters Strip: Accuracy | Wrong Moves | Hints (Reference Image 2)
+                            Surface(
+                                shape = RoundedCornerShape(14.dp),
+                                color = if (theme.isDark) theme.background.copy(alpha = 0.75f) else theme.boosterBg.copy(alpha = 0.65f),
+                                border = BorderStroke(1.dp, theme.gridLine.copy(alpha = 0.45f)),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
                                 Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 12.dp, vertical = if (isVeryCompact) 7.dp else 9.dp),
+                                    horizontalArrangement = Arrangement.SpaceAround,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text(
-                                        text = "Time",
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color = theme.textSecondary
-                                    )
+                                    // 1. Accuracy
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(5.dp)
                                     ) {
-                                        val rankLetter = if (completionTimeSeconds <= 60 && accuracyPercent >= 85) "S"
-                                        else if (completionTimeSeconds <= 120) "A"
-                                        else "B"
-
-                                        Surface(
-                                            shape = CircleShape,
-                                            color = Color(0xFFFEF3C7),
-                                            border = BorderStroke(1.dp, Color(0xFFF59E0B)),
-                                            modifier = Modifier.size(18.dp)
-                                        ) {
-                                            Box(
-                                                contentAlignment = Alignment.Center,
-                                                modifier = Modifier.fillMaxSize()
-                                            ) {
-                                                Text(
-                                                    text = rankLetter,
-                                                    fontSize = 10.sp,
-                                                    fontWeight = FontWeight.Black,
-                                                    color = Color(0xFFB45309),
-                                                    style = TextStyle(
-                                                        platformStyle = PlatformTextStyle(includeFontPadding = false)
-                                                    )
-                                                )
-                                            }
-                                        }
+                                        Text(text = "🎯", fontSize = 13.sp)
                                         Text(
-                                            text = timeFormatted,
-                                            fontSize = 15.sp,
+                                            text = "$accuracyPercent%",
+                                            fontSize = 13.5.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = theme.textPrimary
                                         )
                                     }
+
+                                    // Divider
+                                    Box(
+                                        modifier = Modifier
+                                            .width(1.dp)
+                                            .height(14.dp)
+                                            .background(theme.gridLine.copy(alpha = 0.6f))
+                                    )
+
+                                    // 2. Wrong Moves / Mistakes
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        Text(
+                                            text = "✕",
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Black,
+                                            color = Color(0xFFEF4444)
+                                        )
+                                        Text(
+                                            text = "$mistakesCount",
+                                            fontSize = 13.5.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (mistakesCount > 0) Color(0xFFEF4444) else theme.textPrimary
+                                        )
+                                    }
+
+                                    // Divider
+                                    Box(
+                                        modifier = Modifier
+                                            .width(1.dp)
+                                            .height(14.dp)
+                                            .background(theme.gridLine.copy(alpha = 0.6f))
+                                    )
+
+                                    // 3. Hints Used
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        Text(text = "💡", fontSize = 13.sp)
+                                        Text(
+                                            text = "$hintsUsed",
+                                            fontSize = 13.5.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (hintsUsed > 0) Color(0xFFF59E0B) else theme.textPrimary
+                                        )
+                                    }
                                 }
-
-                                // Row 3: Score
-                                PerformanceMetricRow(
-                                    label = "Score",
-                                    value = "$score",
-                                    theme = theme
-                                )
-
-                                // Row 4: Accuracy
-                                PerformanceMetricRow(
-                                    label = "Accuracy",
-                                    value = "$accuracyPercent%",
-                                    theme = theme
-                                )
                             }
                         }
                     }
 
-                    // Crowning 3D Star Podium Arch (Sitting seamlessly along the arched crest)
+                    // Crowning 3D Star Podium Arch (Top layer, overlapping card arch crest)
                     Row(
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.Bottom,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(84.dp)
+                            .height(starPodiumHeight)
                     ) {
-                        // Left Star (Tilted -9°, size 52dp)
+                        // Left Star (Tilted -9°)
                         SculptedStar3D(
                             isEarned = starsEarned >= 1,
-                            size = 52.dp,
+                            size = sideStarSize,
                             rotation = -9f,
                             scale = star1Scale.value,
-                            modifier = Modifier.offset(y = 12.dp)
+                            modifier = Modifier.offset(y = 11.dp)
                         )
 
-                        Spacer(modifier = Modifier.width(14.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
 
-                        // Center Hero Star (Elevated at peak, size 72dp, with radiant halo aura)
+                        // Center Hero Star (Elevated at apex, radiant halo aura)
                         SculptedStar3D(
                             isEarned = starsEarned >= 2,
-                            size = 72.dp,
+                            size = centerStarSize,
                             scale = star2Scale.value,
                             haloAura = true,
-                            modifier = Modifier.offset(y = (-6).dp)
+                            modifier = Modifier.offset(y = (-5).dp)
                         )
 
-                        Spacer(modifier = Modifier.width(14.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
 
-                        // Right Star (Tilted +9°, size 52dp)
+                        // Right Star (Tilted +9°)
                         SculptedStar3D(
                             isEarned = starsEarned >= 3,
-                            size = 52.dp,
+                            size = sideStarSize,
                             rotation = 9f,
                             scale = star3Scale.value,
-                            modifier = Modifier.offset(y = 12.dp)
+                            modifier = Modifier.offset(y = 11.dp)
                         )
                     }
                 }
 
-                // 2. HORIZONTAL LEVEL PROGRESSION TRACK (Unity Reference 210-211-212-213-214)
+                Spacer(modifier = Modifier.height(if (isVeryCompact) 10.dp else 14.dp))
+
+                // 2. HORIZONTAL LEVEL PROGRESSION ROAD (Clean 5-Node Stepper)
                 LevelProgressionTrack(
                     currentLevel = levelNumber,
                     isDailyChallenge = isDailyChallenge,
+                    isVeryCompact = isVeryCompact,
                     theme = theme
                 )
 
-                // 3. ACTION BUTTONS: Level 5 Milestone vs Standard Hero CTA
+                Spacer(modifier = Modifier.height(if (isVeryCompact) 10.dp else 14.dp))
+
+                // 3. LARGE PROMINENT ACTION BUTTONS (Placed DIRECTLY below Level Number)
                 if (isDailyUnlockMilestone) {
                     DailyChallengeUnlockHero(
                         theme = theme,
+                        primaryBtnHeight = primaryBtnHeight,
+                        secBtnHeight = secBtnHeight,
                         onStartDailyChallengeClick = {
                             onPlayClickSound()
                             onStartDailyChallengeClick()
@@ -586,12 +604,12 @@ fun VictoryScreen(
                 } else {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(if (isVeryCompact) 8.dp else 10.dp),
                         modifier = Modifier
                             .fillMaxWidth()
                             .widthIn(max = 380.dp)
                     ) {
-                        // Hero Primary CTA with Docked Floating Streak Pill
+                        // Hero Primary CTA Button ("Next Level") with Docked Streak Badge
                         Box(
                             modifier = Modifier.fillMaxWidth()
                         ) {
@@ -602,10 +620,11 @@ fun VictoryScreen(
                                     onNextLevelClick()
                                 },
                                 theme = theme,
+                                height = primaryBtnHeight,
                                 modifier = Modifier.fillMaxWidth()
                             )
 
-                            // Floating Streak Win Pill docked on the top-right corner
+                            // Floating Streak Win Pill docked on top-right corner
                             if (streakDays >= 1) {
                                 Surface(
                                     shape = RoundedCornerShape(percent = 50),
@@ -614,7 +633,7 @@ fun VictoryScreen(
                                     shadowElevation = 3.dp,
                                     modifier = Modifier
                                         .align(Alignment.TopEnd)
-                                        .offset(x = 6.dp, y = (-11).dp)
+                                        .offset(x = 6.dp, y = (-10).dp)
                                 ) {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
@@ -625,7 +644,7 @@ fun VictoryScreen(
                                                     listOf(Color(0xFFF59E0B), Color(0xFFD97706))
                                                 )
                                             )
-                                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                                            .padding(horizontal = 9.dp, vertical = 3.5.dp)
                                     ) {
                                         Text(
                                             text = "👑",
@@ -645,10 +664,16 @@ fun VictoryScreen(
                             }
                         }
 
-                        // Secondary Action: Minimalist "Home" text link
-                        Box(
-                            contentAlignment = Alignment.Center,
+                        // Prominent Secondary Button ("Home") - Styled as tactile, large, accessible button
+                        Surface(
+                            shape = RoundedCornerShape(16.dp),
+                            color = theme.surface,
+                            border = BorderStroke(1.4.dp, theme.gridLine),
+                            shadowElevation = 0.dp,
                             modifier = Modifier
+                                .fillMaxWidth()
+                                .height(secBtnHeight)
+                                .clip(RoundedCornerShape(16.dp))
                                 .clickable(
                                     interactionSource = remember { MutableInteractionSource() },
                                     indication = null
@@ -656,24 +681,25 @@ fun VictoryScreen(
                                     onPlayClickSound()
                                     onHomeClick()
                                 }
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
-                            Text(
-                                text = "Home",
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = theme.textSecondary,
-                                textDecoration = TextDecoration.Underline,
-                                style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
-                            )
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Text(
+                                    text = "Home",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = theme.textPrimary,
+                                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                                )
+                            }
                         }
                     }
                 }
 
-                // Bottom breathing clearance
-                if (!requiresScroll) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
+                // Bottom flexible breathing room
+                Spacer(modifier = Modifier.weight(if (isCompact) 0.5f else 1.0f))
             }
 
             // Milestone Flying Flame Animation Overlay
@@ -721,14 +747,15 @@ fun VictoryScreen(
 }
 
 /**
- * Sleek 5-node level progression road/track matching the Unity aesthetic.
- * Shows completed levels in soft theme tint, the current level highlighted with bold prominence,
- * and upcoming levels in subtle outline.
+ * 5-node horizontal level progression road/stepper.
+ * Shows completed levels in soft theme tint, the current level highlighted with bold prominence
+ * and a crown badge, and upcoming levels in subtle outline.
  */
 @Composable
 private fun LevelProgressionTrack(
     currentLevel: Int,
     isDailyChallenge: Boolean,
+    isVeryCompact: Boolean,
     theme: ThemePreset,
     modifier: Modifier = Modifier
 ) {
@@ -746,14 +773,14 @@ private fun LevelProgressionTrack(
         modifier = modifier
             .fillMaxWidth()
             .widthIn(max = 380.dp)
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = 6.dp),
         contentAlignment = Alignment.Center
     ) {
         // Connecting track bar behind nodes
         Box(
             modifier = Modifier
-                .fillMaxWidth(0.85f)
-                .height(4.dp)
+                .fillMaxWidth(0.86f)
+                .height(3.5.dp)
                 .clip(CircleShape)
                 .background(theme.gridLine.copy(alpha = 0.8f))
         )
@@ -768,9 +795,12 @@ private fun LevelProgressionTrack(
                 val isCompleted = index < activeIndex
                 val isCurrent = index == activeIndex
 
-                val nodeSize = if (isCurrent) 38.dp else 32.dp
+                val nodeSize = if (isCurrent) (if (isVeryCompact) 36.dp else 40.dp) else (if (isVeryCompact) 28.dp else 32.dp)
                 val bgColor = when {
-                    isCurrent -> theme.arrowDefault
+                    isCurrent -> when (theme.name) {
+                        "Warm Sepia" -> Color(0xFF7C3AED) // Vibrant purple node as in Unity reference
+                        else -> theme.arrowDefault
+                    }
                     isCompleted -> if (theme.isDark) theme.surface else theme.arrowDefault.copy(alpha = 0.35f)
                     else -> theme.surface
                 }
@@ -780,28 +810,39 @@ private fun LevelProgressionTrack(
                     else -> theme.textSecondary.copy(alpha = 0.7f)
                 }
                 val borderColor = when {
-                    isCurrent -> Color.White.copy(alpha = 0.35f)
+                    isCurrent -> Color.White.copy(alpha = 0.45f)
                     isCompleted -> Color.Transparent
                     else -> theme.gridLine
                 }
 
-                Surface(
-                    shape = CircleShape,
-                    color = bgColor,
-                    border = BorderStroke(if (isCurrent) 2.dp else 1.dp, borderColor),
-                    shadowElevation = if (isCurrent) 3.dp else 0.dp,
-                    modifier = Modifier.size(nodeSize)
-                ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
+                Box(contentAlignment = Alignment.TopCenter) {
+                    Surface(
+                        shape = CircleShape,
+                        color = bgColor,
+                        border = BorderStroke(if (isCurrent) 2.dp else 1.dp, borderColor),
+                        shadowElevation = if (isCurrent) 4.dp else 0.dp,
+                        modifier = Modifier.size(nodeSize)
                     ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                text = label,
+                                fontSize = if (isCurrent) 13.5.sp else 12.sp,
+                                fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.SemiBold,
+                                color = textColor,
+                                style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                            )
+                        }
+                    }
+
+                    // Mini Crown badge over current completed node
+                    if (isCurrent) {
                         Text(
-                            text = label,
-                            fontSize = if (isCurrent) 13.sp else 12.sp,
-                            fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.SemiBold,
-                            color = textColor,
-                            style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                            text = "👑",
+                            fontSize = 11.sp,
+                            modifier = Modifier.offset(y = (-11).dp)
                         )
                     }
                 }
@@ -832,7 +873,7 @@ private fun PerformanceMetricRow(
         )
         Text(
             text = value,
-            fontSize = 15.sp,
+            fontSize = 14.5.sp,
             fontWeight = FontWeight.Bold,
             color = theme.textPrimary
         )
@@ -842,6 +883,8 @@ private fun PerformanceMetricRow(
 @Composable
 private fun DailyChallengeUnlockHero(
     theme: ThemePreset,
+    primaryBtnHeight: Dp,
+    secBtnHeight: Dp,
     onStartDailyChallengeClick: () -> Unit,
     onNextLevelClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -919,28 +962,38 @@ private fun DailyChallengeUnlockHero(
             text = "Start Daily Challenge",
             onClick = onStartDailyChallengeClick,
             theme = theme,
+            height = primaryBtnHeight,
             modifier = Modifier.fillMaxWidth()
         )
 
-        Box(
-            contentAlignment = Alignment.Center,
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = theme.surface,
+            border = BorderStroke(1.4.dp, theme.gridLine),
+            shadowElevation = 0.dp,
             modifier = Modifier
+                .fillMaxWidth()
+                .height(secBtnHeight)
+                .clip(RoundedCornerShape(16.dp))
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 ) {
                     onNextLevelClick()
                 }
-                .padding(horizontal = 16.dp, vertical = 6.dp)
         ) {
-            Text(
-                text = "Next Level",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = theme.textSecondary,
-                textDecoration = TextDecoration.Underline,
-                style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
-            )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(
+                    text = "Next Level",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = theme.textPrimary,
+                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                )
+            }
         }
     }
 }

@@ -166,6 +166,8 @@ fun GamePlayScreen(
             movesCount = uiState.levelMovesCount,
             score = uiState.levelFinalScore,
             accuracyPercent = uiState.levelAccuracyPercent,
+            mistakesCount = uiState.levelMistakesCount,
+            hintsUsed = uiState.levelHintsUsedCount,
             starsEarned = uiState.levelStarsEarned,
             isDailyUnlockMilestone = isDailyUnlockMilestone,
             onStartDailyChallengeClick = onStartDailyChallengeClick,
