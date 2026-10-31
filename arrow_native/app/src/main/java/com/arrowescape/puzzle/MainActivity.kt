@@ -30,6 +30,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.arrowescape.puzzle.game.GameViewModel
+import com.arrowescape.puzzle.notification.NotificationHelper
 import com.arrowescape.puzzle.ui.components.DailyStartPromptDialog
 import com.arrowescape.puzzle.ui.components.SoundSettingsDialog
 import com.arrowescape.puzzle.ui.screens.DailyChallengeScreen
@@ -185,6 +186,16 @@ class MainActivity : ComponentActivity() {
                                     onLevelChange = { newLevel ->
                                         gameViewModel.playClick()
                                         gameViewModel.loadLevel(newLevel)
+                                    },
+                                    onTestNotificationClick = {
+                                        gameViewModel.playClick()
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                            !NotificationHelper.hasNotificationPermission(this@MainActivity)) {
+                                            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                        } else {
+                                            NotificationHelper.postDailyChallengeNotification(this@MainActivity, streakDays = uiState.streakDays)
+                                            Toast.makeText(this@MainActivity, "Daily notification sent! Check notification tray.", Toast.LENGTH_SHORT).show()
+                                        }
                                     }
                                 )
                             }

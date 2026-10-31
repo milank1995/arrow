@@ -87,6 +87,7 @@ fun HomeScreen(
     onLockPuzzleClick: () -> Unit = {},
     onDevTestClick: () -> Unit = {},
     onLevelChange: (Int) -> Unit = {},
+    onTestNotificationClick: () -> Unit = {},
     isDevMode: Boolean = BuildConfig.DEBUG,
     modifier: Modifier = Modifier
 ) {
@@ -668,6 +669,34 @@ fun HomeScreen(
                                         }
                                     )
                                 }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Test Notification Button (Dev Mode only)
+                        Surface(
+                            shape = RoundedCornerShape(14.dp),
+                            color = theme.surface,
+                            border = BorderStroke(1.dp, Color(0xFFD97706).copy(alpha = 0.5f)),
+                            shadowElevation = 1.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(38.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .clickable(onClick = onTestNotificationClick)
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Text(
+                                    text = "🔔 Test Daily Notification Now",
+                                    fontSize = 11.5.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFFD97706)
+                                )
                             }
                         }
                     }
