@@ -148,7 +148,7 @@ fun GamePlayScreen(
 
     if (uiState.isLevelComplete) {
         val baseCoins = if (uiState.isDailyChallengeMode) 100 else 50 + (uiState.comboCount * 5)
-        val isDailyUnlockMilestone = uiState.currentLevelNumber == 5 && 
+        val isDailyUnlockMilestone = uiState.currentLevelNumber == 10 && 
             !uiState.isDailyChallengeMode && 
             !uiState.hasSeenDailyUnlockCelebration
 

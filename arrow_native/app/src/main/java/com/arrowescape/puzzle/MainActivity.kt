@@ -111,10 +111,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            // Automatically request Android notification permission on app launch if Level 5+ has already been completed
+            // Automatically request Android notification permission on app launch if Level 10+ has already been completed
             LaunchedEffect(uiState.currentLevelNumber, uiState.lastCompletedLevelNumber, uiState.hasRequestedNotificationPermission) {
-                val isPastLevel5 = uiState.currentLevelNumber > 5 || uiState.lastCompletedLevelNumber >= 5
-                if (isPastLevel5 && !uiState.hasRequestedNotificationPermission) {
+                val isPastLevel10 = uiState.currentLevelNumber > 10 || uiState.lastCompletedLevelNumber >= 10
+                if (isPastLevel10 && !uiState.hasRequestedNotificationPermission) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         val hasPermission = ContextCompat.checkSelfPermission(
                             this@MainActivity,
@@ -146,18 +146,18 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onDailyChallengeClick = {
                                         gameViewModel.playClick()
-                                        val isUnlocked = uiState.currentLevelNumber > 5 || 
-                                            uiState.lastCompletedLevelNumber >= 5 || 
+                                        val isUnlocked = uiState.currentLevelNumber > 10 || 
+                                            uiState.lastCompletedLevelNumber >= 10 || 
                                             uiState.hasSeenDailyUnlockCelebration
 
                                         if (isUnlocked) {
                                             currentScreen = AppScreen.DAILY_CHALLENGE
                                         } else {
                                             val completed = uiState.lastCompletedLevelNumber.coerceAtLeast(uiState.currentLevelNumber - 1)
-                                            val needed = (5 - completed).coerceAtLeast(1)
+                                            val needed = (10 - completed).coerceAtLeast(1)
                                             Toast.makeText(
                                                 this@MainActivity,
-                                                "Complete Level 5 to unlock Daily Challenges! ($needed level${if (needed > 1) "s" else ""} left)",
+                                                "Complete Level 10 to unlock Daily Challenges! ($needed level${if (needed > 1) "s" else ""} left)",
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
@@ -219,7 +219,7 @@ class MainActivity : ComponentActivity() {
                                     onNextLevelClick = {
                                         gameViewModel.playClick()
                                         gameViewModel.markHasPlayedBefore()
-                                        if (uiState.currentLevelNumber == 5 && !uiState.hasSeenDailyUnlockCelebration) {
+                                        if (uiState.currentLevelNumber == 10 && !uiState.hasSeenDailyUnlockCelebration) {
                                             gameViewModel.markDailyUnlockCelebrationSeen()
                                         }
                                         val wasDaily = uiState.isDailyChallengeMode
@@ -268,7 +268,7 @@ class MainActivity : ComponentActivity() {
                                         } else if (uiState.isGameOver) {
                                             gameViewModel.loadLevel(uiState.currentLevelNumber)
                                         }
-                                        currentScreen = if (wasDaily) AppScreen.DAILY_CHALLENGE else AppScreen.HOME
+                                        currentScreen = AppScreen.HOME
                                     },
                                     onClaimFreeLives = {
                                         gameViewModel.claimFreeLives(3)

@@ -123,7 +123,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
                 val todayStr = LocalDate.now().toString()
                 val isDailyCompletedToday = data.completedDailyDates.contains(todayStr)
-                val isDailyUnlocked = data.currentLevel > 5 || data.hasSeenDailyUnlockCelebration
+                val isDailyUnlocked = data.currentLevel > 10 || data.hasSeenDailyUnlockCelebration
                 val shouldShowDailyPrompt = isDailyUnlocked && !isDailyCompletedToday && !hasDismissedDailyLaunchPromptThisSession
 
                 _uiState.update { current ->

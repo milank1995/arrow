@@ -288,7 +288,7 @@ fun HomeScreen(
                     .padding(bottom = 24.dp)
             ) {
                 // Daily Challenge Card: Standardized 16dp corner radius & 54dp height matching design system
-                val isUnlocked = uiState.currentLevelNumber > 5 || uiState.lastCompletedLevelNumber >= 5 || uiState.hasSeenDailyUnlockCelebration
+                val isUnlocked = uiState.currentLevelNumber > 10 || uiState.lastCompletedLevelNumber >= 10 || uiState.hasSeenDailyUnlockCelebration
                 val todayStr = remember { LocalDate.now().toString() }
                 val isCompletedToday = uiState.completedDailyDates.contains(todayStr)
 
