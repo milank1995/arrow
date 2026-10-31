@@ -44,6 +44,7 @@ import com.arrowescape.puzzle.ui.theme.ThemePreset
 @Composable
 fun GameOverDialog(
     theme: ThemePreset,
+    isStartingLevels: Boolean = false,
     hasGlobalLives: Boolean = false,
     onClaimLives: () -> Unit,
     onRestartClick: () -> Unit
@@ -75,18 +76,21 @@ fun GameOverDialog(
                     .fillMaxWidth()
                     .padding(horizontal = 22.dp, vertical = 26.dp)
             ) {
-                // Heart Broken Icon with ambient soft glow
+                // Heart Icon with soft ambient glow (Green for free refill levels 1-10; Red for challenge levels)
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .size(68.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFEF4444).copy(alpha = 0.12f))
+                        .background(
+                            if (isStartingLevels) Color(0xFF10B981).copy(alpha = 0.12f)
+                            else Color(0xFFEF4444).copy(alpha = 0.12f)
+                        )
                 ) {
                     Icon(
-                        imageVector = Icons.Default.HeartBroken,
+                        imageVector = if (isStartingLevels) Icons.Default.Favorite else Icons.Default.HeartBroken,
                         contentDescription = "Out of Lives",
-                        tint = Color(0xFFEF4444),
+                        tint = if (isStartingLevels) Color(0xFF10B981) else Color(0xFFEF4444),
                         modifier = Modifier.size(36.dp)
                     )
                 }
@@ -100,23 +104,23 @@ fun GameOverDialog(
                     color = theme.textPrimary
                 )
 
+                Spacer(modifier = Modifier.height(6.dp))
+
                 Text(
-                    text = "Watch a short video to claim 3 additional lives.",
+                    text = if (isStartingLevels) "Get 3 free lives to continue." else "Watch an ad to get 3 lives.",
                     fontSize = 13.sp,
                     color = theme.textSecondary,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 18.sp,
-                    modifier = Modifier.padding(top = 6.dp, start = 6.dp, end = 6.dp)
+                    textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(22.dp))
 
-                // Primary Action: Claim 3 Free Lives (Watch Ad)
+                // Primary Action
                 AppPrimaryButton(
-                    text = "Claim 3 Free Lives",
+                    text = if (isStartingLevels) "Claim 3 Lives" else "Watch Ad (+3 Lives)",
                     onClick = onClaimLives,
                     theme = theme,
-                    containerColor = Color(0xFFEF4444),
+                    containerColor = if (isStartingLevels) Color(0xFF10B981) else Color(0xFFEF4444),
                     modifier = Modifier.fillMaxWidth()
                 )
 

@@ -99,20 +99,20 @@ fun HintRefillDialog(
                     color = theme.textPrimary
                 )
 
+                Spacer(modifier = Modifier.height(6.dp))
+
                 Text(
-                    text = "Watch a short video to get an extra hint.",
+                    text = "Watch an ad to get a hint.",
                     fontSize = 13.sp,
                     color = theme.textSecondary,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 18.sp,
-                    modifier = Modifier.padding(top = 6.dp, start = 6.dp, end = 6.dp)
+                    textAlign = TextAlign.Center
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Primary Action: Watch Ad for +3 Hints
                 AppPrimaryButton(
-                    text = "Watch Ad for Hint",
+                    text = "Watch Ad (+1 Hint)",
                     onClick = onWatchAdClick,
                     theme = theme,
                     containerColor = Color(0xFFD97706),
