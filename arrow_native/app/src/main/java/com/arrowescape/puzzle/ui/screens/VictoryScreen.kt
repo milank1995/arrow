@@ -285,11 +285,11 @@ fun VictoryScreen(
                     .fillMaxSize()
                     .scale(sunburstAlpha.value)
             ) {
-                val center = Offset(size.width / 2f, size.height * 0.22f)
+                val center = Offset(size.width / 2f, size.height * 0.35f)
                 val rayCount = 14
                 val maxRadius = hypot(size.width.toDouble(), size.height.toDouble()).toFloat() * 1.15f
 
-                // Luminous top ambient glow circle behind the stars
+                // Luminous top ambient glow circle behind the stats card
                 drawCircle(
                     brush = Brush.radialGradient(
                         colors = listOf(
@@ -347,8 +347,8 @@ fun VictoryScreen(
             val starPodiumHeight = if (isVeryCompact) 68.dp else 78.dp
             val centerStarSize = if (isVeryCompact) 58.dp else 68.dp
             val sideStarSize = if (isVeryCompact) 42.dp else 48.dp
-            val cardPaddingTop = if (isVeryCompact) 26.dp else 34.dp
-            val cardInnerTopSpacer = if (isVeryCompact) 18.dp else 24.dp
+            val cardPaddingTop = if (isVeryCompact) 30.dp else 38.dp
+            val cardInnerTopSpacer = if (isVeryCompact) 32.dp else 40.dp
             val headlineFontSize = if (isVeryCompact) 25.sp else 28.sp
             val primaryBtnHeight = if (isVeryCompact) 52.dp else 58.dp
             val secBtnHeight = if (isVeryCompact) 42.dp else 48.dp
@@ -546,7 +546,7 @@ fun VictoryScreen(
                             size = sideStarSize,
                             rotation = -9f,
                             scale = star1Scale.value,
-                            modifier = Modifier.offset(y = 11.dp)
+                            modifier = Modifier.offset(y = 5.dp)
                         )
 
                         Spacer(modifier = Modifier.width(12.dp))
@@ -557,7 +557,7 @@ fun VictoryScreen(
                             size = centerStarSize,
                             scale = star2Scale.value,
                             haloAura = true,
-                            modifier = Modifier.offset(y = (-5).dp)
+                            modifier = Modifier.offset(y = (-12).dp)
                         )
 
                         Spacer(modifier = Modifier.width(12.dp))
@@ -568,7 +568,7 @@ fun VictoryScreen(
                             size = sideStarSize,
                             rotation = 9f,
                             scale = star3Scale.value,
-                            modifier = Modifier.offset(y = 11.dp)
+                            modifier = Modifier.offset(y = 5.dp)
                         )
                     }
                 }
@@ -598,6 +598,10 @@ fun VictoryScreen(
                         onNextLevelClick = {
                             onPlayClickSound()
                             onNextLevelClick()
+                        },
+                        onHomeClick = {
+                            onPlayClickSound()
+                            onHomeClick()
                         }
                     )
                 } else {
@@ -608,79 +612,36 @@ fun VictoryScreen(
                             .fillMaxWidth()
                             .widthIn(max = 380.dp)
                     ) {
-                        // Hero Primary CTA Button ("Next Level") with Docked Streak Badge
-                        Box(
-                            modifier = Modifier.fillMaxWidth()
+                        // Hero Primary CTA Button ("Next Level")
+                        Surface(
+                            shape = RoundedCornerShape(18.dp),
+                            color = theme.arrowDefault,
+                            shadowElevation = 5.dp,
+                            border = BorderStroke(1.2.dp, Color.White.copy(alpha = 0.22f)),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(primaryBtnHeight)
+                                .clip(RoundedCornerShape(18.dp))
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
+                                    onPlayClickSound()
+                                    onNextLevelClick()
+                                }
                         ) {
-                            Surface(
-                                shape = RoundedCornerShape(18.dp),
-                                color = theme.arrowDefault,
-                                shadowElevation = 5.dp,
-                                border = BorderStroke(1.2.dp, Color.White.copy(alpha = 0.22f)),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(primaryBtnHeight)
-                                    .clip(RoundedCornerShape(18.dp))
-                                    .clickable(
-                                        interactionSource = remember { MutableInteractionSource() },
-                                        indication = null
-                                    ) {
-                                        onPlayClickSound()
-                                        onNextLevelClick()
-                                    }
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
                             ) {
-                                Box(
-                                    contentAlignment = Alignment.Center,
-                                    modifier = Modifier.fillMaxSize()
-                                ) {
-                                    Text(
-                                        text = if (isDailyChallenge) "Continue" else "Next Level",
-                                        fontSize = if (isVeryCompact) 16.5.sp else 18.sp,
-                                        fontWeight = FontWeight.Black,
-                                        letterSpacing = 0.5.sp,
-                                        color = Color.White,
-                                        style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
-                                    )
-                                }
-                            }
-
-                            // Floating Streak Win Pill docked on top-right corner
-                            if (streakDays >= 1) {
-                                Surface(
-                                    shape = RoundedCornerShape(percent = 50),
-                                    color = Color(0xFFF59E0B),
-                                    border = BorderStroke(1.2.dp, Color(0xFFFDE68A)),
-                                    shadowElevation = 3.dp,
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .offset(x = 6.dp, y = (-10).dp)
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                        modifier = Modifier
-                                            .background(
-                                                Brush.horizontalGradient(
-                                                    listOf(Color(0xFFF59E0B), Color(0xFFD97706))
-                                                )
-                                            )
-                                            .padding(horizontal = 9.dp, vertical = 3.5.dp)
-                                    ) {
-                                        Text(
-                                            text = "👑",
-                                            fontSize = 11.sp
-                                        )
-                                        Text(
-                                            text = if (streakDays > 1) "x$streakDays Win" else "1 Win",
-                                            fontSize = 11.sp,
-                                            fontWeight = FontWeight.ExtraBold,
-                                            color = Color.White,
-                                            style = TextStyle(
-                                                platformStyle = PlatformTextStyle(includeFontPadding = false)
-                                            )
-                                        )
-                                    }
-                                }
+                                Text(
+                                    text = if (isDailyChallenge) "Continue" else "Next Level",
+                                    fontSize = if (isVeryCompact) 16.5.sp else 18.sp,
+                                    fontWeight = FontWeight.Black,
+                                    letterSpacing = 0.5.sp,
+                                    color = Color.White,
+                                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                                )
                             }
                         }
 
@@ -912,6 +873,7 @@ private fun DailyChallengeUnlockHero(
     secBtnHeight: Dp,
     onStartDailyChallengeClick: () -> Unit,
     onNextLevelClick: () -> Unit,
+    onHomeClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "dailyUnlockPulse")
@@ -1019,33 +981,71 @@ private fun DailyChallengeUnlockHero(
         } else {
             theme.boosterBg.copy(alpha = 0.65f)
         }
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-            color = secBgColor,
-            border = BorderStroke(1.dp, theme.gridLine.copy(alpha = 0.55f)),
-            shadowElevation = 0.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(secBtnHeight)
-                .clip(RoundedCornerShape(16.dp))
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {
-                    onNextLevelClick()
-                }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
+            // Next Level Button
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = secBgColor,
+                border = BorderStroke(1.dp, theme.gridLine.copy(alpha = 0.55f)),
+                shadowElevation = 0.dp,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(secBtnHeight)
+                    .clip(RoundedCornerShape(16.dp))
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        onNextLevelClick()
+                    }
             ) {
-                Text(
-                    text = "Next Level",
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = theme.textSecondary,
-                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
-                )
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text(
+                        text = "Next Level",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = theme.textSecondary,
+                        style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                    )
+                }
+            }
+
+            // Home Button
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = secBgColor,
+                border = BorderStroke(1.dp, theme.gridLine.copy(alpha = 0.55f)),
+                shadowElevation = 0.dp,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(secBtnHeight)
+                    .clip(RoundedCornerShape(16.dp))
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        onHomeClick()
+                    }
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text(
+                        text = "Home",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = theme.textSecondary,
+                        style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                    )
+                }
             }
         }
     }
