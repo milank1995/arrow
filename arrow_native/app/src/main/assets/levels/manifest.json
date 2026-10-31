@@ -271,13 +271,13 @@
   },
   {
     "LevelNumber": 28,
-    "ArrowCount": 57,
-    "Difficulty": "Medium",
-    "ShapeName": "Black Cat",
-    "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 35,
-    "YSize": 49
+    "ArrowCount": 158,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Existing 1K Levels",
+    "XSize": 34,
+    "YSize": 43
   },
   {
     "LevelNumber": 29,
@@ -291,13 +291,13 @@
   },
   {
     "LevelNumber": 30,
-    "ArrowCount": 158,
+    "ArrowCount": 80,
     "Difficulty": "Hard",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
-    "XSize": 34,
-    "YSize": 43
+    "ShapeName": "Unknown Shape 2",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 35,
+    "YSize": 48
   },
   {
     "LevelNumber": 31,
@@ -481,16 +481,6 @@
   },
   {
     "LevelNumber": 49,
-    "ArrowCount": 130,
-    "Difficulty": "Super Hard",
-    "ShapeName": "Cactus",
-    "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 37,
-    "YSize": 49
-  },
-  {
-    "LevelNumber": 50,
     "ArrowCount": 53,
     "Difficulty": "Medium",
     "ShapeName": null,
@@ -498,6 +488,16 @@
     "SourceCategory": "Existing 1K Levels",
     "XSize": 20,
     "YSize": 24
+  },
+  {
+    "LevelNumber": 50,
+    "ArrowCount": 130,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Cactus",
+    "IsShape": true,
+    "SourceCategory": "Shape Puzzle Levels",
+    "XSize": 37,
+    "YSize": 49
   },
   {
     "LevelNumber": 51,
