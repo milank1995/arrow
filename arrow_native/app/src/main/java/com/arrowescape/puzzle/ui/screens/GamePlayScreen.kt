@@ -291,9 +291,11 @@ fun GamePlayScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             val effectiveHints = if (uiState.isDailyChallengeMode) {
-                                uiState.dailyComplimentaryHintsRemaining
+                                uiState.levelFreeHintsRemaining
+                            } else if (uiState.currentLevelNumber <= 10) {
+                                999
                             } else {
-                                uiState.hintsAvailable
+                                uiState.levelFreeHintsRemaining
                             }
                             BoosterBar(
                                 hintsCount = effectiveHints,
@@ -381,7 +383,7 @@ fun GamePlayScreen(
                 if (uiState.isGameOver) {
                     GameOverDialog(
                         theme = theme,
-                        hasGlobalLives = (uiState.globalLivesAvailable >= 3),
+                        hasGlobalLives = false,
                         onClaimLives = onClaimFreeLives,
                         onRestartClick = onRestartClick
                     )

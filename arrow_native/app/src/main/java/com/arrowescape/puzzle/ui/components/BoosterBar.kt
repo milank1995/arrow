@@ -154,7 +154,7 @@ fun BoosterBar(
                         onHintClick()
                     }
             ) {
-                // Layer 1: Refined Modern Lightbulb Art (Centered for starting levels, slightly raised when badge is present)
+                // Layer 1: Refined Modern Lightbulb Art (Consistently aligned with badge)
                 ModernLightbulbArt(
                     activeProgress = activeProgress,
                     auraGlow = auraGlow,
@@ -162,47 +162,54 @@ fun BoosterBar(
                     modifier = Modifier
                         .size(width = 46.dp, height = 52.dp)
                         .align(Alignment.Center)
-                        .offset(y = if (isFreeHintLevel) 0.dp else (-6).dp)
+                        .offset(y = (-5).dp)
                 )
 
-                // Layer 2: Badge (ONLY shown when NOT on free hint starting levels)
-                if (!isFreeHintLevel) {
-                    val badgeBgColor = if (hintsCount > 0) theme.surface else Color(0xFFD97706)
-                    val badgeBorderColor = if (hintsCount > 0) theme.gridLine else Color(0xFFFBBF24)
+                // Layer 2: Badge (Infinity for Levels 1-10 unlimited hints, Count for Level 11+, Videocam when ad needed)
+                val isAdState = (!isFreeHintLevel && hintsCount <= 0)
+                val badgeBgColor = if (isAdState) Color(0xFFD97706) else theme.surface
+                val badgeBorderColor = if (isAdState) Color(0xFFFBBF24) else theme.gridLine
 
-                    Surface(
-                        shape = RoundedCornerShape(percent = 50),
-                        color = badgeBgColor,
-                        border = BorderStroke(1.2.dp, badgeBorderColor),
-                        shadowElevation = if (hintsCount > 0) 1.dp else 3.dp,
+                Surface(
+                    shape = RoundedCornerShape(percent = 50),
+                    color = badgeBgColor,
+                    border = BorderStroke(1.2.dp, badgeBorderColor),
+                    shadowElevation = if (isAdState) 3.dp else 1.dp,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .offset(y = (-4).dp)
+                ) {
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .offset(y = (-4).dp)
+                            .height(19.dp)
+                            .widthIn(min = 28.dp)
+                            .padding(horizontal = 7.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .height(19.dp)
-                                .widthIn(min = 28.dp)
-                                .padding(horizontal = 7.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (hintsCount > 0) {
-                                // Limited Hints: 1, 2, or 3
-                                Text(
-                                    text = "$hintsCount",
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = theme.textPrimary
-                                )
-                            } else {
-                                // Exhausted Hints: Watch Video Ad Icon
-                                Icon(
-                                    imageVector = Icons.Default.Videocam,
-                                    contentDescription = "Watch Video Ad for 3 Hints",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(13.dp)
-                                )
-                            }
+                        if (isFreeHintLevel) {
+                            // Starting Levels 1-10: Unlimited Hints Symbol
+                            Text(
+                                text = "∞",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = theme.textPrimary
+                            )
+                        } else if (hintsCount > 0) {
+                            // Level 11+: 1 free hint per level (or remaining hints)
+                            Text(
+                                text = "$hintsCount",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = theme.textPrimary
+                            )
+                        } else {
+                            // Exhausted / Daily Challenge: Watch Video Ad Icon
+                            Icon(
+                                imageVector = Icons.Default.Videocam,
+                                contentDescription = "Watch Video Ad for Hint",
+                                tint = Color.White,
+                                modifier = Modifier.size(13.dp)
+                            )
                         }
                     }
                 }

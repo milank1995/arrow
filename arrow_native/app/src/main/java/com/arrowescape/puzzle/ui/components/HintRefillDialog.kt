@@ -100,7 +100,7 @@ fun HintRefillDialog(
                 )
 
                 Text(
-                    text = "Watch a short video to get 3 hints across all levels.",
+                    text = "Watch a short video to get an extra hint.",
                     fontSize = 13.sp,
                     color = theme.textSecondary,
                     textAlign = TextAlign.Center,
@@ -112,7 +112,7 @@ fun HintRefillDialog(
 
                 // Primary Action: Watch Ad for +3 Hints
                 AppPrimaryButton(
-                    text = "Watch Ad for +3 Hints",
+                    text = "Watch Ad for Hint",
                     onClick = onWatchAdClick,
                     theme = theme,
                     containerColor = Color(0xFFD97706),

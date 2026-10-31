@@ -55,6 +55,7 @@ data class GameUiState(
     val streakDays: Int = 1,
     val hintsAvailable: Int = 3,
     val dailyComplimentaryHintsRemaining: Int = 1,
+    val levelFreeHintsRemaining: Int = 1,
     val hammersAvailable: Int = 2,
     val wandsAvailable: Int = 2,
     val isDailyChallengeMode: Boolean = false,
@@ -244,7 +245,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 isLockPuzzleMode = false,
                 activeDailyDate = null,
                 activeDailyIndex = 1,
-                dailyComplimentaryHintsRemaining = 1,
+                dailyComplimentaryHintsRemaining = if (levelNumber <= 10) 999 else 1,
+                levelFreeHintsRemaining = if (levelNumber <= 10) 999 else 1,
                 showHintAdPrompt = false,
                 restartTrigger = System.currentTimeMillis()
             )
@@ -279,6 +281,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 activeDailyDate = null,
                 activeDailyIndex = 1,
                 dailyComplimentaryHintsRemaining = 1,
+                levelFreeHintsRemaining = 1,
                 showHintAdPrompt = false,
                 restartTrigger = System.currentTimeMillis()
             )
@@ -319,7 +322,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 isLockPuzzleMode = false,
                 activeDailyDate = date.toString(),
                 activeDailyIndex = dailyIndex,
-                dailyComplimentaryHintsRemaining = 1,
+                dailyComplimentaryHintsRemaining = 0,
+                levelFreeHintsRemaining = 0,
+                showHintAdPrompt = false,
                 restartTrigger = System.currentTimeMillis()
             )
         }
@@ -385,33 +390,69 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             } else {
                 (_uiState.value.heartsRemaining - 1).coerceAtLeast(0)
             }
-            val isOver = newHearts <= 0
-
-            if (isOver) {
-                audioHapticManager.playLevelFail()
-            }
 
             val dist = PuzzleSolver.getDistanceToBlocker(freshArrow, occupancyMap)
             val durationMs = (280L + (dist * 35L).toLong()).coerceIn(320L, 560L)
 
-            _uiState.update { state ->
-                val flashedArrows = state.arrows.map {
-                    if (it.id == freshArrow.id) {
-                        it.copyWithState(
-                            newState = ArrowState.WRONG_FLASH,
-                            progress = 0f,
-                            highlighted = true,
-                            collisionDist = dist
-                        )
-                    } else it
+            val isStartingLevels = (_uiState.value.currentLevelNumber <= 10 && !_uiState.value.isDailyChallengeMode && !_uiState.value.isLockPuzzleMode)
+
+            if (isStartingLevels) {
+                // Starting levels 1-10: unlimited lives managed in batches of 3
+                _uiState.update { state ->
+                    val flashedArrows = state.arrows.map {
+                        if (it.id == freshArrow.id) {
+                            it.copyWithState(
+                                newState = ArrowState.WRONG_FLASH,
+                                progress = 0f,
+                                highlighted = true,
+                                collisionDist = dist
+                            )
+                        } else it
+                    }
+                    state.copy(
+                        arrows = flashedArrows,
+                        heartsRemaining = newHearts,
+                        comboCount = 0,
+                        cheerMessage = null,
+                        isGameOver = false
+                    )
                 }
-                state.copy(
-                    arrows = flashedArrows,
-                    heartsRemaining = newHearts,
-                    comboCount = 0,
-                    cheerMessage = null,
-                    isGameOver = isOver
-                )
+
+                // If all 3 hearts in the batch are depleted, replenish to a fresh batch of 3 lives
+                if (newHearts <= 0) {
+                    viewModelScope.launch {
+                        delay(450L) // Wait for broken heart animation to finish
+                        _uiState.update { state ->
+                            state.copy(heartsRemaining = 3)
+                        }
+                    }
+                }
+            } else {
+                // Level 11+ and Daily Challenge: 3 lives per level. 0 lives triggers Game Over.
+                val isOver = newHearts <= 0
+                if (isOver) {
+                    audioHapticManager.playLevelFail()
+                }
+
+                _uiState.update { state ->
+                    val flashedArrows = state.arrows.map {
+                        if (it.id == freshArrow.id) {
+                            it.copyWithState(
+                                newState = ArrowState.WRONG_FLASH,
+                                progress = 0f,
+                                highlighted = true,
+                                collisionDist = dist
+                            )
+                        } else it
+                    }
+                    state.copy(
+                        arrows = flashedArrows,
+                        heartsRemaining = newHearts,
+                        comboCount = 0,
+                        cheerMessage = null,
+                        isGameOver = isOver
+                    )
+                }
             }
 
             // Animate collision spring-bounce and reset to IDLE (keeping highlighted = true)
@@ -608,7 +649,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         dismissAllPreviewRays()
     }
 
-    val isFreeHintLevel: Boolean get() = (_uiState.value.currentLevelNumber <= 10 && !_uiState.value.isDailyChallengeMode)
+    val isFreeHintLevel: Boolean get() = (_uiState.value.currentLevelNumber <= 10 && !_uiState.value.isDailyChallengeMode && !_uiState.value.isLockPuzzleMode)
 
     fun useHint() {
         viewModelScope.launch(Dispatchers.Default) {
@@ -622,9 +663,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     }
                     state.copy(arrows = updated)
                 }
-            } else if (_uiState.value.isDailyChallengeMode) {
-                if (_uiState.value.dailyComplimentaryHintsRemaining > 0) {
-                    // Strictly 1 hint in Daily Challenge mode
+            } else {
+                // Level 11+ (1 free hint per level) or Daily Challenge (0 free hints)
+                if (_uiState.value.levelFreeHintsRemaining > 0) {
                     audioHapticManager.playBoosterUse("hint")
                     _uiState.update { state ->
                         val updated = state.arrows.map {
@@ -632,29 +673,12 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         }
                         state.copy(
                             arrows = updated,
+                            levelFreeHintsRemaining = 0,
                             dailyComplimentaryHintsRemaining = 0
                         )
                     }
                 } else {
-                    // Out of hints in Daily Challenge -> prompt rewarded ad dialog
-                    _uiState.update { it.copy(showHintAdPrompt = true) }
-                }
-            } else {
-                if (_uiState.value.hintsAvailable > 0) {
-                    if (repository.useBooster("hint")) {
-                        audioHapticManager.playBoosterUse("hint")
-                        _uiState.update { state ->
-                            val updated = state.arrows.map {
-                                if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
-                            }
-                            state.copy(
-                                arrows = updated,
-                                hintsAvailable = maxOf(0, state.hintsAvailable - 1)
-                            )
-                        }
-                    }
-                } else {
-                    // Out of hints on Level 11+ or daily -> prompt rewarded ad dialog
+                    // Out of free hints for this level / Daily Challenge -> prompt rewarded ad dialog
                     _uiState.update { it.copy(showHintAdPrompt = true) }
                 }
             }
@@ -665,39 +689,22 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         _uiState.update { it.copy(showHintAdPrompt = false) }
     }
 
-    fun claimAdHints(amount: Int = 3) {
+    fun claimAdHints(amount: Int = 1) {
         viewModelScope.launch {
-            if (_uiState.value.isDailyChallengeMode) {
-                _uiState.update { it.copy(dailyComplimentaryHintsRemaining = 1, showHintAdPrompt = false) }
-                val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap)
-                if (hintTarget != null) {
-                    audioHapticManager.playBoosterUse("hint")
-                    _uiState.update { state ->
-                        val updated = state.arrows.map {
-                            if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
-                        }
-                        state.copy(arrows = updated, dailyComplimentaryHintsRemaining = 0)
+            _uiState.update { it.copy(showHintAdPrompt = false) }
+            // Auto-execute 1 hint on the board for instant relief
+            val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap)
+            if (hintTarget != null) {
+                audioHapticManager.playBoosterUse("hint")
+                _uiState.update { state ->
+                    val updated = state.arrows.map {
+                        if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
                     }
-                }
-            } else {
-                repository.addHints(amount)
-                _uiState.update { it.copy(showHintAdPrompt = false) }
-
-                // Immediately auto-execute 1 hint on the board for instant relief
-                val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap)
-                if (hintTarget != null) {
-                    if (repository.useBooster("hint")) {
-                        audioHapticManager.playBoosterUse("hint")
-                        _uiState.update { state ->
-                            val updated = state.arrows.map {
-                                if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
-                            }
-                            state.copy(
-                                arrows = updated,
-                                hintsAvailable = maxOf(0, state.hintsAvailable - 1)
-                            )
-                        }
-                    }
+                    state.copy(
+                        arrows = updated,
+                        levelFreeHintsRemaining = 0,
+                        dailyComplimentaryHintsRemaining = 0
+                    )
                 }
             }
         }
@@ -847,12 +854,10 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun claimFreeLives(count: Int = 3) {
         viewModelScope.launch {
-            repository.useGlobalLives(count)
             audioHapticManager.playClick()
-            val restoredHearts = minOf(_uiState.value.maxHearts, count).coerceAtLeast(1)
             _uiState.update {
                 it.copy(
-                    heartsRemaining = restoredHearts,
+                    heartsRemaining = 3,
                     isGameOver = false
                 )
             }

@@ -43,7 +43,7 @@ import com.arrowescape.puzzle.ui.theme.ThemePreset
 @Composable
 fun GameOverDialog(
     theme: ThemePreset,
-    hasGlobalLives: Boolean,
+    hasGlobalLives: Boolean = false,
     onClaimLives: () -> Unit,
     onRestartClick: () -> Unit
 ) {
@@ -111,10 +111,10 @@ fun GameOverDialog(
 
                 // Primary Action: Claim 3 Lives or Watch Ad
                 AppPrimaryButton(
-                    text = if (hasGlobalLives) "Claim 3 Lives" else "Watch Ad for +3 Lives",
+                    text = "Watch Ad for +3 Lives",
                     onClick = onClaimLives,
                     theme = theme,
-                    containerColor = if (hasGlobalLives) Color(0xFFE11D48) else activeThemePrimary(theme),
+                    containerColor = Color(0xFFEF4444),
                     modifier = Modifier.fillMaxWidth()
                 )
 
