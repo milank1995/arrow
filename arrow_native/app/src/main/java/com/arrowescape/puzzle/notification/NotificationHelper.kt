@@ -67,25 +67,30 @@ object NotificationHelper {
         )
 
         val title = if (streakDays > 1) {
-            "🔥 Keep your $streakDays-Day Streak Alive!"
+            "🔥 $streakDays-Day Streak at Risk"
         } else {
-            "🌅 Today's Daily Challenge is Ready!"
+            "Daily Challenge Ready"
         }
 
         val message = if (streakDays > 1) {
-            "Your daily mindful puzzle is waiting. Play today before midnight to protect your streak!"
+            "Play before midnight to keep it."
         } else {
-            "A fresh, handcrafted puzzle awaits you. Take 3 minutes to test your skills!"
+            "Today's puzzle is waiting."
         }
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(com.arrowescape.puzzle.R.mipmap.ic_launcher)
             .setContentTitle(title)
             .setContentText(message)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
+            .addAction(
+                0,
+                "Play Challenge",
+                pendingIntent
+            )
             .build()
 
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
