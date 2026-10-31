@@ -140,5 +140,7 @@ object ThemePresets {
         isDark = false
     )
 
-    val all = listOf(CleanLight, WarmSepia, MidnightDark, CalmPastel, MintFresh, SunsetRose)
+    // Active 2-theme architecture (Clean Light & Warm Sepia)
+    // Additional themes preserved for future updates
+    val all = listOf(WarmSepia, CleanLight)
 }

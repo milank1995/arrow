@@ -4,9 +4,9 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,11 +35,10 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Policy
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Vibration
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -51,15 +50,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.ui.theme.ThemePreset
 import com.arrowescape.puzzle.ui.theme.ThemePresets
 
+/**
+ * Modern, minimal, theme-adaptive Settings page.
+ * Features:
+ * - Symmetrical 2-option theme selector (Clean Light vs Warm Sepia) without scrolling.
+ * - Grouped card hierarchy for Audio/Notifications and About/Support.
+ * - Clean single-line rows with redundant subtitles removed.
+ * - Full theme-adaptive background immersion with ambient blooming aura.
+ * - Minimal version footer ("Version X.X.X").
+ */
 @Composable
 fun SettingsScreen(
     isSoundEnabled: Boolean,
@@ -100,7 +112,7 @@ fun SettingsScreen(
             val intent = Intent(Intent.ACTION_SENDTO).apply {
                 data = Uri.parse("mailto:")
                 putExtra(Intent.EXTRA_EMAIL, arrayOf("support@arrowescape.com"))
-                putExtra(Intent.EXTRA_SUBJECT, "Arrow Escape Feedback (v$versionName)")
+                putExtra(Intent.EXTRA_SUBJECT, "Arrow Decode Feedback (v$versionName)")
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             context.startActivity(intent)
@@ -118,15 +130,37 @@ fun SettingsScreen(
         }
     }
 
-    val screenBg = if (activeTheme.isDark) Color(0xFF0F172A) else Color(0xFFF8FAFC)
-    val cardBg = if (activeTheme.isDark) Color(0xFF1E293B) else Color.White
-    val cardBorder = if (activeTheme.isDark) Color(0xFF334155) else Color(0xFFE2E8F0)
-    val itemBg = if (activeTheme.isDark) Color(0xFF273549) else Color(0xFFF8FAFC)
+    val screenBg = activeTheme.background
+    val cardBg = activeTheme.surface
+    val cardBorder = activeTheme.gridLine
+    val itemBg = if (activeTheme.name == "Warm Sepia") Color(0xFFF8F2E6) else Color(0xFFF8FAFC)
 
-    Surface(
-        color = screenBg,
-        modifier = modifier.fillMaxSize()
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(screenBg)
     ) {
+        // Soft Ambient Radial Aura behind content
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val centerX = size.width / 2f
+            val centerY = size.height * 0.45f
+            val auraRadius = size.height * 0.40f
+            val auraColor = if (activeTheme.name == "Warm Sepia") {
+                Color(0xFFE09F3E).copy(alpha = 0.14f)
+            } else {
+                Color(0xFF1E293B).copy(alpha = 0.06f)
+            }
+            drawCircle(
+                brush = Brush.radialGradient(
+                    colors = listOf(auraColor, Color.Transparent),
+                    center = Offset(centerX, centerY),
+                    radius = auraRadius
+                ),
+                radius = auraRadius,
+                center = Offset(centerX, centerY)
+            )
+        }
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
@@ -135,20 +169,20 @@ fun SettingsScreen(
                 .navigationBarsPadding()
                 .displayCutoutPadding()
         ) {
-            // TOP APP BAR: Back Button + Centered Title + Visual Balance Spacer
+            // TOP APP BAR: Circular Back Button + Centered Title + Visual Balance Spacer
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .padding(horizontal = 20.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Back Button
+                // Circular Back Button matching Home & Game Area style
                 Surface(
                     shape = CircleShape,
                     color = cardBg,
-                    border = BorderStroke(1.dp, cardBorder),
-                    shadowElevation = 1.dp,
+                    border = BorderStroke(1.2.dp, cardBorder),
+                    shadowElevation = 2.dp,
                     modifier = Modifier.size(42.dp)
                 ) {
                     IconButton(
@@ -164,83 +198,88 @@ fun SettingsScreen(
                     }
                 }
 
-                // Centered Clean Title (Matching overall UI design)
+                // Centered Clean Title
                 Text(
                     text = "Settings",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 0.5.sp,
                     color = activeTheme.textPrimary,
-                    style = androidx.compose.ui.text.TextStyle(
-                        platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
-                    )
+                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
                 )
 
-                // Dummy Spacer for symmetry
+                // Dummy Spacer for optical symmetry
                 Spacer(modifier = Modifier.size(42.dp))
             }
 
-            // SCROLLABLE SETTINGS CONTENT (Responsive width container max 560dp)
+            // SCROLLABLE SETTINGS CONTENT (Constrained max 340dp width)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 10.dp),
+                    .padding(horizontal = 20.dp, vertical = 6.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Column(
                     modifier = Modifier
-                        .widthIn(max = 560.dp)
+                        .widthIn(max = 340.dp)
                         .fillMaxWidth()
                 ) {
                     // =========================================================
-                    // SECTION 1: BOARD THEME SELECTOR
+                    // SECTION 1: BOARD THEME (Simplified Dual Selector: No Scrolling!)
                     // =========================================================
-                    SectionHeader(
-                        title = "BOARD THEME",
-                        icon = Icons.Default.Palette,
-                        theme = activeTheme
+                    Text(
+                        text = "BOARD THEME",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = 1.5.sp,
+                        color = activeTheme.textSecondary,
+                        modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    // Horizontal scrolling Theme Swatch row
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        ThemePresets.all.forEach { preset ->
-                            val isSelected = (preset.name == activeTheme.name)
-                            ThemeCard(
-                                preset = preset,
-                                isSelected = isSelected,
-                                activeTheme = activeTheme,
-                                onSelect = { onThemeSelect(preset) }
-                            )
-                        }
+                        // Warm Sepia Option Card
+                        ThemeOptionCard(
+                            preset = ThemePresets.WarmSepia,
+                            isSelected = (activeTheme.name == ThemePresets.WarmSepia.name),
+                            activeTheme = activeTheme,
+                            onSelect = { onThemeSelect(ThemePresets.WarmSepia) },
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        // Clean Light Option Card
+                        ThemeOptionCard(
+                            preset = ThemePresets.CleanLight,
+                            isSelected = (activeTheme.name == ThemePresets.CleanLight.name),
+                            activeTheme = activeTheme,
+                            onSelect = { onThemeSelect(ThemePresets.CleanLight) },
+                            modifier = Modifier.weight(1f)
+                        )
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     // =========================================================
-                    // SECTION 2: AUDIO, HAPTICS & REMINDERS (Grouped Card)
+                    // SECTION 2: AUDIO & NOTIFICATIONS (Consolidated Grouped Card)
                     // =========================================================
-                    SectionHeader(
-                        title = "AUDIO & REMINDERS",
-                        icon = Icons.AutoMirrored.Filled.VolumeUp,
-                        theme = activeTheme
+                    Text(
+                        text = "AUDIO & NOTIFICATIONS",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = 1.5.sp,
+                        color = activeTheme.textSecondary,
+                        modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(10.dp))
-
                     Surface(
-                        shape = RoundedCornerShape(20.dp),
+                        shape = RoundedCornerShape(22.dp),
                         color = cardBg,
-                        border = BorderStroke(1.dp, cardBorder),
-                        shadowElevation = 1.dp,
+                        border = BorderStroke(1.2.dp, cardBorder),
+                        shadowElevation = 2.dp,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(modifier = Modifier.fillMaxWidth()) {
@@ -248,14 +287,14 @@ fun SettingsScreen(
                             SettingsToggleRow(
                                 title = "Sound Effects",
                                 icon = if (isSoundEnabled) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeMute,
-                                iconBg = if (isSoundEnabled) activeTheme.arrowHint.copy(alpha = 0.16f) else activeTheme.gridLine.copy(alpha = 0.35f),
-                                iconTint = if (isSoundEnabled) activeTheme.arrowHint else activeTheme.textSecondary,
+                                iconBg = itemBg,
+                                iconTint = activeTheme.textPrimary,
                                 isChecked = isSoundEnabled,
                                 onCheckedChange = { onToggleSound() },
                                 activeTheme = activeTheme
                             )
 
-                            androidx.compose.material3.HorizontalDivider(
+                            HorizontalDivider(
                                 color = cardBorder.copy(alpha = 0.6f),
                                 thickness = 1.dp,
                                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -265,25 +304,25 @@ fun SettingsScreen(
                             SettingsToggleRow(
                                 title = "Haptic Vibration",
                                 icon = Icons.Default.Vibration,
-                                iconBg = if (isVibrationEnabled) activeTheme.arrowDefault.copy(alpha = 0.16f) else activeTheme.gridLine.copy(alpha = 0.35f),
-                                iconTint = if (isVibrationEnabled) activeTheme.arrowDefault else activeTheme.textSecondary,
+                                iconBg = itemBg,
+                                iconTint = activeTheme.textPrimary,
                                 isChecked = isVibrationEnabled,
                                 onCheckedChange = { onToggleVibration() },
                                 activeTheme = activeTheme
                             )
 
-                            androidx.compose.material3.HorizontalDivider(
+                            HorizontalDivider(
                                 color = cardBorder.copy(alpha = 0.6f),
                                 thickness = 1.dp,
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
 
-                            // Daily Challenge Reminders Row
+                            // Daily Reminder Row
                             SettingsToggleRow(
-                                title = "Daily Challenge Reminders",
+                                title = "Daily Reminder",
                                 icon = Icons.Default.NotificationsActive,
-                                iconBg = if (dailyRemindersEnabled) activeTheme.arrowHint.copy(alpha = 0.16f) else activeTheme.gridLine.copy(alpha = 0.35f),
-                                iconTint = if (dailyRemindersEnabled) activeTheme.arrowHint else activeTheme.textSecondary,
+                                iconBg = itemBg,
+                                iconTint = activeTheme.textPrimary,
                                 isChecked = dailyRemindersEnabled,
                                 onCheckedChange = { onToggleDailyReminders() },
                                 activeTheme = activeTheme
@@ -291,97 +330,81 @@ fun SettingsScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     // =========================================================
-                    // SECTION 3: SUPPORT & COMMUNITY (Grouped Card)
+                    // SECTION 3: ABOUT & SUPPORT (Clean Consolidated Card)
                     // =========================================================
-                    SectionHeader(
-                        title = "SUPPORT & COMMUNITY",
-                        icon = Icons.Default.Star,
-                        theme = activeTheme
+                    Text(
+                        text = "ABOUT & SUPPORT",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = 1.5.sp,
+                        color = activeTheme.textSecondary,
+                        modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(10.dp))
-
                     Surface(
-                        shape = RoundedCornerShape(20.dp),
+                        shape = RoundedCornerShape(22.dp),
                         color = cardBg,
-                        border = BorderStroke(1.dp, cardBorder),
-                        shadowElevation = 1.dp,
+                        border = BorderStroke(1.2.dp, cardBorder),
+                        shadowElevation = 2.dp,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(modifier = Modifier.fillMaxWidth()) {
+                            // Rate Us Row
                             SettingsLinkRow(
-                                title = "Rate Us",
-                                subtitle = "Support us with 5 stars on Play Store",
+                                title = "Rate Arrow Decode",
                                 icon = Icons.Default.Star,
-                                iconBg = activeTheme.arrowHint.copy(alpha = 0.16f),
-                                iconTint = activeTheme.arrowHint,
+                                iconBg = itemBg,
+                                iconTint = Color(0xFFD97706),
                                 onClick = openRateUs,
                                 activeTheme = activeTheme
                             )
 
-                            androidx.compose.material3.HorizontalDivider(
+                            HorizontalDivider(
                                 color = cardBorder.copy(alpha = 0.6f),
                                 thickness = 1.dp,
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
 
+                            // Feedback & Support Row
                             SettingsLinkRow(
                                 title = "Feedback & Support",
-                                subtitle = "Contact the development team",
                                 icon = Icons.Default.Email,
-                                iconBg = activeTheme.arrowClear.copy(alpha = 0.16f),
-                                iconTint = activeTheme.arrowClear,
+                                iconBg = itemBg,
+                                iconTint = activeTheme.textPrimary,
                                 onClick = openEmail,
                                 activeTheme = activeTheme
                             )
-                        }
-                    }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                            HorizontalDivider(
+                                color = cardBorder.copy(alpha = 0.6f),
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
 
-                    // =========================================================
-                    // SECTION 4: LEGAL & PRIVACY (Grouped Card)
-                    // =========================================================
-                    SectionHeader(
-                        title = "LEGAL & PRIVACY",
-                        icon = Icons.Default.Lock,
-                        theme = activeTheme
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Surface(
-                        shape = RoundedCornerShape(20.dp),
-                        color = cardBg,
-                        border = BorderStroke(1.dp, cardBorder),
-                        shadowElevation = 1.dp,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(modifier = Modifier.fillMaxWidth()) {
+                            // Privacy Policy Row
                             SettingsLinkRow(
                                 title = "Privacy Policy",
-                                subtitle = "How we protect your data",
                                 icon = Icons.Default.Lock,
-                                iconBg = activeTheme.gridLine.copy(alpha = 0.4f),
+                                iconBg = itemBg,
                                 iconTint = activeTheme.textSecondary,
                                 onClick = { openUrl("https://arrowescape.com/privacy") },
                                 activeTheme = activeTheme
                             )
 
-                            androidx.compose.material3.HorizontalDivider(
+                            HorizontalDivider(
                                 color = cardBorder.copy(alpha = 0.6f),
                                 thickness = 1.dp,
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
 
+                            // Terms of Service Row
                             SettingsLinkRow(
                                 title = "Terms of Service",
-                                subtitle = "Terms and conditions of use",
                                 icon = Icons.Default.Policy,
-                                iconBg = activeTheme.gridLine.copy(alpha = 0.4f),
+                                iconBg = itemBg,
                                 iconTint = activeTheme.textSecondary,
                                 onClick = { openUrl("https://arrowescape.com/terms") },
                                 activeTheme = activeTheme
@@ -389,129 +412,138 @@ fun SettingsScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(30.dp))
+                    Spacer(modifier = Modifier.height(28.dp))
 
                     // =========================================================
-                    // SECTION 5: BRANDING & VERSION FOOTER
+                    // SECTION 4: VERSION FOOTER (Arrow Decode Removed)
                     // =========================================================
                     Text(
-                        text = "Arrow Decode • Version $versionName",
+                        text = "Version $versionName",
                         fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = activeTheme.textSecondary.copy(alpha = 0.7f),
+                        fontWeight = FontWeight.SemiBold,
+                        color = activeTheme.textSecondary.copy(alpha = 0.65f),
+                        letterSpacing = 0.8.sp,
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
         }
     }
 }
 
+/**
+ * Clean, tactile dual-card theme option with palette swatch preview.
+ */
 @Composable
-private fun SectionHeader(
-    title: String,
-    icon: ImageVector,
-    theme: ThemePreset
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = theme.arrowDefault,
-            modifier = Modifier.size(14.dp)
-        )
-        Text(
-            text = title,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Bold,
-            color = theme.textSecondary,
-            letterSpacing = 0.8.sp
-        )
-    }
-}
-
-@Composable
-private fun ThemeCard(
+private fun ThemeOptionCard(
     preset: ThemePreset,
     isSelected: Boolean,
     activeTheme: ThemePreset,
-    onSelect: () -> Unit
+    onSelect: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Surface(
-        shape = RoundedCornerShape(16.dp),
-        color = preset.background,
+        shape = RoundedCornerShape(20.dp),
+        color = activeTheme.surface,
         border = BorderStroke(
-            width = if (isSelected) 2.5.dp else 1.dp,
-            color = if (isSelected) activeTheme.arrowDefault else preset.gridLine
+            width = if (isSelected) 2.dp else 1.2.dp,
+            color = if (isSelected) activeTheme.textPrimary else activeTheme.gridLine
         ),
         shadowElevation = if (isSelected) 4.dp else 1.dp,
-        modifier = Modifier
-            .size(width = 104.dp, height = 76.dp)
-            .clip(RoundedCornerShape(16.dp))
+        modifier = modifier
+            .clip(RoundedCornerShape(20.dp))
             .clickable(onClick = onSelect)
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
+                .padding(vertical = 14.dp, horizontal = 12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // Swatch Box previewing the theme's background and default arrow color
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(preset.background)
+                    .then(
+                        if (preset.name == "Clean Light") {
+                            Modifier.background(
+                                color = preset.background,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                        } else Modifier
+                    ),
+                contentAlignment = Alignment.Center
             ) {
-                // Color dots representing preset palette
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Box(
-                        modifier = Modifier
-                            .size(10.dp)
-                            .clip(CircleShape)
-                            .background(preset.arrowDefault)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(10.dp)
-                            .clip(CircleShape)
-                            .background(preset.gridDot)
+                // Subtle border on the swatch
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.Transparent)
+                        .then(
+                            androidx.compose.ui.Modifier.padding(0.dp)
+                        )
+                )
+                Canvas(modifier = Modifier.size(44.dp)) {
+                    drawRoundRect(
+                        color = preset.gridLine,
+                        size = size,
+                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx()),
+                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.2.dp.toPx())
                     )
                 }
 
-                if (isSelected) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .size(16.dp)
-                            .clip(CircleShape)
-                            .background(activeTheme.arrowDefault)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = "Selected",
-                            tint = if (activeTheme.isDark) Color(0xFF0F172A) else Color.White,
-                            modifier = Modifier.size(11.dp)
-                        )
-                    }
-                }
+                // Inner palette dot
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .clip(CircleShape)
+                        .background(preset.arrowDefault)
+                )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = preset.name,
-                fontSize = 11.sp,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
-                color = preset.textPrimary,
-                maxLines = 1
+                fontSize = 13.sp,
+                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Bold,
+                color = activeTheme.textPrimary
             )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Selection indicator badge
+            if (isSelected) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(18.dp)
+                        .clip(CircleShape)
+                        .background(activeTheme.textPrimary)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Selected",
+                        tint = activeTheme.surface,
+                        modifier = Modifier.size(11.dp)
+                    )
+                }
+            } else {
+                Spacer(modifier = Modifier.height(18.dp))
+            }
         }
     }
 }
 
+/**
+ * Minimal, clean settings toggle row with theme-harmonized tactile switch.
+ */
 @Composable
 private fun SettingsToggleRow(
     title: String,
@@ -525,34 +557,36 @@ private fun SettingsToggleRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onCheckedChange(!isChecked) }
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(14.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .size(42.dp)
-                    .clip(CircleShape)
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(11.dp))
                     .background(iconBg)
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
                     tint = iconTint,
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(18.dp)
                 )
             }
 
             Text(
                 text = title,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = activeTheme.textPrimary
+                fontSize = 14.5.sp,
+                fontWeight = FontWeight.Bold,
+                color = activeTheme.textPrimary,
+                style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
             )
         }
 
@@ -563,17 +597,19 @@ private fun SettingsToggleRow(
                 checkedThumbColor = Color.White,
                 checkedTrackColor = activeTheme.arrowDefault,
                 uncheckedThumbColor = Color(0xFF94A3B8),
-                uncheckedTrackColor = if (activeTheme.isDark) Color(0xFF475569) else Color(0xFFE2E8F0),
+                uncheckedTrackColor = activeTheme.gridLine.copy(alpha = 0.5f),
                 uncheckedBorderColor = Color.Transparent
             )
         )
     }
 }
 
+/**
+ * Minimal, single-line link row with chevron indicator.
+ */
 @Composable
 private fun SettingsLinkRow(
     title: String,
-    subtitle: String,
     icon: ImageVector,
     iconBg: Color,
     iconTint: Color,
@@ -590,44 +626,38 @@ private fun SettingsLinkRow(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.weight(1f)
         ) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .size(42.dp)
-                    .clip(CircleShape)
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(11.dp))
                     .background(iconBg)
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
                     tint = iconTint,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(18.dp)
                 )
             }
 
-            Column {
-                Text(
-                    text = title,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = activeTheme.textPrimary
-                )
-                Text(
-                    text = subtitle,
-                    fontSize = 12.sp,
-                    color = activeTheme.textSecondary
-                )
-            }
+            Text(
+                text = title,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = activeTheme.textPrimary,
+                style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+            )
         }
 
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
             contentDescription = null,
-            tint = activeTheme.textSecondary.copy(alpha = 0.5f),
-            modifier = Modifier.size(14.dp)
+            tint = activeTheme.textSecondary.copy(alpha = 0.45f),
+            modifier = Modifier.size(13.dp)
         )
     }
 }
