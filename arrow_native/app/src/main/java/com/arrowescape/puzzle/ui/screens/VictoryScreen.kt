@@ -947,9 +947,9 @@ private fun DailyChallengeUnlockHero(
 
         Surface(
             shape = RoundedCornerShape(18.dp),
-            color = theme.arrowDefault,
+            color = Color.Transparent,
             shadowElevation = 5.dp,
-            border = BorderStroke(1.2.dp, Color.White.copy(alpha = 0.22f)),
+            border = BorderStroke(1.2.dp, Color(0xFFFDE68A).copy(alpha = 0.45f)),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(primaryBtnHeight)
@@ -963,16 +963,34 @@ private fun DailyChallengeUnlockHero(
         ) {
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(Color(0xFFF59E0B), Color(0xFFD97706))
+                        )
+                    )
             ) {
-                Text(
-                    text = "Start Daily Challenge",
-                    fontSize = 17.5.sp,
-                    fontWeight = FontWeight.Black,
-                    letterSpacing = 0.5.sp,
-                    color = Color.White,
-                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.EmojiEvents,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(19.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Play Daily Challenge",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = 0.5.sp,
+                        color = Color.White,
+                        style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                    )
+                }
             }
         }
 
@@ -986,12 +1004,12 @@ private fun DailyChallengeUnlockHero(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Next Level Button
+            // Next Level Button (Matching the primary button color of all other Victory Pages)
             Surface(
                 shape = RoundedCornerShape(16.dp),
-                color = secBgColor,
-                border = BorderStroke(1.dp, theme.gridLine.copy(alpha = 0.55f)),
-                shadowElevation = 0.dp,
+                color = theme.arrowDefault,
+                border = BorderStroke(1.2.dp, Color.White.copy(alpha = 0.22f)),
+                shadowElevation = 3.dp,
                 modifier = Modifier
                     .weight(1f)
                     .height(secBtnHeight)
@@ -1010,8 +1028,8 @@ private fun DailyChallengeUnlockHero(
                     Text(
                         text = "Next Level",
                         fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = theme.textSecondary,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
                         style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
                     )
                 }
