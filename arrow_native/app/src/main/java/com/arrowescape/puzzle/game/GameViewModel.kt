@@ -394,65 +394,30 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             val dist = PuzzleSolver.getDistanceToBlocker(freshArrow, occupancyMap)
             val durationMs = (280L + (dist * 35L).toLong()).coerceIn(320L, 560L)
 
-            val isStartingLevels = (_uiState.value.currentLevelNumber <= 10 && !_uiState.value.isDailyChallengeMode && !_uiState.value.isLockPuzzleMode)
+            // 3 lives per batch/level: 0 lives triggers the Lives Expiry popup ("Claim 3 Free Lives" via ad or restart)
+            val isOver = newHearts <= 0
+            if (isOver) {
+                audioHapticManager.playLevelFail()
+            }
 
-            if (isStartingLevels) {
-                // Starting levels 1-10: unlimited lives managed in batches of 3
-                _uiState.update { state ->
-                    val flashedArrows = state.arrows.map {
-                        if (it.id == freshArrow.id) {
-                            it.copyWithState(
-                                newState = ArrowState.WRONG_FLASH,
-                                progress = 0f,
-                                highlighted = true,
-                                collisionDist = dist
-                            )
-                        } else it
-                    }
-                    state.copy(
-                        arrows = flashedArrows,
-                        heartsRemaining = newHearts,
-                        comboCount = 0,
-                        cheerMessage = null,
-                        isGameOver = false
-                    )
+            _uiState.update { state ->
+                val flashedArrows = state.arrows.map {
+                    if (it.id == freshArrow.id) {
+                        it.copyWithState(
+                            newState = ArrowState.WRONG_FLASH,
+                            progress = 0f,
+                            highlighted = true,
+                            collisionDist = dist
+                        )
+                    } else it
                 }
-
-                // If all 3 hearts in the batch are depleted, replenish to a fresh batch of 3 lives
-                if (newHearts <= 0) {
-                    viewModelScope.launch {
-                        delay(450L) // Wait for broken heart animation to finish
-                        _uiState.update { state ->
-                            state.copy(heartsRemaining = 3)
-                        }
-                    }
-                }
-            } else {
-                // Level 11+ and Daily Challenge: 3 lives per level. 0 lives triggers Game Over.
-                val isOver = newHearts <= 0
-                if (isOver) {
-                    audioHapticManager.playLevelFail()
-                }
-
-                _uiState.update { state ->
-                    val flashedArrows = state.arrows.map {
-                        if (it.id == freshArrow.id) {
-                            it.copyWithState(
-                                newState = ArrowState.WRONG_FLASH,
-                                progress = 0f,
-                                highlighted = true,
-                                collisionDist = dist
-                            )
-                        } else it
-                    }
-                    state.copy(
-                        arrows = flashedArrows,
-                        heartsRemaining = newHearts,
-                        comboCount = 0,
-                        cheerMessage = null,
-                        isGameOver = isOver
-                    )
-                }
+                state.copy(
+                    arrows = flashedArrows,
+                    heartsRemaining = newHearts,
+                    comboCount = 0,
+                    cheerMessage = null,
+                    isGameOver = isOver
+                )
             }
 
             // Animate collision spring-bounce and reset to IDLE (keeping highlighted = true)

@@ -1,5 +1,6 @@
 package com.arrowescape.puzzle.ui.components
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -47,12 +48,13 @@ fun GameOverDialog(
     onClaimLives: () -> Unit,
     onRestartClick: () -> Unit
 ) {
+    BackHandler(onBack = onRestartClick)
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val dialogWidth = minOf(screenWidth - 36.dp, 360.dp)
 
     Dialog(
-        onDismissRequest = {},
+        onDismissRequest = onRestartClick,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Card(
@@ -99,7 +101,7 @@ fun GameOverDialog(
                 )
 
                 Text(
-                    text = "Get extra lives to keep solving or restart the level.",
+                    text = "Watch a short video to claim 3 additional lives.",
                     fontSize = 13.sp,
                     color = theme.textSecondary,
                     textAlign = TextAlign.Center,
@@ -109,9 +111,9 @@ fun GameOverDialog(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Primary Action: Claim 3 Lives or Watch Ad
+                // Primary Action: Claim 3 Free Lives (Watch Ad)
                 AppPrimaryButton(
-                    text = "Watch Ad for +3 Lives",
+                    text = "Claim 3 Free Lives",
                     onClick = onClaimLives,
                     theme = theme,
                     containerColor = Color(0xFFEF4444),

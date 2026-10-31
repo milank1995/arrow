@@ -37,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.CornerRadius
@@ -154,7 +155,7 @@ fun BoosterBar(
                         onHintClick()
                     }
             ) {
-                // Layer 1: Refined Modern Lightbulb Art (Consistently aligned with badge)
+                // Layer 1: Refined Modern Lightbulb Art (Centered for starting levels; offset when badge is present)
                 ModernLightbulbArt(
                     activeProgress = activeProgress,
                     auraGlow = auraGlow,
@@ -162,54 +163,52 @@ fun BoosterBar(
                     modifier = Modifier
                         .size(width = 46.dp, height = 52.dp)
                         .align(Alignment.Center)
-                        .offset(y = (-5).dp)
+                        .offset(y = if (isFreeHintLevel) 0.dp else (-5).dp)
                 )
 
-                // Layer 2: Badge (Infinity for Levels 1-10 unlimited hints, Count for Level 11+, Videocam when ad needed)
-                val isAdState = (!isFreeHintLevel && hintsCount <= 0)
-                val badgeBgColor = if (isAdState) Color(0xFFD97706) else theme.surface
-                val badgeBorderColor = if (isAdState) Color(0xFFFBBF24) else theme.gridLine
+                // Layer 2: Badge (Shown ONLY when NOT on free hint starting levels)
+                // - Shows count (e.g. "1") when free hint(s) available
+                // - Shows clean, professional "AD" text badge when free hints are exhausted
+                if (!isFreeHintLevel) {
+                    val isAdState = (hintsCount <= 0)
+                    val badgeBgColor = if (isAdState) Color(0xFFD97706) else theme.surface
+                    val badgeBorderColor = if (isAdState) Color(0xFFFBBF24) else theme.gridLine
 
-                Surface(
-                    shape = RoundedCornerShape(percent = 50),
-                    color = badgeBgColor,
-                    border = BorderStroke(1.2.dp, badgeBorderColor),
-                    shadowElevation = if (isAdState) 3.dp else 1.dp,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .offset(y = (-4).dp)
-                ) {
-                    Box(
+                    Surface(
+                        shape = RoundedCornerShape(percent = 50),
+                        color = badgeBgColor,
+                        border = BorderStroke(1.2.dp, badgeBorderColor),
+                        shadowElevation = if (isAdState) 2.dp else 1.dp,
                         modifier = Modifier
-                            .height(19.dp)
-                            .widthIn(min = 28.dp)
-                            .padding(horizontal = 7.dp),
-                        contentAlignment = Alignment.Center
+                            .align(Alignment.BottomCenter)
+                            .offset(y = (-4).dp)
                     ) {
-                        if (isFreeHintLevel) {
-                            // Starting Levels 1-10: Unlimited Hints Symbol
-                            Text(
-                                text = "∞",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = theme.textPrimary
-                            )
-                        } else if (hintsCount > 0) {
-                            // Level 11+: 1 free hint per level (or remaining hints)
-                            Text(
-                                text = "$hintsCount",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = theme.textPrimary
-                            )
-                        } else {
-                            // Exhausted / Daily Challenge: Watch Video Ad Icon
-                            Icon(
-                                imageVector = Icons.Default.Videocam,
-                                contentDescription = "Watch Video Ad for Hint",
-                                tint = Color.White,
-                                modifier = Modifier.size(13.dp)
-                            )
+                        Box(
+                            modifier = Modifier
+                                .height(18.dp)
+                                .widthIn(min = 28.dp)
+                            .padding(horizontal = 6.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (hintsCount > 0) {
+                                // Limited Hints balance: 1, 2, 3
+                                Text(
+                                    text = "$hintsCount",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = theme.textPrimary
+                                )
+                            } else {
+                                // Free hints exhausted: Professional "AD" text badge
+                                Text(
+                                    text = "AD",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Black,
+                                    letterSpacing = 0.6.sp,
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     }
                 }
