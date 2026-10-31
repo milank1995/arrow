@@ -552,6 +552,7 @@ private fun LevelSelectorDialog(
 
     fun getShapeEmoji(name: String): String {
         return when {
+            name.contains("Heart", ignoreCase = true) -> "❤️"
             name.contains("Palm", ignoreCase = true) -> "🌴"
             name.contains("Balloon", ignoreCase = true) -> "🎈"
             name.contains("Cat", ignoreCase = true) -> "🐱"

@@ -43,11 +43,11 @@
     "LevelNumber": 5,
     "ArrowCount": 55,
     "Difficulty": "Hard",
-    "ShapeName": "Palm Tree",
+    "ShapeName": "Heart",
     "IsShape": true,
     "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 47,
-    "YSize": 52
+    "XSize": 28,
+    "YSize": 24
   },
   {
     "LevelNumber": 6,
