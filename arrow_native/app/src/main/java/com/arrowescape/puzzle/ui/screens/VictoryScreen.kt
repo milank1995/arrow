@@ -272,11 +272,7 @@ fun VictoryScreen(
 
     Surface(
         color = theme.background,
-        modifier = modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .navigationBarsPadding()
-            .displayCutoutPadding()
+        modifier = modifier.fillMaxSize()
     ) {
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             val availableHeight = maxHeight
@@ -291,14 +287,14 @@ fun VictoryScreen(
             ) {
                 val center = Offset(size.width / 2f, size.height * 0.22f)
                 val rayCount = 14
-                val maxRadius = hypot(size.width.toDouble(), size.height.toDouble()).toFloat() * 0.88f
+                val maxRadius = hypot(size.width.toDouble(), size.height.toDouble()).toFloat() * 1.15f
 
                 // Luminous top ambient glow circle behind the stars
                 drawCircle(
                     brush = Brush.radialGradient(
                         colors = listOf(
-                            ctaGrad1.copy(alpha = 0.35f),
-                            ctaGrad2.copy(alpha = 0.12f),
+                            ctaGrad1.copy(alpha = 0.38f),
+                            ctaGrad2.copy(alpha = 0.14f),
                             Color.Transparent
                         ),
                         center = center,
@@ -308,7 +304,7 @@ fun VictoryScreen(
                     radius = maxRadius * 0.65f
                 )
 
-                // Revolving radiant sunburst rays
+                // Revolving radiant sunburst rays spanning edge-to-edge across entire window
                 rotate(sunburstRotation, pivot = center) {
                     for (i in 0 until rayCount) {
                         val angle = (i * 360f / rayCount) * (Math.PI.toFloat() / 180f)
@@ -331,8 +327,8 @@ fun VictoryScreen(
                             path = path,
                             brush = Brush.radialGradient(
                                 colors = listOf(
-                                    ctaGrad1.copy(alpha = 0.26f),
-                                    ctaGrad2.copy(alpha = 0.09f),
+                                    ctaGrad1.copy(alpha = 0.28f),
+                                    ctaGrad2.copy(alpha = 0.10f),
                                     Color.Transparent
                                 ),
                                 center = center,
@@ -343,7 +339,7 @@ fun VictoryScreen(
                 }
             }
 
-            // Drifting Confetti Particles Layer
+            // Drifting Confetti Particles Layer (Full bleed)
             ConfettiBurstEffect(modifier = Modifier.fillMaxSize(), particleCount = 26)
 
             // Responsive Scaling Parameters for Zero-Scroll Guarantee
@@ -354,17 +350,20 @@ fun VictoryScreen(
             val cardPaddingTop = if (isVeryCompact) 26.dp else 34.dp
             val cardInnerTopSpacer = if (isVeryCompact) 18.dp else 24.dp
             val headlineFontSize = if (isVeryCompact) 25.sp else 28.sp
-            val primaryBtnHeight = if (isVeryCompact) 50.dp else 56.dp
-            val secBtnHeight = if (isVeryCompact) 44.dp else 50.dp
+            val primaryBtnHeight = if (isVeryCompact) 52.dp else 58.dp
+            val secBtnHeight = if (isVeryCompact) 42.dp else 48.dp
             val contentPadHoriz = if (isVeryCompact) 18.dp else 22.dp
 
-            // Main Screen Content: Perfectly Centered & Compact with Zero-Scroll Guarantee
+            // Main Screen Content: Perfectly Centered & Compact with Insets Padding and Zero-Scroll Guarantee
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = contentPadHoriz, vertical = 12.dp)
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .displayCutoutPadding()
+                    .padding(horizontal = contentPadHoriz, vertical = 8.dp)
             ) {
                 // Top flexible breathing room
                 Spacer(modifier = Modifier.weight(if (isCompact) 0.5f else 1.0f))
@@ -613,16 +612,37 @@ fun VictoryScreen(
                         Box(
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            AppPrimaryButton(
-                                text = if (isDailyChallenge) "Continue" else "Next Level",
-                                onClick = {
-                                    onPlayClickSound()
-                                    onNextLevelClick()
-                                },
-                                theme = theme,
-                                height = primaryBtnHeight,
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            Surface(
+                                shape = RoundedCornerShape(18.dp),
+                                color = theme.arrowDefault,
+                                shadowElevation = 5.dp,
+                                border = BorderStroke(1.2.dp, Color.White.copy(alpha = 0.22f)),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(primaryBtnHeight)
+                                    .clip(RoundedCornerShape(18.dp))
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null
+                                    ) {
+                                        onPlayClickSound()
+                                        onNextLevelClick()
+                                    }
+                            ) {
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    Text(
+                                        text = if (isDailyChallenge) "Continue" else "Next Level",
+                                        fontSize = if (isVeryCompact) 16.5.sp else 18.sp,
+                                        fontWeight = FontWeight.Black,
+                                        letterSpacing = 0.5.sp,
+                                        color = Color.White,
+                                        style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                                    )
+                                }
+                            }
 
                             // Floating Streak Win Pill docked on top-right corner
                             if (streakDays >= 1) {
@@ -664,11 +684,16 @@ fun VictoryScreen(
                             }
                         }
 
-                        // Prominent Secondary Button ("Home") - Styled as tactile, large, accessible button
+                        // Subtle Secondary Button ("Home") - Noticeable but understated compared to hero Next Level
+                        val homeBgColor = if (theme.isDark) {
+                            theme.surface.copy(alpha = 0.55f)
+                        } else {
+                            theme.boosterBg.copy(alpha = 0.65f)
+                        }
                         Surface(
                             shape = RoundedCornerShape(16.dp),
-                            color = theme.surface,
-                            border = BorderStroke(1.4.dp, theme.gridLine),
+                            color = homeBgColor,
+                            border = BorderStroke(1.dp, theme.gridLine.copy(alpha = 0.55f)),
                             shadowElevation = 0.dp,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -688,9 +713,9 @@ fun VictoryScreen(
                             ) {
                                 Text(
                                     text = "Home",
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = theme.textPrimary,
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = theme.textSecondary,
                                     style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
                                 )
                             }
@@ -958,18 +983,46 @@ private fun DailyChallengeUnlockHero(
             }
         }
 
-        AppPrimaryButton(
-            text = "Start Daily Challenge",
-            onClick = onStartDailyChallengeClick,
-            theme = theme,
-            height = primaryBtnHeight,
-            modifier = Modifier.fillMaxWidth()
-        )
+        Surface(
+            shape = RoundedCornerShape(18.dp),
+            color = theme.arrowDefault,
+            shadowElevation = 5.dp,
+            border = BorderStroke(1.2.dp, Color.White.copy(alpha = 0.22f)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(primaryBtnHeight)
+                .clip(RoundedCornerShape(18.dp))
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    onStartDailyChallengeClick()
+                }
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(
+                    text = "Start Daily Challenge",
+                    fontSize = 17.5.sp,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 0.5.sp,
+                    color = Color.White,
+                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                )
+            }
+        }
 
+        val secBgColor = if (theme.isDark) {
+            theme.surface.copy(alpha = 0.55f)
+        } else {
+            theme.boosterBg.copy(alpha = 0.65f)
+        }
         Surface(
             shape = RoundedCornerShape(16.dp),
-            color = theme.surface,
-            border = BorderStroke(1.4.dp, theme.gridLine),
+            color = secBgColor,
+            border = BorderStroke(1.dp, theme.gridLine.copy(alpha = 0.55f)),
             shadowElevation = 0.dp,
             modifier = Modifier
                 .fillMaxWidth()
@@ -988,9 +1041,9 @@ private fun DailyChallengeUnlockHero(
             ) {
                 Text(
                     text = "Next Level",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = theme.textPrimary,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = theme.textSecondary,
                     style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
                 )
             }
