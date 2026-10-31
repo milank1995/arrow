@@ -52,7 +52,10 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arrowescape.puzzle.ui.theme.ThemePreset
@@ -165,63 +168,63 @@ fun BoosterBar(
                         .align(Alignment.Center)
                 )
 
-                // Layer 2: Top-Right Badge (Symmetrically matches the Grid button's Eye badge placement)
+                // Layer 2: Top-Right Circle Badge (Symmetrically matches the Grid button's Eye badge geometry)
                 // - Hidden on Levels 1-10 (unlimited hints, clean original design)
-                // - Shows count (e.g. "1") when free hint is available
-                // - Shows professional "AD" pill when free hints are exhausted
+                // - Both "AD" and number use an identical 18dp circle with optical cap-height centering
                 if (!isFreeHintLevel) {
                     val isAdState = (hintsCount <= 0)
-                    if (isAdState) {
-                        // Symmetrical Sleek "AD" Badge positioned at top-right
-                        Surface(
-                            shape = RoundedCornerShape(percent = 50),
-                            color = Color(0xFFD97706),
-                            border = BorderStroke(1.dp, Color(0xFFFDE68A).copy(alpha = 0.85f)),
-                            shadowElevation = 1.dp,
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .offset(x = 2.dp, y = 4.dp)
+                    val badgeBgColor = if (isAdState) Color(0xFFD97706) else theme.surface
+                    val badgeBorderColor = if (isAdState) Color(0xFFFDE68A).copy(alpha = 0.85f) else theme.gridLine
+
+                    Surface(
+                        shape = CircleShape,
+                        color = badgeBgColor,
+                        border = BorderStroke(1.dp, badgeBorderColor),
+                        shadowElevation = 1.dp,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .offset(x = 2.dp, y = 4.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier.size(18.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .height(16.dp)
-                                    .widthIn(min = 22.dp)
-                                    .padding(horizontal = 4.5.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
+                            if (isAdState) {
+                                // Perfectly optically centered "AD" inside 18dp circle
                                 Text(
                                     text = "AD",
-                                    fontSize = 9.sp,
+                                    fontSize = 8.5.sp,
                                     fontWeight = FontWeight.Black,
-                                    letterSpacing = 0.5.sp,
+                                    letterSpacing = 0.2.sp,
                                     color = Color.White,
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
+                                    style = TextStyle(
+                                        platformStyle = PlatformTextStyle(includeFontPadding = false),
+                                        lineHeight = 9.sp,
+                                        lineHeightStyle = LineHeightStyle(
+                                            alignment = LineHeightStyle.Alignment.Center,
+                                            trim = LineHeightStyle.Trim.Both
+                                        )
+                                    ),
+                                    modifier = Modifier.offset(y = (-0.8).dp)
                                 )
-                            }
-                        }
-                    } else {
-                        // Symmetrical Circular Count Badge (e.g. "1") matching the eye badge geometry
-                        Surface(
-                            shape = CircleShape,
-                            color = theme.surface,
-                            border = BorderStroke(1.dp, theme.gridLine),
-                            shadowElevation = 1.dp,
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .offset(x = 2.dp, y = 4.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(18.dp)
-                                    .padding(2.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
+                            } else {
+                                // Perfectly optically centered number inside 18dp circle
                                 Text(
                                     text = "$hintsCount",
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = theme.textPrimary,
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
+                                    style = TextStyle(
+                                        platformStyle = PlatformTextStyle(includeFontPadding = false),
+                                        lineHeight = 10.sp,
+                                        lineHeightStyle = LineHeightStyle(
+                                            alignment = LineHeightStyle.Alignment.Center,
+                                            trim = LineHeightStyle.Trim.Both
+                                        )
+                                    ),
+                                    modifier = Modifier.offset(y = (-0.8).dp)
                                 )
                             }
                         }
