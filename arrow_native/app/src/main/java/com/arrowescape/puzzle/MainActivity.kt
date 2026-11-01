@@ -12,6 +12,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.runtime.DisposableEffect
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -101,6 +105,33 @@ class MainActivity : ComponentActivity() {
             }
             var currentScreen by remember { mutableStateOf(initialScreen) }
             var showSoundSettingsDialog by remember { mutableStateOf(false) }
+
+            val lifecycleOwner = LocalLifecycleOwner.current
+            DisposableEffect(lifecycleOwner) {
+                val observer = LifecycleEventObserver { _, event ->
+                    when (event) {
+                        Lifecycle.Event.ON_PAUSE, Lifecycle.Event.ON_STOP -> {
+                            gameViewModel.onAppBackgrounded()
+                        }
+                        Lifecycle.Event.ON_RESUME -> {
+                            gameViewModel.onAppForegrounded(isGameplayScreen = currentScreen == AppScreen.GAMEPLAY)
+                        }
+                        else -> {}
+                    }
+                }
+                lifecycleOwner.lifecycle.addObserver(observer)
+                onDispose {
+                    lifecycleOwner.lifecycle.removeObserver(observer)
+                }
+            }
+
+            LaunchedEffect(currentScreen) {
+                if (currentScreen == AppScreen.GAMEPLAY) {
+                    gameViewModel.onNavigateToGameplay()
+                } else {
+                    gameViewModel.onNavigateAwayFromGameplay()
+                }
+            }
 
             val notificationPermissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestPermission()
@@ -326,6 +357,9 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onGameplayStarted = {
                                         gameViewModel.onGameplayStarted()
+                                    },
+                                    onPauseStateChanged = { isPaused ->
+                                        gameViewModel.setGamePaused(isPaused)
                                     }
                                 )
                             }

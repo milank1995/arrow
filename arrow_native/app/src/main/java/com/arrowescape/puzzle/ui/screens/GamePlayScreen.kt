@@ -83,12 +83,16 @@ fun GamePlayScreen(
     onDismissPreviewRays: () -> Unit = {},
     onAutoSolveClick: () -> Unit = {},
     onGameplayStarted: () -> Unit = {},
+    onPauseStateChanged: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(uiState.currentLevelNumber, uiState.activeDailyDate) {
         onGameplayStarted()
     }
     var showPauseDialog by remember { mutableStateOf(false) }
+    LaunchedEffect(showPauseDialog) {
+        onPauseStateChanged(showPauseDialog)
+    }
     var showSoundDialog by remember { mutableStateOf(false) }
     var hudToastMessage by remember { mutableStateOf<String?>(null) }
     var hudToastTimer by remember { mutableLongStateOf(0L) }
@@ -115,24 +119,34 @@ fun GamePlayScreen(
     var hasPlayedIdleSoundForPeriod by remember { mutableStateOf(false) }
     var prevHeartsRemaining by remember { mutableIntStateOf(uiState.heartsRemaining) }
 
-    // Heart loss / mistake triggers stuck assistance immediately
-    LaunchedEffect(uiState.heartsRemaining) {
-        if (uiState.heartsRemaining < prevHeartsRemaining) {
+    val isGameActivelyPlaying = !showPauseDialog && 
+                                !uiState.isGamePaused && 
+                                !uiState.isAppInBackground && 
+                                !uiState.isLevelComplete && 
+                                !uiState.isGameOver && 
+                                remainingArrowsCount > 0
+
+    // Heart loss / mistake triggers stuck assistance immediately during active play
+    LaunchedEffect(uiState.heartsRemaining, isGameActivelyPlaying) {
+        if (uiState.heartsRemaining < prevHeartsRemaining && isGameActivelyPlaying) {
             isIdlePromptActive = true
         }
         prevHeartsRemaining = uiState.heartsRemaining
     }
 
-    // 8-second idle timer triggers stuck assistance
-    LaunchedEffect(lastInteractionTime, remainingArrowsCount, uiState.isLevelComplete, uiState.isGameOver) {
-        if (uiState.isLevelComplete || uiState.isGameOver || remainingArrowsCount == 0) {
+    // 8-second idle timer triggers stuck assistance strictly during active gameplay
+    LaunchedEffect(lastInteractionTime, isGameActivelyPlaying) {
+        if (!isGameActivelyPlaying) {
             isIdlePromptActive = false
+            hasPlayedIdleSoundForPeriod = false
             return@LaunchedEffect
         }
         isIdlePromptActive = false
         hasPlayedIdleSoundForPeriod = false
-        delay(8000L) // 8s idle period
-        isIdlePromptActive = true
+        delay(8000L) // 8s idle period during active gameplay
+        if (isGameActivelyPlaying) {
+            isIdlePromptActive = true
+        }
     }
 
     LaunchedEffect(isIdlePromptActive) {

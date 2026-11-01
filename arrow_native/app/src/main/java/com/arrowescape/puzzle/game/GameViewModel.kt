@@ -81,7 +81,9 @@ data class GameUiState(
     val showDailyLaunchPrompt: Boolean = false,
     val restartTrigger: Long = 0L,
     val isAutoSolving: Boolean = false,
-    val isDevMode: Boolean = com.arrowescape.puzzle.BuildConfig.DEBUG
+    val isDevMode: Boolean = com.arrowescape.puzzle.BuildConfig.DEBUG,
+    val isGamePaused: Boolean = false,
+    val isAppInBackground: Boolean = false
 ) {
     val previewRayArrowId: String? get() = previewRayArrowIds.firstOrNull()
 }
@@ -96,7 +98,12 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private var occupancyMap = GridOccupancyMap(4, 4)
     private var cheerDismissJob: Job? = null
-    private var levelStartTime: Long = 0L
+    private var accumulatedActivePlayTimeMs: Long = 0L
+    private var currentSegmentStartTimeMs: Long = 0L
+    private var isTimerRunning: Boolean = false
+    private var isGamePaused: Boolean = false
+    private var isAppInBackground: Boolean = false
+    private var isGameplayScreenActive: Boolean = false
     private var hasGameplayStarted: Boolean = false
     private var levelMovesAttempted: Int = 0
     private var levelMistakesCount: Int = 0
@@ -225,9 +232,86 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun resumeActiveTimer() {
+        if (!hasGameplayStarted) return
+        if (!isGameplayScreenActive) return
+        if (isGamePaused || isAppInBackground) return
+        if (_uiState.value.isLevelComplete || _uiState.value.isGameOver) return
+        if (!isTimerRunning) {
+            currentSegmentStartTimeMs = android.os.SystemClock.elapsedRealtime()
+            isTimerRunning = true
+        }
+    }
+
+    fun pauseActiveTimer() {
+        if (isTimerRunning) {
+            val now = android.os.SystemClock.elapsedRealtime()
+            accumulatedActivePlayTimeMs += (now - currentSegmentStartTimeMs).coerceAtLeast(0L)
+            currentSegmentStartTimeMs = 0L
+            isTimerRunning = false
+        }
+    }
+
+    fun getActivePlayTimeSeconds(): Int {
+        val current = if (isTimerRunning && currentSegmentStartTimeMs > 0L) {
+            (android.os.SystemClock.elapsedRealtime() - currentSegmentStartTimeMs).coerceAtLeast(0L)
+        } else 0L
+        val totalMs = accumulatedActivePlayTimeMs + current
+        return (totalMs / 1000L).toInt().coerceAtLeast(1)
+    }
+
+    fun setGamePaused(paused: Boolean) {
+        isGamePaused = paused
+        _uiState.update { it.copy(isGamePaused = paused) }
+        if (paused) {
+            pauseActiveTimer()
+        } else {
+            resumeActiveTimer()
+        }
+    }
+
+    fun onAppBackgrounded() {
+        isAppInBackground = true
+        _uiState.update { it.copy(isAppInBackground = true) }
+        pauseActiveTimer()
+    }
+
+    fun onAppForegrounded(isGameplayScreen: Boolean) {
+        isAppInBackground = false
+        isGameplayScreenActive = isGameplayScreen
+        _uiState.update { it.copy(isAppInBackground = false) }
+        if (isGameplayScreen && !isGamePaused) {
+            resumeActiveTimer()
+        }
+    }
+
+    fun onNavigateToGameplay() {
+        isGameplayScreenActive = true
+        if (!isGamePaused && !isAppInBackground) {
+            resumeActiveTimer()
+        }
+    }
+
+    fun onNavigateAwayFromGameplay() {
+        isGameplayScreenActive = false
+        pauseActiveTimer()
+    }
+
+    private fun resetLevelMetrics() {
+        accumulatedActivePlayTimeMs = 0L
+        currentSegmentStartTimeMs = 0L
+        isTimerRunning = false
+        hasGameplayStarted = false
+        isGamePaused = false
+        levelMovesAttempted = 0
+        levelMistakesCount = 0
+        levelHintsUsedCount = 0
+        resetMilestoneFlags()
+    }
+
     fun onGameplayStarted() {
-        levelStartTime = System.currentTimeMillis()
         hasGameplayStarted = true
+        resumeActiveTimer()
         levelMovesAttempted = 0
         levelMistakesCount = 0
         levelHintsUsedCount = 0
@@ -235,12 +319,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun loadLevel(levelNumber: Int) {
         stopAutoSolve()
-        levelStartTime = 0L
-        hasGameplayStarted = false
-        levelMovesAttempted = 0
-        levelMistakesCount = 0
-        levelHintsUsedCount = 0
-        resetMilestoneFlags()
+        resetLevelMetrics()
         val level = LevelLoader.loadLevel(app, levelNumber)
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)
@@ -266,18 +345,14 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 dailyComplimentaryHintsRemaining = if (levelNumber <= 10) 999 else 1,
                 levelFreeHintsRemaining = if (levelNumber <= 10) 999 else 1,
                 showHintAdPrompt = false,
+                isGamePaused = false,
                 restartTrigger = System.currentTimeMillis()
             )
         }
     }
 
     fun startLockPuzzle() {
-        levelStartTime = 0L
-        hasGameplayStarted = false
-        levelMovesAttempted = 0
-        levelMistakesCount = 0
-        levelHintsUsedCount = 0
-        resetMilestoneFlags()
+        resetLevelMetrics()
         val level = LevelLoader.loadLockPuzzle(app)
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)
@@ -302,6 +377,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 dailyComplimentaryHintsRemaining = 1,
                 levelFreeHintsRemaining = 1,
                 showHintAdPrompt = false,
+                isGamePaused = false,
                 restartTrigger = System.currentTimeMillis()
             )
         }
@@ -309,12 +385,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun startDailyChallenge(dateString: String = LocalDate.now().toString()) {
         stopAutoSolve()
-        levelStartTime = 0L
-        hasGameplayStarted = false
-        levelMovesAttempted = 0
-        levelMistakesCount = 0
-        levelHintsUsedCount = 0
-        resetMilestoneFlags()
+        resetLevelMetrics()
         val date = try {
             LocalDate.parse(dateString)
         } catch (e: Exception) {
@@ -346,6 +417,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 dailyComplimentaryHintsRemaining = 0,
                 levelFreeHintsRemaining = 0,
                 showHintAdPrompt = false,
+                isGamePaused = false,
                 restartTrigger = System.currentTimeMillis()
             )
         }
@@ -367,9 +439,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             }
         }
 
-        if (!hasGameplayStarted || levelStartTime == 0L) {
-            levelStartTime = System.currentTimeMillis()
+        if (!hasGameplayStarted) {
             hasGameplayStarted = true
+            resumeActiveTimer()
         }
 
         markHasPlayedBefore()
@@ -906,9 +978,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private suspend fun triggerLevelVictory(finalArrows: List<Arrow>) {
         val completedLvl = _uiState.value.currentLevelNumber
-        val now = System.currentTimeMillis()
-        val actualStartTime = if (levelStartTime > 0L) levelStartTime else now - 4000L
-        val elapsedSec = ((now - actualStartTime) / 1000L).toInt().coerceAtLeast(1)
+        pauseActiveTimer()
+        val elapsedSec = getActivePlayTimeSeconds()
         val totalMoves = levelMovesAttempted.coerceAtLeast(1)
         val mistakes = levelMistakesCount
         val accuracy = (((totalMoves - mistakes).toFloat() / totalMoves.toFloat()) * 100).toInt().coerceIn(10, 100)
