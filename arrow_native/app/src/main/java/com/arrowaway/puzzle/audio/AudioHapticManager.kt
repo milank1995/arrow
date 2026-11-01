@@ -14,8 +14,7 @@ import kotlinx.coroutines.launch
 
 /**
  * Authentic Sound & Haptics Manager for Arrow Away.
- * Manages all gameplay audio clips extracted directly from the Unity reference,
- * providing microsecond low-latency playback via SoundPool with vibration synthesis.
+ * Manages low-latency gameplay audio clips and haptic feedback via SoundPool with vibration synthesis.
  */
 class AudioHapticManager(private val context: Context) {
 
