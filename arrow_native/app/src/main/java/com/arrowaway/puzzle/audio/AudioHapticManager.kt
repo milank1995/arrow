@@ -13,8 +13,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * Sound & Haptics Manager for Arrow Away.
- * Manages original gameplay audio and procedural combo push SFX,
+ * Authentic Sound & Haptics Manager for Arrow Away.
+ * Manages all gameplay audio clips extracted directly from the Unity reference,
  * providing microsecond low-latency playback via SoundPool with vibration synthesis.
  */
 class AudioHapticManager(private val context: Context) {
