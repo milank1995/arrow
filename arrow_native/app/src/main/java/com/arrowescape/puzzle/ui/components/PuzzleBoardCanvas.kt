@@ -31,7 +31,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -911,62 +910,6 @@ fun PuzzleBoardCanvas(
                     drawTutorialGuidance(boardOrigin, tutorialTargetArrow, cellSize, theme)
                 }
 
-            }
-        }
-
-        // Floating Reset Zoom pill button shown whenever zoomed in or panned away from default
-        val isZoomedOrPanned = kotlin.math.abs(scale - defaultScale) > 0.08f || kotlin.math.abs(panX) > 20f || kotlin.math.abs(panY) > 20f
-        if (!isCelebrationBurstActive && isZoomedOrPanned && introProgress.value >= 1f) {
-            Surface(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(12.dp)
-                    .clickable {
-                        panInertiaJob?.cancel()
-                        panInertiaJob = coroutineScope.launch {
-                            launch {
-                                val sAnim = Animatable(scale)
-                                sAnim.animateTo(defaultScale, tween(260, easing = FastOutSlowInEasing)) {
-                                    scale = value
-                                }
-                            }
-                            launch {
-                                val pxAnim = Animatable(panX)
-                                pxAnim.animateTo(0f, tween(260, easing = FastOutSlowInEasing)) {
-                                    panX = value
-                                }
-                            }
-                            launch {
-                                val pyAnim = Animatable(panY)
-                                pyAnim.animateTo(0f, tween(260, easing = FastOutSlowInEasing)) {
-                                    panY = value
-                                }
-                            }
-                        }
-                    },
-                shape = RoundedCornerShape(14.dp),
-                color = if (theme.isDark) Color(0xEE334155) else Color(0xEE1E293B),
-                border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine.copy(alpha = 0.5f)),
-                shadowElevation = 4.dp
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Refresh,
-                        contentDescription = "Reset Zoom",
-                        tint = Color.White,
-                        modifier = Modifier.size(13.dp)
-                    )
-                    Text(
-                        text = "Reset %.1fx".format(scale),
-                        color = Color.White,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
             }
         }
 

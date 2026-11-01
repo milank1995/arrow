@@ -3,6 +3,15 @@ package com.arrowescape.puzzle.ui.screens
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalHapticFeedback
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -47,6 +56,8 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.Job
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -78,9 +89,11 @@ fun SettingsScreen(
     isVibrationEnabled: Boolean,
     dailyRemindersEnabled: Boolean = true,
     activeTheme: ThemePreset,
+    isDevMode: Boolean = false,
     onToggleSound: () -> Unit,
     onToggleVibration: () -> Unit,
     onToggleDailyReminders: () -> Unit = {},
+    onToggleDevMode: () -> Unit = {},
     onThemeSelect: (ThemePreset) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -416,15 +429,55 @@ fun SettingsScreen(
 
                     // =========================================================
                     // SECTION 4: VERSION FOOTER (Arrow Decode Removed)
+                    // Secret: Press & hold for 10s to toggle Dev / Prod mode
                     // =========================================================
-                    Text(
-                        text = "Version $versionName",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = activeTheme.textSecondary.copy(alpha = 0.65f),
-                        letterSpacing = 0.8.sp,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
+                    val haptic = LocalHapticFeedback.current
+                    val coroutineScope = rememberCoroutineScope()
+
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .clip(RoundedCornerShape(8.dp))
+                            .pointerInput(isDevMode, onToggleDevMode) {
+                                awaitEachGesture {
+                                    val down = awaitFirstDown(requireUnconsumed = false)
+                                    val startPos = down.position
+
+                                    val timerJob: Job = coroutineScope.launch {
+                                        delay(10_000L)
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        onToggleDevMode()
+                                    }
+
+                                    try {
+                                        while (true) {
+                                            val event = awaitPointerEvent(PointerEventPass.Main)
+                                            val pointer = event.changes.firstOrNull { it.id == down.id }
+                                            if (pointer == null || !pointer.pressed) {
+                                                break
+                                            }
+                                            val distance = (pointer.position - startPos).getDistance()
+                                            if (distance > 120f) {
+                                                break
+                                            }
+                                            pointer.consume()
+                                        }
+                                    } finally {
+                                        timerJob.cancel()
+                                    }
+                                }
+                            }
+                            .padding(horizontal = 16.dp, vertical = 10.dp)
+                    ) {
+                        Text(
+                            text = if (isDevMode) "Version $versionName • DEV" else "Version $versionName",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (isDevMode) Color(0xFFDC2626) else activeTheme.textSecondary.copy(alpha = 0.65f),
+                            letterSpacing = 0.8.sp
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(24.dp))
                 }

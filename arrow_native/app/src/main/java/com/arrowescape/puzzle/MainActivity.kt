@@ -145,6 +145,7 @@ class MainActivity : ComponentActivity() {
                                     uiState = uiState,
                                     theme = uiState.activeTheme,
                                     isSoundOn = uiState.isSoundEnabled,
+                                    isDevMode = uiState.isDevMode,
                                     onPlayClick = {
                                         gameViewModel.playClick()
                                         currentScreen = AppScreen.GAMEPLAY
@@ -329,21 +330,25 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             AppScreen.DEV_TEST -> {
-                                DevTestScreen(
-                                    theme = uiState.activeTheme,
-                                    audioHapticManager = gameViewModel.audioHapticManager,
-                                    onBackToHomeClick = {
-                                        currentScreen = AppScreen.HOME
-                                    },
-                                    onPlayInRegularGame = { selectedLevel ->
-                                        gameViewModel.playClick()
-                                        gameViewModel.loadLevel(selectedLevel)
-                                        currentScreen = AppScreen.GAMEPLAY
-                                    },
-                                    onThemeSelect = { selectedTheme ->
-                                        gameViewModel.setTheme(selectedTheme)
-                                    }
-                                )
+                                if (uiState.isDevMode) {
+                                    DevTestScreen(
+                                        theme = uiState.activeTheme,
+                                        audioHapticManager = gameViewModel.audioHapticManager,
+                                        onBackToHomeClick = {
+                                            currentScreen = AppScreen.HOME
+                                        },
+                                        onPlayInRegularGame = { selectedLevel ->
+                                            gameViewModel.playClick()
+                                            gameViewModel.loadLevel(selectedLevel)
+                                            currentScreen = AppScreen.GAMEPLAY
+                                        },
+                                        onThemeSelect = { selectedTheme ->
+                                            gameViewModel.setTheme(selectedTheme)
+                                        }
+                                    )
+                                } else {
+                                    currentScreen = AppScreen.HOME
+                                }
                             }
                             AppScreen.SETTINGS -> {
                                 SettingsScreen(
@@ -351,6 +356,16 @@ class MainActivity : ComponentActivity() {
                                     isVibrationEnabled = uiState.isVibrationEnabled,
                                     dailyRemindersEnabled = uiState.dailyRemindersEnabled,
                                     activeTheme = uiState.activeTheme,
+                                    isDevMode = uiState.isDevMode,
+                                    onToggleDevMode = {
+                                        val isNowDev = gameViewModel.toggleDevMode()
+                                        val msg = if (isNowDev) {
+                                            "🛠️ Development Mode Enabled"
+                                        } else {
+                                            "🌟 Production Mode Enabled"
+                                        }
+                                        Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
+                                    },
                                     onToggleSound = {
                                         gameViewModel.toggleSound()
                                     },

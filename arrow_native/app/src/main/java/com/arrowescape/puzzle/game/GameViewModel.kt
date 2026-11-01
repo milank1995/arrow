@@ -80,7 +80,8 @@ data class GameUiState(
     val hasRequestedNotificationPermission: Boolean = false,
     val showDailyLaunchPrompt: Boolean = false,
     val restartTrigger: Long = 0L,
-    val isAutoSolving: Boolean = false
+    val isAutoSolving: Boolean = false,
+    val isDevMode: Boolean = com.arrowescape.puzzle.BuildConfig.DEBUG
 ) {
     val previewRayArrowId: String? get() = previewRayArrowIds.firstOrNull()
 }
@@ -146,7 +147,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         hasSeenDailyUnlockCelebration = data.hasSeenDailyUnlockCelebration,
                         dailyRemindersEnabled = data.dailyRemindersEnabled,
                         hasRequestedNotificationPermission = data.hasRequestedNotificationPermission,
-                        showDailyLaunchPrompt = shouldShowDailyPrompt
+                        showDailyLaunchPrompt = shouldShowDailyPrompt,
+                        isDevMode = data.isDevMode
                     )
                 }
 
@@ -168,6 +170,15 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     fun dismissDailyLaunchPrompt() {
         hasDismissedDailyLaunchPromptThisSession = true
         _uiState.update { it.copy(showDailyLaunchPrompt = false) }
+    }
+
+    fun toggleDevMode(): Boolean {
+        val newMode = !_uiState.value.isDevMode
+        viewModelScope.launch {
+            repository.setDevMode(newMode)
+        }
+        _uiState.update { it.copy(isDevMode = newMode) }
+        return newMode
     }
 
     fun markDailyUnlockCelebrationSeen() {

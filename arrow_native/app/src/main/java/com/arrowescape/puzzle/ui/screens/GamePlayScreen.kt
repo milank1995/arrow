@@ -287,8 +287,8 @@ fun GamePlayScreen(
                                 .padding(top = 4.dp)
                         )
 
-                        // Developer Auto-Solve Testing Tool (Debug builds only)
-                        if (BuildConfig.DEBUG) {
+                        // Developer Auto-Solve Testing Tool (Dev Mode only)
+                        if (uiState.isDevMode) {
                             AutoSolveButton(
                                 isAutoSolving = uiState.isAutoSolving,
                                 onClick = {
