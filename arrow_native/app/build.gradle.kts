@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.arrowescape.puzzle"
+    namespace = "com.arrowaway.puzzle"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.arrowescape.puzzle"
+        applicationId = "com.arrowaway.puzzle"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        android:name=".ArrowEscapeApplication"
+        android:name=".ArrowAwayApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_full_name"
@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:hardwareAccelerated="true"
         android:enableOnBackInvokedCallback="true"
-        android:theme="@style/Theme.ArrowEscape">
+        android:theme="@style/Theme.ArrowAway">
 
         <activity
             android:name=".MainActivity"
@@ -22,7 +22,7 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
-            android:theme="@style/Theme.ArrowEscape">
+            android:theme="@style/Theme.ArrowAway">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -34,7 +34,7 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="com.arrowescape.puzzle.ACTION_DAILY_REMINDER" />
+                <action android:name="com.arrowaway.puzzle.ACTION_DAILY_REMINDER" />
             </intent-filter>
         </receiver>
 
