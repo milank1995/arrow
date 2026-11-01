@@ -82,6 +82,8 @@ fun BoosterBar(
     heartsRemaining: Int? = null,
     maxHearts: Int = 3,
     theme: ThemePreset,
+    isHintVisible: Boolean = true,
+    isGridVisible: Boolean = true,
     onHintClick: () -> Unit,
     onGridClick: () -> Unit,
     onRestartClick: (() -> Unit)? = null,
@@ -139,9 +141,10 @@ fun BoosterBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 1. REFINED MODERN HINT ICON (Inactive White vs Active Glowing Yellow)
-            val combinedHintScale = hintPressScale.value * idlePulseScale
+            if (isHintVisible) {
+                val combinedHintScale = hintPressScale.value * idlePulseScale
 
-            Box(
+                Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .size(width = 64.dp, height = 70.dp)
@@ -231,6 +234,7 @@ fun BoosterBar(
                     }
                 }
             }
+            }
 
             // 2. CENTER: CLEAN LEVEL INDICATOR BADGE (Or Hearts if explicitly configured)
             if (levelNumber != null) {
@@ -259,9 +263,10 @@ fun BoosterBar(
             }
 
             // 3. GRID GUIDE ICON (Clean, borderless, floating with miniature eye badge)
-            val gridColor = if (isGridLinesActive) theme.arrowDefault else theme.textSecondary.copy(alpha = 0.75f)
+            if (isGridVisible) {
+                val gridColor = if (isGridLinesActive) theme.arrowDefault else theme.textSecondary.copy(alpha = 0.75f)
 
-            Box(
+                Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .size(width = 64.dp, height = 70.dp)
@@ -350,6 +355,7 @@ fun BoosterBar(
                         )
                     }
                 }
+            }
             }
 
             // 3. RESTART ICON (Shown in test mode)

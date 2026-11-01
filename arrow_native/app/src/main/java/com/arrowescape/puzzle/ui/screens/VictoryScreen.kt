@@ -268,7 +268,7 @@ fun VictoryScreen(
         else -> "Normal"
     }
     val timeFormatted = String.format(Locale.US, "%02d:%02d", completionTimeSeconds / 60, completionTimeSeconds % 60)
-    val scoreFormatted = NumberFormat.getNumberInstance(Locale.US).format(score)
+    val scoreFormatted = "$score Pts"
 
     Surface(
         color = theme.background,

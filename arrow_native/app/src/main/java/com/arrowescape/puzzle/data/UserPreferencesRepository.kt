@@ -35,7 +35,10 @@ data class UserGameData(
     val hasSeenDailyUnlockCelebration: Boolean = false,
     val dailyRemindersEnabled: Boolean = true,
     val hasRequestedNotificationPermission: Boolean = false,
-    val isDevMode: Boolean = com.arrowescape.puzzle.BuildConfig.DEBUG
+    val isDevMode: Boolean = com.arrowescape.puzzle.BuildConfig.DEBUG,
+    val isHintButtonVisible: Boolean = true,
+    val isGridButtonVisible: Boolean = true,
+    val hintTimerSeconds: Int = 10
 )
 
 class UserPreferencesRepository(private val context: Context) {
@@ -58,6 +61,9 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_DAILY_REMINDERS_ENABLED = booleanPreferencesKey("daily_reminders_enabled")
     private val KEY_NOTIFICATION_PERMISSION_REQUESTED = booleanPreferencesKey("has_requested_notification_permission")
     private val KEY_DEV_MODE = booleanPreferencesKey("is_dev_mode_enabled")
+    private val KEY_HINT_BUTTON_VISIBLE = booleanPreferencesKey("hint_button_visible")
+    private val KEY_GRID_BUTTON_VISIBLE = booleanPreferencesKey("grid_button_visible")
+    private val KEY_HINT_TIMER_SECONDS = intPreferencesKey("hint_timer_seconds")
 
     private val SYNC_PREFS = "arrow_sync_prefs"
     private val KEY_SYNC_HAS_PLAYED = "has_played_before"
@@ -113,7 +119,10 @@ class UserPreferencesRepository(private val context: Context) {
             hasSeenDailyUnlockCelebration = prefs[KEY_DAILY_UNLOCK_SEEN] ?: false,
             dailyRemindersEnabled = prefs[KEY_DAILY_REMINDERS_ENABLED] ?: true,
             hasRequestedNotificationPermission = prefs[KEY_NOTIFICATION_PERMISSION_REQUESTED] ?: false,
-            isDevMode = prefs[KEY_DEV_MODE] ?: com.arrowescape.puzzle.BuildConfig.DEBUG
+            isDevMode = prefs[KEY_DEV_MODE] ?: com.arrowescape.puzzle.BuildConfig.DEBUG,
+            isHintButtonVisible = prefs[KEY_HINT_BUTTON_VISIBLE] ?: true,
+            isGridButtonVisible = prefs[KEY_GRID_BUTTON_VISIBLE] ?: true,
+            hintTimerSeconds = (prefs[KEY_HINT_TIMER_SECONDS] ?: 10).coerceIn(5, 55)
         )
     }
 
@@ -269,6 +278,25 @@ class UserPreferencesRepository(private val context: Context) {
     suspend fun setDevMode(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[KEY_DEV_MODE] = enabled
+        }
+    }
+
+    suspend fun setHintButtonVisible(visible: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[KEY_HINT_BUTTON_VISIBLE] = visible
+        }
+    }
+
+    suspend fun setGridButtonVisible(visible: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[KEY_GRID_BUTTON_VISIBLE] = visible
+        }
+    }
+
+    suspend fun setHintTimerSeconds(seconds: Int) {
+        val clamped = seconds.coerceIn(5, 55)
+        context.dataStore.edit { prefs ->
+            prefs[KEY_HINT_TIMER_SECONDS] = clamped
         }
     }
 

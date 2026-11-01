@@ -83,7 +83,10 @@ data class GameUiState(
     val isAutoSolving: Boolean = false,
     val isDevMode: Boolean = com.arrowescape.puzzle.BuildConfig.DEBUG,
     val isGamePaused: Boolean = false,
-    val isAppInBackground: Boolean = false
+    val isAppInBackground: Boolean = false,
+    val isHintButtonVisible: Boolean = true,
+    val isGridButtonVisible: Boolean = true,
+    val hintTimerSeconds: Int = 10
 ) {
     val previewRayArrowId: String? get() = previewRayArrowIds.firstOrNull()
 }
@@ -155,7 +158,10 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         dailyRemindersEnabled = data.dailyRemindersEnabled,
                         hasRequestedNotificationPermission = data.hasRequestedNotificationPermission,
                         showDailyLaunchPrompt = shouldShowDailyPrompt,
-                        isDevMode = data.isDevMode
+                        isDevMode = data.isDevMode,
+                        isHintButtonVisible = data.isHintButtonVisible,
+                        isGridButtonVisible = data.isGridButtonVisible,
+                        hintTimerSeconds = data.hintTimerSeconds
                     )
                 }
 
@@ -295,6 +301,22 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     fun onNavigateAwayFromGameplay() {
         isGameplayScreenActive = false
         pauseActiveTimer()
+    }
+
+    fun setHintButtonVisible(visible: Boolean) {
+        viewModelScope.launch { repository.setHintButtonVisible(visible) }
+        _uiState.update { it.copy(isHintButtonVisible = visible) }
+    }
+
+    fun setGridButtonVisible(visible: Boolean) {
+        viewModelScope.launch { repository.setGridButtonVisible(visible) }
+        _uiState.update { it.copy(isGridButtonVisible = visible) }
+    }
+
+    fun setHintTimerSeconds(seconds: Int) {
+        val clamped = seconds.coerceIn(5, 55)
+        viewModelScope.launch { repository.setHintTimerSeconds(clamped) }
+        _uiState.update { it.copy(hintTimerSeconds = clamped) }
     }
 
     private fun resetLevelMetrics() {
@@ -991,15 +1013,20 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             else -> 1
         }
 
-        // Scale-proportional score rewarding board size, pace, health, and streak
+        // Option A: 100-Point Skill Mastery Score (0 - 100 Pts)
+        val baseClear = 50
+        val healthPoints = (_uiState.value.heartsRemaining.coerceIn(0, 3) * 10)
+        val hintPoints = when (levelHintsUsedCount) {
+            0 -> 10
+            1 -> 5
+            else -> 0
+        }
         val totalArrows = finalArrows.size
-        val arrowPoints = totalArrows * 50
-        val targetPaceSeconds = maxOf(30, totalArrows * 4)
-        val timeBonus = ((targetPaceSeconds - elapsedSec).coerceAtLeast(0) * 5)
-        val healthBonus = _uiState.value.heartsRemaining * 250
-        val streakBonus = _uiState.value.streakDays * 100
-        val modeClearBonus = if (_uiState.value.isDailyChallengeMode) 2000 else (500 + completedLvl * 25)
-        val finalScore = modeClearBonus + arrowPoints + timeBonus + healthBonus + streakBonus
+        val targetPaceSeconds = maxOf(25, totalArrows * 3)
+        val timeEfficiency = ((targetPaceSeconds - elapsedSec).toFloat() / targetPaceSeconds.toFloat()).coerceIn(0f, 1f)
+        val speedPoints = kotlin.math.round(timeEfficiency * 10f).toInt().coerceIn(0, 10)
+
+        val finalScore = (baseClear + healthPoints + hintPoints + speedPoints).coerceIn(50, 100)
 
         _uiState.update { state ->
             state.copy(

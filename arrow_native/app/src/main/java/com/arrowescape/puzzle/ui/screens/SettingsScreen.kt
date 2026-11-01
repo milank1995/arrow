@@ -42,11 +42,17 @@ import androidx.compose.material.icons.automirrored.filled.VolumeMute
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.GridOn
+import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Policy
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Vibration
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import kotlin.math.roundToInt
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -90,9 +96,15 @@ fun SettingsScreen(
     dailyRemindersEnabled: Boolean = true,
     activeTheme: ThemePreset,
     isDevMode: Boolean = false,
+    isHintButtonVisible: Boolean = true,
+    isGridButtonVisible: Boolean = true,
+    hintTimerSeconds: Int = 10,
     onToggleSound: () -> Unit,
     onToggleVibration: () -> Unit,
     onToggleDailyReminders: () -> Unit = {},
+    onToggleHintButton: () -> Unit = {},
+    onToggleGridButton: () -> Unit = {},
+    onHintTimerChange: (Int) -> Unit = {},
     onToggleDevMode: () -> Unit = {},
     onThemeSelect: (ThemePreset) -> Unit,
     onBackClick: () -> Unit,
@@ -346,7 +358,153 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     // =========================================================
-                    // SECTION 3: ABOUT & SUPPORT (Clean Consolidated Card)
+                    // SECTION 3: GAMEPLAY CONTROLS (Hint & Grid Settings)
+                    // =========================================================
+                    Text(
+                        text = "GAMEPLAY CONTROLS",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = 1.5.sp,
+                        color = activeTheme.textSecondary,
+                        modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
+                    )
+
+                    Surface(
+                        shape = RoundedCornerShape(22.dp),
+                        color = cardBg,
+                        border = BorderStroke(1.2.dp, cardBorder),
+                        shadowElevation = 2.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            // Hint Button Visibility Row
+                            SettingsToggleRow(
+                                title = "Hint Button",
+                                icon = Icons.Default.Lightbulb,
+                                iconBg = itemBg,
+                                iconTint = Color(0xFFF59E0B),
+                                isChecked = isHintButtonVisible,
+                                onCheckedChange = { onToggleHintButton() },
+                                activeTheme = activeTheme
+                            )
+
+                            HorizontalDivider(
+                                color = cardBorder.copy(alpha = 0.6f),
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            // Grid Guide (#) Button Visibility Row
+                            SettingsToggleRow(
+                                title = "Grid Guide (#) Button",
+                                icon = Icons.Default.GridOn,
+                                iconBg = itemBg,
+                                iconTint = activeTheme.arrowDefault,
+                                isChecked = isGridButtonVisible,
+                                onCheckedChange = { onToggleGridButton() },
+                                activeTheme = activeTheme
+                            )
+
+                            HorizontalDivider(
+                                color = cardBorder.copy(alpha = 0.6f),
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            // Hint Timer Configuration Row
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 14.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        Box(
+                                            contentAlignment = Alignment.Center,
+                                            modifier = Modifier
+                                                .size(36.dp)
+                                                .clip(RoundedCornerShape(11.dp))
+                                                .background(itemBg)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Timer,
+                                                contentDescription = "Hint Timer",
+                                                tint = activeTheme.textPrimary,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        }
+
+                                        Text(
+                                            text = "Hint Timer",
+                                            fontSize = 14.5.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = activeTheme.textPrimary,
+                                            style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                                        )
+                                    }
+
+                                    Surface(
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = activeTheme.arrowDefault.copy(alpha = 0.15f),
+                                        border = BorderStroke(1.dp, activeTheme.arrowDefault.copy(alpha = 0.35f))
+                                    ) {
+                                        Text(
+                                            text = "${hintTimerSeconds}s",
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.ExtraBold,
+                                            color = activeTheme.arrowDefault,
+                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                Slider(
+                                    value = hintTimerSeconds.toFloat(),
+                                    onValueChange = { onHintTimerChange(it.roundToInt().coerceIn(5, 55)) },
+                                    valueRange = 5f..55f,
+                                    steps = 9,
+                                    colors = SliderDefaults.colors(
+                                        thumbColor = activeTheme.arrowDefault,
+                                        activeTrackColor = activeTheme.arrowDefault,
+                                        inactiveTrackColor = activeTheme.gridLine.copy(alpha = 0.5f)
+                                    ),
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = "5s",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = activeTheme.textSecondary.copy(alpha = 0.65f)
+                                    )
+                                    Text(
+                                        text = "55s",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = activeTheme.textSecondary.copy(alpha = 0.65f)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // =========================================================
+                    // SECTION 4: ABOUT & SUPPORT (Clean Consolidated Card)
                     // =========================================================
                     Text(
                         text = "ABOUT & SUPPORT",
@@ -428,7 +586,7 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(28.dp))
 
                     // =========================================================
-                    // SECTION 4: VERSION FOOTER (Arrow Decode Removed)
+                    // SECTION 5: VERSION FOOTER (Arrow Decode Removed)
                     // Secret: Press & hold for 10s to toggle Dev / Prod mode
                     // =========================================================
                     val haptic = LocalHapticFeedback.current

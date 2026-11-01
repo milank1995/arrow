@@ -134,8 +134,8 @@ fun GamePlayScreen(
         prevHeartsRemaining = uiState.heartsRemaining
     }
 
-    // 8-second idle timer triggers stuck assistance strictly during active gameplay
-    LaunchedEffect(lastInteractionTime, isGameActivelyPlaying) {
+    // Dynamically configurable idle timer triggers stuck assistance strictly during active gameplay
+    LaunchedEffect(lastInteractionTime, isGameActivelyPlaying, uiState.hintTimerSeconds) {
         if (!isGameActivelyPlaying) {
             isIdlePromptActive = false
             hasPlayedIdleSoundForPeriod = false
@@ -143,7 +143,7 @@ fun GamePlayScreen(
         }
         isIdlePromptActive = false
         hasPlayedIdleSoundForPeriod = false
-        delay(8000L) // 8s idle period during active gameplay
+        delay(uiState.hintTimerSeconds * 1000L) // Configurable idle duration (default 10s, range 5-55s)
         if (isGameActivelyPlaying) {
             isIdlePromptActive = true
         }
@@ -339,6 +339,8 @@ fun GamePlayScreen(
                                 levelNumber = uiState.currentLevelNumber,
                                 isDailyChallenge = uiState.isDailyChallengeMode,
                                 theme = theme,
+                                isHintVisible = uiState.isHintButtonVisible,
+                                isGridVisible = uiState.isGridButtonVisible,
                                 onHintClick = {
                                     lastInteractionTime = System.currentTimeMillis()
                                     isIdlePromptActive = false

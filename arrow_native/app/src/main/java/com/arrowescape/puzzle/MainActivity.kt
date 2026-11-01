@@ -391,6 +391,20 @@ class MainActivity : ComponentActivity() {
                                     dailyRemindersEnabled = uiState.dailyRemindersEnabled,
                                     activeTheme = uiState.activeTheme,
                                     isDevMode = uiState.isDevMode,
+                                    isHintButtonVisible = uiState.isHintButtonVisible,
+                                    isGridButtonVisible = uiState.isGridButtonVisible,
+                                    hintTimerSeconds = uiState.hintTimerSeconds,
+                                    onToggleHintButton = {
+                                        gameViewModel.playClick()
+                                        gameViewModel.setHintButtonVisible(!uiState.isHintButtonVisible)
+                                    },
+                                    onToggleGridButton = {
+                                        gameViewModel.playClick()
+                                        gameViewModel.setGridButtonVisible(!uiState.isGridButtonVisible)
+                                    },
+                                    onHintTimerChange = { newSec ->
+                                        gameViewModel.setHintTimerSeconds(newSec)
+                                    },
                                     onToggleDevMode = {
                                         val isNowDev = gameViewModel.toggleDevMode()
                                         val msg = if (isNowDev) {
