@@ -17,7 +17,7 @@ object LevelLoader {
      * ensuring every level displays the true intended handcrafted puzzle layout.
      */
     fun loadLevel(context: Context, levelNumber: Int): LevelData {
-        val totalHandcraftedLevels = 151
+        val totalHandcraftedLevels = 150
         val actualLevelNumber = ((levelNumber - 1) % totalHandcraftedLevels) + 1
         val assetName = "levels/Level_$actualLevelNumber.json"
         try {
@@ -53,33 +53,16 @@ object LevelLoader {
      * Loads the featured Lock shape puzzle level.
      */
     fun loadLockPuzzle(context: Context): LevelData {
-        val assetName = "levels/Level_151.json"
-        try {
-            val jsonStr = context.assets.open(assetName).bufferedReader().use { it.readText() }
-            val level = parseLevelJson(151, jsonStr)
-            if (level != null && level.arrows.isNotEmpty()) {
-                return level
-            }
-        } catch (e: Exception) {}
-        return loadLevel(context, 151)
+        return loadLevel(context, 150)
     }
 
     /**
-     * Loads a daily level from assets/levels/DailyLevels_{N}.json.
+     * Loads a daily level mapped deterministically from the 150 curated levels.
      */
     fun loadDailyLevel(context: Context, dailyIndex: Int): LevelData {
-        val assetName = "levels/DailyLevels_$dailyIndex.json"
-        try {
-            val jsonStr = context.assets.open(assetName).bufferedReader().use { it.readText() }
-            val level = parseLevelJson(dailyIndex, jsonStr)
-            if (level != null && level.arrows.isNotEmpty()) {
-                return level
-            }
-        } catch (e: Exception) {
-            // Fall back to standard level
-        }
-
-        return loadLevel(context, dailyIndex)
+        val totalHandcraftedLevels = 150
+        val actualIndex = ((dailyIndex - 1) % totalHandcraftedLevels) + 1
+        return loadLevel(context, actualIndex)
     }
 
     data class ManifestLevelItem(

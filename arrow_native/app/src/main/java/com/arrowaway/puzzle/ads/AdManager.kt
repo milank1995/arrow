@@ -37,9 +37,9 @@ object AdManager {
 
     /**
      * Enforces official Google test ads across all ad units for integration testing & verification.
-     * Set to false when deploying the final production build to the Google Play Store.
+     * Set to false for production release so live AdMob ad units are loaded in Release builds.
      */
-    var forceTestAds: Boolean = true
+    var forceTestAds: Boolean = false
 
     private var cachedRewardedAd: RewardedAd? = null
     private var isRewardedLoading = false

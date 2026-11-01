@@ -463,13 +463,13 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
 
         analytics.logLevelStart(
-            levelNumber = 151,
+            levelNumber = 150,
             gameMode = "lock",
             totalArrows = level.arrows.size,
             gridDimensions = "${level.xSize}x${level.ySize}",
             attemptNumber = 1
         )
-        CrashLogger.setCustomKey("current_level", 151)
+        CrashLogger.setCustomKey("current_level", 150)
         CrashLogger.setCustomKey("game_mode", "lock")
 
         _uiState.update {
@@ -1277,7 +1277,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     rewardCoinsClaimed = dailyRewardCoins
                 )
             } else if (_uiState.value.isLockPuzzleMode) {
-                repository.recordLevelCompletion(151, stars)
+                repository.recordLevelCompletion(150, stars)
             } else {
                 repository.recordLevelCompletion(completedLevel, stars)
             }

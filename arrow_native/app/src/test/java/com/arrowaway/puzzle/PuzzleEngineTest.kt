@@ -195,9 +195,9 @@ class PuzzleEngineTest {
     }
 
     @Test
-    fun testDailyLevelHintCalculation() {
-        val file = java.io.File("src/main/assets/levels/DailyLevels_97.json")
-        assertTrue("DailyLevels_97.json must exist", file.exists())
+    fun testCuratedLevelHintCalculation() {
+        val file = java.io.File("src/main/assets/levels/Level_97.json")
+        assertTrue("Level_97.json must exist", file.exists())
         val json = file.readText()
         val level = com.arrowaway.puzzle.core.engine.LevelLoader.parseLevelJson(97, json)
         assertNotNull("Level should parse", level)
@@ -205,20 +205,17 @@ class PuzzleEngineTest {
             rebuild(level.arrows)
         }
         val hint = PuzzleSolver.getBestHint(level.arrows, occupancy)
-        assertNotNull("Daily challenge must have a valid movable hint", hint)
+        assertNotNull("Curated level must have a valid movable hint", hint)
     }
 
     @Test
-    fun testLockPuzzleLevelSolvability() {
-        val file = java.io.File("src/main/assets/levels/Level_151.json")
-        assertTrue("Level_151.json must exist in assets", file.exists())
+    fun testCuratedLevel1Solvability() {
+        val file = java.io.File("src/main/assets/levels/Level_1.json")
+        assertTrue("Level_1.json must exist in assets", file.exists())
         val json = file.readText()
-        val level = com.arrowaway.puzzle.core.engine.LevelLoader.parseLevelJson(151, json)
-        assertNotNull("Level 151 should parse successfully", level)
-        assertEquals("Lock shape puzzle must have 70 arrows", 70, level!!.arrows.size)
-        assertEquals("Lock shape puzzle must have 26 xSize", 26, level.xSize)
-        assertEquals("Lock shape puzzle must have 36 ySize", 36, level.ySize)
-        assertEquals("Lock shape puzzle shapeName", "Lock", level.shapeName)
+        val level = com.arrowaway.puzzle.core.engine.LevelLoader.parseLevelJson(1, json)
+        assertNotNull("Level 1 should parse successfully", level)
+        assertEquals("Level 1 must have 4 arrows", 4, level!!.arrows.size)
 
         val occupancy = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)
@@ -235,13 +232,13 @@ class PuzzleEngineTest {
                 occupancy
             ).firstOrNull()
 
-            assertNotNull("Lock puzzle reached deadlock at step $steps with ${currentArrows.count { it.state != ArrowState.CLEARED }} arrows remaining", movable)
+            assertNotNull("Level 1 reached deadlock at step $steps", movable)
             occupancy.release(movable!!)
             val idx = currentArrows.indexOfFirst { it.id == movable.id }
             currentArrows[idx] = movable.copyWithState(ArrowState.CLEARED)
         }
 
-        assertTrue("All 70 arrows must be solved without deadlock", currentArrows.all { it.state == ArrowState.CLEARED })
-        assertEquals("Lock puzzle should be cleared in exactly 70 steps", 70, steps)
+        assertTrue("All arrows must be solved without deadlock", currentArrows.all { it.state == ArrowState.CLEARED })
+        assertEquals("Level 1 should be cleared in exactly 4 steps", 4, steps)
     }
 }

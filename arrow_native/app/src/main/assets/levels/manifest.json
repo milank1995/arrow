@@ -5,7 +5,7 @@
     "Difficulty": "Easy",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 4,
     "YSize": 5
   },
@@ -15,7 +15,7 @@
     "Difficulty": "Easy",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 8,
     "YSize": 10
   },
@@ -25,7 +25,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 10,
     "YSize": 10
   },
@@ -35,7 +35,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 11,
     "YSize": 10
   },
@@ -45,7 +45,7 @@
     "Difficulty": "Hard",
     "ShapeName": "Heart",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 28,
     "YSize": 24
   },
@@ -55,7 +55,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 15,
     "YSize": 15
   },
@@ -65,7 +65,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 18,
     "YSize": 25
   },
@@ -75,7 +75,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 29,
     "YSize": 39
   },
@@ -85,19 +85,19 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 14,
     "YSize": 18
   },
   {
     "LevelNumber": 10,
-    "ArrowCount": 52,
-    "Difficulty": "Hard",
-    "ShapeName": "Robot",
+    "ArrowCount": 70,
+    "Difficulty": "Medium",
+    "ShapeName": "Lock",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 35,
-    "YSize": 40
+    "SourceCategory": "Arrow Away Handcrafted Curated",
+    "XSize": 26,
+    "YSize": 36
   },
   {
     "LevelNumber": 11,
@@ -105,7 +105,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 16,
     "YSize": 22
   },
@@ -115,7 +115,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 22,
     "YSize": 29
   },
@@ -125,7 +125,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 22,
     "YSize": 32
   },
@@ -135,19 +135,19 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 19,
     "YSize": 24
   },
   {
     "LevelNumber": 15,
-    "ArrowCount": 81,
-    "Difficulty": "Hard",
-    "ShapeName": "Panda",
+    "ArrowCount": 76,
+    "Difficulty": "Medium",
+    "ShapeName": "Magnet",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 45,
-    "YSize": 54
+    "SourceCategory": "Arrow Away Handcrafted Curated",
+    "XSize": 41,
+    "YSize": 41
   },
   {
     "LevelNumber": 16,
@@ -155,7 +155,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 20,
     "YSize": 30
   },
@@ -165,7 +165,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 18,
     "YSize": 25
   },
@@ -175,7 +175,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 34,
     "YSize": 40
   },
@@ -185,7 +185,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 20,
     "YSize": 28
   },
@@ -195,7 +195,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": "Swan",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 45,
     "YSize": 63
   },
@@ -205,7 +205,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 22,
     "YSize": 30
   },
@@ -215,7 +215,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 32,
     "YSize": 42
   },
@@ -225,7 +225,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 22,
     "YSize": 32
   },
@@ -235,19 +235,19 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 18,
     "YSize": 26
   },
   {
     "LevelNumber": 25,
-    "ArrowCount": 130,
-    "Difficulty": "Super Hard",
-    "ShapeName": "Strawberry",
+    "ArrowCount": 70,
+    "Difficulty": "Medium",
+    "ShapeName": "Ice Cream Cup",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 64,
-    "YSize": 108
+    "SourceCategory": "Arrow Away Handcrafted Curated",
+    "XSize": 83,
+    "YSize": 126
   },
   {
     "LevelNumber": 26,
@@ -255,7 +255,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 23,
     "YSize": 36
   },
@@ -265,7 +265,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 32,
     "YSize": 45
   },
@@ -275,7 +275,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 34,
     "YSize": 43
   },
@@ -285,7 +285,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 18,
     "YSize": 25
   },
@@ -295,7 +295,7 @@
     "Difficulty": "Hard",
     "ShapeName": "Unknown Shape 2",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 35,
     "YSize": 48
   },
@@ -305,7 +305,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 28,
     "YSize": 38
   },
@@ -315,7 +315,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 32,
     "YSize": 52
   },
@@ -325,7 +325,7 @@
     "Difficulty": "Medium",
     "ShapeName": "Clock",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 51,
     "YSize": 57
   },
@@ -335,7 +335,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 35,
     "YSize": 49
   },
@@ -345,7 +345,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 31,
     "YSize": 25
   },
@@ -355,7 +355,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 19,
     "YSize": 23
   },
@@ -365,7 +365,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 37,
     "YSize": 49
   },
@@ -375,7 +375,7 @@
     "Difficulty": "Medium",
     "ShapeName": "Jellyfish",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 46,
     "YSize": 56
   },
@@ -385,7 +385,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 32,
     "YSize": 52
   },
@@ -395,7 +395,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 32,
     "YSize": 41
   },
@@ -405,7 +405,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 16,
     "YSize": 22
   },
@@ -415,7 +415,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 35,
     "YSize": 55
   },
@@ -425,7 +425,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 18,
     "YSize": 25
   },
@@ -435,7 +435,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 37,
     "YSize": 52
   },
@@ -445,7 +445,7 @@
     "Difficulty": "Medium",
     "ShapeName": "Squirrel",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 43,
     "YSize": 50
   },
@@ -455,7 +455,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 29,
     "YSize": 47
   },
@@ -465,7 +465,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 18,
     "YSize": 25
   },
@@ -475,7 +475,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 27,
     "YSize": 36
   },
@@ -485,7 +485,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 20,
     "YSize": 24
   },
@@ -495,7 +495,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": "Cactus",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 37,
     "YSize": 49
   },
@@ -505,7 +505,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 38,
     "YSize": 47
   },
@@ -515,7 +515,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 27,
     "YSize": 37
   },
@@ -525,7 +525,7 @@
     "Difficulty": "Medium",
     "ShapeName": "Hourglass",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 56,
     "YSize": 94
   },
@@ -535,7 +535,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 38,
     "YSize": 51
   },
@@ -545,7 +545,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 28,
     "YSize": 42
   },
@@ -555,7 +555,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 36,
     "YSize": 53
   },
@@ -565,7 +565,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 26,
     "YSize": 41
   },
@@ -575,7 +575,7 @@
     "Difficulty": "Hard",
     "ShapeName": "Magnolia Flower",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 50,
     "YSize": 70
   },
@@ -585,7 +585,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 20,
     "YSize": 28
   },
@@ -595,7 +595,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 30,
     "YSize": 46
   },
@@ -605,7 +605,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 36,
     "YSize": 49
   },
@@ -615,7 +615,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 26,
     "YSize": 40
   },
@@ -625,7 +625,7 @@
     "Difficulty": "Medium",
     "ShapeName": "Dolphin",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 48,
     "YSize": 48
   },
@@ -635,7 +635,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 27,
     "YSize": 30
   },
@@ -645,7 +645,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 16,
     "YSize": 22
   },
@@ -655,7 +655,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 37,
     "YSize": 56
   },
@@ -665,7 +665,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 20,
     "YSize": 28
   },
@@ -675,7 +675,7 @@
     "Difficulty": "Hard",
     "ShapeName": "Trophy",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 43,
     "YSize": 64
   },
@@ -685,7 +685,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 18,
     "YSize": 25
   },
@@ -695,7 +695,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 37,
     "YSize": 47
   },
@@ -705,7 +705,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 25,
     "YSize": 32
   },
@@ -715,7 +715,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 31,
     "YSize": 34
   },
@@ -725,7 +725,7 @@
     "Difficulty": "Medium",
     "ShapeName": "Goldfish",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 89,
     "YSize": 85
   },
@@ -735,7 +735,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 23,
     "YSize": 35
   },
@@ -745,7 +745,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 23,
     "YSize": 35
   },
@@ -755,7 +755,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 29,
     "YSize": 44
   },
@@ -765,7 +765,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 18,
     "YSize": 25
   },
@@ -775,19 +775,19 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 35,
     "YSize": 55
   },
   {
     "LevelNumber": 79,
-    "ArrowCount": 68,
-    "Difficulty": "Medium",
-    "ShapeName": "Snowflake",
+    "ArrowCount": 130,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Strawberry",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
-    "XSize": 59,
-    "YSize": 57
+    "SourceCategory": "Arrow Away Handcrafted Curated",
+    "XSize": 64,
+    "YSize": 108
   },
   {
     "LevelNumber": 80,
@@ -795,7 +795,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 37,
     "YSize": 53
   },
@@ -805,7 +805,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 18,
     "YSize": 25
   },
@@ -815,7 +815,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 36,
     "YSize": 38
   },
@@ -825,7 +825,7 @@
     "Difficulty": "Medium",
     "ShapeName": "Sparrow",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 70,
     "YSize": 63
   },
@@ -835,7 +835,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 23,
     "YSize": 30
   },
@@ -845,7 +845,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 35,
     "YSize": 46
   },
@@ -855,7 +855,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 23,
     "YSize": 31
   },
@@ -865,7 +865,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 37,
     "YSize": 48
   },
@@ -875,7 +875,7 @@
     "Difficulty": "Medium",
     "ShapeName": "Dog",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 38,
     "YSize": 47
   },
@@ -885,7 +885,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 16,
     "YSize": 22
   },
@@ -895,7 +895,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 47,
     "YSize": 47
   },
@@ -905,7 +905,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 17,
     "YSize": 25
   },
@@ -915,7 +915,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 36,
     "YSize": 45
   },
@@ -925,7 +925,7 @@
     "Difficulty": "Medium",
     "ShapeName": "Seal",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 50,
     "YSize": 51
   },
@@ -935,7 +935,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 37,
     "YSize": 40
   },
@@ -945,7 +945,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 22,
     "YSize": 32
   },
@@ -955,7 +955,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 23,
     "YSize": 26
   },
@@ -965,7 +965,7 @@
     "Difficulty": "Medium",
     "ShapeName": "Rabbit",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 53,
     "YSize": 63
   },
@@ -975,7 +975,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 28,
     "YSize": 36
   },
@@ -985,7 +985,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 32,
     "YSize": 45
   },
@@ -995,7 +995,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 36,
     "YSize": 55
   },
@@ -1005,7 +1005,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 22,
     "YSize": 32
   },
@@ -1015,7 +1015,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 35,
     "YSize": 58
   },
@@ -1025,7 +1025,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 31,
     "YSize": 40
   },
@@ -1035,7 +1035,7 @@
     "Difficulty": "Medium",
     "ShapeName": "Castle",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 49,
     "YSize": 55
   },
@@ -1045,7 +1045,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 28,
     "YSize": 34
   },
@@ -1055,7 +1055,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 33,
     "YSize": 36
   },
@@ -1065,7 +1065,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 23,
     "YSize": 30
   },
@@ -1075,7 +1075,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 30,
     "YSize": 30
   },
@@ -1085,7 +1085,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": "Winter Bird",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 49,
     "YSize": 79
   },
@@ -1095,7 +1095,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 35,
     "YSize": 38
   },
@@ -1105,7 +1105,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 35,
     "YSize": 49
   },
@@ -1115,7 +1115,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 29,
     "YSize": 45
   },
@@ -1125,7 +1125,7 @@
     "Difficulty": "Medium",
     "ShapeName": "Elephant",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 51,
     "YSize": 62
   },
@@ -1135,7 +1135,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 29,
     "YSize": 39
   },
@@ -1145,7 +1145,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 19,
     "YSize": 26
   },
@@ -1155,7 +1155,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 37,
     "YSize": 60
   },
@@ -1165,7 +1165,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 24,
     "YSize": 34
   },
@@ -1175,7 +1175,7 @@
     "Difficulty": "Medium",
     "ShapeName": "Honeybee",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 47,
     "YSize": 50
   },
@@ -1185,7 +1185,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 28,
     "YSize": 38
   },
@@ -1195,7 +1195,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 28,
     "YSize": 31
   },
@@ -1205,7 +1205,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 35,
     "YSize": 56
   },
@@ -1215,7 +1215,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 21,
     "YSize": 25
   },
@@ -1225,7 +1225,7 @@
     "Difficulty": "Medium",
     "ShapeName": "Star",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 68,
     "YSize": 91
   },
@@ -1235,7 +1235,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 36,
     "YSize": 38
   },
@@ -1245,7 +1245,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 32,
     "YSize": 44
   },
@@ -1255,7 +1255,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 28,
     "YSize": 41
   },
@@ -1265,7 +1265,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 22,
     "YSize": 33
   },
@@ -1275,7 +1275,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": "Sunflower",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 46,
     "YSize": 66
   },
@@ -1285,7 +1285,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 22,
     "YSize": 36
   },
@@ -1295,7 +1295,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 32,
     "YSize": 48
   },
@@ -1305,7 +1305,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 18,
     "YSize": 25
   },
@@ -1315,7 +1315,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 35,
     "YSize": 44
   },
@@ -1325,7 +1325,7 @@
     "Difficulty": "Medium",
     "ShapeName": "Beach Umbrella",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 29,
     "YSize": 29
   },
@@ -1335,7 +1335,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 32,
     "YSize": 47
   },
@@ -1345,7 +1345,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 31,
     "YSize": 46
   },
@@ -1355,7 +1355,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 30,
     "YSize": 47
   },
@@ -1365,7 +1365,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 25,
     "YSize": 32
   },
@@ -1375,7 +1375,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": "Whale",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 60,
     "YSize": 60
   },
@@ -1385,7 +1385,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 25,
     "YSize": 32
   },
@@ -1395,7 +1395,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 31,
     "YSize": 37
   },
@@ -1405,7 +1405,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 33,
     "YSize": 47
   },
@@ -1415,7 +1415,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 32,
     "YSize": 51
   },
@@ -1425,7 +1425,7 @@
     "Difficulty": "Medium",
     "ShapeName": "Catstar",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 60,
     "YSize": 55
   },
@@ -1435,7 +1435,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 38,
     "YSize": 36
   },
@@ -1445,7 +1445,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 38,
     "YSize": 58
   },
@@ -1455,7 +1455,7 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 23,
     "YSize": 31
   },
@@ -1465,7 +1465,7 @@
     "Difficulty": "Hard",
     "ShapeName": "Lion",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 50,
     "YSize": 80
   },
@@ -1475,7 +1475,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Existing 1K Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 25,
     "YSize": 35
   },
@@ -1485,7 +1485,7 @@
     "Difficulty": "Hard",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "New Unity Normal Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 22,
     "YSize": 32
   },
@@ -1495,7 +1495,7 @@
     "Difficulty": "Super Hard",
     "ShapeName": "Rose Grand Finale",
     "IsShape": true,
-    "SourceCategory": "Shape Puzzle Levels",
+    "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 50,
     "YSize": 92
   }

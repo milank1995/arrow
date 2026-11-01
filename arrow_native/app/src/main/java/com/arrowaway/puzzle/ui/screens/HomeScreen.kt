@@ -405,7 +405,7 @@ fun HomeScreen(
                                             .size(36.dp)
                                             .clip(CircleShape)
                                             .clickable {
-                                                val next = (uiState.currentLevelNumber + 1).coerceAtMost(151)
+                                                val next = (uiState.currentLevelNumber + 1).coerceAtMost(150)
                                                 onLevelChange(next)
                                             }
                                     ) {
@@ -641,7 +641,7 @@ fun HomeScreen(
                             }
 
                             // Lock Puzzle Button
-                            val isLockCompleted = (uiState.levelStars[151] ?: 0) > 0 || uiState.lastCompletedLevelNumber >= 151
+                            val isLockCompleted = (uiState.levelStars[150] ?: 0) > 0 || uiState.lastCompletedLevelNumber >= 150
                             Surface(
                                 shape = RoundedCornerShape(14.dp),
                                 color = theme.surface,
