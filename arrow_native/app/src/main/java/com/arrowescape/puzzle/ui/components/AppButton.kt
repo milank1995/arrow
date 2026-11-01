@@ -35,7 +35,7 @@ import com.arrowescape.puzzle.ui.theme.ThemePreset
 import kotlinx.coroutines.launch
 
 /**
- * Standardized, clean, modern flat button design system for Arrow Decode.
+ * Standardized, clean, modern flat button design system for Arrow Away.
  * Features:
  * - Clean flat geometry with 16dp rounded corners.
  * - Solid theme-accent background with subtle ambient blur elevation (zero bulky 3D bevels).

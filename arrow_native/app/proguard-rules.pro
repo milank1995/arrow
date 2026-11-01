@@ -1,4 +1,4 @@
-# Arrow Escape native ProGuard rules
+# Arrow Away native ProGuard rules
 -keepclassmembers class * {
     @androidx.compose.runtime.Composable *;
 }

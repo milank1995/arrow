@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * Authentic Sound & Haptics Manager for Arrow Escape.
+ * Authentic Sound & Haptics Manager for Arrow Away.
  * Manages all gameplay audio clips extracted directly from the Unity reference,
  * providing microsecond low-latency playback via SoundPool with vibration synthesis.
  */
@@ -145,7 +145,7 @@ class AudioHapticManager(private val context: Context) {
     }
 
     /**
-     * Arrow escape / slide whoosh with combo escalation.
+     * Arrow fly / slide whoosh with combo escalation.
      */
     fun playArrowFly(comboCount: Int = 0) {
         if (isSoundEnabled) {

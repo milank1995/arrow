@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Arrow Escape</string>
-    <string name="subtitle">Directional Puzzle Maze</string>
+    <string name="app_name">Arrow Away</string>
+    <string name="app_full_name">Arrow Away: Tap Logic Puzzle</string>
+    <string name="subtitle">Tap Logic Puzzle</string>
     <string name="play">PLAY</string>
     <string name="daily_challenge">DAILY CHALLENGE</string>
     <string name="level_prefix">Level %1$d</string>

@@ -65,7 +65,7 @@ import com.arrowescape.puzzle.ui.theme.ThemePreset
 import java.time.LocalDate
 
 /**
- * Modern, minimal, theme-adaptive homepage for Arrow Decode.
+ * Modern, minimal, theme-adaptive homepage for Arrow Away.
  * Features:
  * - Centered vertical hierarchy: Level Card -> Play Button -> Daily Challenge Button.
  * - Compact vertical orientation (max 284dp width) with generous side margins to avoid horizontal stretching.
@@ -275,7 +275,7 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
-                            text = "ARROW DECODE",
+                            text = "ARROW AWAY",
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Black,
                             letterSpacing = 5.sp,
@@ -284,7 +284,7 @@ fun HomeScreen(
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "MINDFUL PUZZLE",
+                            text = "TAP LOGIC PUZZLE",
                             fontSize = 9.5.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 3.sp,

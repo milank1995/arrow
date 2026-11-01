@@ -136,8 +136,8 @@ fun SettingsScreen(
         try {
             val intent = Intent(Intent.ACTION_SENDTO).apply {
                 data = Uri.parse("mailto:")
-                putExtra(Intent.EXTRA_EMAIL, arrayOf("support@arrowescape.com"))
-                putExtra(Intent.EXTRA_SUBJECT, "Arrow Decode Feedback (v$versionName)")
+                putExtra(Intent.EXTRA_EMAIL, arrayOf("support@arrowaway.com"))
+                putExtra(Intent.EXTRA_SUBJECT, "Arrow Away Feedback (v$versionName)")
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             context.startActivity(intent)
@@ -525,7 +525,7 @@ fun SettingsScreen(
                         Column(modifier = Modifier.fillMaxWidth()) {
                             // Rate Us Row
                             SettingsLinkRow(
-                                title = "Rate Arrow Decode",
+                                title = "Rate Arrow Away",
                                 icon = Icons.Default.Star,
                                 iconBg = itemBg,
                                 iconTint = Color(0xFFD97706),
@@ -561,7 +561,7 @@ fun SettingsScreen(
                                 icon = Icons.Default.Lock,
                                 iconBg = itemBg,
                                 iconTint = activeTheme.textSecondary,
-                                onClick = { openUrl("https://arrowescape.com/privacy") },
+                                onClick = { openUrl("https://arrowaway.com/privacy") },
                                 activeTheme = activeTheme
                             )
 
@@ -577,7 +577,7 @@ fun SettingsScreen(
                                 icon = Icons.Default.Policy,
                                 iconBg = itemBg,
                                 iconTint = activeTheme.textSecondary,
-                                onClick = { openUrl("https://arrowescape.com/terms") },
+                                onClick = { openUrl("https://arrowaway.com/terms") },
                                 activeTheme = activeTheme
                             )
                         }
@@ -586,7 +586,7 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(28.dp))
 
                     // =========================================================
-                    // SECTION 5: VERSION FOOTER (Arrow Decode Removed)
+                    // SECTION 5: VERSION FOOTER
                     // Secret: Press & hold for 10s to toggle Dev / Prod mode
                     // =========================================================
                     val haptic = LocalHapticFeedback.current
