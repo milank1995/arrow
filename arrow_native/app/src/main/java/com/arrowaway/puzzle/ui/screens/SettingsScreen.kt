@@ -1,5 +1,7 @@
 package com.arrowaway.puzzle.ui.screens
 
+import com.arrowaway.puzzle.ui.components.BannerAdView
+
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
@@ -640,6 +642,8 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                 }
             }
+
+            BannerAdView(modifier = Modifier.padding(vertical = 4.dp))
         }
     }
 }

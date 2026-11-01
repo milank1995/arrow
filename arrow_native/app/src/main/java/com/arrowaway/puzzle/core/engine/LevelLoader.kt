@@ -27,7 +27,17 @@ object LevelLoader {
                 return level
             }
         } catch (e: Exception) {
-            // If any asset read issue, load Level 1 as safe authentic fallback
+            // If any asset read issue, record and load Level 1 as safe authentic fallback
+            com.arrowaway.puzzle.analytics.CrashLogger.recordException(e, "LevelLoader.loadLevel($levelNumber)")
+            com.arrowaway.puzzle.analytics.AnalyticsManager.getInstance(context).logNonFatalException(
+                exceptionClass = e.javaClass.simpleName,
+                message = e.message ?: "",
+                location = "LevelLoader.loadLevel"
+            )
+            com.arrowaway.puzzle.analytics.AnalyticsManager.getInstance(context).logAssetLoadFallback(
+                requestedLevel = levelNumber,
+                fallbackLevel = 1
+            )
         }
 
         try {

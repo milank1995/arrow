@@ -1,5 +1,7 @@
 package com.arrowaway.puzzle
 
+import com.arrowaway.puzzle.ads.AdManager
+
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -125,7 +127,18 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
+            val inAppReviewManager = remember { com.arrowaway.puzzle.review.InAppReviewManager(this@MainActivity) }
+
+            LaunchedEffect(uiState.reviewPromptTrigger) {
+                if (uiState.reviewPromptTrigger > 0L) {
+                    inAppReviewManager.launchReviewFlow {
+                        gameViewModel.onReviewPromptHandled()
+                    }
+                }
+            }
+
             LaunchedEffect(currentScreen) {
+                gameViewModel.analytics.logScreenView(currentScreen.name)
                 if (currentScreen == AppScreen.GAMEPLAY) {
                     gameViewModel.onNavigateToGameplay()
                 } else {
@@ -147,9 +160,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            // Automatically request Android notification permission on app launch if Level 10+ has already been completed
+            // Automatically request Android notification permission on app launch if daily challenge unlock level has already been reached
             LaunchedEffect(uiState.currentLevelNumber, uiState.lastCompletedLevelNumber, uiState.hasRequestedNotificationPermission) {
-                val isPastLevel10 = uiState.currentLevelNumber > 10 || uiState.lastCompletedLevelNumber >= 10
+                val unlockLevel = com.arrowaway.puzzle.config.RemoteConfigManager.dailyChallengeUnlockLevel
+                val isPastLevel10 = uiState.currentLevelNumber > unlockLevel || uiState.lastCompletedLevelNumber >= unlockLevel
                 if (isPastLevel10 && !uiState.hasRequestedNotificationPermission) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         val hasPermission = ContextCompat.checkSelfPermission(
@@ -183,18 +197,23 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onDailyChallengeClick = {
                                         gameViewModel.playClick()
-                                        val isUnlocked = uiState.currentLevelNumber > 10 || 
-                                            uiState.lastCompletedLevelNumber >= 10 || 
+                                        if (!com.arrowaway.puzzle.config.RemoteConfigManager.isDailyChallengeEnabled) {
+                                            Toast.makeText(this@MainActivity, "Daily Challenges are temporarily offline for maintenance.", Toast.LENGTH_SHORT).show()
+                                            return@HomeScreen
+                                        }
+                                        val unlockLevel = com.arrowaway.puzzle.config.RemoteConfigManager.dailyChallengeUnlockLevel
+                                        val isUnlocked = uiState.currentLevelNumber > unlockLevel || 
+                                            uiState.lastCompletedLevelNumber >= unlockLevel || 
                                             uiState.hasSeenDailyUnlockCelebration
 
                                         if (isUnlocked) {
                                             currentScreen = AppScreen.DAILY_CHALLENGE
                                         } else {
                                             val completed = uiState.lastCompletedLevelNumber.coerceAtLeast(uiState.currentLevelNumber - 1)
-                                            val needed = (10 - completed).coerceAtLeast(1)
+                                            val needed = (unlockLevel - completed).coerceAtLeast(1)
                                             Toast.makeText(
                                                 this@MainActivity,
-                                                "Complete Level 10 to unlock Daily Challenges! ($needed level${if (needed > 1) "s" else ""} left)",
+                                                "Complete Level $unlockLevel to unlock Daily Challenges! ($needed level${if (needed > 1) "s" else ""} left)",
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
@@ -275,11 +294,25 @@ class MainActivity : ComponentActivity() {
                                         }
                                         val wasDaily = uiState.isDailyChallengeMode
                                         val wasLock = uiState.isLockPuzzleMode
-                                        gameViewModel.nextLevel()
-                                        if (wasDaily) {
-                                            currentScreen = AppScreen.DAILY_CHALLENGE
-                                        } else if (wasLock) {
-                                            currentScreen = AppScreen.HOME
+                                        val curLevel = uiState.currentLevelNumber
+
+                                        val advance = {
+                                            gameViewModel.nextLevel()
+                                            if (wasDaily) {
+                                                currentScreen = AppScreen.DAILY_CHALLENGE
+                                            } else if (wasLock) {
+                                                currentScreen = AppScreen.HOME
+                                            }
+                                        }
+
+                                        if (!wasDaily && !wasLock) {
+                                            AdManager.showInterstitialAd(
+                                                activity = this@MainActivity,
+                                                currentLevel = curLevel,
+                                                onDismissed = { advance() }
+                                            )
+                                        } else {
+                                            advance()
                                         }
                                     },
                                     onStartDailyChallengeClick = {
@@ -309,6 +342,7 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.restartLevel()
                                     },
                                     onBackToHomeClick = {
+                                        gameViewModel.onAbandonGameplay("back_to_home")
                                         gameViewModel.playClick()
                                         gameViewModel.markHasPlayedBefore()
                                         val wasDaily = uiState.isDailyChallengeMode
@@ -322,10 +356,28 @@ class MainActivity : ComponentActivity() {
                                         currentScreen = if (wasDaily) AppScreen.DAILY_CHALLENGE else AppScreen.HOME
                                     },
                                     onClaimFreeLives = {
-                                        gameViewModel.claimFreeLives(3)
+                                        if (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode && !uiState.isLockPuzzleMode) {
+                                            gameViewModel.claimFreeLives(3)
+                                        } else {
+                                            AdManager.showRewardedAd(
+                                                activity = this@MainActivity,
+                                                placement = "lives_expiry",
+                                                onRewardEarned = {
+                                                    gameViewModel.claimFreeLives(3)
+                                                },
+                                                onAdClosed = { _ -> }
+                                            )
+                                        }
                                     },
                                     onClaimAdHints = {
-                                        gameViewModel.claimAdHints(3)
+                                        AdManager.showRewardedAd(
+                                            activity = this@MainActivity,
+                                            placement = "hint_refill",
+                                            onRewardEarned = {
+                                                gameViewModel.claimAdHints(1)
+                                            },
+                                            onAdClosed = { _ -> }
+                                        )
                                     },
                                     onDismissHintAdPrompt = {
                                         gameViewModel.dismissHintAdPrompt()
@@ -396,17 +448,23 @@ class MainActivity : ComponentActivity() {
                                     hintTimerSeconds = uiState.hintTimerSeconds,
                                     onToggleHintButton = {
                                         gameViewModel.playClick()
-                                        gameViewModel.setHintButtonVisible(!uiState.isHintButtonVisible)
+                                        val newVal = !uiState.isHintButtonVisible
+                                        gameViewModel.analytics.logSettingPreferenceChanged("hint_button_visibility", uiState.isHintButtonVisible, newVal)
+                                        gameViewModel.setHintButtonVisible(newVal)
                                     },
                                     onToggleGridButton = {
                                         gameViewModel.playClick()
-                                        gameViewModel.setGridButtonVisible(!uiState.isGridButtonVisible)
+                                        val newVal = !uiState.isGridButtonVisible
+                                        gameViewModel.analytics.logSettingPreferenceChanged("grid_button_visibility", uiState.isGridButtonVisible, newVal)
+                                        gameViewModel.setGridButtonVisible(newVal)
                                     },
                                     onHintTimerChange = { newSec ->
+                                        gameViewModel.analytics.logSettingPreferenceChanged("hint_timer_duration", uiState.hintTimerSeconds, newSec)
                                         gameViewModel.setHintTimerSeconds(newSec)
                                     },
                                     onToggleDevMode = {
                                         val isNowDev = gameViewModel.toggleDevMode()
+                                        gameViewModel.analytics.logDevModeToggled(isNowDev)
                                         val msg = if (isNowDev) {
                                             "🛠️ Development Mode Enabled"
                                         } else {
@@ -415,14 +473,17 @@ class MainActivity : ComponentActivity() {
                                         Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
                                     },
                                     onToggleSound = {
+                                        gameViewModel.analytics.logSettingPreferenceChanged("sound", uiState.isSoundEnabled, !uiState.isSoundEnabled)
                                         gameViewModel.toggleSound()
                                     },
                                     onToggleVibration = {
+                                        gameViewModel.analytics.logSettingPreferenceChanged("vibration", uiState.isVibrationEnabled, !uiState.isVibrationEnabled)
                                         gameViewModel.toggleVibration()
                                     },
                                     onToggleDailyReminders = {
                                         gameViewModel.playClick()
                                         val isCurrentlyEnabled = uiState.dailyRemindersEnabled
+                                        gameViewModel.analytics.logSettingPreferenceChanged("daily_reminders", isCurrentlyEnabled, !isCurrentlyEnabled)
                                         if (!isCurrentlyEnabled) {
                                             // User wants to turn ON reminders: check OS permission
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -444,6 +505,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onThemeSelect = { selectedTheme ->
                                         gameViewModel.playClick()
+                                        gameViewModel.analytics.logSettingPreferenceChanged("theme", uiState.activeTheme.name, selectedTheme.name)
                                         gameViewModel.setTheme(selectedTheme)
                                     },
                                     onBackClick = {

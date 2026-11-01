@@ -1,5 +1,7 @@
 package com.arrowaway.puzzle.ui.screens
 
+import com.arrowaway.puzzle.ui.components.BannerAdView
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -76,8 +78,14 @@ fun DailyChallengeScreen(
 ) {
     BackHandler(onBack = onBackClick)
 
+    val context = androidx.compose.ui.platform.LocalContext.current
     val today = remember { LocalDate.now() }
     var currentYearMonth by remember { mutableStateOf(YearMonth.from(today)) }
+
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        com.arrowaway.puzzle.analytics.AnalyticsManager.getInstance(context)
+            .logDailyChallengeViewed(completedDates.size, streakDays)
+    }
     var selectedDate by remember { mutableStateOf(today) }
 
     val daysInMonth = currentYearMonth.lengthOfMonth()
@@ -398,6 +406,12 @@ fun DailyChallengeScreen(
                                                     .background(cellBackground)
                                                     .clickable(enabled = !isFuture) {
                                                         selectedDate = thisDate
+                                                        com.arrowaway.puzzle.analytics.AnalyticsManager.getInstance(context)
+                                                            .logDailyDateSelected(
+                                                                selectedDate = thisDate.toString(),
+                                                                isToday = thisDate == today,
+                                                                isReplay = completedDates.contains(thisDate.toString())
+                                                            )
                                                     },
                                                 contentAlignment = Alignment.Center
                                             ) {
@@ -523,6 +537,8 @@ fun DailyChallengeScreen(
                     }
                 }
             }
+
+            BannerAdView(modifier = Modifier.padding(top = 4.dp, bottom = 4.dp))
         }
     }
 }

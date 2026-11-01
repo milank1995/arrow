@@ -3,7 +3,11 @@ package com.arrowaway.puzzle.game
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arrowaway.puzzle.analytics.AnalyticsManager
+import com.arrowaway.puzzle.analytics.CrashLogger
 import com.arrowaway.puzzle.audio.AudioHapticManager
+import com.arrowaway.puzzle.config.RemoteConfigManager
+import com.arrowaway.puzzle.review.InAppReviewManager
 import com.arrowaway.puzzle.core.engine.GridOccupancyMap
 import com.arrowaway.puzzle.core.engine.LevelGenerator
 import com.arrowaway.puzzle.core.engine.LevelLoader
@@ -86,7 +90,8 @@ data class GameUiState(
     val isAppInBackground: Boolean = false,
     val isHintButtonVisible: Boolean = true,
     val isGridButtonVisible: Boolean = true,
-    val hintTimerSeconds: Int = 10
+    val hintTimerSeconds: Int = 10,
+    val reviewPromptTrigger: Long = 0L
 ) {
     val previewRayArrowId: String? get() = previewRayArrowIds.firstOrNull()
 }
@@ -95,6 +100,17 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private val repository = UserPreferencesRepository(app)
     val audioHapticManager = AudioHapticManager(app)
+    val analytics = AnalyticsManager.getInstance(app)
+
+    private var sessionId = java.util.UUID.randomUUID().toString()
+    private var sessionStartTimeMs: Long = System.currentTimeMillis()
+    private var lastBackgroundTimeMs: Long = 0L
+    private var levelsAttemptedInSession: Int = 0
+    private var levelsCompletedInSession: Int = 0
+    private val levelAttemptCountMap = mutableMapOf<Int, Int>()
+    private var levelStartWallTimeMs: Long = 0L
+    private var hasInteractedWithArrowThisLevel: Boolean = false
+    private var hasLoggedSessionStart: Boolean = false
 
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
@@ -135,7 +151,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
                 val todayStr = LocalDate.now().toString()
                 val isDailyCompletedToday = data.completedDailyDates.contains(todayStr)
-                val isDailyUnlocked = data.currentLevel > 10 || data.hasSeenDailyUnlockCelebration
+                val isDailyUnlocked = data.currentLevel > RemoteConfigManager.dailyChallengeUnlockLevel || data.hasSeenDailyUnlockCelebration
                 val shouldShowDailyPrompt = isDailyUnlocked && !isDailyCompletedToday && !hasDismissedDailyLaunchPromptThisSession
 
                 _uiState.update { current ->
@@ -163,6 +179,18 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         isGridButtonVisible = data.isGridButtonVisible,
                         hintTimerSeconds = data.hintTimerSeconds
                     )
+                }
+
+                if (!hasLoggedSessionStart) {
+                    hasLoggedSessionStart = true
+                    analytics.logAppSessionStart(
+                        sessionId = sessionId,
+                        isColdStart = true,
+                        theme = theme.name,
+                        currentLevel = data.currentLevel
+                    )
+                    CrashLogger.setCustomKey("current_level", data.currentLevel)
+                    CrashLogger.setCustomKey("theme", theme.name)
                 }
 
                 // If not loaded yet, load current level
@@ -271,23 +299,56 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         _uiState.update { it.copy(isGamePaused = paused) }
         if (paused) {
             pauseActiveTimer()
+            val remaining = _uiState.value.arrows.count { it.state != ArrowState.CLEARED }
+            analytics.logPuzzlePaused(_uiState.value.currentLevelNumber, remaining, getActivePlayTimeSeconds().toLong())
         } else {
             resumeActiveTimer()
+            analytics.logPuzzleResumed(_uiState.value.currentLevelNumber, 0L)
         }
     }
 
-    fun onAppBackgrounded() {
+    fun onAppBackgrounded(activeScreen: String = "GAMEPLAY") {
         isAppInBackground = true
+        lastBackgroundTimeMs = System.currentTimeMillis()
         _uiState.update { it.copy(isAppInBackground = true) }
         pauseActiveTimer()
+        val wasPuzzleActive = isGameplayScreenActive && !_uiState.value.isLevelComplete && !_uiState.value.isGameOver
+        analytics.logAppBackground(activeScreen, wasPuzzleActive)
     }
 
     fun onAppForegrounded(isGameplayScreen: Boolean) {
         isAppInBackground = false
         isGameplayScreenActive = isGameplayScreen
         _uiState.update { it.copy(isAppInBackground = false) }
+        if (lastBackgroundTimeMs > 0L) {
+            val diffSec = (System.currentTimeMillis() - lastBackgroundTimeMs) / 1000L
+            analytics.logAppForeground(diffSec)
+            if (diffSec >= 1800L) {
+                val sessionDuration = (System.currentTimeMillis() - sessionStartTimeMs) / 1000L
+                analytics.logAppSessionEnd(sessionId, sessionDuration, levelsAttemptedInSession, levelsCompletedInSession)
+                sessionId = java.util.UUID.randomUUID().toString()
+                sessionStartTimeMs = System.currentTimeMillis()
+                levelsAttemptedInSession = 0
+                levelsCompletedInSession = 0
+                analytics.logAppSessionStart(sessionId, false, _uiState.value.activeTheme.name, _uiState.value.currentLevelNumber)
+            }
+        }
         if (isGameplayScreen && !isGamePaused) {
             resumeActiveTimer()
+        }
+    }
+
+    fun onAbandonGameplay(exitPoint: String = "back_button") {
+        if (!_uiState.value.isLevelComplete && !_uiState.value.isGameOver && hasGameplayStarted) {
+            val elapsed = getActivePlayTimeSeconds().toLong()
+            val remaining = _uiState.value.arrows.count { it.state != ArrowState.CLEARED }
+            analytics.logLevelAbandoned(_uiState.value.currentLevelNumber, elapsed, remaining, exitPoint)
+        }
+    }
+
+    fun onReviewPromptHandled() {
+        viewModelScope.launch {
+            repository.recordReviewPromptShown(System.currentTimeMillis())
         }
     }
 
@@ -342,10 +403,26 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     fun loadLevel(levelNumber: Int) {
         stopAutoSolve()
         resetLevelMetrics()
+        levelsAttemptedInSession++
+        val attempts = (levelAttemptCountMap[levelNumber] ?: 0) + 1
+        levelAttemptCountMap[levelNumber] = attempts
+        levelStartWallTimeMs = System.currentTimeMillis()
+        hasInteractedWithArrowThisLevel = false
+
         val level = LevelLoader.loadLevel(app, levelNumber)
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)
         }
+
+        analytics.logLevelStart(
+            levelNumber = levelNumber,
+            gameMode = "campaign",
+            totalArrows = level.arrows.size,
+            gridDimensions = "${level.xSize}x${level.ySize}",
+            attemptNumber = attempts
+        )
+        CrashLogger.setCustomKey("current_level", levelNumber)
+        CrashLogger.setCustomKey("game_mode", "campaign")
 
         _uiState.update {
             it.copy(
@@ -364,8 +441,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 isLockPuzzleMode = false,
                 activeDailyDate = null,
                 activeDailyIndex = 1,
-                dailyComplimentaryHintsRemaining = if (levelNumber <= 10) 999 else 1,
-                levelFreeHintsRemaining = if (levelNumber <= 10) 999 else 1,
+                dailyComplimentaryHintsRemaining = if (levelNumber <= 10) 999 else 0,
+                levelFreeHintsRemaining = if (levelNumber <= 10) 999 else 0,
                 showHintAdPrompt = false,
                 isGamePaused = false,
                 restartTrigger = System.currentTimeMillis()
@@ -374,11 +451,26 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun startLockPuzzle() {
+        stopAutoSolve()
         resetLevelMetrics()
+        levelsAttemptedInSession++
+        levelStartWallTimeMs = System.currentTimeMillis()
+        hasInteractedWithArrowThisLevel = false
+
         val level = LevelLoader.loadLockPuzzle(app)
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)
         }
+
+        analytics.logLevelStart(
+            levelNumber = 151,
+            gameMode = "lock",
+            totalArrows = level.arrows.size,
+            gridDimensions = "${level.xSize}x${level.ySize}",
+            attemptNumber = 1
+        )
+        CrashLogger.setCustomKey("current_level", 151)
+        CrashLogger.setCustomKey("game_mode", "lock")
 
         _uiState.update {
             it.copy(
@@ -396,8 +488,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 isLockPuzzleMode = true,
                 activeDailyDate = null,
                 activeDailyIndex = 1,
-                dailyComplimentaryHintsRemaining = 1,
-                levelFreeHintsRemaining = 1,
+                dailyComplimentaryHintsRemaining = 0,
+                levelFreeHintsRemaining = 0,
                 showHintAdPrompt = false,
                 isGamePaused = false,
                 restartTrigger = System.currentTimeMillis()
@@ -408,6 +500,10 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     fun startDailyChallenge(dateString: String = LocalDate.now().toString()) {
         stopAutoSolve()
         resetLevelMetrics()
+        levelsAttemptedInSession++
+        levelStartWallTimeMs = System.currentTimeMillis()
+        hasInteractedWithArrowThisLevel = false
+
         val date = try {
             LocalDate.parse(dateString)
         } catch (e: Exception) {
@@ -419,6 +515,21 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)
         }
+
+        analytics.logDailyChallengeStart(
+            puzzleDate = date.toString(),
+            dailyLevelIndex = dailyIndex,
+            arrowCount = level.arrows.size
+        )
+        analytics.logLevelStart(
+            levelNumber = dailyIndex,
+            gameMode = "daily",
+            totalArrows = level.arrows.size,
+            gridDimensions = "${level.xSize}x${level.ySize}",
+            attemptNumber = 1
+        )
+        CrashLogger.setCustomKey("current_level", dailyIndex)
+        CrashLogger.setCustomKey("game_mode", "daily")
 
         _uiState.update {
             it.copy(
@@ -447,6 +558,13 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun onArrowClicked(clickedArrow: Arrow) {
         if (_uiState.value.isLevelComplete || _uiState.value.isGameOver) return
+
+        if (!hasInteractedWithArrowThisLevel) {
+            hasInteractedWithArrowThisLevel = true
+            val inspectionSec = ((System.currentTimeMillis() - levelStartWallTimeMs) / 1000L).coerceAtLeast(0L)
+            analytics.logLevelFirstInteraction(_uiState.value.currentLevelNumber, inspectionSec)
+        }
+
         val currentArrow = _uiState.value.arrows.firstOrNull { it.id == clickedArrow.id } ?: clickedArrow
         // Multi-tap prevention: Ignore clicks on arrows that are actively flying out or already cleared.
         // WRONG_FLASH arrows CAN be re-tapped immediately (user tapping blocked arrow again is valid input).
@@ -498,8 +616,12 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             levelMistakesCount++
             audioHapticManager.playWrongMove()
 
+            val isUnlimitedLivesLevel = _uiState.value.currentLevelNumber <= 10 && !_uiState.value.isDailyChallengeMode && !_uiState.value.isLockPuzzleMode
             val isAlreadyHighlighted = freshArrow.isHighlighted
-            val newHearts = if (isAlreadyHighlighted) {
+            val newHearts = if (isUnlimitedLivesLevel) {
+                // From Level 1 to Level 10: unlimited lives for seamless onboarding
+                _uiState.value.maxHearts
+            } else if (isAlreadyHighlighted) {
                 // If user clicks on the same highlighted, blocked arrow again, deduct only one life for that interaction
                 _uiState.value.heartsRemaining
             } else {
@@ -509,11 +631,16 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             val dist = PuzzleSolver.getDistanceToBlocker(freshArrow, occupancyMap)
             val durationMs = (280L + (dist * 35L).toLong()).coerceIn(320L, 560L)
 
-            // 3 lives per batch/level: 0 lives triggers the Lives Expiry popup ("Claim 3 Free Lives" via ad or restart)
-            val isOver = newHearts <= 0
+            // Starting from Level 11 and Daily Challenge: 0 lives triggers the Lives Expiry popup ("Watch Ad (+3 Lives)" or restart)
+            val isOver = if (isUnlimitedLivesLevel) false else (newHearts <= 0)
             if (isOver) {
                 audioHapticManager.playLevelFail()
+                val elapsedSec = getActivePlayTimeSeconds().toLong()
+                val arrowsRemaining = _uiState.value.arrows.count { it.state != ArrowState.CLEARED }
+                analytics.logLevelFailed(_uiState.value.currentLevelNumber, elapsedSec, arrowsRemaining, levelHintsUsedCount)
+                CrashLogger.log("Level Failed: ${_uiState.value.currentLevelNumber}, remaining=$arrowsRemaining")
             }
+            analytics.logArrowTapWrong(_uiState.value.currentLevelNumber, newHearts, freshArrow.id)
 
             _uiState.update { state ->
                 val flashedArrows = state.arrows.map {
@@ -735,6 +862,16 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         viewModelScope.launch(Dispatchers.Default) {
             val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap) ?: return@launch
             levelHintsUsedCount++
+            val isFree = isFreeHintLevel || _uiState.value.levelFreeHintsRemaining > 0
+            analytics.logHintButtonClicked(
+                levelNumber = _uiState.value.currentLevelNumber,
+                hintsBalance = _uiState.value.hintsAvailable,
+                wasIdleHighlightActive = false,
+                isFreeHint = isFree
+            )
+            val remainingArrows = _uiState.value.arrows.count { it.state != ArrowState.CLEARED }
+            analytics.logHintApplied(_uiState.value.currentLevelNumber, hintTarget.id, remainingArrows)
+
             if (isFreeHintLevel) {
                 // Unlimited free hints for starting levels (1-10) in campaign mode
                 audioHapticManager.playBoosterUse("hint")
@@ -760,6 +897,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     }
                 } else {
                     // Out of free hints for this level / Daily Challenge -> prompt rewarded ad dialog
+                    analytics.logAdRewardPromptShown("hint_refill")
                     _uiState.update { it.copy(showHintAdPrompt = true) }
                 }
             }
@@ -874,7 +1012,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun toggleGridLines() {
         _uiState.update {
-            it.copy(isGridLinesActive = !it.isGridLinesActive)
+            val newState = !it.isGridLinesActive
+            analytics.logGridButtonToggled(it.currentLevelNumber, if (newState) "enabled" else "disabled")
+            it.copy(isGridLinesActive = newState)
         }
     }
 
@@ -970,7 +1110,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun restartLevel() {
+    fun restartLevel(restartSource: String = "game_over") {
+        analytics.logLevelRestart(_uiState.value.currentLevelNumber, restartSource)
         stopAutoSolve()
         if (_uiState.value.isDailyChallengeMode) {
             val dateStr = _uiState.value.activeDailyDate ?: LocalDate.now().toString()
@@ -1028,6 +1169,32 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
         val finalScore = (baseClear + healthPoints + hintPoints + speedPoints).coerceIn(50, 100)
 
+        levelsCompletedInSession++
+        val gameMode = if (_uiState.value.isDailyChallengeMode) "daily" else if (_uiState.value.isLockPuzzleMode) "lock" else "campaign"
+        analytics.logLevelComplete(
+            levelNumber = completedLvl,
+            gameMode = gameMode,
+            activePlayTimeSec = elapsedSec.toLong(),
+            score = finalScore,
+            heartsRemaining = _uiState.value.heartsRemaining,
+            mistakesCount = mistakes,
+            hintsUsed = levelHintsUsedCount,
+            starsEarned = stars
+        )
+        CrashLogger.log("Level Complete: $completedLvl, mode=$gameMode, score=$finalScore, stars=$stars")
+
+        val lastPrompt = repository.getLastReviewPromptTimestampSynchronous()
+        val cooldown = RemoteConfigManager.reviewPromptCooldownDays
+        val shouldPromptReview = InAppReviewManager.shouldPromptReview(
+            currentLevel = completedLvl,
+            starsEarned = stars,
+            scoreEarned = finalScore,
+            currentStreakDays = _uiState.value.streakDays,
+            lastPromptTimestamp = lastPrompt,
+            cooldownDays = cooldown,
+            isDailyMode = _uiState.value.isDailyChallengeMode
+        )
+
         _uiState.update { state ->
             state.copy(
                 arrows = finalArrows,
@@ -1039,7 +1206,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 levelAccuracyPercent = accuracy,
                 levelMistakesCount = mistakes,
                 levelHintsUsedCount = levelHintsUsedCount,
-                levelStarsEarned = stars
+                levelStarsEarned = stars,
+                reviewPromptTrigger = if (shouldPromptReview) System.currentTimeMillis() else 0L
             )
         }
         audioHapticManager.playLevelWin()
@@ -1100,10 +1268,17 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             else -> 1
         }
         viewModelScope.launch {
-            val baseCoins = if (_uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode) 100 else 50 + (_uiState.value.comboCount * 5)
+            val dailyRewardCoins = RemoteConfigManager.dailyCompletionCoins
+            val baseCoins = if (_uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode) dailyRewardCoins else 50 + (_uiState.value.comboCount * 5)
             if (_uiState.value.isDailyChallengeMode) {
                 val dateStr = _uiState.value.activeDailyDate ?: LocalDate.now().toString()
                 repository.recordDailyCompletion(dateStr)
+                analytics.logDailyChallengeComplete(
+                    puzzleDate = dateStr,
+                    completionTimeSec = _uiState.value.levelCompletionTimeSeconds.toLong(),
+                    newStreakDays = _uiState.value.streakDays + 1,
+                    rewardCoinsClaimed = dailyRewardCoins
+                )
             } else if (_uiState.value.isLockPuzzleMode) {
                 repository.recordLevelCompletion(151, stars)
             } else {

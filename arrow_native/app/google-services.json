@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "184383452993",
+    "project_id": "arrow-away-4e937",
+    "storage_bucket": "arrow-away-4e937.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:184383452993:android:821718db27d866fe0493c0",
+        "android_client_info": {
+          "package_name": "com.arrowaway.puzzle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxsugvrI-rQBx2Jor23p4cCMvtTMqSDe0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

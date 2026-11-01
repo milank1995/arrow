@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -38,7 +39,8 @@ data class UserGameData(
     val isDevMode: Boolean = com.arrowaway.puzzle.BuildConfig.DEBUG,
     val isHintButtonVisible: Boolean = true,
     val isGridButtonVisible: Boolean = true,
-    val hintTimerSeconds: Int = 10
+    val hintTimerSeconds: Int = 10,
+    val lastReviewPromptTimestamp: Long = 0L
 )
 
 class UserPreferencesRepository(private val context: Context) {
@@ -64,6 +66,7 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_HINT_BUTTON_VISIBLE = booleanPreferencesKey("hint_button_visible")
     private val KEY_GRID_BUTTON_VISIBLE = booleanPreferencesKey("grid_button_visible")
     private val KEY_HINT_TIMER_SECONDS = intPreferencesKey("hint_timer_seconds")
+    private val KEY_LAST_REVIEW_PROMPT_TIMESTAMP = longPreferencesKey("last_review_prompt_timestamp")
 
     private val SYNC_PREFS = "arrow_sync_prefs"
     private val KEY_SYNC_HAS_PLAYED = "has_played_before"
@@ -94,6 +97,19 @@ class UserPreferencesRepository(private val context: Context) {
         return sp.getInt("streak_days", 1)
     }
 
+    fun getLastReviewPromptTimestampSynchronous(): Long {
+        val sp = context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
+        return sp.getLong("last_review_prompt_timestamp", 0L)
+    }
+
+    suspend fun recordReviewPromptShown(timestamp: Long = System.currentTimeMillis()) {
+        context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
+            .edit().putLong("last_review_prompt_timestamp", timestamp).apply()
+        context.dataStore.edit { prefs ->
+            prefs[KEY_LAST_REVIEW_PROMPT_TIMESTAMP] = timestamp
+        }
+    }
+
     val userGameData: Flow<UserGameData> = context.dataStore.data.map { prefs ->
         val syncPlayed = hasPlayedBeforeSynchronous()
         val hasPlayed = syncPlayed || (prefs[KEY_HAS_PLAYED_BEFORE] ?: ((prefs[KEY_LEVEL] ?: 1) > 1 || (prefs[KEY_COINS] != null && (prefs[KEY_COINS] ?: 100) != 100)))
@@ -122,7 +138,8 @@ class UserPreferencesRepository(private val context: Context) {
             isDevMode = prefs[KEY_DEV_MODE] ?: com.arrowaway.puzzle.BuildConfig.DEBUG,
             isHintButtonVisible = prefs[KEY_HINT_BUTTON_VISIBLE] ?: true,
             isGridButtonVisible = prefs[KEY_GRID_BUTTON_VISIBLE] ?: true,
-            hintTimerSeconds = (prefs[KEY_HINT_TIMER_SECONDS] ?: 10).coerceIn(5, 55)
+            hintTimerSeconds = (prefs[KEY_HINT_TIMER_SECONDS] ?: 10).coerceIn(5, 55),
+            lastReviewPromptTimestamp = prefs[KEY_LAST_REVIEW_PROMPT_TIMESTAMP] ?: 0L
         )
     }
 

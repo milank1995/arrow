@@ -1,5 +1,7 @@
 package com.arrowaway.puzzle.ui.screens
 
+import com.arrowaway.puzzle.ui.components.BannerAdView
+
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -686,6 +688,8 @@ fun VictoryScreen(
 
                 // Bottom flexible breathing room
                 Spacer(modifier = Modifier.weight(if (isCompact) 0.5f else 1.0f))
+
+                BannerAdView(modifier = Modifier.padding(top = 6.dp, bottom = 4.dp))
             }
 
             // Milestone Flying Flame Animation Overlay
