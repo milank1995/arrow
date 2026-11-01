@@ -616,25 +616,15 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             levelMistakesCount++
             audioHapticManager.playWrongMove()
 
-            val isUnlimitedLivesLevel = _uiState.value.currentLevelNumber <= 10 && !_uiState.value.isDailyChallengeMode && !_uiState.value.isLockPuzzleMode
-            val isAlreadyHighlighted = freshArrow.isHighlighted
-            val newHearts = if (isUnlimitedLivesLevel) {
-                // From Level 1 to Level 10: unlimited lives for seamless onboarding
-                _uiState.value.maxHearts
-            } else if (isAlreadyHighlighted) {
-                // If user clicks on the same highlighted, blocked arrow again, deduct only one life for that interaction
-                _uiState.value.heartsRemaining
-            } else {
-                (_uiState.value.heartsRemaining - 1).coerceAtLeast(0)
-            }
+            val newHearts = (_uiState.value.heartsRemaining - 1).coerceAtLeast(0)
 
             val dist = PuzzleSolver.getDistanceToBlocker(freshArrow, occupancyMap)
             val durationMs = (280L + (dist * 35L).toLong()).coerceIn(320L, 560L)
 
-            // Starting from Level 11 and Daily Challenge: 0 lives triggers the Lives Expiry popup ("Watch Ad (+3 Lives)" or restart)
-            val isOver = if (isUnlimitedLivesLevel) false else (newHearts <= 0)
+            val isOver = newHearts <= 0
             if (isOver) {
                 audioHapticManager.playLevelFail()
+                pauseActiveTimer()
                 val elapsedSec = getActivePlayTimeSeconds().toLong()
                 val arrowsRemaining = _uiState.value.arrows.count { it.state != ArrowState.CLEARED }
                 analytics.logLevelFailed(_uiState.value.currentLevelNumber, elapsedSec, arrowsRemaining, levelHintsUsedCount)
@@ -1126,9 +1116,10 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     fun claimFreeLives(count: Int = 3) {
         viewModelScope.launch {
             audioHapticManager.playClick()
+            resumeActiveTimer()
             _uiState.update {
                 it.copy(
-                    heartsRemaining = 3,
+                    heartsRemaining = count,
                     isGameOver = false
                 )
             }
