@@ -123,30 +123,14 @@ fun BoosterBar(
         label = "auraGlow"
     )
 
-    Surface(
-        color = Color.Transparent,
-        modifier = modifier.fillMaxWidth()
-    ) {
-        val hasCenterItem = (levelNumber != null || heartsRemaining != null)
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 22.dp)
-                .padding(horizontal = if (hasCenterItem) 24.dp else 0.dp),
-            horizontalArrangement = if (hasCenterItem && onRestartClick == null) {
-                Arrangement.SpaceBetween
-            } else {
-                Arrangement.spacedBy(if (onRestartClick != null) 36.dp else 52.dp, Alignment.CenterHorizontally)
-            },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // 1. REFINED MODERN HINT ICON (Inactive White vs Active Glowing Yellow)
+    val hintButton = @Composable { boxModifier: Modifier ->
+        // 1. REFINED MODERN HINT ICON (Inactive White vs Active Glowing Yellow)
             if (isHintVisible) {
                 val combinedHintScale = hintPressScale.value * idlePulseScale
 
                 Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier
+                modifier = boxModifier
                     .size(width = 64.dp, height = 70.dp)
                     .scale(combinedHintScale)
                     .clickable(
@@ -235,15 +219,17 @@ fun BoosterBar(
                 }
             }
             }
+    }
 
-            // 2. CENTER: CLEAN LEVEL INDICATOR BADGE (Or Hearts if explicitly configured)
+    val centerBadge = @Composable { boxModifier: Modifier ->
+        // 2. CENTER: CLEAN LEVEL INDICATOR BADGE (Or Hearts if explicitly configured)
             if (levelNumber != null) {
                 Surface(
                     shape = RoundedCornerShape(percent = 50),
                     color = theme.textPrimary.copy(alpha = 0.05f),
                     border = BorderStroke(1.dp, theme.gridLine.copy(alpha = 0.45f)),
                     shadowElevation = 0.dp,
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    modifier = boxModifier.padding(horizontal = 4.dp)
                 ) {
                     Text(
                         text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
@@ -255,20 +241,24 @@ fun BoosterBar(
                     )
                 }
             } else if (heartsRemaining != null) {
-                HeartIndicatorPill(
-                    heartsRemaining = heartsRemaining,
-                    maxHearts = maxHearts,
-                    theme = theme
-                )
+                Box(modifier = boxModifier) {
+                    HeartIndicatorPill(
+                        heartsRemaining = heartsRemaining,
+                        maxHearts = maxHearts,
+                        theme = theme
+                    )
+                }
             }
+    }
 
-            // 3. GRID GUIDE ICON (Clean, borderless, floating with miniature eye badge)
+    val gridButton = @Composable { boxModifier: Modifier ->
+        // 3. GRID GUIDE ICON (Clean, borderless, floating with miniature eye badge)
             if (isGridVisible) {
                 val gridColor = if (isGridLinesActive) theme.arrowDefault else theme.textSecondary.copy(alpha = 0.75f)
 
                 Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier
+                modifier = boxModifier
                     .size(width = 64.dp, height = 70.dp)
                     .scale(gridPressScale.value)
                     .clickable(
@@ -357,13 +347,15 @@ fun BoosterBar(
                 }
             }
             }
+    }
 
-            // 3. RESTART ICON (Shown in test mode)
+    val restartButton = @Composable { boxModifier: Modifier ->
+        // 3. RESTART ICON (Shown in test mode)
             if (onRestartClick != null) {
                 val restartPressScale = remember { Animatable(1f) }
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier
+                    modifier = boxModifier
                         .size(width = 64.dp, height = 70.dp)
                         .scale(restartPressScale.value)
                         .clickable(
@@ -387,6 +379,41 @@ fun BoosterBar(
                             .align(Alignment.Center)
                     )
                 }
+            }
+    }
+
+    Surface(
+        color = Color.Transparent,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        val hasCenterItem = (levelNumber != null || heartsRemaining != null)
+        if (hasCenterItem && onRestartClick == null) {
+            // Box ensures the level/hearts badge is ALWAYS 100% mathematically centered,
+            // regardless of whether Hint and Grid buttons are visible or hidden!
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, bottom = 22.dp)
+                    .padding(horizontal = 24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                hintButton(Modifier.align(Alignment.CenterStart))
+                centerBadge(Modifier.align(Alignment.Center))
+                gridButton(Modifier.align(Alignment.CenterEnd))
+            }
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, bottom = 22.dp)
+                    .padding(horizontal = if (hasCenterItem) 24.dp else 0.dp),
+                horizontalArrangement = Arrangement.spacedBy(if (onRestartClick != null) 36.dp else 52.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                hintButton(Modifier)
+                centerBadge(Modifier)
+                gridButton(Modifier)
+                restartButton(Modifier)
             }
         }
     }
