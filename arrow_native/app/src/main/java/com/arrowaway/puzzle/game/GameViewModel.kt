@@ -616,7 +616,13 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             levelMistakesCount++
             audioHapticManager.playWrongMove()
 
-            val newHearts = (_uiState.value.heartsRemaining - 1).coerceAtLeast(0)
+            val isAlreadyMarkedIncorrect = freshArrow.isHighlighted
+            val newHearts = if (isAlreadyMarkedIncorrect) {
+                // Do not deduct a life when user taps an arrow that has already been marked as incorrect
+                _uiState.value.heartsRemaining
+            } else {
+                (_uiState.value.heartsRemaining - 1).coerceAtLeast(0)
+            }
 
             val dist = PuzzleSolver.getDistanceToBlocker(freshArrow, occupancyMap)
             val durationMs = (280L + (dist * 35L).toLong()).coerceIn(320L, 560L)
