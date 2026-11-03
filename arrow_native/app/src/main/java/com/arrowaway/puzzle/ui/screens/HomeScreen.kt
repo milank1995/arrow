@@ -7,6 +7,8 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -84,6 +86,7 @@ fun HomeScreen(
     onThemeClick: () -> Unit,
     onSoundToggle: () -> Unit,
     onSettingsClick: () -> Unit,
+    onGlassesPuzzleClick: () -> Unit = {},
     onLockPuzzleClick: () -> Unit = {},
     onDevTestClick: () -> Unit = {},
     onLevelChange: (Int) -> Unit = {},
@@ -243,6 +246,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .widthIn(max = 284.dp)
                         .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
                 ) {
                     // Brand Header with insignia
                     Column(
@@ -423,7 +427,7 @@ fun HomeScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(18.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     // 2. PLAY BUTTON (Directly Below Level Card — 62dp Tactile CTA)
                     Surface(
@@ -462,7 +466,7 @@ fun HomeScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     // 3. DAILY CHALLENGE BUTTON (Below Play Button — 62dp Feature Card)
                     Surface(
@@ -599,6 +603,117 @@ fun HomeScreen(
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.ExtraBold,
                                         color = theme.arrowClear,
+                                        letterSpacing = 0.8.sp,
+                                        modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // 4. GLASSES PUZZLE FEATURE CARD
+                    val isGlassesCompleted = (uiState.levelStars[999] ?: 0) > 0
+                    Surface(
+                        shape = RoundedCornerShape(18.dp),
+                        color = theme.surface,
+                        border = BorderStroke(
+                            width = 1.2.dp,
+                            color = if (isGlassesCompleted) {
+                                if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
+                            } else {
+                                theme.gridLine
+                            }
+                        ),
+                        shadowElevation = 1.5.dp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(62.dp)
+                            .clip(RoundedCornerShape(18.dp))
+                            .clickable(onClick = onGlassesPuzzleClick)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 14.dp)
+                        ) {
+                            // Theme-Harmonized Icon Pod
+                            Box(
+                                modifier = Modifier
+                                    .size(38.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(
+                                        if (isGlassesCompleted) {
+                                            if (theme.name == "Warm Sepia") Color(0xFFB45309).copy(alpha = 0.18f) else theme.arrowClear.copy(alpha = 0.18f)
+                                        } else {
+                                            theme.arrowDefault.copy(alpha = 0.15f)
+                                        }
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "👓",
+                                    fontSize = 18.sp
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(12.dp))
+
+                            // Text Column
+                            Column(
+                                verticalArrangement = Arrangement.Center,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    text = "Glasses Puzzle",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = theme.textPrimary,
+                                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = if (isGlassesCompleted) "✓ Completed" else "Special Shape • 156 Arrows",
+                                    fontSize = 11.sp,
+                                    color = if (isGlassesCompleted) {
+                                        if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
+                                    } else {
+                                        theme.textSecondary
+                                    },
+                                    fontWeight = if (isGlassesCompleted) FontWeight.SemiBold else FontWeight.Medium,
+                                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                                )
+                            }
+
+                            // Trailing Chip Badge
+                            if (isGlassesCompleted) {
+                                Surface(
+                                    shape = RoundedCornerShape(percent = 50),
+                                    color = theme.arrowClear.copy(alpha = 0.16f),
+                                    border = BorderStroke(1.dp, theme.arrowClear.copy(alpha = 0.4f))
+                                ) {
+                                    Text(
+                                        text = "DONE",
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = theme.arrowClear,
+                                        letterSpacing = 0.8.sp,
+                                        modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)
+                                    )
+                                }
+                            } else {
+                                Surface(
+                                    shape = RoundedCornerShape(percent = 50),
+                                    color = theme.arrowDefault.copy(alpha = 0.14f),
+                                    border = BorderStroke(1.dp, theme.arrowDefault.copy(alpha = 0.35f))
+                                ) {
+                                    Text(
+                                        text = "SPECIAL",
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = theme.arrowDefault,
                                         letterSpacing = 0.8.sp,
                                         modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)
                                     )

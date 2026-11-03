@@ -178,7 +178,7 @@ fun GamePlayScreen(
             theme = theme,
             heartsRemaining = uiState.heartsRemaining,
             maxHearts = uiState.maxHearts,
-            shapeName = level?.shapeName,
+            shapeName = if (uiState.isGlassesPuzzleMode) "Glasses" else level?.shapeName,
             isDailyChallenge = uiState.isDailyChallengeMode,
             completionTimeSeconds = uiState.levelCompletionTimeSeconds,
             movesCount = uiState.levelMovesCount,
@@ -417,7 +417,7 @@ fun GamePlayScreen(
 
                 // 6. GAME OVER DIALOG
                 if (uiState.isGameOver) {
-                    val isStartingLevels = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode && !uiState.isLockPuzzleMode)
+                    val isStartingLevels = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode && !uiState.isLockPuzzleMode && !uiState.isGlassesPuzzleMode)
                     GameOverDialog(
                         theme = theme,
                         isStartingLevels = isStartingLevels,

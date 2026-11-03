@@ -241,4 +241,44 @@ class PuzzleEngineTest {
         assertTrue("All arrows must be solved without deadlock", currentArrows.all { it.state == ArrowState.CLEARED })
         assertEquals("Level 1 should be cleared in exactly 4 steps", 4, steps)
     }
+
+    @Test
+    fun testGlassesPuzzleSolvability() {
+        val file = java.io.File("src/main/assets/levels/Glasses.json")
+        assertTrue("Glasses.json must exist in assets", file.exists())
+        val json = file.readText()
+        val level = com.arrowaway.puzzle.core.engine.LevelLoader.parseLevelJson(999, json)
+        assertNotNull("Glasses level should parse successfully", level)
+        assertEquals("ShapeName must be Glasses", "Glasses", level!!.shapeName)
+        assertEquals("Glasses must have 156 arrows", 156, level.arrows.size)
+        assertEquals("XSize must be 75", 75, level.xSize)
+        assertEquals("YSize must be 48", 48, level.ySize)
+
+        val occupancy = GridOccupancyMap(level.xSize, level.ySize).apply {
+            rebuild(level.arrows)
+        }
+
+        val initialMovable = PuzzleSolver.findAllMovableArrows(level.arrows, occupancy)
+        assertTrue("Glasses puzzle must have at least one valid starting move", initialMovable.isNotEmpty())
+
+        val currentArrows = level.arrows.map { it.copy() }.toMutableList()
+        var steps = 0
+        val maxSteps = currentArrows.size + 10
+
+        while (currentArrows.any { it.state != ArrowState.CLEARED } && steps < maxSteps) {
+            steps++
+            val movable = PuzzleSolver.findAllMovableArrows(
+                currentArrows.filter { it.state != ArrowState.CLEARED },
+                occupancy
+            ).firstOrNull()
+
+            assertNotNull("Glasses puzzle reached deadlock at step $steps", movable)
+            occupancy.release(movable!!)
+            val idx = currentArrows.indexOfFirst { it.id == movable.id }
+            currentArrows[idx] = movable.copyWithState(ArrowState.CLEARED)
+        }
+
+        assertTrue("All 156 arrows in Glasses puzzle must be solved without deadlock", currentArrows.all { it.state == ArrowState.CLEARED })
+        assertEquals("Glasses puzzle should be cleared in exactly 156 steps", 156, steps)
+    }
 }

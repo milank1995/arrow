@@ -163,6 +163,17 @@ class UserPreferencesRepository(private val context: Context) {
         return map.entries.joinToString(";") { "${it.key}:${it.value}" }
     }
 
+    suspend fun recordSpecialLevelCompletion(levelId: Int, starsEarned: Int) {
+        context.dataStore.edit { prefs ->
+            val starsMap = parseLevelStars(prefs[KEY_LEVEL_STARS_MAP] ?: "").toMutableMap()
+            val existing = starsMap[levelId] ?: 0
+            if (starsEarned > existing) {
+                starsMap[levelId] = starsEarned
+                prefs[KEY_LEVEL_STARS_MAP] = encodeLevelStars(starsMap)
+            }
+        }
+    }
+
     suspend fun recordLevelCompletion(level: Int, starsEarned: Int) {
         context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
             .edit().putInt("current_level", level + 1).apply()

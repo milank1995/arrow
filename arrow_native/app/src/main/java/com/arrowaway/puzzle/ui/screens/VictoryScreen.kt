@@ -264,6 +264,7 @@ fun VictoryScreen(
 
     // Dynamic stats derived from authentic gameplay results
     val difficultyText = when {
+        shapeName != null -> "Hard"
         isDailyChallenge -> "Hard"
         levelNumber % 5 == 0 -> "Hard"
         levelNumber > 10 -> "Medium"
@@ -577,15 +578,32 @@ fun VictoryScreen(
 
                 Spacer(modifier = Modifier.height(if (isVeryCompact) 10.dp else 14.dp))
 
-                // 2. HORIZONTAL LEVEL PROGRESSION ROAD (Clean 5-Node Stepper)
-                LevelProgressionTrack(
-                    currentLevel = levelNumber,
-                    isDailyChallenge = isDailyChallenge,
-                    isVeryCompact = isVeryCompact,
-                    theme = theme
-                )
-
-                Spacer(modifier = Modifier.height(if (isVeryCompact) 10.dp else 14.dp))
+                // 2. HORIZONTAL LEVEL PROGRESSION ROAD / SPECIAL SHAPE BADGE
+                if (shapeName != null) {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = theme.surface,
+                        border = BorderStroke(1.dp, theme.gridLine),
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "👓 $shapeName Shape Mastered!",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = theme.textPrimary,
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(if (isVeryCompact) 10.dp else 14.dp))
+                } else {
+                    LevelProgressionTrack(
+                        currentLevel = levelNumber,
+                        isDailyChallenge = isDailyChallenge,
+                        isVeryCompact = isVeryCompact,
+                        theme = theme
+                    )
+                    Spacer(modifier = Modifier.height(if (isVeryCompact) 10.dp else 14.dp))
+                }
 
                 // 3. LARGE PROMINENT ACTION BUTTONS (Placed DIRECTLY below Level Number)
                 if (isDailyUnlockMilestone) {
@@ -637,7 +655,7 @@ fun VictoryScreen(
                                 modifier = Modifier.fillMaxSize()
                             ) {
                                 Text(
-                                    text = if (isDailyChallenge) "Continue" else "Next Level",
+                                    text = if (isDailyChallenge || shapeName != null) "Continue" else "Next Level",
                                     fontSize = if (isVeryCompact) 16.5.sp else 18.sp,
                                     fontWeight = FontWeight.Black,
                                     letterSpacing = 0.5.sp,

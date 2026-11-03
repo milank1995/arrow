@@ -57,6 +57,22 @@ object LevelLoader {
     }
 
     /**
+     * Loads the special Glasses shape puzzle level from assets/levels/Glasses.json.
+     */
+    fun loadGlassesPuzzle(context: Context): LevelData {
+        try {
+            val jsonStr = context.assets.open("levels/Glasses.json").bufferedReader().use { it.readText() }
+            val level = parseLevelJson(999, jsonStr)
+            if (level != null && level.arrows.isNotEmpty()) {
+                return level
+            }
+        } catch (e: Exception) {
+            com.arrowaway.puzzle.analytics.CrashLogger.recordException(e, "LevelLoader.loadGlassesPuzzle")
+        }
+        return loadLevel(context, 1)
+    }
+
+    /**
      * Loads a daily level mapped deterministically from the 150 curated levels.
      */
     fun loadDailyLevel(context: Context, dailyIndex: Int): LevelData {

@@ -64,6 +64,7 @@ data class GameUiState(
     val wandsAvailable: Int = 2,
     val isDailyChallengeMode: Boolean = false,
     val isLockPuzzleMode: Boolean = false,
+    val isGlassesPuzzleMode: Boolean = false,
     val activeDailyDate: String? = null,
     val activeDailyIndex: Int = 1,
     val completedDailyDates: Set<String> = emptySet(),
@@ -448,6 +449,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 previewRayArrowIds = emptySet(),
                 isDailyChallengeMode = false,
                 isLockPuzzleMode = false,
+                isGlassesPuzzleMode = false,
                 activeDailyDate = null,
                 activeDailyIndex = 1,
                 dailyComplimentaryHintsRemaining = if (levelNumber <= 10) 999 else 0,
@@ -496,6 +498,56 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 previewRayArrowIds = emptySet(),
                 isDailyChallengeMode = false,
                 isLockPuzzleMode = true,
+                isGlassesPuzzleMode = false,
+                activeDailyDate = null,
+                activeDailyIndex = 1,
+                dailyComplimentaryHintsRemaining = 0,
+                levelFreeHintsRemaining = 0,
+                showHintAdPrompt = false,
+                isGamePaused = false,
+                restartTrigger = System.currentTimeMillis()
+            )
+        }
+    }
+
+    fun startGlassesPuzzle() {
+        stopAutoSolve()
+        resetLevelMetrics()
+        levelsAttemptedInSession++
+        levelStartWallTimeMs = System.currentTimeMillis()
+        hasInteractedWithArrowThisLevel = false
+
+        val level = LevelLoader.loadGlassesPuzzle(app)
+        occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
+            rebuild(level.arrows)
+        }
+
+        analytics.logLevelStart(
+            levelNumber = 999,
+            gameMode = "glasses",
+            totalArrows = level.arrows.size,
+            gridDimensions = "${level.xSize}x${level.ySize}",
+            attemptNumber = 1
+        )
+        CrashLogger.setCustomKey("current_level", 999)
+        CrashLogger.setCustomKey("game_mode", "glasses")
+
+        _uiState.update {
+            it.copy(
+                levelData = level,
+                arrows = level.arrows,
+                heartsRemaining = level.maxHearts,
+                maxHearts = level.maxHearts,
+                isLevelComplete = false,
+                isGameOver = false,
+                comboCount = 0,
+                cheerMessage = null,
+                isHammerModeActive = false,
+                isGridLinesActive = false,
+                previewRayArrowIds = emptySet(),
+                isDailyChallengeMode = false,
+                isLockPuzzleMode = false,
+                isGlassesPuzzleMode = true,
                 activeDailyDate = null,
                 activeDailyIndex = 1,
                 dailyComplimentaryHintsRemaining = 0,
@@ -556,6 +608,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 previewRayArrowIds = emptySet(),
                 isDailyChallengeMode = true,
                 isLockPuzzleMode = false,
+                isGlassesPuzzleMode = false,
                 activeDailyDate = date.toString(),
                 activeDailyIndex = dailyIndex,
                 dailyComplimentaryHintsRemaining = 0,
@@ -713,7 +766,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         } + 1
 
         val currentLvl = _uiState.value.currentLevelNumber
-        val isSpecialMode = _uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode
+        val isSpecialMode = _uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode || _uiState.value.isGlassesPuzzleMode
 
         val milestoneCheer = evaluateMilestone(clearedCount, totalArrows, currentLvl, isSpecialMode)
         // Combo praise appears with no "Combo x5" label, silenced around milestones to avoid overlap
@@ -863,7 +916,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         dismissAllPreviewRays()
     }
 
-    val isFreeHintLevel: Boolean get() = (_uiState.value.currentLevelNumber <= 10 && !_uiState.value.isDailyChallengeMode && !_uiState.value.isLockPuzzleMode)
+    val isFreeHintLevel: Boolean get() = (_uiState.value.currentLevelNumber <= 10 && !_uiState.value.isDailyChallengeMode && !_uiState.value.isLockPuzzleMode && !_uiState.value.isGlassesPuzzleMode)
 
     fun useHint() {
         viewModelScope.launch(Dispatchers.Default) {
@@ -1036,7 +1089,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun nextLevel() {
         resetGridLines()
-        if (_uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode) {
+        if (_uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode || _uiState.value.isGlassesPuzzleMode) {
             // When completing a daily or special level, reload current campaign level so player returns to campaign
             loadLevel(_uiState.value.currentLevelNumber)
         } else {
@@ -1097,7 +1150,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun onVictoryHomeClick() {
         stopAutoSolve()
-        if (_uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode) {
+        if (_uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode || _uiState.value.isGlassesPuzzleMode) {
             loadLevel(_uiState.value.currentLevelNumber)
         } else {
             val nextLvl = _uiState.value.currentLevelNumber + 1
@@ -1127,6 +1180,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             startDailyChallenge(dateStr)
         } else if (_uiState.value.isLockPuzzleMode) {
             startLockPuzzle()
+        } else if (_uiState.value.isGlassesPuzzleMode) {
+            startGlassesPuzzle()
         } else {
             loadLevel(_uiState.value.currentLevelNumber)
         }
@@ -1180,7 +1235,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         val finalScore = (baseClear + healthPoints + hintPoints + speedPoints).coerceIn(50, 100)
 
         levelsCompletedInSession++
-        val gameMode = if (_uiState.value.isDailyChallengeMode) "daily" else if (_uiState.value.isLockPuzzleMode) "lock" else "campaign"
+        val gameMode = if (_uiState.value.isDailyChallengeMode) "daily" else if (_uiState.value.isLockPuzzleMode) "lock" else if (_uiState.value.isGlassesPuzzleMode) "glasses" else "campaign"
         analytics.logLevelComplete(
             levelNumber = completedLvl,
             gameMode = gameMode,
@@ -1279,7 +1334,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
         viewModelScope.launch {
             val dailyRewardCoins = RemoteConfigManager.dailyCompletionCoins
-            val baseCoins = if (_uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode) dailyRewardCoins else 50 + (_uiState.value.comboCount * 5)
+            val baseCoins = if (_uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode || _uiState.value.isGlassesPuzzleMode) dailyRewardCoins else 50 + (_uiState.value.comboCount * 5)
             if (_uiState.value.isDailyChallengeMode) {
                 val dateStr = _uiState.value.activeDailyDate ?: LocalDate.now().toString()
                 repository.recordDailyCompletion(dateStr)
@@ -1291,6 +1346,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 )
             } else if (_uiState.value.isLockPuzzleMode) {
                 repository.recordLevelCompletion(150, stars)
+            } else if (_uiState.value.isGlassesPuzzleMode) {
+                repository.recordSpecialLevelCompletion(999, stars)
             } else {
                 repository.recordLevelCompletion(completedLevel, stars)
             }
