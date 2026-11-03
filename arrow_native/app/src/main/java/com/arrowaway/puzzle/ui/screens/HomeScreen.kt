@@ -86,7 +86,7 @@ fun HomeScreen(
     onThemeClick: () -> Unit,
     onSoundToggle: () -> Unit,
     onSettingsClick: () -> Unit,
-    onGlassesPuzzleClick: () -> Unit = {},
+    onNewOwnShapeClick: () -> Unit = {},
     onLockPuzzleClick: () -> Unit = {},
     onDevTestClick: () -> Unit = {},
     onLevelChange: (Int) -> Unit = {},
@@ -611,116 +611,7 @@ fun HomeScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(10.dp))
 
-                    // 4. GLASSES PUZZLE FEATURE CARD
-                    val isGlassesCompleted = (uiState.levelStars[999] ?: 0) > 0
-                    Surface(
-                        shape = RoundedCornerShape(18.dp),
-                        color = theme.surface,
-                        border = BorderStroke(
-                            width = 1.2.dp,
-                            color = if (isGlassesCompleted) {
-                                if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
-                            } else {
-                                theme.gridLine
-                            }
-                        ),
-                        shadowElevation = 1.5.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(62.dp)
-                            .clip(RoundedCornerShape(18.dp))
-                            .clickable(onClick = onGlassesPuzzleClick)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 14.dp)
-                        ) {
-                            // Theme-Harmonized Icon Pod
-                            Box(
-                                modifier = Modifier
-                                    .size(38.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(
-                                        if (isGlassesCompleted) {
-                                            if (theme.name == "Warm Sepia") Color(0xFFB45309).copy(alpha = 0.18f) else theme.arrowClear.copy(alpha = 0.18f)
-                                        } else {
-                                            theme.arrowDefault.copy(alpha = 0.15f)
-                                        }
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "👓",
-                                    fontSize = 18.sp
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.width(12.dp))
-
-                            // Text Column
-                            Column(
-                                verticalArrangement = Arrangement.Center,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text(
-                                    text = "Glasses Puzzle",
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = theme.textPrimary,
-                                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
-                                )
-                                Spacer(modifier = Modifier.height(2.dp))
-                                Text(
-                                    text = if (isGlassesCompleted) "✓ Completed" else "Special Shape • 156 Arrows",
-                                    fontSize = 11.sp,
-                                    color = if (isGlassesCompleted) {
-                                        if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
-                                    } else {
-                                        theme.textSecondary
-                                    },
-                                    fontWeight = if (isGlassesCompleted) FontWeight.SemiBold else FontWeight.Medium,
-                                    style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
-                                )
-                            }
-
-                            // Trailing Chip Badge
-                            if (isGlassesCompleted) {
-                                Surface(
-                                    shape = RoundedCornerShape(percent = 50),
-                                    color = theme.arrowClear.copy(alpha = 0.16f),
-                                    border = BorderStroke(1.dp, theme.arrowClear.copy(alpha = 0.4f))
-                                ) {
-                                    Text(
-                                        text = "DONE",
-                                        fontSize = 10.sp,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        color = theme.arrowClear,
-                                        letterSpacing = 0.8.sp,
-                                        modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)
-                                    )
-                                }
-                            } else {
-                                Surface(
-                                    shape = RoundedCornerShape(percent = 50),
-                                    color = theme.arrowDefault.copy(alpha = 0.14f),
-                                    border = BorderStroke(1.dp, theme.arrowDefault.copy(alpha = 0.35f))
-                                ) {
-                                    Text(
-                                        text = "SPECIAL",
-                                        fontSize = 10.sp,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        color = theme.arrowDefault,
-                                        letterSpacing = 0.8.sp,
-                                        modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
 
                     // Dev Secondary Shelf (Only visible in Dev Mode)
                     if (isDevMode) {
@@ -784,6 +675,34 @@ fun HomeScreen(
                                         }
                                     )
                                 }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // New Own Shape Folder Button (Dev Mode only)
+                        Surface(
+                            shape = RoundedCornerShape(14.dp),
+                            color = theme.surface,
+                            border = BorderStroke(1.dp, Color(0xFF6366F1).copy(alpha = 0.5f)),
+                            shadowElevation = 1.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(40.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .clickable(onClick = onNewOwnShapeClick)
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Text(
+                                    text = "🎨 New Own Shape",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF6366F1)
+                                )
                             }
                         }
 

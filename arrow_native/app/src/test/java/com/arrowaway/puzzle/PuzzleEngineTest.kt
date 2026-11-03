@@ -244,7 +244,7 @@ class PuzzleEngineTest {
 
     @Test
     fun testGlassesPuzzleSolvability() {
-        val file = java.io.File("src/main/assets/levels/Glasses.json")
+        val file = java.io.File("src/main/assets/New Own Shape/Glasses.json")
         assertTrue("Glasses.json must exist in assets", file.exists())
         val json = file.readText()
         val level = com.arrowaway.puzzle.core.engine.LevelLoader.parseLevelJson(999, json)

@@ -56,20 +56,70 @@ object LevelLoader {
         return loadLevel(context, 150)
     }
 
+    data class CustomShapeItem(
+        val fileName: String,
+        val displayName: String,
+        val shapeName: String?,
+        val arrowCount: Int,
+        val xSize: Int,
+        val ySize: Int,
+        val difficulty: LevelDifficulty
+    )
+
     /**
-     * Loads the special Glasses shape puzzle level from assets/levels/Glasses.json.
+     * Scans and returns all custom shape levels stored in the assets/New Own Shape folder.
      */
-    fun loadGlassesPuzzle(context: Context): LevelData {
+    fun listCustomShapeLevels(context: Context): List<CustomShapeItem> {
+        val list = mutableListOf<CustomShapeItem>()
         try {
-            val jsonStr = context.assets.open("levels/Glasses.json").bufferedReader().use { it.readText() }
-            val level = parseLevelJson(999, jsonStr)
-            if (level != null && level.arrows.isNotEmpty()) {
-                return level
+            val files = context.assets.list("New Own Shape") ?: emptyArray()
+            for (file in files.filter { it.endsWith(".json", ignoreCase = true) }) {
+                try {
+                    val jsonStr = context.assets.open("New Own Shape/$file").bufferedReader().use { it.readText() }
+                    val level = parseLevelJson(999, jsonStr)
+                    if (level != null) {
+                        val displayName = level.shapeName?.takeIf { it.isNotBlank() }
+                            ?: file.removeSuffix(".json").replace("_", " ")
+                        list.add(
+                            CustomShapeItem(
+                                fileName = file,
+                                displayName = displayName,
+                                shapeName = level.shapeName,
+                                arrowCount = level.arrows.size,
+                                xSize = level.xSize,
+                                ySize = level.ySize,
+                                difficulty = level.difficulty
+                            )
+                        )
+                    }
+                } catch (e: Exception) {
+                    com.arrowaway.puzzle.analytics.CrashLogger.recordException(e, "LevelLoader.listCustomShapeLevels($file)")
+                }
             }
         } catch (e: Exception) {
-            com.arrowaway.puzzle.analytics.CrashLogger.recordException(e, "LevelLoader.loadGlassesPuzzle")
+            com.arrowaway.puzzle.analytics.CrashLogger.recordException(e, "LevelLoader.listCustomShapeLevels")
         }
-        return loadLevel(context, 1)
+        return list
+    }
+
+    /**
+     * Loads a specific custom shape level by file name from assets/New Own Shape.
+     */
+    fun loadCustomShapeLevel(context: Context, fileName: String): LevelData? {
+        try {
+            val jsonStr = context.assets.open("New Own Shape/$fileName").bufferedReader().use { it.readText() }
+            return parseLevelJson(999, jsonStr)
+        } catch (e: Exception) {
+            com.arrowaway.puzzle.analytics.CrashLogger.recordException(e, "LevelLoader.loadCustomShapeLevel($fileName)")
+            return null
+        }
+    }
+
+    /**
+     * Loads the special Glasses shape puzzle level from assets/New Own Shape/Glasses.json.
+     */
+    fun loadGlassesPuzzle(context: Context): LevelData {
+        return loadCustomShapeLevel(context, "Glasses.json") ?: loadLevel(context, 1)
     }
 
     /**

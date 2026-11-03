@@ -65,6 +65,8 @@ data class GameUiState(
     val isDailyChallengeMode: Boolean = false,
     val isLockPuzzleMode: Boolean = false,
     val isGlassesPuzzleMode: Boolean = false,
+    val isCustomShapeMode: Boolean = false,
+    val activeCustomShapeFileName: String? = null,
     val activeDailyDate: String? = null,
     val activeDailyIndex: Int = 1,
     val completedDailyDates: Set<String> = emptySet(),
@@ -450,6 +452,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 isDailyChallengeMode = false,
                 isLockPuzzleMode = false,
                 isGlassesPuzzleMode = false,
+                isCustomShapeMode = false,
+                activeCustomShapeFileName = null,
                 activeDailyDate = null,
                 activeDailyIndex = 1,
                 dailyComplimentaryHintsRemaining = if (levelNumber <= 10) 999 else 0,
@@ -510,27 +514,28 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun startGlassesPuzzle() {
+    fun startCustomShapeLevel(fileName: String) {
         stopAutoSolve()
         resetLevelMetrics()
         levelsAttemptedInSession++
         levelStartWallTimeMs = System.currentTimeMillis()
         hasInteractedWithArrowThisLevel = false
 
-        val level = LevelLoader.loadGlassesPuzzle(app)
+        val level = LevelLoader.loadCustomShapeLevel(app, fileName) ?: LevelLoader.loadLevel(app, 1)
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)
         }
 
         analytics.logLevelStart(
             levelNumber = 999,
-            gameMode = "glasses",
+            gameMode = "custom_shape",
             totalArrows = level.arrows.size,
             gridDimensions = "${level.xSize}x${level.ySize}",
             attemptNumber = 1
         )
         CrashLogger.setCustomKey("current_level", 999)
-        CrashLogger.setCustomKey("game_mode", "glasses")
+        CrashLogger.setCustomKey("game_mode", "custom_shape")
+        CrashLogger.setCustomKey("custom_shape_file", fileName)
 
         _uiState.update {
             it.copy(
@@ -548,6 +553,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 isDailyChallengeMode = false,
                 isLockPuzzleMode = false,
                 isGlassesPuzzleMode = true,
+                isCustomShapeMode = true,
+                activeCustomShapeFileName = fileName,
                 activeDailyDate = null,
                 activeDailyIndex = 1,
                 dailyComplimentaryHintsRemaining = 0,
@@ -557,6 +564,10 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 restartTrigger = System.currentTimeMillis()
             )
         }
+    }
+
+    fun startGlassesPuzzle() {
+        startCustomShapeLevel("Glasses.json")
     }
 
     fun startDailyChallenge(dateString: String = LocalDate.now().toString()) {
@@ -1180,8 +1191,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             startDailyChallenge(dateStr)
         } else if (_uiState.value.isLockPuzzleMode) {
             startLockPuzzle()
-        } else if (_uiState.value.isGlassesPuzzleMode) {
-            startGlassesPuzzle()
+        } else if (_uiState.value.isCustomShapeMode || _uiState.value.isGlassesPuzzleMode) {
+            val file = _uiState.value.activeCustomShapeFileName ?: "Glasses.json"
+            startCustomShapeLevel(file)
         } else {
             loadLevel(_uiState.value.currentLevelNumber)
         }
