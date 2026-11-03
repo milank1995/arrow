@@ -289,6 +289,7 @@ class MainActivity : ComponentActivity() {
                                     onNextLevelClick = {
                                         gameViewModel.playClick()
                                         gameViewModel.markHasPlayedBefore()
+                                        gameViewModel.resetGridLines()
                                         if (uiState.currentLevelNumber == 10 && !uiState.hasSeenDailyUnlockCelebration) {
                                             gameViewModel.markDailyUnlockCelebrationSeen()
                                         }
@@ -345,6 +346,7 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.onAbandonGameplay("back_to_home")
                                         gameViewModel.playClick()
                                         gameViewModel.markHasPlayedBefore()
+                                        gameViewModel.resetGridLines()
                                         val wasDaily = uiState.isDailyChallengeMode
                                         if (uiState.isLevelComplete) {
                                             gameViewModel.onVictoryHomeClick()

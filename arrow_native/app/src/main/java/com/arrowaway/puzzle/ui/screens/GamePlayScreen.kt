@@ -127,16 +127,16 @@ fun GamePlayScreen(
                                 remainingArrowsCount > 0
 
     // Heart loss / mistake triggers stuck assistance immediately during active play
-    LaunchedEffect(uiState.heartsRemaining, isGameActivelyPlaying) {
-        if (uiState.heartsRemaining < prevHeartsRemaining && isGameActivelyPlaying) {
+    LaunchedEffect(uiState.heartsRemaining, isGameActivelyPlaying, uiState.isHintButtonVisible) {
+        if (uiState.heartsRemaining < prevHeartsRemaining && isGameActivelyPlaying && uiState.isHintButtonVisible) {
             isIdlePromptActive = true
         }
         prevHeartsRemaining = uiState.heartsRemaining
     }
 
-    // Dynamically configurable idle timer triggers stuck assistance strictly during active gameplay
-    LaunchedEffect(lastInteractionTime, isGameActivelyPlaying, uiState.hintTimerSeconds) {
-        if (!isGameActivelyPlaying) {
+    // Dynamically configurable idle timer triggers stuck assistance strictly during active gameplay (disabled when Hint Button is false)
+    LaunchedEffect(lastInteractionTime, isGameActivelyPlaying, uiState.hintTimerSeconds, uiState.isHintButtonVisible) {
+        if (!isGameActivelyPlaying || !uiState.isHintButtonVisible) {
             isIdlePromptActive = false
             hasPlayedIdleSoundForPeriod = false
             return@LaunchedEffect
@@ -144,7 +144,7 @@ fun GamePlayScreen(
         isIdlePromptActive = false
         hasPlayedIdleSoundForPeriod = false
         delay(uiState.hintTimerSeconds * 1000L) // Configurable idle duration (default 10s, range 5-55s)
-        if (isGameActivelyPlaying) {
+        if (isGameActivelyPlaying && uiState.isHintButtonVisible) {
             isIdlePromptActive = true
         }
     }

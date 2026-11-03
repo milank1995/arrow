@@ -38,6 +38,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.automirrored.filled.VolumeMute
@@ -114,6 +123,7 @@ fun SettingsScreen(
 ) {
     BackHandler(onBack = onBackClick)
     val context = LocalContext.current
+    var showHintTimerInfoDialog by remember { mutableStateOf(false) }
 
     // Dynamically query application version name from PackageManager
     val versionName = remember {
@@ -413,7 +423,10 @@ fun SettingsScreen(
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
 
-                            // Hint Timer Configuration Row
+                            // Hint Timer Configuration Row (Automatically disabled when Hint Button is false)
+                            val isTimerActive = isHintButtonVisible
+                            val timerControlsAlpha = if (isTimerActive) 1f else 0.45f
+
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -438,30 +451,51 @@ fun SettingsScreen(
                                             Icon(
                                                 imageVector = Icons.Default.Timer,
                                                 contentDescription = "Hint Timer",
-                                                tint = activeTheme.textPrimary,
+                                                tint = activeTheme.textPrimary.copy(alpha = timerControlsAlpha),
                                                 modifier = Modifier.size(18.dp)
                                             )
                                         }
 
-                                        Text(
-                                            text = "Hint Timer",
-                                            fontSize = 14.5.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = activeTheme.textPrimary,
-                                            style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
-                                        )
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                        ) {
+                                            Text(
+                                                text = "Hint Timer",
+                                                fontSize = 14.5.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = activeTheme.textPrimary.copy(alpha = timerControlsAlpha),
+                                                style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                                            )
+
+                                            // Small information (i) icon
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(24.dp)
+                                                    .clip(CircleShape)
+                                                    .clickable { showHintTimerInfoDialog = true },
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Outlined.Info,
+                                                    contentDescription = "Hint Timer Info",
+                                                    tint = activeTheme.textSecondary.copy(alpha = if (isTimerActive) 0.85f else 0.55f),
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                            }
+                                        }
                                     }
 
                                     Surface(
                                         shape = RoundedCornerShape(8.dp),
-                                        color = activeTheme.arrowDefault.copy(alpha = 0.15f),
-                                        border = BorderStroke(1.dp, activeTheme.arrowDefault.copy(alpha = 0.35f))
+                                        color = if (isTimerActive) activeTheme.arrowDefault.copy(alpha = 0.15f) else activeTheme.gridLine.copy(alpha = 0.35f),
+                                        border = BorderStroke(1.dp, if (isTimerActive) activeTheme.arrowDefault.copy(alpha = 0.35f) else activeTheme.gridLine.copy(alpha = 0.5f))
                                     ) {
                                         Text(
-                                            text = "${hintTimerSeconds}s",
-                                            fontSize = 13.sp,
+                                            text = if (isTimerActive) "${hintTimerSeconds}s" else "Disabled",
+                                            fontSize = if (isTimerActive) 13.sp else 11.5.sp,
                                             fontWeight = FontWeight.ExtraBold,
-                                            color = activeTheme.arrowDefault,
+                                            color = if (isTimerActive) activeTheme.arrowDefault else activeTheme.textSecondary.copy(alpha = 0.55f),
                                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                                         )
                                     }
@@ -472,12 +506,16 @@ fun SettingsScreen(
                                 Slider(
                                     value = hintTimerSeconds.toFloat(),
                                     onValueChange = { onHintTimerChange(it.roundToInt().coerceIn(5, 55)) },
+                                    enabled = isTimerActive,
                                     valueRange = 5f..55f,
                                     steps = 9,
                                     colors = SliderDefaults.colors(
                                         thumbColor = activeTheme.arrowDefault,
                                         activeTrackColor = activeTheme.arrowDefault,
-                                        inactiveTrackColor = activeTheme.gridLine.copy(alpha = 0.5f)
+                                        inactiveTrackColor = activeTheme.gridLine.copy(alpha = 0.5f),
+                                        disabledThumbColor = activeTheme.arrowDefault.copy(alpha = 0.3f),
+                                        disabledActiveTrackColor = activeTheme.arrowDefault.copy(alpha = 0.25f),
+                                        disabledInactiveTrackColor = activeTheme.gridLine.copy(alpha = 0.25f)
                                     ),
                                     modifier = Modifier.fillMaxWidth()
                                 )
@@ -490,13 +528,13 @@ fun SettingsScreen(
                                         text = "5s",
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = activeTheme.textSecondary.copy(alpha = 0.65f)
+                                        color = activeTheme.textSecondary.copy(alpha = if (isTimerActive) 0.65f else 0.3f)
                                     )
                                     Text(
                                         text = "55s",
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = activeTheme.textSecondary.copy(alpha = 0.65f)
+                                        color = activeTheme.textSecondary.copy(alpha = if (isTimerActive) 0.65f else 0.3f)
                                     )
                                 }
                             }
@@ -644,6 +682,90 @@ fun SettingsScreen(
             }
 
             BannerAdView(modifier = Modifier.padding(vertical = 4.dp))
+        }
+
+        // HINT TIMER EXPLANATION MODAL DIALOG
+        if (showHintTimerInfoDialog) {
+            Dialog(
+                onDismissRequest = { showHintTimerInfoDialog = false },
+                properties = DialogProperties(usePlatformDefaultWidth = false)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(24.dp),
+                    color = cardBg,
+                    border = BorderStroke(1.2.dp, cardBorder),
+                    shadowElevation = 14.dp,
+                    modifier = Modifier
+                        .widthIn(max = 330.dp)
+                        .fillMaxWidth(0.88f)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(22.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Header Icon
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFF59E0B).copy(alpha = 0.15f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Timer,
+                                contentDescription = null,
+                                tint = Color(0xFFF59E0B),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        Text(
+                            text = "Hint Timer",
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = activeTheme.textPrimary
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            text = "The Hint Timer gently assists you when you're stuck on a tricky puzzle.\n\n" +
+                                   "• Purpose: Offers a gentle nudge without interrupting your problem-solving flow.\n\n" +
+                                   "• How it works: If you don't make a move within the chosen time (5s - 55s), the Hint button softly pulses and plays a subtle sound to remind you that a hint is available.\n\n" +
+                                   "• Note: When the Hint Button is turned off, the Hint Timer is automatically disabled.",
+                            fontSize = 13.sp,
+                            lineHeight = 19.sp,
+                            color = activeTheme.textSecondary,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        Button(
+                            onClick = { showHintTimerInfoDialog = false },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = activeTheme.arrowDefault,
+                                contentColor = Color.White
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(42.dp)
+                        ) {
+                            Text(
+                                text = "Got It",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }

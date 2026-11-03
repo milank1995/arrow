@@ -352,8 +352,15 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun resetGridLines() {
+        if (_uiState.value.isGridLinesActive) {
+            _uiState.update { it.copy(isGridLinesActive = false) }
+        }
+    }
+
     fun onNavigateToGameplay() {
         isGameplayScreenActive = true
+        resetGridLines()
         if (!isGamePaused && !isAppInBackground) {
             resumeActiveTimer()
         }
@@ -362,6 +369,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     fun onNavigateAwayFromGameplay() {
         isGameplayScreenActive = false
         pauseActiveTimer()
+        resetGridLines()
     }
 
     fun setHintButtonVisible(visible: Boolean) {
@@ -436,6 +444,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 comboCount = 0,
                 cheerMessage = null,
                 isHammerModeActive = false,
+                isGridLinesActive = false,
                 previewRayArrowIds = emptySet(),
                 isDailyChallengeMode = false,
                 isLockPuzzleMode = false,
@@ -483,6 +492,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 comboCount = 0,
                 cheerMessage = null,
                 isHammerModeActive = false,
+                isGridLinesActive = false,
                 previewRayArrowIds = emptySet(),
                 isDailyChallengeMode = false,
                 isLockPuzzleMode = true,
@@ -542,6 +552,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 comboCount = 0,
                 cheerMessage = null,
                 isHammerModeActive = false,
+                isGridLinesActive = false,
                 previewRayArrowIds = emptySet(),
                 isDailyChallengeMode = true,
                 isLockPuzzleMode = false,
@@ -1024,6 +1035,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun nextLevel() {
+        resetGridLines()
         if (_uiState.value.isDailyChallengeMode || _uiState.value.isLockPuzzleMode) {
             // When completing a daily or special level, reload current campaign level so player returns to campaign
             loadLevel(_uiState.value.currentLevelNumber)
@@ -1109,6 +1121,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     fun restartLevel(restartSource: String = "game_over") {
         analytics.logLevelRestart(_uiState.value.currentLevelNumber, restartSource)
         stopAutoSolve()
+        resetGridLines()
         if (_uiState.value.isDailyChallengeMode) {
             val dateStr = _uiState.value.activeDailyDate ?: LocalDate.now().toString()
             startDailyChallenge(dateStr)
