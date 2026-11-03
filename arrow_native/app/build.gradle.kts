@@ -102,3 +102,18 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
+
+// Automatically package native debug symbols into native-debug-symbols.zip for Google Play Console upload
+tasks.register<Zip>("packageReleaseDebugSymbols") {
+    description = "Packages native debug symbols into a zip for Google Play Console"
+    archiveFileName.set("native-debug-symbols.zip")
+    destinationDirectory.set(layout.buildDirectory.dir("outputs/bundle/release"))
+
+    from(layout.buildDirectory.dir("intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib"))
+}
+
+afterEvaluate {
+    tasks.findByName("bundleRelease")?.finalizedBy(tasks.named("packageReleaseDebugSymbols"))
+}
+
+
