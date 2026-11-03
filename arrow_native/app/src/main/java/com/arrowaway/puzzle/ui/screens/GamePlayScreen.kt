@@ -334,9 +334,10 @@ fun GamePlayScreen(
                             BoosterBar(
                                 hintsCount = effectiveHints,
                                 isGridLinesActive = uiState.isGridLinesActive,
-                                isFreeHintLevel = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode),
+                                isFreeHintLevel = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode && !uiState.isGlassesPuzzleMode),
                                 isIdlePromptActive = isIdlePromptActive,
-                                levelNumber = uiState.currentLevelNumber,
+                                levelNumber = if (uiState.isGlassesPuzzleMode) null else uiState.currentLevelNumber,
+                                shapeName = if (uiState.isGlassesPuzzleMode) "Glasses" else level?.shapeName,
                                 isDailyChallenge = uiState.isDailyChallengeMode,
                                 theme = theme,
                                 isHintVisible = uiState.isHintButtonVisible,

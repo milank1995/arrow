@@ -251,8 +251,8 @@ class PuzzleEngineTest {
         assertNotNull("Glasses level should parse successfully", level)
         assertEquals("ShapeName must be Glasses", "Glasses", level!!.shapeName)
         assertEquals("Glasses must have 156 arrows", 156, level.arrows.size)
-        assertEquals("XSize must be 75", 75, level.xSize)
-        assertEquals("YSize must be 48", 48, level.ySize)
+        assertEquals("XSize must be 60", 60, level.xSize)
+        assertEquals("YSize must be 35", 35, level.ySize)
 
         val occupancy = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)

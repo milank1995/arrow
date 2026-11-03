@@ -200,9 +200,9 @@ fun PuzzleBoardCanvas(
         val viewportWidth = constraints.maxWidth.toFloat()
         val viewportHeight = constraints.maxHeight.toFloat()
 
-        // Fit board into viewport with comfortable margin (94% width, 90% height for maximum board visibility)
-        val availableWidth = viewportWidth * 0.94f
-        val availableHeight = viewportHeight * 0.90f
+        // Fit board into viewport with comfortable margin (96% width, 94% height for maximum board visibility)
+        val availableWidth = viewportWidth * 0.96f
+        val availableHeight = viewportHeight * 0.94f
         val maxCellPx = with(LocalDensity.current) { 50.dp.toPx() }
         val cellSize = minOf(availableWidth / xSize, availableHeight / ySize).coerceAtMost(maxCellPx)
         val boardWidth = cellSize * xSize
