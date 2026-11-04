@@ -562,6 +562,10 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.analytics.logSettingPreferenceChanged("theme", uiState.activeTheme.name, selectedTheme.name)
                                         gameViewModel.setTheme(selectedTheme)
                                     },
+                                    onResetGameData = {
+                                        gameViewModel.resetGameData()
+                                        Toast.makeText(this@MainActivity, "Game progress reset to Level 1", Toast.LENGTH_SHORT).show()
+                                    },
                                     onBackClick = {
                                         gameViewModel.playClick()
                                         currentScreen = AppScreen.HOME

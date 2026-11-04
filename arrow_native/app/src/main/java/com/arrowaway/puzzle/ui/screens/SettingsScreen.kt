@@ -61,9 +61,11 @@ import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Policy
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Vibration
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import kotlin.math.roundToInt
@@ -122,6 +124,7 @@ fun SettingsScreen(
     onToggleGridButton: () -> Unit = {},
     onHintTimerChange: (Int) -> Unit = {},
     onToggleDevMode: () -> Unit = {},
+    onResetGameData: () -> Unit = {},
     onThemeSelect: (ThemePreset) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -131,6 +134,7 @@ fun SettingsScreen(
     var showHintTimerInfoDialog by remember { mutableStateOf(false) }
     var showPrivacyPolicyDialog by remember { mutableStateOf(false) }
     var showTermsDialog by remember { mutableStateOf(false) }
+    var showResetConfirmDialog by remember { mutableStateOf(false) }
 
     // Dynamically query application version name from PackageManager
     val versionName = remember {
@@ -565,7 +569,40 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     // =========================================================
-                    // SECTION 4: ABOUT & SUPPORT (Clean Consolidated Card)
+                    // SECTION 4: GAME PROGRESS (Reset data & scores)
+                    // =========================================================
+                    Text(
+                        text = "GAME PROGRESS",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = 1.5.sp,
+                        color = activeTheme.textSecondary,
+                        modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
+                    )
+
+                    Surface(
+                        shape = RoundedCornerShape(22.dp),
+                        color = cardBg,
+                        border = BorderStroke(1.2.dp, cardBorder),
+                        shadowElevation = 2.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            SettingsLinkRow(
+                                title = "Reset Game Progress",
+                                icon = Icons.Default.Refresh,
+                                iconBg = if (activeTheme.name == "Warm Sepia") Color(0xFFFDE8E8) else Color(0xFFFEE2E2),
+                                iconTint = Color(0xFFDC2626),
+                                onClick = { showResetConfirmDialog = true },
+                                activeTheme = activeTheme
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // =========================================================
+                    // SECTION 5: ABOUT & SUPPORT (Clean Consolidated Card)
                     // =========================================================
                     Text(
                         text = "ABOUT & SUPPORT",
@@ -726,6 +763,115 @@ fun SettingsScreen(
             }
 
             BannerAdView(modifier = Modifier.padding(vertical = 4.dp))
+        }
+
+        // RESET GAME PROGRESS CONFIRMATION MODAL DIALOG
+        if (showResetConfirmDialog) {
+            Dialog(
+                onDismissRequest = { showResetConfirmDialog = false },
+                properties = DialogProperties(usePlatformDefaultWidth = false)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(24.dp),
+                    color = cardBg,
+                    border = BorderStroke(1.2.dp, cardBorder),
+                    shadowElevation = 14.dp,
+                    modifier = Modifier
+                        .widthIn(max = 330.dp)
+                        .fillMaxWidth(0.88f)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(22.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Warning Icon Pod
+                        Box(
+                            modifier = Modifier
+                                .size(52.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFEF4444).copy(alpha = 0.12f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = "Reset Progress",
+                                tint = Color(0xFFDC2626),
+                                modifier = Modifier.size(26.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        Text(
+                            text = "Reset Game Progress?",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = activeTheme.textPrimary,
+                            textAlign = TextAlign.Center
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            text = "This will reset your campaign level back to Level 1, stars, coins, and streak.\n\nYour theme and sound settings will be preserved.\n\nThis action cannot be undone.",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Normal,
+                            lineHeight = 18.sp,
+                            color = activeTheme.textSecondary,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Destructive Reset Button
+                        Button(
+                            onClick = {
+                                showResetConfirmDialog = false
+                                onResetGameData()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFDC2626),
+                                contentColor = Color.White
+                            ),
+                            shape = RoundedCornerShape(14.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(46.dp)
+                        ) {
+                            Text(
+                                text = "Reset Everything",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Safe Cancel Button
+                        Button(
+                            onClick = { showResetConfirmDialog = false },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = activeTheme.textPrimary
+                            ),
+                            shape = RoundedCornerShape(14.dp),
+                            border = BorderStroke(1.dp, cardBorder),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(44.dp)
+                        ) {
+                            Text(
+                                text = "Keep Playing",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+                }
+            }
         }
 
         // HINT TIMER EXPLANATION MODAL DIALOG
