@@ -140,7 +140,7 @@ class UserPreferencesRepository(private val context: Context) {
             isDevMode = prefs[KEY_DEV_MODE] ?: com.arrowaway.puzzle.BuildConfig.DEBUG,
             isHintButtonVisible = prefs[KEY_HINT_BUTTON_VISIBLE] ?: true,
             isGridButtonVisible = prefs[KEY_GRID_BUTTON_VISIBLE] ?: true,
-            hintTimerSeconds = (prefs[KEY_HINT_TIMER_SECONDS] ?: 10).coerceIn(5, 55),
+            hintTimerSeconds = (prefs[KEY_HINT_TIMER_SECONDS] ?: 10).coerceIn(0, 55),
             lastReviewPromptTimestamp = prefs[KEY_LAST_REVIEW_PROMPT_TIMESTAMP] ?: 0L,
             isAnalyticsEnabled = prefs[KEY_ANALYTICS_ENABLED] ?: (!com.arrowaway.puzzle.BuildConfig.DEBUG)
         )
@@ -325,7 +325,7 @@ class UserPreferencesRepository(private val context: Context) {
     }
 
     suspend fun setHintTimerSeconds(seconds: Int) {
-        val clamped = seconds.coerceIn(5, 55)
+        val clamped = seconds.coerceIn(0, 55)
         context.dataStore.edit { prefs ->
             prefs[KEY_HINT_TIMER_SECONDS] = clamped
         }

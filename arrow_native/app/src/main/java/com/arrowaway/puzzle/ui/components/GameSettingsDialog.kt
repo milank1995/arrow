@@ -67,11 +67,12 @@ import com.arrowaway.puzzle.ui.theme.ThemePresets
 import kotlin.math.roundToInt
 
 /**
- * Modern In-Game Settings Dialog accessible directly from the Game Area header.
- * Provides instant real-time configuration for:
- * 1. Audio & Haptics (Sound Effects, Vibration)
- * 2. Gameplay Controls (Hint Button, Grid Guide Button, Hint Timer Duration Slider)
- * 3. Board Theme Selection (Real-time live swatch preview)
+ * Clean, flat In-Game Settings Dialog accessible from the Game Area header.
+ * Designed with a streamlined, modern layout:
+ * - Zero nested box clutter.
+ * - Flat list items with hairline dividers.
+ * - Hint Timer slider with "Off" option (0s, 5s-55s).
+ * - Real-time Board Theme selector.
  */
 @Composable
 fun GameSettingsDialog(
@@ -92,25 +93,25 @@ fun GameSettingsDialog(
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
-    val dialogWidth = minOf(screenWidth - 32.dp, 360.dp)
-    val maxScrollHeight = (screenHeight - 140.dp).coerceIn(280.dp, 560.dp)
+    val dialogWidth = minOf(screenWidth - 36.dp, 350.dp)
+    val maxScrollHeight = (screenHeight - 120.dp).coerceIn(300.dp, 600.dp)
 
     var showHintTimerInfoDialog by remember { mutableStateOf(false) }
 
     val cardBg = if (activeTheme.isDark) Color(0xFF1E293B) else Color.White
     val cardBorder = if (activeTheme.isDark) Color(0xFF334155) else Color(0xFFE2E8F0)
-    val itemBg = if (activeTheme.isDark) Color(0xFF334155).copy(alpha = 0.5f) else Color(0xFFF1F5F9)
-    val sectionCardBg = if (activeTheme.isDark) Color(0xFF0F172A).copy(alpha = 0.5f) else Color(0xFFF8FAFC)
+    val dividerColor = activeTheme.gridLine.copy(alpha = 0.35f)
+    val itemBg = if (activeTheme.isDark) Color(0xFF334155).copy(alpha = 0.55f) else Color(0xFFF1F5F9)
 
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Surface(
-            shape = RoundedCornerShape(26.dp),
+            shape = RoundedCornerShape(24.dp),
             color = cardBg,
             border = BorderStroke(1.dp, cardBorder),
-            shadowElevation = 18.dp,
+            shadowElevation = 16.dp,
             modifier = Modifier
                 .width(dialogWidth)
                 .padding(vertical = 12.dp)
@@ -118,9 +119,9 @@ fun GameSettingsDialog(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 20.dp)
+                    .padding(horizontal = 20.dp, vertical = 18.dp)
             ) {
-                // 1. DIALOG HEADER (Title + Close Button)
+                // 1. HEADER (Title + Close Button)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -128,7 +129,7 @@ fun GameSettingsDialog(
                 ) {
                     Text(
                         text = "Settings",
-                        fontSize = 20.sp,
+                        fontSize = 19.sp,
                         fontWeight = FontWeight.Bold,
                         color = activeTheme.textPrimary
                     )
@@ -136,7 +137,7 @@ fun GameSettingsDialog(
                     IconButton(
                         onClick = onDismiss,
                         modifier = Modifier
-                            .size(34.dp)
+                            .size(32.dp)
                             .clip(CircleShape)
                             .background(
                                 if (activeTheme.isDark) Color(0xFF334155) else Color(0xFFF1F5F9)
@@ -146,14 +147,14 @@ fun GameSettingsDialog(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
                             tint = activeTheme.textPrimary,
-                            modifier = Modifier.size(17.dp)
+                            modifier = Modifier.size(16.dp)
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-                // Scrollable Content
+                // Scrollable content column (fits without scrolling on normal screens)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -161,231 +162,212 @@ fun GameSettingsDialog(
                         .verticalScroll(rememberScrollState())
                 ) {
                     // =========================================================
-                    // SECTION 1: AUDIO & HAPTICS
+                    // SECTION 1: AUDIO & HAPTICS (Flat layout, no inner boxes)
                     // =========================================================
                     Text(
                         text = "AUDIO & HAPTICS",
-                        fontSize = 11.sp,
+                        fontSize = 10.5.sp,
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 1.2.sp,
                         color = activeTheme.textSecondary,
-                        modifier = Modifier.padding(start = 2.dp, bottom = 6.dp)
+                        modifier = Modifier.padding(start = 2.dp, bottom = 4.dp)
                     )
 
-                    Surface(
-                        shape = RoundedCornerShape(18.dp),
-                        color = sectionCardBg,
-                        border = BorderStroke(1.dp, cardBorder.copy(alpha = 0.8f)),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            // Sound Effects Toggle
-                            GameSettingToggleRow(
-                                title = "Sound Effects",
-                                icon = if (isSoundEnabled) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeMute,
-                                iconBg = if (isSoundEnabled) Color(0xFFFEF3C7) else Color(0xFFE2E8F0),
-                                iconTint = if (isSoundEnabled) Color(0xFFD97706) else Color(0xFF64748B),
-                                isChecked = isSoundEnabled,
-                                onCheckedChange = { onToggleSound() },
-                                activeTheme = activeTheme
-                            )
+                    GameSettingToggleRow(
+                        title = "Sound Effects",
+                        icon = if (isSoundEnabled) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeMute,
+                        iconBg = if (isSoundEnabled) Color(0xFFFEF3C7) else Color(0xFFE2E8F0),
+                        iconTint = if (isSoundEnabled) Color(0xFFD97706) else Color(0xFF64748B),
+                        isChecked = isSoundEnabled,
+                        onCheckedChange = { onToggleSound() },
+                        activeTheme = activeTheme
+                    )
 
-                            HorizontalDivider(
-                                color = cardBorder.copy(alpha = 0.5f),
-                                thickness = 1.dp,
-                                modifier = Modifier.padding(horizontal = 14.dp)
-                            )
+                    HorizontalDivider(color = dividerColor, thickness = 0.8.dp)
 
-                            // Haptic Vibration Toggle
-                            GameSettingToggleRow(
-                                title = "Haptic Vibration",
-                                icon = Icons.Default.Vibration,
-                                iconBg = if (isVibrationEnabled) Color(0xFFE0E7FF) else Color(0xFFE2E8F0),
-                                iconTint = if (isVibrationEnabled) Color(0xFF4F46E5) else Color(0xFF64748B),
-                                isChecked = isVibrationEnabled,
-                                onCheckedChange = { onToggleVibration() },
-                                activeTheme = activeTheme
-                            )
-                        }
-                    }
+                    GameSettingToggleRow(
+                        title = "Haptic Vibration",
+                        icon = Icons.Default.Vibration,
+                        iconBg = if (isVibrationEnabled) Color(0xFFE0E7FF) else Color(0xFFE2E8F0),
+                        iconTint = if (isVibrationEnabled) Color(0xFF4F46E5) else Color(0xFF64748B),
+                        isChecked = isVibrationEnabled,
+                        onCheckedChange = { onToggleVibration() },
+                        activeTheme = activeTheme
+                    )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     // =========================================================
-                    // SECTION 2: GAMEPLAY CONTROLS
+                    // SECTION 2: GAMEPLAY CONTROLS (Flat layout, no inner boxes)
                     // =========================================================
                     Text(
                         text = "GAMEPLAY CONTROLS",
-                        fontSize = 11.sp,
+                        fontSize = 10.5.sp,
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 1.2.sp,
                         color = activeTheme.textSecondary,
-                        modifier = Modifier.padding(start = 2.dp, bottom = 6.dp)
+                        modifier = Modifier.padding(start = 2.dp, bottom = 4.dp)
                     )
 
-                    Surface(
-                        shape = RoundedCornerShape(18.dp),
-                        color = sectionCardBg,
-                        border = BorderStroke(1.dp, cardBorder.copy(alpha = 0.8f)),
-                        modifier = Modifier.fillMaxWidth()
+                    GameSettingToggleRow(
+                        title = "Hint Button",
+                        icon = Icons.Default.Lightbulb,
+                        iconBg = itemBg,
+                        iconTint = Color(0xFFF59E0B),
+                        isChecked = isHintButtonVisible,
+                        onCheckedChange = { onToggleHintButton() },
+                        activeTheme = activeTheme
+                    )
+
+                    HorizontalDivider(color = dividerColor, thickness = 0.8.dp)
+
+                    GameSettingToggleRow(
+                        title = "Grid Guide (#) Button",
+                        icon = Icons.Default.GridOn,
+                        iconBg = itemBg,
+                        iconTint = activeTheme.arrowDefault,
+                        isChecked = isGridButtonVisible,
+                        onCheckedChange = { onToggleGridButton() },
+                        activeTheme = activeTheme
+                    )
+
+                    HorizontalDivider(color = dividerColor, thickness = 0.8.dp)
+
+                    // Hint Timer Slider Row (with OFF option)
+                    val isTimerActive = isHintButtonVisible
+                    val timerControlsAlpha = if (isTimerActive) 1f else 0.45f
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
                     ) {
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            // Hint Button Visibility
-                            GameSettingToggleRow(
-                                title = "Hint Button",
-                                icon = Icons.Default.Lightbulb,
-                                iconBg = itemBg,
-                                iconTint = Color(0xFFF59E0B),
-                                isChecked = isHintButtonVisible,
-                                onCheckedChange = { onToggleHintButton() },
-                                activeTheme = activeTheme
-                            )
-
-                            HorizontalDivider(
-                                color = cardBorder.copy(alpha = 0.5f),
-                                thickness = 1.dp,
-                                modifier = Modifier.padding(horizontal = 14.dp)
-                            )
-
-                            // Grid Guide (#) Button Visibility
-                            GameSettingToggleRow(
-                                title = "Grid Guide (#) Button",
-                                icon = Icons.Default.GridOn,
-                                iconBg = itemBg,
-                                iconTint = activeTheme.arrowDefault,
-                                isChecked = isGridButtonVisible,
-                                onCheckedChange = { onToggleGridButton() },
-                                activeTheme = activeTheme
-                            )
-
-                            HorizontalDivider(
-                                color = cardBorder.copy(alpha = 0.5f),
-                                thickness = 1.dp,
-                                modifier = Modifier.padding(horizontal = 14.dp)
-                            )
-
-                            // Hint Timer Configuration Row
-                            val isTimerActive = isHintButtonVisible
-                            val timerControlsAlpha = if (isTimerActive) 1f else 0.45f
-
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 12.dp)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .clip(RoundedCornerShape(9.dp))
+                                        .background(itemBg)
                                 ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    Icon(
+                                        imageVector = Icons.Default.Timer,
+                                        contentDescription = "Hint Timer",
+                                        tint = activeTheme.textPrimary.copy(alpha = timerControlsAlpha),
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Text(
+                                        text = "Hint Timer",
+                                        fontSize = 13.5.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = activeTheme.textPrimary.copy(alpha = timerControlsAlpha),
+                                        style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                                    )
+
+                                    // (i) info icon
+                                    Box(
+                                        modifier = Modifier
+                                            .size(22.dp)
+                                            .clip(CircleShape)
+                                            .clickable { showHintTimerInfoDialog = true },
+                                        contentAlignment = Alignment.Center
                                     ) {
-                                        Box(
-                                            contentAlignment = Alignment.Center,
-                                            modifier = Modifier
-                                                .size(32.dp)
-                                                .clip(RoundedCornerShape(9.dp))
-                                                .background(itemBg)
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Timer,
-                                                contentDescription = "Hint Timer",
-                                                tint = activeTheme.textPrimary.copy(alpha = timerControlsAlpha),
-                                                modifier = Modifier.size(16.dp)
-                                            )
-                                        }
-
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                        ) {
-                                            Text(
-                                                text = "Hint Timer",
-                                                fontSize = 13.5.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = activeTheme.textPrimary.copy(alpha = timerControlsAlpha),
-                                                style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
-                                            )
-
-                                            // (i) info icon
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(22.dp)
-                                                    .clip(CircleShape)
-                                                    .clickable { showHintTimerInfoDialog = true },
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Icon(
-                                                    imageVector = Icons.Outlined.Info,
-                                                    contentDescription = "Hint Timer Info",
-                                                    tint = activeTheme.textSecondary.copy(alpha = if (isTimerActive) 0.85f else 0.55f),
-                                                    modifier = Modifier.size(15.dp)
-                                                )
-                                            }
-                                        }
-                                    }
-
-                                    Surface(
-                                        shape = RoundedCornerShape(7.dp),
-                                        color = if (isTimerActive) activeTheme.arrowDefault.copy(alpha = 0.15f) else activeTheme.gridLine.copy(alpha = 0.35f),
-                                        border = BorderStroke(1.dp, if (isTimerActive) activeTheme.arrowDefault.copy(alpha = 0.35f) else activeTheme.gridLine.copy(alpha = 0.5f))
-                                    ) {
-                                        Text(
-                                            text = if (isTimerActive) "${hintTimerSeconds}s" else "Disabled",
-                                            fontSize = if (isTimerActive) 12.sp else 11.sp,
-                                            fontWeight = FontWeight.ExtraBold,
-                                            color = if (isTimerActive) activeTheme.arrowDefault else activeTheme.textSecondary.copy(alpha = 0.55f),
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                        Icon(
+                                            imageVector = Icons.Outlined.Info,
+                                            contentDescription = "Hint Timer Info",
+                                            tint = activeTheme.textSecondary.copy(alpha = if (isTimerActive) 0.85f else 0.55f),
+                                            modifier = Modifier.size(15.dp)
                                         )
                                     }
                                 }
-
-                                Spacer(modifier = Modifier.height(4.dp))
-
-                                Slider(
-                                    value = hintTimerSeconds.toFloat(),
-                                    onValueChange = { onHintTimerChange(it.roundToInt().coerceIn(5, 55)) },
-                                    enabled = isTimerActive,
-                                    valueRange = 5f..55f,
-                                    steps = 9,
-                                    colors = SliderDefaults.colors(
-                                        thumbColor = activeTheme.arrowDefault,
-                                        activeTrackColor = activeTheme.arrowDefault,
-                                        inactiveTrackColor = activeTheme.gridLine.copy(alpha = 0.5f),
-                                        disabledThumbColor = activeTheme.arrowDefault.copy(alpha = 0.3f),
-                                        disabledActiveTrackColor = activeTheme.arrowDefault.copy(alpha = 0.25f),
-                                        disabledInactiveTrackColor = activeTheme.gridLine.copy(alpha = 0.25f)
-                                    ),
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = "5s",
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = activeTheme.textSecondary.copy(alpha = if (isTimerActive) 0.65f else 0.3f)
-                                    )
-                                    Text(
-                                        text = "55s",
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = activeTheme.textSecondary.copy(alpha = if (isTimerActive) 0.65f else 0.3f)
-                                    )
-                                }
                             }
+
+                            // Value chip (Disabled, Off, or Xs)
+                            val chipText = when {
+                                !isTimerActive -> "Disabled"
+                                hintTimerSeconds <= 0 -> "Off"
+                                else -> "${hintTimerSeconds}s"
+                            }
+                            val isChipActive = isTimerActive && hintTimerSeconds > 0
+
+                            Surface(
+                                shape = RoundedCornerShape(7.dp),
+                                color = if (isChipActive) activeTheme.arrowDefault.copy(alpha = 0.15f) else activeTheme.gridLine.copy(alpha = 0.35f),
+                                border = BorderStroke(
+                                    1.dp,
+                                    if (isChipActive) activeTheme.arrowDefault.copy(alpha = 0.35f) else activeTheme.gridLine.copy(alpha = 0.5f)
+                                )
+                            ) {
+                                Text(
+                                    text = chipText,
+                                    fontSize = if (isChipActive) 12.sp else 11.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = if (isChipActive) activeTheme.arrowDefault else activeTheme.textSecondary.copy(alpha = 0.55f),
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        // Slider with 0 (Off) to 55s range in 5s steps (steps = 10 between min and max)
+                        Slider(
+                            value = hintTimerSeconds.coerceIn(0, 55).toFloat(),
+                            onValueChange = { raw ->
+                                val snapped = ((raw / 5f).roundToInt() * 5).coerceIn(0, 55)
+                                onHintTimerChange(snapped)
+                            },
+                            enabled = isTimerActive,
+                            valueRange = 0f..55f,
+                            steps = 10,
+                            colors = SliderDefaults.colors(
+                                thumbColor = activeTheme.arrowDefault,
+                                activeTrackColor = activeTheme.arrowDefault,
+                                inactiveTrackColor = activeTheme.gridLine.copy(alpha = 0.5f),
+                                disabledThumbColor = activeTheme.arrowDefault.copy(alpha = 0.3f),
+                                disabledActiveTrackColor = activeTheme.arrowDefault.copy(alpha = 0.25f),
+                                disabledInactiveTrackColor = activeTheme.gridLine.copy(alpha = 0.25f)
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Off",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = activeTheme.textSecondary.copy(alpha = if (isTimerActive) 0.65f else 0.3f)
+                            )
+                            Text(
+                                text = "55s",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = activeTheme.textSecondary.copy(alpha = if (isTimerActive) 0.65f else 0.3f)
+                            )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     // =========================================================
-                    // SECTION 3: BOARD THEME
+                    // SECTION 3: BOARD THEME (Flat layout, no inner boxes)
                     // =========================================================
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -402,7 +384,7 @@ fun GameSettingsDialog(
                             Spacer(modifier = Modifier.width(5.dp))
                             Text(
                                 text = "BOARD THEME",
-                                fontSize = 11.sp,
+                                fontSize = 10.5.sp,
                                 fontWeight = FontWeight.ExtraBold,
                                 letterSpacing = 1.2.sp,
                                 color = activeTheme.textSecondary
@@ -425,7 +407,7 @@ fun GameSettingsDialog(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Swatches row with real-time reactive selection
+                    // Real-time Swatches Row
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -443,7 +425,7 @@ fun GameSettingsDialog(
                                 ),
                                 shadowElevation = if (isSelected) 2.dp else 0.dp,
                                 modifier = Modifier
-                                    .size(width = 46.dp, height = 34.dp)
+                                    .size(width = 44.dp, height = 32.dp)
                                     .clip(RoundedCornerShape(12.dp))
                                     .clickable {
                                         onThemeSelect(preset)
@@ -481,14 +463,16 @@ fun GameSettingsDialog(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(18.dp))
 
-                    // 4. BOTTOM DONE BUTTON
+                    // 4. DONE BUTTON
                     AppPrimaryButton(
                         text = "Done",
                         onClick = onDismiss,
                         theme = activeTheme,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(44.dp)
                     )
                 }
             }
@@ -577,7 +561,7 @@ fun GameSettingsDialog(
 }
 
 /**
- * Clean, compact toggle row designed specifically for the in-game settings dialog.
+ * Clean, flat toggle row with zero nested cards.
  */
 @Composable
 private fun GameSettingToggleRow(
@@ -593,7 +577,7 @@ private fun GameSettingToggleRow(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onCheckedChange(!isChecked) }
-            .padding(horizontal = 14.dp, vertical = 10.dp),
+            .padding(vertical = 7.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

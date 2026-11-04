@@ -54,7 +54,7 @@ import com.arrowaway.puzzle.ui.theme.ThemePresets
 @Composable
 fun PauseDialog(
     activeTheme: ThemePreset,
-    onThemeSelect: (ThemePreset) -> Unit,
+    onThemeSelect: ((ThemePreset) -> Unit)? = null,
     onRestartClick: () -> Unit,
     onHomeClick: () -> Unit,
     onDismiss: () -> Unit
@@ -153,93 +153,7 @@ fun PauseDialog(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(18.dp))
 
-                // 4. COMPACT BOARD THEME SELECTOR
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Palette,
-                                contentDescription = "Theme",
-                                tint = activeTheme.arrowDefault,
-                                modifier = Modifier.size(15.dp)
-                            )
-                            Spacer(modifier = Modifier.width(5.dp))
-                            Text(
-                                text = "Board Theme",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = activeTheme.textPrimary
-                            )
-                        }
-
-                        Surface(
-                            shape = RoundedCornerShape(percent = 50),
-                            color = activeTheme.arrowDefault.copy(alpha = 0.12f)
-                        ) {
-                            Text(
-                                text = activeTheme.name,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = activeTheme.arrowDefault,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        ThemePresets.all.forEach { preset ->
-                            val isSelected = (preset.name == activeTheme.name)
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = preset.background,
-                                border = BorderStroke(
-                                    width = if (isSelected) 2.dp else 1.dp,
-                                    color = if (isSelected) activeTheme.arrowDefault else preset.gridLine
-                                ),
-                                shadowElevation = if (isSelected) 2.dp else 0.dp,
-                                modifier = Modifier
-                                    .size(width = 46.dp, height = 34.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .clickable {
-                                        onThemeSelect(preset)
-                                    }
-                            ) {
-                                Box(
-                                    contentAlignment = Alignment.Center,
-                                    modifier = Modifier.fillMaxSize()
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(16.dp)
-                                            .clip(CircleShape)
-                                            .background(preset.arrowDefault)
-                                    )
-                                    if (isSelected) {
-                                        Icon(
-                                            imageVector = Icons.Default.Check,
-                                            contentDescription = "Selected",
-                                            tint = if (preset.isDark) Color.White else Color.Black,
-                                            modifier = Modifier.size(11.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
     }

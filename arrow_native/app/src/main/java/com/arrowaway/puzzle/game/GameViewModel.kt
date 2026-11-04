@@ -407,7 +407,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun setHintTimerSeconds(seconds: Int) {
-        val clamped = seconds.coerceIn(5, 55)
+        val clamped = seconds.coerceIn(0, 55)
         viewModelScope.launch { repository.setHintTimerSeconds(clamped) }
         _uiState.update { it.copy(hintTimerSeconds = clamped) }
     }

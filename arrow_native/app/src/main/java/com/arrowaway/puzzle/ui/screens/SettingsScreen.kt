@@ -492,16 +492,23 @@ fun SettingsScreen(
                                         }
                                     }
 
+                                    val chipText = when {
+                                        !isTimerActive -> "Disabled"
+                                        hintTimerSeconds <= 0 -> "Off"
+                                        else -> "${hintTimerSeconds}s"
+                                    }
+                                    val isChipActive = isTimerActive && hintTimerSeconds > 0
+
                                     Surface(
                                         shape = RoundedCornerShape(8.dp),
-                                        color = if (isTimerActive) activeTheme.arrowDefault.copy(alpha = 0.15f) else activeTheme.gridLine.copy(alpha = 0.35f),
-                                        border = BorderStroke(1.dp, if (isTimerActive) activeTheme.arrowDefault.copy(alpha = 0.35f) else activeTheme.gridLine.copy(alpha = 0.5f))
+                                        color = if (isChipActive) activeTheme.arrowDefault.copy(alpha = 0.15f) else activeTheme.gridLine.copy(alpha = 0.35f),
+                                        border = BorderStroke(1.dp, if (isChipActive) activeTheme.arrowDefault.copy(alpha = 0.35f) else activeTheme.gridLine.copy(alpha = 0.5f))
                                     ) {
                                         Text(
-                                            text = if (isTimerActive) "${hintTimerSeconds}s" else "Disabled",
-                                            fontSize = if (isTimerActive) 13.sp else 11.5.sp,
+                                            text = chipText,
+                                            fontSize = if (isChipActive) 13.sp else 11.5.sp,
                                             fontWeight = FontWeight.ExtraBold,
-                                            color = if (isTimerActive) activeTheme.arrowDefault else activeTheme.textSecondary.copy(alpha = 0.55f),
+                                            color = if (isChipActive) activeTheme.arrowDefault else activeTheme.textSecondary.copy(alpha = 0.55f),
                                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                                         )
                                     }
@@ -510,11 +517,14 @@ fun SettingsScreen(
                                 Spacer(modifier = Modifier.height(6.dp))
 
                                 Slider(
-                                    value = hintTimerSeconds.toFloat(),
-                                    onValueChange = { onHintTimerChange(it.roundToInt().coerceIn(5, 55)) },
+                                    value = hintTimerSeconds.coerceIn(0, 55).toFloat(),
+                                    onValueChange = { raw ->
+                                        val snapped = ((raw / 5f).roundToInt() * 5).coerceIn(0, 55)
+                                        onHintTimerChange(snapped)
+                                    },
                                     enabled = isTimerActive,
-                                    valueRange = 5f..55f,
-                                    steps = 9,
+                                    valueRange = 0f..55f,
+                                    steps = 10,
                                     colors = SliderDefaults.colors(
                                         thumbColor = activeTheme.arrowDefault,
                                         activeTrackColor = activeTheme.arrowDefault,
@@ -531,7 +541,7 @@ fun SettingsScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "5s",
+                                        text = "Off",
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         color = activeTheme.textSecondary.copy(alpha = if (isTimerActive) 0.65f else 0.3f)
