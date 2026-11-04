@@ -1,6 +1,7 @@
 package com.arrowaway.puzzle.ui.screens
 
 import com.arrowaway.puzzle.ui.components.BannerAdView
+import com.arrowaway.puzzle.ui.components.GridGuideIcon
 
 import android.content.Intent
 import android.net.Uri
@@ -415,12 +416,16 @@ fun SettingsScreen(
                             // Grid Guide (#) Button Visibility Row
                             SettingsToggleRow(
                                 title = "Grid Guide (#) Button",
-                                icon = Icons.Default.GridOn,
                                 iconBg = itemBg,
-                                iconTint = activeTheme.arrowDefault,
                                 isChecked = isGridButtonVisible,
                                 onCheckedChange = { onToggleGridButton() },
-                                activeTheme = activeTheme
+                                activeTheme = activeTheme,
+                                customIcon = {
+                                    GridGuideIcon(
+                                        tint = activeTheme.arrowDefault,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
                             )
 
                             HorizontalDivider(
@@ -1102,12 +1107,13 @@ private fun ThemeOptionCard(
 @Composable
 private fun SettingsToggleRow(
     title: String,
-    icon: ImageVector,
     iconBg: Color,
-    iconTint: Color,
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    activeTheme: ThemePreset
+    activeTheme: ThemePreset,
+    icon: ImageVector? = null,
+    iconTint: Color = Color.Unspecified,
+    customIcon: (@Composable () -> Unit)? = null
 ) {
     Row(
         modifier = Modifier
@@ -1128,12 +1134,16 @@ private fun SettingsToggleRow(
                     .clip(RoundedCornerShape(11.dp))
                     .background(iconBg)
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = title,
-                    tint = iconTint,
-                    modifier = Modifier.size(18.dp)
-                )
+                if (customIcon != null) {
+                    customIcon()
+                } else if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = title,
+                        tint = iconTint,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
 
             Text(

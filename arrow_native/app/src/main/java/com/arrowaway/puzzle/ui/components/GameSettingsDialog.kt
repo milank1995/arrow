@@ -26,9 +26,7 @@ import androidx.compose.material.icons.automirrored.filled.VolumeMute
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.GridOn
 import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.material.icons.outlined.Info
@@ -68,11 +66,10 @@ import kotlin.math.roundToInt
 
 /**
  * Clean, flat In-Game Settings Dialog accessible from the Game Area header.
- * Designed with a streamlined, modern layout:
- * - Zero nested box clutter.
- * - Flat list items with hairline dividers.
- * - Hint Timer slider with "Off" option (0s, 5s-55s).
- * - Real-time Board Theme selector.
+ * Ordered cleanly:
+ * 1. THEME (Real-time swatch picker)
+ * 2. SOUND (Sound Effects, Haptic Vibration)
+ * 3. GAMEPLAY CONTROLS (Hint Button, Grid Guide Button with gameplay icon, Hint Timer slider with Off option)
  */
 @Composable
 fun GameSettingsDialog(
@@ -121,7 +118,7 @@ fun GameSettingsDialog(
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp, vertical = 18.dp)
             ) {
-                // 1. HEADER (Title + Close Button)
+                // DIALOG HEADER (Title + Close Button)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -154,7 +151,7 @@ fun GameSettingsDialog(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // Scrollable content column (fits without scrolling on normal screens)
+                // Scrollable content column
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -162,10 +159,100 @@ fun GameSettingsDialog(
                         .verticalScroll(rememberScrollState())
                 ) {
                     // =========================================================
-                    // SECTION 1: AUDIO & HAPTICS (Flat layout, no inner boxes)
+                    // SECTION 1: THEME
+                    // =========================================================
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 2.dp, bottom = 6.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "THEME",
+                            fontSize = 10.5.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = 1.2.sp,
+                            color = activeTheme.textSecondary
+                        )
+
+                        Surface(
+                            shape = RoundedCornerShape(percent = 50),
+                            color = activeTheme.arrowDefault.copy(alpha = 0.12f)
+                        ) {
+                            Text(
+                                text = activeTheme.name,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = activeTheme.arrowDefault,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+
+                    // Real-time Swatches Row
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ThemePresets.all.forEach { preset ->
+                            val isSelected = (preset.name == activeTheme.name)
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = preset.background,
+                                border = BorderStroke(
+                                    width = if (isSelected) 2.dp else 1.dp,
+                                    color = if (isSelected) activeTheme.arrowDefault else preset.gridLine
+                                ),
+                                shadowElevation = if (isSelected) 2.dp else 0.dp,
+                                modifier = Modifier
+                                    .size(width = 44.dp, height = 32.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .clickable {
+                                        onThemeSelect(preset)
+                                    }
+                            ) {
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    if (isSelected) {
+                                        Box(
+                                            contentAlignment = Alignment.Center,
+                                            modifier = Modifier
+                                                .size(18.dp)
+                                                .clip(CircleShape)
+                                                .background(preset.arrowDefault)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Check,
+                                                contentDescription = "Selected",
+                                                tint = preset.surface,
+                                                modifier = Modifier.size(11.dp)
+                                            )
+                                        }
+                                    } else {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(10.dp)
+                                                .clip(CircleShape)
+                                                .background(preset.arrowDefault)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // =========================================================
+                    // SECTION 2: SOUND
                     // =========================================================
                     Text(
-                        text = "AUDIO & HAPTICS",
+                        text = "SOUND",
                         fontSize = 10.5.sp,
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 1.2.sp,
@@ -198,7 +285,7 @@ fun GameSettingsDialog(
                     Spacer(modifier = Modifier.height(14.dp))
 
                     // =========================================================
-                    // SECTION 2: GAMEPLAY CONTROLS (Flat layout, no inner boxes)
+                    // SECTION 3: GAMEPLAY CONTROLS
                     // =========================================================
                     Text(
                         text = "GAMEPLAY CONTROLS",
@@ -221,14 +308,19 @@ fun GameSettingsDialog(
 
                     HorizontalDivider(color = dividerColor, thickness = 0.8.dp)
 
+                    // Grid Guide (#) Button with authentic gameplay area (#) icon
                     GameSettingToggleRow(
                         title = "Grid Guide (#) Button",
-                        icon = Icons.Default.GridOn,
                         iconBg = itemBg,
-                        iconTint = activeTheme.arrowDefault,
                         isChecked = isGridButtonVisible,
                         onCheckedChange = { onToggleGridButton() },
-                        activeTheme = activeTheme
+                        activeTheme = activeTheme,
+                        customIcon = {
+                            GridGuideIcon(
+                                tint = activeTheme.arrowDefault,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
                     )
 
                     HorizontalDivider(color = dividerColor, thickness = 0.8.dp)
@@ -364,105 +456,6 @@ fun GameSettingsDialog(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    // =========================================================
-                    // SECTION 3: BOARD THEME (Flat layout, no inner boxes)
-                    // =========================================================
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Palette,
-                                contentDescription = "Theme",
-                                tint = activeTheme.arrowDefault,
-                                modifier = Modifier.size(14.dp)
-                            )
-                            Spacer(modifier = Modifier.width(5.dp))
-                            Text(
-                                text = "BOARD THEME",
-                                fontSize = 10.5.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                letterSpacing = 1.2.sp,
-                                color = activeTheme.textSecondary
-                            )
-                        }
-
-                        Surface(
-                            shape = RoundedCornerShape(percent = 50),
-                            color = activeTheme.arrowDefault.copy(alpha = 0.12f)
-                        ) {
-                            Text(
-                                text = activeTheme.name,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = activeTheme.arrowDefault,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Real-time Swatches Row
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        ThemePresets.all.forEach { preset ->
-                            val isSelected = (preset.name == activeTheme.name)
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = preset.background,
-                                border = BorderStroke(
-                                    width = if (isSelected) 2.dp else 1.dp,
-                                    color = if (isSelected) activeTheme.arrowDefault else preset.gridLine
-                                ),
-                                shadowElevation = if (isSelected) 2.dp else 0.dp,
-                                modifier = Modifier
-                                    .size(width = 44.dp, height = 32.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .clickable {
-                                        onThemeSelect(preset)
-                                    }
-                            ) {
-                                Box(
-                                    contentAlignment = Alignment.Center,
-                                    modifier = Modifier.fillMaxSize()
-                                ) {
-                                    if (isSelected) {
-                                        Box(
-                                            contentAlignment = Alignment.Center,
-                                            modifier = Modifier
-                                                .size(18.dp)
-                                                .clip(CircleShape)
-                                                .background(preset.arrowDefault)
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Check,
-                                                contentDescription = "Selected",
-                                                tint = preset.surface,
-                                                modifier = Modifier.size(11.dp)
-                                            )
-                                        }
-                                    } else {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(10.dp)
-                                                .clip(CircleShape)
-                                                .background(preset.arrowDefault)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-
                     Spacer(modifier = Modifier.height(18.dp))
 
                     // 4. DONE BUTTON
@@ -561,17 +554,18 @@ fun GameSettingsDialog(
 }
 
 /**
- * Clean, flat toggle row with zero nested cards.
+ * Clean, flat toggle row with support for ImageVector or custom vector icon composable.
  */
 @Composable
 private fun GameSettingToggleRow(
     title: String,
-    icon: ImageVector,
     iconBg: Color,
-    iconTint: Color,
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    activeTheme: ThemePreset
+    activeTheme: ThemePreset,
+    icon: ImageVector? = null,
+    iconTint: Color = activeTheme.textPrimary,
+    customIcon: (@Composable () -> Unit)? = null
 ) {
     Row(
         modifier = Modifier
@@ -592,12 +586,16 @@ private fun GameSettingToggleRow(
                     .clip(RoundedCornerShape(9.dp))
                     .background(iconBg)
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = title,
-                    tint = iconTint,
-                    modifier = Modifier.size(16.dp)
-                )
+                if (customIcon != null) {
+                    customIcon()
+                } else if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = title,
+                        tint = iconTint,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
 
             Text(
