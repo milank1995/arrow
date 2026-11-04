@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -297,8 +298,8 @@ fun GameHeader(
                         }
                     }
                 } else {
-                    // Symmetrical Dual-action Sound button matching Pause pod on left:
-                    // Quick tap toggles audio, Hold for settings dialog
+                    // Symmetrical tactile Settings pod matching Pause pod on left
+                    val settingsAction = onSettingsClick ?: effectiveSoundToggle
                     Surface(
                         shape = RoundedCornerShape(14.dp),
                         color = theme.boosterBg,
@@ -307,19 +308,18 @@ fun GameHeader(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(RoundedCornerShape(14.dp))
-                            .combinedClickable(
-                                onClick = effectiveSoundToggle,
-                                onLongClick = effectiveSoundLongPress
-                            )
+                            .clickable {
+                                settingsAction()
+                            }
                     ) {
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier.fillMaxSize()
                         ) {
                             Icon(
-                                imageVector = if (isSoundOn) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeMute,
-                                contentDescription = if (isSoundOn) "Mute Sound (Hold for Settings)" else "Unmute Sound (Hold for Settings)",
-                                tint = if (isSoundOn) theme.textPrimary else theme.textSecondary.copy(alpha = 0.5f),
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Settings",
+                                tint = theme.textPrimary,
                                 modifier = Modifier.size(20.dp)
                             )
                         }

@@ -49,7 +49,7 @@ import com.arrowaway.puzzle.ui.components.GameOverDialog
 import com.arrowaway.puzzle.ui.components.HintRefillDialog
 import com.arrowaway.puzzle.ui.components.PauseDialog
 import com.arrowaway.puzzle.ui.components.PuzzleBoardCanvas
-import com.arrowaway.puzzle.ui.components.SoundSettingsDialog
+import com.arrowaway.puzzle.ui.components.GameSettingsDialog
 import com.arrowaway.puzzle.ui.screens.VictoryScreen
 import com.arrowaway.puzzle.ui.theme.ThemePreset
 import kotlinx.coroutines.delay
@@ -74,6 +74,9 @@ fun GamePlayScreen(
     onDismissHintAdPrompt: () -> Unit = {},
     onToggleSound: () -> Unit = {},
     onToggleVibration: () -> Unit = {},
+    onToggleHintButton: () -> Unit = {},
+    onToggleGridButton: () -> Unit = {},
+    onHintTimerChange: (Int) -> Unit = {},
     onSettingsClick: (() -> Unit)? = null,
     onClaimDoubleCoins: (Int) -> Unit = {},
     onIdlePromptSound: () -> Unit = {},
@@ -90,17 +93,17 @@ fun GamePlayScreen(
         onGameplayStarted()
     }
     var showPauseDialog by remember { mutableStateOf(false) }
-    LaunchedEffect(showPauseDialog) {
-        onPauseStateChanged(showPauseDialog)
+    var showSettingsDialog by remember { mutableStateOf(false) }
+    LaunchedEffect(showPauseDialog, showSettingsDialog) {
+        onPauseStateChanged(showPauseDialog || showSettingsDialog)
     }
-    var showSoundDialog by remember { mutableStateOf(false) }
     var hudToastMessage by remember { mutableStateOf<String?>(null) }
     var hudToastTimer by remember { mutableLongStateOf(0L) }
 
     // Intercept Android back gesture / button during gameplay
     BackHandler(enabled = true) {
         when {
-            showSoundDialog -> showSoundDialog = false
+            showSettingsDialog -> showSettingsDialog = false
             showPauseDialog -> showPauseDialog = false
             uiState.showHintAdPrompt -> onDismissHintAdPrompt()
             uiState.isGameOver -> onRestartClick()
@@ -120,6 +123,7 @@ fun GamePlayScreen(
     var prevHeartsRemaining by remember { mutableIntStateOf(uiState.heartsRemaining) }
 
     val isGameActivelyPlaying = !showPauseDialog && 
+                                !showSettingsDialog && 
                                 !uiState.isGamePaused && 
                                 !uiState.isAppInBackground && 
                                 !uiState.isLevelComplete && 
@@ -241,17 +245,10 @@ fun GamePlayScreen(
                                     onPlayClickSound()
                                     showPauseDialog = true
                                 },
-                                onSoundToggle = {
-                                    val nextSound = !uiState.isSoundEnabled
-                                    onToggleSound()
-                                    hudToastMessage = if (nextSound) "Sound On 🔊" else "Sound Muted 🔇"
-                                    hudToastTimer = System.currentTimeMillis()
-                                },
-                                onSoundLongPress = {
+                                onSettingsClick = {
                                     onPlayClickSound()
-                                    showSoundDialog = true
+                                    showSettingsDialog = true
                                 },
-                                isSoundOn = uiState.isSoundEnabled,
                                 modifier = Modifier.widthIn(max = 480.dp)
                             )
                         }
@@ -402,16 +399,24 @@ fun GamePlayScreen(
                     )
                 }
 
-                // 6. DEDICATED SOUND & VIBRATION MODAL DIALOG
-                if (showSoundDialog) {
-                    SoundSettingsDialog(
+                // 6. DEDICATED IN-GAME SETTINGS MODAL DIALOG
+                if (showSettingsDialog) {
+                    GameSettingsDialog(
                         isSoundEnabled = uiState.isSoundEnabled,
                         isVibrationEnabled = uiState.isVibrationEnabled,
+                        isHintButtonVisible = uiState.isHintButtonVisible,
+                        isGridButtonVisible = uiState.isGridButtonVisible,
+                        hintTimerSeconds = uiState.hintTimerSeconds,
                         activeTheme = theme,
                         onToggleSound = onToggleSound,
                         onToggleVibration = onToggleVibration,
+                        onToggleHintButton = onToggleHintButton,
+                        onToggleGridButton = onToggleGridButton,
+                        onHintTimerChange = onHintTimerChange,
+                        onThemeSelect = onThemeSelect,
                         onDismiss = {
-                            showSoundDialog = false
+                            showSettingsDialog = false
+                            lastInteractionTime = System.currentTimeMillis()
                         }
                     )
                 }
