@@ -168,7 +168,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         levelStars = data.levelStars,
                         hasPlayedBefore = data.hasPlayedBefore,
                         globalLivesAvailable = data.globalLives,
-                        lastCompletedLevelNumber = if (current.levelData == null) maxOf(1, data.currentLevel - 1) else current.lastCompletedLevelNumber,
+                        lastCompletedLevelNumber = if (current.levelData == null) maxOf(0, data.currentLevel - 1) else current.lastCompletedLevelNumber,
                         isSoundEnabled = data.soundEnabled,
                         isVibrationEnabled = data.vibrationEnabled,
                         activeTheme = theme,
@@ -1301,7 +1301,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             _uiState.update { current ->
                 current.copy(
                     currentLevelNumber = 1,
-                    lastCompletedLevelNumber = 1,
+                    lastCompletedLevelNumber = 0,
                     coins = 100,
                     streakDays = 0,
                     isStreakEarnedThisLevel = false,

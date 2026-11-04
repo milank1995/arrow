@@ -12,6 +12,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -931,14 +932,15 @@ fun PuzzleBoardCanvas(
             ) {
                 Surface(
                     shape = RoundedCornerShape(32.dp),
-                    color = if (theme.isDark) Color(0xFF334155).copy(alpha = 0.88f) else Color(0xFFDCE4F0).copy(alpha = 0.88f),
-                    shadowElevation = 0.dp
+                    color = theme.surface,
+                    border = BorderStroke(1.5.dp, theme.gridLine),
+                    shadowElevation = 3.dp
                 ) {
                     Text(
                         text = "Tap to move",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = if (theme.isDark) Color.White else Color(0xFF1E293B),
+                        color = theme.textPrimary,
                         modifier = Modifier.padding(horizontal = 42.dp, vertical = 13.dp),
                         textAlign = TextAlign.Center
                     )

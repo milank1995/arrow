@@ -541,6 +541,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onResetGameData = {
                                         gameViewModel.resetGameData()
+                                        currentScreen = AppScreen.GAMEPLAY
                                         Toast.makeText(this@MainActivity, "Game progress reset to Level 1", Toast.LENGTH_SHORT).show()
                                     },
                                     onBackClick = {
