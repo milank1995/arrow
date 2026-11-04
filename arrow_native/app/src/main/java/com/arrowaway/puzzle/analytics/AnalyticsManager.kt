@@ -3,6 +3,7 @@ package com.arrowaway.puzzle.analytics
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import com.arrowaway.puzzle.BuildConfig
 import com.google.firebase.analytics.FirebaseAnalytics
 
 /**
@@ -15,9 +16,13 @@ class AnalyticsManager private constructor(context: Context) {
     private val appContext = context.applicationContext
     private var firebaseAnalytics: FirebaseAnalytics? = null
 
+    @Volatile
+    private var isAnalyticsEnabled: Boolean = !BuildConfig.DEBUG
+
     init {
         try {
             firebaseAnalytics = FirebaseAnalytics.getInstance(appContext)
+            firebaseAnalytics?.setAnalyticsCollectionEnabled(isAnalyticsEnabled)
         } catch (e: Exception) {
             Log.w(TAG, "FirebaseAnalytics init failed or running in offline mock environment: ${e.message}")
         }
@@ -36,7 +41,28 @@ class AnalyticsManager private constructor(context: Context) {
         }
     }
 
+    /**
+     * Dynamically enable or disable analytics tracking.
+     * When disabled, all event logging to Firebase Analytics is silenced, preventing
+     * developer/test events from polluting production analytics.
+     */
+    fun setAnalyticsEnabled(enabled: Boolean) {
+        isAnalyticsEnabled = enabled
+        try {
+            firebaseAnalytics?.setAnalyticsCollectionEnabled(enabled)
+            Log.i(TAG, "Analytics collection enabled state set to: $enabled")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to set analytics collection enabled to $enabled: ${e.message}")
+        }
+    }
+
+    fun isAnalyticsEnabled(): Boolean = isAnalyticsEnabled
+
     private fun logEvent(eventName: String, params: Bundle = Bundle()) {
+        if (!isAnalyticsEnabled) {
+            // Silenced during local testing/development to protect analytics accuracy
+            return
+        }
         try {
             firebaseAnalytics?.logEvent(eventName, params)
             Log.d(TAG, "[Event: $eventName] params: $params")

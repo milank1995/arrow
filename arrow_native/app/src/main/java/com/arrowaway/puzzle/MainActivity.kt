@@ -450,6 +450,17 @@ class MainActivity : ComponentActivity() {
                                     isHintButtonVisible = uiState.isHintButtonVisible,
                                     isGridButtonVisible = uiState.isGridButtonVisible,
                                     hintTimerSeconds = uiState.hintTimerSeconds,
+                                    isAnalyticsEnabled = uiState.isAnalyticsEnabled,
+                                    onToggleAnalytics = {
+                                        gameViewModel.playClick()
+                                        val isNowEnabled = gameViewModel.toggleAnalytics()
+                                        val msg = if (isNowEnabled) {
+                                            "📊 Analytics tracking enabled"
+                                        } else {
+                                            "🚫 Analytics tracking disabled for testing"
+                                        }
+                                        Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
+                                    },
                                     onToggleHintButton = {
                                         gameViewModel.playClick()
                                         val newVal = !uiState.isHintButtonVisible
