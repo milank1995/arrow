@@ -180,6 +180,7 @@ fun GamePlayScreen(
             streakDays = uiState.streakDays,
             totalCoins = uiState.coins,
             theme = theme,
+            isStreakEarnedToday = uiState.isStreakEarnedThisLevel,
             heartsRemaining = uiState.heartsRemaining,
             maxHearts = uiState.maxHearts,
             shapeName = level?.shapeName,

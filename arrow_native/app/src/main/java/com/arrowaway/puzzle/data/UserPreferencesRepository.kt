@@ -26,6 +26,7 @@ data class UserGameData(
     val freeWands: Int = 2,
     val streakDays: Int = 1,
     val lastDailyDate: String = "",
+    val lastStreakDate: String = "",
     val completedDailyDates: Set<String> = emptySet(),
     val levelStars: Map<Int, Int> = emptyMap(),
     val hasPlayedBefore: Boolean = false,
@@ -53,6 +54,7 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_WANDS = intPreferencesKey("wands_count")
     private val KEY_STREAK = intPreferencesKey("streak_days")
     private val KEY_LAST_DAILY = stringPreferencesKey("last_daily_date")
+    private val KEY_LAST_STREAK_DATE = stringPreferencesKey("last_streak_date")
     private val KEY_COMPLETED_DAILY_DATES = stringSetPreferencesKey("completed_daily_dates")
     private val KEY_LEVEL_STARS_MAP = stringPreferencesKey("level_stars_map")
     private val KEY_HAS_PLAYED_BEFORE = booleanPreferencesKey("has_played_before")
@@ -96,7 +98,28 @@ class UserPreferencesRepository(private val context: Context) {
 
     fun getStreakDaysSynchronous(): Int {
         val sp = context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
-        return sp.getInt("streak_days", 1)
+        val savedStreak = sp.getInt("streak_days", 0)
+        val lastDateStr = sp.getString("last_streak_date", null)
+            ?: sp.getString("last_daily_date", null)
+        val hasPlayed = sp.getBoolean(KEY_SYNC_HAS_PLAYED, false)
+        if (lastDateStr.isNullOrEmpty()) {
+            return if (hasPlayed) savedStreak.coerceAtLeast(1) else 0
+        }
+        return try {
+            val lastDate = LocalDate.parse(lastDateStr)
+            val today = LocalDate.now()
+            val diff = ChronoUnit.DAYS.between(lastDate, today)
+            if (diff >= 2L) 0 else savedStreak.coerceAtLeast(1)
+        } catch (e: Exception) {
+            savedStreak.coerceAtLeast(1)
+        }
+    }
+
+    fun isStreakClaimedTodaySynchronous(): Boolean {
+        val sp = context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
+        val lastDateStr = sp.getString("last_streak_date", null)
+        val today = LocalDate.now().toString()
+        return lastDateStr == today
     }
 
     fun getLastReviewPromptTimestampSynchronous(): Long {
@@ -112,6 +135,23 @@ class UserPreferencesRepository(private val context: Context) {
         }
     }
 
+    private fun calculateDisplayStreak(lastDateStr: String, todayStr: String, savedStreak: Int, hasPlayed: Boolean): Int {
+        if (lastDateStr.isEmpty()) {
+            return if (hasPlayed) savedStreak.coerceAtLeast(1) else 0
+        }
+        return try {
+            val lastDate = LocalDate.parse(lastDateStr)
+            val today = LocalDate.parse(todayStr)
+            val diffDays = ChronoUnit.DAYS.between(lastDate, today)
+            when {
+                diffDays <= 1L -> savedStreak.coerceAtLeast(1)
+                else -> 0
+            }
+        } catch (e: Exception) {
+            savedStreak.coerceAtLeast(1)
+        }
+    }
+
     val userGameData: Flow<UserGameData> = context.dataStore.data.map { prefs ->
         val syncPlayed = hasPlayedBeforeSynchronous()
         val hasPlayed = syncPlayed || (prefs[KEY_HAS_PLAYED_BEFORE] ?: ((prefs[KEY_LEVEL] ?: 1) > 1 || (prefs[KEY_COINS] != null && (prefs[KEY_COINS] ?: 100) != 100)))
@@ -119,14 +159,21 @@ class UserPreferencesRepository(private val context: Context) {
             context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
                 .edit().putBoolean(KEY_SYNC_HAS_PLAYED, true).apply()
         }
+
+        val todayStr = LocalDate.now().toString()
+        val lastStreakDate = prefs[KEY_LAST_STREAK_DATE] ?: prefs[KEY_LAST_DAILY] ?: ""
+        val rawStreak = prefs[KEY_STREAK] ?: 0
+        val displayStreak = calculateDisplayStreak(lastStreakDate, todayStr, rawStreak, hasPlayed)
+
         UserGameData(
             currentLevel = prefs[KEY_LEVEL] ?: 1,
             coins = prefs[KEY_COINS] ?: 100,
             freeHints = prefs[KEY_HINTS] ?: 3,
             freeHammers = prefs[KEY_HAMMERS] ?: 2,
             freeWands = prefs[KEY_WANDS] ?: 2,
-            streakDays = prefs[KEY_STREAK] ?: 1,
+            streakDays = displayStreak,
             lastDailyDate = prefs[KEY_LAST_DAILY] ?: "",
+            lastStreakDate = lastStreakDate,
             completedDailyDates = prefs[KEY_COMPLETED_DAILY_DATES] ?: emptySet(),
             levelStars = parseLevelStars(prefs[KEY_LEVEL_STARS_MAP] ?: ""),
             hasPlayedBefore = hasPlayed,
@@ -247,6 +294,50 @@ class UserPreferencesRepository(private val context: Context) {
         context.dataStore.edit { it[KEY_VIBRATION] = !(it[KEY_VIBRATION] ?: true) }
     }
 
+    suspend fun recordStreakOnLevelCompletion(): Pair<Boolean, Int> {
+        val today = LocalDate.now().toString()
+        var isClaimedToday = false
+        var resultingStreak = 1
+
+        context.dataStore.edit { prefs ->
+            val lastDateStr = prefs[KEY_LAST_STREAK_DATE] ?: prefs[KEY_LAST_DAILY] ?: ""
+            val currentStreak = prefs[KEY_STREAK] ?: 0
+
+            if (lastDateStr == today) {
+                // Already claimed today
+                isClaimedToday = false
+                resultingStreak = currentStreak.coerceAtLeast(1)
+            } else {
+                // First level completed today!
+                isClaimedToday = true
+                resultingStreak = if (lastDateStr.isEmpty()) {
+                    1
+                } else {
+                    try {
+                        val lastDate = LocalDate.parse(lastDateStr)
+                        val diff = ChronoUnit.DAYS.between(lastDate, LocalDate.parse(today))
+                        if (diff == 1L) {
+                            currentStreak + 1
+                        } else {
+                            1
+                        }
+                    } catch (e: Exception) {
+                        1
+                    }
+                }
+                prefs[KEY_STREAK] = resultingStreak
+                prefs[KEY_LAST_STREAK_DATE] = today
+            }
+        }
+
+        context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE).edit()
+            .putInt("streak_days", resultingStreak)
+            .putString("last_streak_date", today)
+            .apply()
+
+        return Pair(isClaimedToday, resultingStreak)
+    }
+
     suspend fun recordDailyCompletion(dateString: String) {
         context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE).let { sp ->
             val set = (sp.getStringSet("completed_dates", emptySet()) ?: emptySet()).toMutableSet()
@@ -262,15 +353,6 @@ class UserPreferencesRepository(private val context: Context) {
             if (isFirstTimeForDate) {
                 val currentCoins = prefs[KEY_COINS] ?: 100
                 prefs[KEY_COINS] = currentCoins + 100
-
-                val lastDateStr = prefs[KEY_LAST_DAILY] ?: ""
-                val currentStreak = prefs[KEY_STREAK] ?: 0
-                val newStreak = calculateStreak(lastDateStr, dateString, currentStreak)
-                prefs[KEY_STREAK] = newStreak
-                prefs[KEY_LAST_DAILY] = dateString
-
-                context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE)
-                    .edit().putInt("streak_days", newStreak).apply()
             }
         }
     }
