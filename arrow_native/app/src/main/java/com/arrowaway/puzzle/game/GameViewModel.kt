@@ -56,7 +56,7 @@ data class GameUiState(
     val currentLevelNumber: Int = 1,
     val lastCompletedLevelNumber: Int = 1,
     val coins: Int = 100,
-    val streakDays: Int = 1,
+    val streakDays: Int = 0,
     val isStreakEarnedThisLevel: Boolean = false,
     val hintsAvailable: Int = 3,
     val dailyComplimentaryHintsRemaining: Int = 1,
