@@ -624,22 +624,46 @@ fun SettingsScreen(
                                 activeTheme = activeTheme
                             )
 
-                            HorizontalDivider(
-                                color = cardBorder.copy(alpha = 0.6f),
-                                thickness = 1.dp,
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
 
-                            // Analytics Tracking Row (Toggle OFF to disable tracking during testing)
-                            SettingsToggleRow(
-                                title = "Analytics Tracking",
-                                icon = Icons.Default.Analytics,
-                                iconBg = itemBg,
-                                iconTint = if (isAnalyticsEnabled) Color(0xFF3B82F6) else activeTheme.textSecondary.copy(alpha = 0.4f),
-                                isChecked = isAnalyticsEnabled,
-                                onCheckedChange = { onToggleAnalytics() },
-                                activeTheme = activeTheme
-                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(28.dp))
+
+                    // =========================================================
+                    // DEVELOPER & TESTING (Gated strictly behind isDevMode)
+                    // 100% hidden from regular users in production builds
+                    // =========================================================
+                    if (isDevMode) {
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        Text(
+                            text = "DEVELOPER & TESTING",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = 1.5.sp,
+                            color = Color(0xFFDC2626),
+                            modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
+                        )
+
+                        Surface(
+                            shape = RoundedCornerShape(22.dp),
+                            color = cardBg,
+                            border = BorderStroke(1.2.dp, Color(0xFFDC2626).copy(alpha = 0.35f)),
+                            shadowElevation = 2.dp,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                SettingsToggleRow(
+                                    title = "Analytics Tracking",
+                                    icon = Icons.Default.Analytics,
+                                    iconBg = itemBg,
+                                    iconTint = if (isAnalyticsEnabled) Color(0xFF3B82F6) else activeTheme.textSecondary.copy(alpha = 0.4f),
+                                    isChecked = isAnalyticsEnabled,
+                                    onCheckedChange = { onToggleAnalytics() },
+                                    activeTheme = activeTheme
+                                )
+                            }
                         }
                     }
 
