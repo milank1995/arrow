@@ -57,6 +57,7 @@ data class GameUiState(
     val lastCompletedLevelNumber: Int = 1,
     val coins: Int = 100,
     val streakDays: Int = 1,
+    val isStreakEarnedThisLevel: Boolean = false,
     val hintsAvailable: Int = 3,
     val dailyComplimentaryHintsRemaining: Int = 1,
     val levelFreeHintsRemaining: Int = 1,
@@ -464,6 +465,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 maxHearts = level.maxHearts,
                 currentLevelNumber = levelNumber,
                 isLevelComplete = false,
+                isStreakEarnedThisLevel = false,
                 isGameOver = false,
                 comboCount = 0,
                 cheerMessage = null,
@@ -515,6 +517,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 heartsRemaining = level.maxHearts,
                 maxHearts = level.maxHearts,
                 isLevelComplete = false,
+                isStreakEarnedThisLevel = false,
                 isGameOver = false,
                 comboCount = 0,
                 cheerMessage = null,
@@ -632,6 +635,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 heartsRemaining = level.maxHearts,
                 maxHearts = level.maxHearts,
                 isLevelComplete = false,
+                isStreakEarnedThisLevel = false,
                 isGameOver = false,
                 comboCount = 0,
                 cheerMessage = null,
@@ -1309,9 +1313,15 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             )
         }
         audioHapticManager.playLevelWin()
+        val streakResult = repository.recordStreakOnLevelCompletion()
         delay(950)
         _uiState.update { state ->
-            state.copy(isLevelComplete = true, isCelebrationBurstActive = false)
+            state.copy(
+                isLevelComplete = true,
+                isCelebrationBurstActive = false,
+                isStreakEarnedThisLevel = streakResult.first,
+                streakDays = streakResult.second
+            )
         }
         handleLevelComplete(completedLvl)
     }
@@ -1374,7 +1384,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 analytics.logDailyChallengeComplete(
                     puzzleDate = dateStr,
                     completionTimeSec = _uiState.value.levelCompletionTimeSeconds.toLong(),
-                    newStreakDays = _uiState.value.streakDays + 1,
+                    newStreakDays = _uiState.value.streakDays,
                     rewardCoinsClaimed = dailyRewardCoins
                 )
             } else if (_uiState.value.isLockPuzzleMode) {

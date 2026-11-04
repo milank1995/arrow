@@ -178,9 +178,9 @@ fun DailyStartPromptDialog(
                     // Minimal engaging description
                     Text(
                         text = if (streakDays > 0) {
-                            "A fresh puzzle awaits you today! Play now to protect your $streakDays-day streak and test your skills."
+                            "Solve today's puzzle to keep your $streakDays-day streak alive!"
                         } else {
-                            "A fresh, handcrafted puzzle is waiting for you today. Play now to start your daily streak!"
+                            "Solve today's puzzle to start your streak and earn +100 coins!"
                         },
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Normal,
@@ -194,7 +194,7 @@ fun DailyStartPromptDialog(
 
                     // Action Buttons: Modern Flat Design
                     AppPrimaryButton(
-                        text = "Play Today's Challenge",
+                        text = "Play Now",
                         onClick = onPlayTodayClick,
                         theme = theme,
                         modifier = Modifier.fillMaxWidth()

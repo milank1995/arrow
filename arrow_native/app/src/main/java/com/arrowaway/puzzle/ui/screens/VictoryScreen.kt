@@ -45,7 +45,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -59,6 +61,9 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -72,6 +77,7 @@ import androidx.compose.ui.unit.sp
 import com.arrowaway.puzzle.ui.components.AppPrimaryButton
 import com.arrowaway.puzzle.ui.components.ConfettiBurstEffect
 import com.arrowaway.puzzle.ui.components.SculptedStar3D
+import com.arrowaway.puzzle.ui.components.StreakChip
 import com.arrowaway.puzzle.ui.theme.ThemePreset
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -141,6 +147,7 @@ fun VictoryScreen(
     streakDays: Int,
     totalCoins: Int,
     theme: ThemePreset,
+    isStreakEarnedToday: Boolean = false,
     heartsRemaining: Int = 3,
     maxHearts: Int = 3,
     shapeName: String? = null,
@@ -181,30 +188,68 @@ fun VictoryScreen(
     val star3Scale = remember { Animatable(0f) }
     val sunburstAlpha = remember { Animatable(0f) }
 
-    // Milestone Unlock Celebration Animation States
-    val flameScale = remember { Animatable(0f) }
-    val flameAlpha = remember { Animatable(0f) }
-    val flightProgress = remember { Animatable(0f) }
+    // Daily Streak Celebration & Animation States
+    val streakFlameScale = remember { Animatable(0f) }
+    val streakFlameAlpha = remember { Animatable(0f) }
+    val streakFlightProgress = remember { Animatable(0f) }
+    val chipScale = remember { Animatable(0.82f) }
+    val chipAlpha = remember { Animatable(0f) }
+    var chipTargetOffsetFromCenter by remember { mutableStateOf<Pair<Dp, Dp>?>(null) }
 
-    if (isDailyUnlockMilestone) {
+    if (isStreakEarnedToday) {
         LaunchedEffect(Unit) {
-            delay(750)
-            launch { flameAlpha.animateTo(1f, tween(240)) }
-            flameScale.animateTo(
-                targetValue = 1.35f,
+            // Wait for victory entrance and star drops (~580ms)
+            delay(580)
+
+            // Phase 1: Center Flame Birth & Energetic Bounce
+            launch { streakFlameAlpha.animateTo(1f, tween(200)) }
+            streakFlameScale.animateTo(
+                targetValue = 1.4f,
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioMediumBouncy,
                     stiffness = Spring.StiffnessLow
                 )
             )
-            flameScale.animateTo(1.0f, tween(180))
-            delay(350)
-            flightProgress.animateTo(
+            streakFlameScale.animateTo(1.05f, tween(160))
+            delay(240)
+
+            // Phase 2: Smooth flight from screen center towards top-left corner
+            launch {
+                streakFlameScale.animateTo(
+                    targetValue = 0.55f,
+                    animationSpec = tween(550, easing = FastOutSlowInEasing)
+                )
+            }
+            streakFlightProgress.animateTo(
                 targetValue = 1f,
-                animationSpec = tween(650, easing = FastOutSlowInEasing)
+                animationSpec = tween(550, easing = FastOutSlowInEasing)
             )
-            flameAlpha.animateTo(0f, tween(120))
-            delay(150)
+
+            // Phase 3: Dissolve flying flame into StreakChip
+            launch { streakFlameAlpha.animateTo(0f, tween(90)) }
+
+            // Pop in the StreakChip with a spring bounce
+            launch { chipAlpha.animateTo(1f, tween(90)) }
+            chipScale.animateTo(
+                targetValue = 1.18f,
+                animationSpec = tween(120, easing = FastOutSlowInEasing)
+            )
+            chipScale.animateTo(
+                targetValue = 1.0f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessMediumLow
+                )
+            )
+
+            if (isDailyUnlockMilestone) {
+                delay(200)
+                onRequestNotificationPermission()
+            }
+        }
+    } else if (isDailyUnlockMilestone) {
+        LaunchedEffect(Unit) {
+            delay(1000)
             onRequestNotificationPermission()
         }
     }
@@ -710,13 +755,59 @@ fun VictoryScreen(
                 BannerAdView(modifier = Modifier.padding(top = 6.dp, bottom = 4.dp))
             }
 
-            // Milestone Flying Flame Animation Overlay
-            if (isDailyUnlockMilestone && flameAlpha.value > 0f) {
+            // Top Status Bar: Streak Indicator (identical layout, styling, and insets as HomeScreen)
+            if (isStreakEarnedToday) {
+                val density = LocalDensity.current
                 val screenWidth = maxWidth
                 val screenHeight = maxHeight
-                val targetFlightX = -(screenWidth / 2f - 84.dp)
-                val targetFlightY = -(screenHeight / 2f - 48.dp)
-                val currentProgress = flightProgress.value
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                        .navigationBarsPadding()
+                        .displayCutoutPadding()
+                        .padding(horizontal = 20.dp, vertical = 12.dp)
+                        .align(Alignment.TopStart)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 6.dp)
+                    ) {
+                        StreakChip(
+                            streakDays = streakDays,
+                            theme = theme,
+                            modifier = Modifier
+                                .scale(chipScale.value)
+                                .alpha(chipAlpha.value)
+                                .onGloballyPositioned { coords ->
+                                    val bounds = coords.boundsInRoot()
+                                    val chipCenterX = with(density) { bounds.center.x.toDp() }
+                                    val chipCenterY = with(density) { bounds.center.y.toDp() }
+                                    val rootCenterX = screenWidth / 2f
+                                    val rootCenterY = screenHeight / 2f
+                                    chipTargetOffsetFromCenter = Pair(
+                                        chipCenterX - rootCenterX,
+                                        chipCenterY - rootCenterY
+                                    )
+                                }
+                        )
+                    }
+                }
+            }
+
+            // Daily Streak Flying Flame Animation Overlay
+            if (isStreakEarnedToday && streakFlameAlpha.value > 0f) {
+                val screenWidth = maxWidth
+                val screenHeight = maxHeight
+                val defaultTargetX = -(screenWidth / 2f - 91.dp)
+                val defaultTargetY = -(screenHeight / 2f - 52.dp)
+                val targetFlightX = chipTargetOffsetFromCenter?.first ?: defaultTargetX
+                val targetFlightY = chipTargetOffsetFromCenter?.second ?: defaultTargetY
+
+                val currentProgress = streakFlightProgress.value
                 val currentFlightX = targetFlightX * currentProgress
                 val currentFlightY = targetFlightY * currentProgress
                 val currentFlameSize = lerp(68.dp, 24.dp, currentProgress)
@@ -726,7 +817,7 @@ fun VictoryScreen(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .offset(x = currentFlightX, y = currentFlightY)
-                        .alpha(flameAlpha.value),
+                        .alpha(streakFlameAlpha.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Box(
@@ -736,8 +827,8 @@ fun VictoryScreen(
                             .background(
                                 Brush.radialGradient(
                                     colors = listOf(
-                                        Color(0xFFF59E0B).copy(alpha = 0.55f * auraAlpha),
-                                        Color(0xFFF97316).copy(alpha = 0.22f * auraAlpha),
+                                        Color(0xFFF59E0B).copy(alpha = 0.58f * auraAlpha),
+                                        Color(0xFFF97316).copy(alpha = 0.25f * auraAlpha),
                                         Color.Transparent
                                     )
                                 )
@@ -746,7 +837,7 @@ fun VictoryScreen(
                     Text(
                         text = "🔥",
                         fontSize = (currentFlameSize.value * 0.74f).sp,
-                        modifier = Modifier.scale(flameScale.value)
+                        modifier = Modifier.scale(streakFlameScale.value)
                     )
                 }
             }
