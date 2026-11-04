@@ -26,6 +26,13 @@ fun StreakChip(
     theme: ThemePreset,
     modifier: Modifier = Modifier
 ) {
+    val chipText = if (streakDays > 0) "$streakDays Day Streak" else "Start Streak"
+    val textColor = if (streakDays > 0) {
+        if (theme.isDark) Color(0xFFFDE047) else Color(0xFFD97706)
+    } else {
+        if (theme.isDark) Color(0xFFFDE047).copy(alpha = 0.90f) else Color(0xFFD97706)
+    }
+
     Surface(
         shape = RoundedCornerShape(percent = 50),
         color = theme.surface,
@@ -40,10 +47,10 @@ fun StreakChip(
         ) {
             Text(text = "🔥", fontSize = 15.sp)
             Text(
-                text = "$streakDays Day Streak",
+                text = chipText,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (theme.isDark) Color(0xFFFDE047) else Color(0xFFD97706)
+                color = textColor
             )
         }
     }

@@ -24,7 +24,7 @@ data class UserGameData(
     val freeHints: Int = 3,
     val freeHammers: Int = 2,
     val freeWands: Int = 2,
-    val streakDays: Int = 1,
+    val streakDays: Int = 0,
     val lastDailyDate: String = "",
     val lastStreakDate: String = "",
     val completedDailyDates: Set<String> = emptySet(),
@@ -103,15 +103,15 @@ class UserPreferencesRepository(private val context: Context) {
             ?: sp.getString("last_daily_date", null)
         val hasPlayed = sp.getBoolean(KEY_SYNC_HAS_PLAYED, false)
         if (lastDateStr.isNullOrEmpty()) {
-            return if (hasPlayed) savedStreak.coerceAtLeast(1) else 0
+            return if (hasPlayed && savedStreak > 0) savedStreak else 0
         }
         return try {
             val lastDate = LocalDate.parse(lastDateStr)
             val today = LocalDate.now()
             val diff = ChronoUnit.DAYS.between(lastDate, today)
-            if (diff >= 2L) 0 else savedStreak.coerceAtLeast(1)
+            if (diff >= 2L) 0 else savedStreak
         } catch (e: Exception) {
-            savedStreak.coerceAtLeast(1)
+            savedStreak
         }
     }
 
@@ -137,18 +137,18 @@ class UserPreferencesRepository(private val context: Context) {
 
     private fun calculateDisplayStreak(lastDateStr: String, todayStr: String, savedStreak: Int, hasPlayed: Boolean): Int {
         if (lastDateStr.isEmpty()) {
-            return if (hasPlayed) savedStreak.coerceAtLeast(1) else 0
+            return if (hasPlayed && savedStreak > 0) savedStreak else 0
         }
         return try {
             val lastDate = LocalDate.parse(lastDateStr)
             val today = LocalDate.parse(todayStr)
             val diffDays = ChronoUnit.DAYS.between(lastDate, today)
             when {
-                diffDays <= 1L -> savedStreak.coerceAtLeast(1)
+                diffDays <= 1L -> savedStreak
                 else -> 0
             }
         } catch (e: Exception) {
-            savedStreak.coerceAtLeast(1)
+            savedStreak
         }
     }
 
