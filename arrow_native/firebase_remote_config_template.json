@@ -2,7 +2,7 @@
   "parameters": {
     "ads_config": {
       "defaultValue": {
-        "value": "{\n  \"ads_enabled\": true,\n  \"banner_ads_enabled\": true,\n  \"interstitial_ads_enabled\": true,\n  \"rewarded_ads_enabled\": true,\n  \"app_open_ads_enabled\": false,\n  \"interstitial_cooldown_seconds\": 360,\n  \"interstitial_min_level\": 10,\n  \"unit_ids\": {\n    \"banner\": \"ca-app-pub-8262479902787896/7179890434\",\n    \"interstitial\": \"ca-app-pub-8262479902787896/5866808768\",\n    \"app_open\": \"\",\n    \"rewarded\": \"ca-app-pub-8262479902787896/7944635208\"\n  }\n}"
+        "value": "{\n  \"ads_enabled\": true,\n  \"banner_ads_enabled\": true,\n  \"interstitial_ads_enabled\": true,\n  \"rewarded_ads_enabled\": true,\n  \"app_open_ads_enabled\": false,\n  \"interstitial_cooldown_seconds\": 360,\n  \"interstitial_min_level\": 10,\n  \"unit_ids\": {\n    \"banner\": \"ca-app-pub-8262479902787896/1869486914\",\n    \"interstitial\": \"ca-app-pub-8262479902787896/8466684854\",\n    \"app_open\": \"\",\n    \"rewarded\": \"ca-app-pub-8262479902787896/4324434877\"\n  }\n}"
       },
       "description": "Controls Google Mobile Ads. Includes global/format kill-switches (banners, interstitials, app open, rewarded), cooldown timers in seconds, and active AdMob unit IDs for live and test environments.",
       "valueType": "JSON"

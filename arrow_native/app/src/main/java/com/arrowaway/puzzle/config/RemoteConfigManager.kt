@@ -45,10 +45,10 @@ object RemoteConfigManager {
           "interstitial_cooldown_seconds": 360,
           "interstitial_min_level": 10,
           "unit_ids": {
-            "banner": "ca-app-pub-8262479902787896/7179890434",
-            "interstitial": "ca-app-pub-8262479902787896/5866808768",
+            "banner": "ca-app-pub-8262479902787896/1869486914",
+            "interstitial": "ca-app-pub-8262479902787896/8466684854",
             "app_open": "",
-            "rewarded": "ca-app-pub-8262479902787896/7944635208"
+            "rewarded": "ca-app-pub-8262479902787896/4324434877"
           }
         }
     """.trimIndent()
@@ -214,16 +214,16 @@ object RemoteConfigManager {
 
     fun getBannerAdUnitId(): String {
         return adsJson?.optJSONObject("unit_ids")?.optString("banner")?.takeIf { it.isNotBlank() }
-            ?: "ca-app-pub-8262479902787896/7179890434"
+            ?: "ca-app-pub-8262479902787896/1869486914"
     }
 
     fun getInterstitialAdUnitId(): String {
         return adsJson?.optJSONObject("unit_ids")?.optString("interstitial")?.takeIf { it.isNotBlank() }
-            ?: "ca-app-pub-8262479902787896/5866808768"
+            ?: "ca-app-pub-8262479902787896/8466684854"
     }
 
     fun getRewardedAdUnitId(): String {
         return adsJson?.optJSONObject("unit_ids")?.optString("rewarded")?.takeIf { it.isNotBlank() }
-            ?: "ca-app-pub-8262479902787896/7944635208"
+            ?: "ca-app-pub-8262479902787896/4324434877"
     }
 }
