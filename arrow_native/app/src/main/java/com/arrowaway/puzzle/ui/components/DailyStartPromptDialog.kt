@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -102,33 +101,7 @@ fun DailyStartPromptDialog(
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp, vertical = 26.dp)
                 ) {
-                    // Top Pill Chip: Streak or Ready status
-                    Surface(
-                        shape = RoundedCornerShape(percent = 50),
-                        color = Color(0xFFF59E0B).copy(alpha = 0.14f),
-                        border = BorderStroke(1.dp, Color(0xFFF59E0B).copy(alpha = 0.45f)),
-                        modifier = Modifier.padding(bottom = 18.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
-                        ) {
-                            Icon(
-                                imageVector = if (streakDays > 0) Icons.Default.LocalFireDepartment else Icons.Default.DateRange,
-                                contentDescription = null,
-                                tint = Color(0xFFD97706),
-                                modifier = Modifier.size(15.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = if (streakDays > 0) "$streakDays DAY STREAK" else "DAILY PUZZLE READY",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                letterSpacing = 1.2.sp,
-                                color = Color(0xFFD97706)
-                            )
-                        }
-                    }
+                    Spacer(modifier = Modifier.height(4.dp))
 
                     // Calendar Emblem Pod
                     Box(
@@ -180,7 +153,7 @@ fun DailyStartPromptDialog(
                         text = if (streakDays > 0) {
                             "Solve today's puzzle to keep your $streakDays-day streak alive!"
                         } else {
-                            "Solve today's puzzle to start your streak and earn +100 coins!"
+                            "A fresh puzzle awaits you! Solve today's challenge to test your skills."
                         },
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Normal,
