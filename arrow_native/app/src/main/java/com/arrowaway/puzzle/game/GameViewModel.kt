@@ -1294,6 +1294,34 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         audioHapticManager.playStarDrop(starIndex)
     }
 
+    fun resetGameData() {
+        audioHapticManager.playClick()
+        viewModelScope.launch {
+            repository.resetGameProgress()
+            _uiState.update { current ->
+                current.copy(
+                    currentLevelNumber = 1,
+                    lastCompletedLevelNumber = 1,
+                    coins = 100,
+                    streakDays = 0,
+                    isStreakEarnedThisLevel = false,
+                    hintsAvailable = 3,
+                    hammersAvailable = 2,
+                    wandsAvailable = 2,
+                    completedDailyDates = emptySet(),
+                    levelStars = emptyMap(),
+                    hasPlayedBefore = false,
+                    globalLivesAvailable = 6,
+                    hasSeenDailyUnlockCelebration = false,
+                    isLevelComplete = false,
+                    isGameOver = false,
+                    comboCount = 0
+                )
+            }
+            loadLevel(1)
+        }
+    }
+
     fun selectLevel(levelNumber: Int) {
         val maxUnlocked = maxOf(_uiState.value.currentLevelNumber, _uiState.value.lastCompletedLevelNumber)
         if (levelNumber in 1..maxUnlocked) {

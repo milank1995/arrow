@@ -430,6 +430,33 @@ class UserPreferencesRepository(private val context: Context) {
         context.dataStore.edit { it[KEY_HAS_PLAYED_BEFORE] = true }
     }
 
+    suspend fun resetGameProgress() {
+        context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE).edit()
+            .putInt("current_level", 1)
+            .putInt("streak_days", 0)
+            .remove("last_streak_date")
+            .remove("last_daily_date")
+            .remove("completed_dates")
+            .putBoolean(KEY_SYNC_HAS_PLAYED, false)
+            .apply()
+
+        context.dataStore.edit { prefs ->
+            prefs[KEY_LEVEL] = 1
+            prefs[KEY_COINS] = 100
+            prefs[KEY_HINTS] = 3
+            prefs[KEY_HAMMERS] = 2
+            prefs[KEY_WANDS] = 2
+            prefs[KEY_STREAK] = 0
+            prefs[KEY_LAST_STREAK_DATE] = ""
+            prefs[KEY_LAST_DAILY] = ""
+            prefs[KEY_COMPLETED_DAILY_DATES] = emptySet()
+            prefs[KEY_LEVEL_STARS_MAP] = ""
+            prefs[KEY_GLOBAL_LIVES] = 6
+            prefs[KEY_DAILY_UNLOCK_SEEN] = false
+            prefs[KEY_HAS_PLAYED_BEFORE] = false
+        }
+    }
+
     suspend fun useGlobalLives(amount: Int = 3): Boolean {
         var used = false
         context.dataStore.edit { prefs ->
