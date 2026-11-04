@@ -392,6 +392,22 @@ class MainActivity : ComponentActivity() {
                                     onToggleVibration = {
                                         gameViewModel.toggleVibration()
                                     },
+                                    onToggleHintButton = {
+                                        gameViewModel.playClick()
+                                        val newVal = !uiState.isHintButtonVisible
+                                        gameViewModel.analytics.logSettingPreferenceChanged("hint_button_visibility", uiState.isHintButtonVisible, newVal)
+                                        gameViewModel.setHintButtonVisible(newVal)
+                                    },
+                                    onToggleGridButton = {
+                                        gameViewModel.playClick()
+                                        val newVal = !uiState.isGridButtonVisible
+                                        gameViewModel.analytics.logSettingPreferenceChanged("grid_button_visibility", uiState.isGridButtonVisible, newVal)
+                                        gameViewModel.setGridButtonVisible(newVal)
+                                    },
+                                    onHintTimerChange = { newSec ->
+                                        gameViewModel.analytics.logSettingPreferenceChanged("hint_timer_duration", uiState.hintTimerSeconds, newSec)
+                                        gameViewModel.setHintTimerSeconds(newSec)
+                                    },
                                     onSettingsClick = {
                                         gameViewModel.playClick()
                                         currentScreen = AppScreen.SETTINGS
