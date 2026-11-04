@@ -7,8 +7,6 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -86,8 +84,6 @@ fun HomeScreen(
     onThemeClick: () -> Unit,
     onSoundToggle: () -> Unit,
     onSettingsClick: () -> Unit,
-    onNewOwnShapeClick: () -> Unit = {},
-    onLockPuzzleClick: () -> Unit = {},
     onDevTestClick: () -> Unit = {},
     onLevelChange: (Int) -> Unit = {},
     onTestNotificationClick: () -> Unit = {},
@@ -246,7 +242,6 @@ fun HomeScreen(
                     modifier = Modifier
                         .widthIn(max = 284.dp)
                         .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
                 ) {
                     // Brand Header with insignia
                     Column(
@@ -427,7 +422,7 @@ fun HomeScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(18.dp))
 
                     // 2. PLAY BUTTON (Directly Below Level Card — 62dp Tactile CTA)
                     Surface(
@@ -466,7 +461,7 @@ fun HomeScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     // 3. DAILY CHALLENGE BUTTON (Below Play Button — 62dp Feature Card)
                     Surface(
@@ -611,86 +606,20 @@ fun HomeScreen(
                         }
                     }
 
-
-
                     // Dev Secondary Shelf (Only visible in Dev Mode)
                     if (isDevMode) {
                         Spacer(modifier = Modifier.height(12.dp))
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            // Jump Level Button
-                            Surface(
-                                shape = RoundedCornerShape(14.dp),
-                                color = theme.surface,
-                                border = BorderStroke(1.dp, theme.gridLine),
-                                shadowElevation = 1.dp,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(42.dp)
-                                    .clip(RoundedCornerShape(14.dp))
-                                    .clickable(onClick = onDevTestClick)
-                            ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.fillMaxSize()
-                                ) {
-                                    Text(
-                                        text = "🎯 Jump Level",
-                                        fontSize = 11.5.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = theme.textPrimary
-                                    )
-                                }
-                            }
-
-                            // Lock Puzzle Button
-                            val isLockCompleted = (uiState.levelStars[150] ?: 0) > 0 || uiState.lastCompletedLevelNumber >= 150
-                            Surface(
-                                shape = RoundedCornerShape(14.dp),
-                                color = theme.surface,
-                                border = BorderStroke(1.dp, theme.gridLine),
-                                shadowElevation = 1.dp,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(42.dp)
-                                    .clip(RoundedCornerShape(14.dp))
-                                    .clickable(onClick = onLockPuzzleClick)
-                            ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.fillMaxSize()
-                                ) {
-                                    Text(
-                                        text = if (isLockCompleted) "✓ Lock Puzzle" else "🔓 Lock Puzzle",
-                                        fontSize = 11.5.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = if (isLockCompleted) {
-                                            if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
-                                        } else {
-                                            theme.textPrimary
-                                        }
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // New Own Shape Folder Button (Dev Mode only)
+                        // Jump Level Button
                         Surface(
                             shape = RoundedCornerShape(14.dp),
                             color = theme.surface,
-                            border = BorderStroke(1.dp, Color(0xFF6366F1).copy(alpha = 0.5f)),
+                            border = BorderStroke(1.dp, theme.gridLine),
                             shadowElevation = 1.dp,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(40.dp)
+                                .height(42.dp)
                                 .clip(RoundedCornerShape(14.dp))
-                                .clickable(onClick = onNewOwnShapeClick)
+                                .clickable(onClick = onDevTestClick)
                         ) {
                             Row(
                                 horizontalArrangement = Arrangement.Center,
@@ -698,10 +627,10 @@ fun HomeScreen(
                                 modifier = Modifier.fillMaxSize()
                             ) {
                                 Text(
-                                    text = "🎨 New Own Shape",
+                                    text = "🎯 Jump Level",
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF6366F1)
+                                    color = theme.textPrimary
                                 )
                             }
                         }

@@ -43,7 +43,6 @@ import com.arrowaway.puzzle.ui.screens.DailyChallengeScreen
 import com.arrowaway.puzzle.ui.screens.DevTestScreen
 import com.arrowaway.puzzle.ui.screens.GamePlayScreen
 import com.arrowaway.puzzle.ui.screens.HomeScreen
-import com.arrowaway.puzzle.ui.screens.NewOwnShapeScreen
 import com.arrowaway.puzzle.ui.screens.SettingsScreen
 import java.time.LocalDate
 
@@ -52,8 +51,7 @@ enum class AppScreen {
     GAMEPLAY,
     DAILY_CHALLENGE,
     DEV_TEST,
-    SETTINGS,
-    NEW_OWN_SHAPE
+    SETTINGS
 }
 
 class MainActivity : ComponentActivity() {
@@ -233,15 +231,6 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.playClick()
                                         currentScreen = AppScreen.SETTINGS
                                     },
-                                    onNewOwnShapeClick = {
-                                        gameViewModel.playClick()
-                                        currentScreen = AppScreen.NEW_OWN_SHAPE
-                                    },
-                                    onLockPuzzleClick = {
-                                        gameViewModel.playClick()
-                                        gameViewModel.startLockPuzzle()
-                                        currentScreen = AppScreen.GAMEPLAY
-                                    },
                                     onDevTestClick = {
                                         gameViewModel.playClick()
                                         currentScreen = AppScreen.DEV_TEST
@@ -302,28 +291,20 @@ class MainActivity : ComponentActivity() {
                                             gameViewModel.markDailyUnlockCelebrationSeen()
                                         }
                                         val wasDaily = uiState.isDailyChallengeMode
-                                        val wasLock = uiState.isLockPuzzleMode
-                                        val wasCustom = uiState.isCustomShapeMode || uiState.isGlassesPuzzleMode
-                                        val curLevel = uiState.currentLevelNumber
+                                        val curLevel = if (wasDaily) 999 else uiState.currentLevelNumber
 
                                         val advance = {
                                             gameViewModel.nextLevel()
-                                            currentScreen = when {
-                                                wasDaily -> AppScreen.DAILY_CHALLENGE
-                                                wasCustom -> AppScreen.NEW_OWN_SHAPE
-                                                else -> AppScreen.HOME
+                                            if (wasDaily) {
+                                                currentScreen = AppScreen.DAILY_CHALLENGE
                                             }
                                         }
 
-                                        if (!wasDaily && !wasLock && !wasCustom) {
-                                            AdManager.showInterstitialAd(
-                                                activity = this@MainActivity,
-                                                currentLevel = curLevel,
-                                                onDismissed = { advance() }
-                                            )
-                                        } else {
-                                            advance()
-                                        }
+                                        AdManager.showInterstitialAd(
+                                            activity = this@MainActivity,
+                                            currentLevel = curLevel,
+                                            onDismissed = { advance() }
+                                        )
                                     },
                                     onStartDailyChallengeClick = {
                                         gameViewModel.playClick()
@@ -357,22 +338,32 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.markHasPlayedBefore()
                                         gameViewModel.resetGridLines()
                                         val wasDaily = uiState.isDailyChallengeMode
-                                        val wasCustom = uiState.isCustomShapeMode || uiState.isGlassesPuzzleMode
-                                        if (uiState.isLevelComplete) {
-                                            gameViewModel.onVictoryHomeClick()
-                                        } else if (uiState.isDailyChallengeMode || uiState.isLockPuzzleMode || wasCustom) {
-                                            gameViewModel.loadLevel(uiState.currentLevelNumber)
-                                        } else if (uiState.isGameOver) {
-                                            gameViewModel.loadLevel(uiState.currentLevelNumber)
+                                        val isVictory = uiState.isLevelComplete
+                                        val curLevel = if (wasDaily) 999 else uiState.currentLevelNumber
+
+                                        val exitToHome = {
+                                            if (isVictory) {
+                                                gameViewModel.onVictoryHomeClick()
+                                            } else if (wasDaily) {
+                                                gameViewModel.loadLevel(uiState.currentLevelNumber)
+                                            } else if (uiState.isGameOver) {
+                                                gameViewModel.loadLevel(uiState.currentLevelNumber)
+                                            }
+                                            currentScreen = if (wasDaily) AppScreen.DAILY_CHALLENGE else AppScreen.HOME
                                         }
-                                        currentScreen = when {
-                                            wasDaily -> AppScreen.DAILY_CHALLENGE
-                                            wasCustom -> AppScreen.NEW_OWN_SHAPE
-                                            else -> AppScreen.HOME
+
+                                        if (wasDaily && isVictory) {
+                                            AdManager.showInterstitialAd(
+                                                activity = this@MainActivity,
+                                                currentLevel = curLevel,
+                                                onDismissed = { exitToHome() }
+                                            )
+                                        } else {
+                                            exitToHome()
                                         }
                                     },
                                     onClaimFreeLives = {
-                                        if (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode && !uiState.isLockPuzzleMode && !uiState.isCustomShapeMode && !uiState.isGlassesPuzzleMode) {
+                                        if (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode) {
                                             gameViewModel.claimFreeLives(3)
                                         } else {
                                             AdManager.showRewardedAd(
@@ -467,17 +458,6 @@ class MainActivity : ComponentActivity() {
                                 } else {
                                     currentScreen = AppScreen.HOME
                                 }
-                            }
-                            AppScreen.NEW_OWN_SHAPE -> {
-                                NewOwnShapeScreen(
-                                    theme = uiState.activeTheme,
-                                    onBackClick = { currentScreen = AppScreen.HOME },
-                                    onLevelSelected = { fileName ->
-                                        gameViewModel.playClick()
-                                        gameViewModel.startCustomShapeLevel(fileName)
-                                        currentScreen = AppScreen.GAMEPLAY
-                                    }
-                                )
                             }
                             AppScreen.SETTINGS -> {
                                 SettingsScreen(

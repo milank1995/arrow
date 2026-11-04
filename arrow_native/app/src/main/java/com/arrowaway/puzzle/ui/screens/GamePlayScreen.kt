@@ -183,7 +183,7 @@ fun GamePlayScreen(
             isStreakEarnedToday = uiState.isStreakEarnedThisLevel,
             heartsRemaining = uiState.heartsRemaining,
             maxHearts = uiState.maxHearts,
-            shapeName = if (uiState.isGlassesPuzzleMode) "Glasses" else level?.shapeName,
+            shapeName = level?.shapeName,
             isDailyChallenge = uiState.isDailyChallengeMode,
             completionTimeSeconds = uiState.levelCompletionTimeSeconds,
             movesCount = uiState.levelMovesCount,
@@ -332,10 +332,9 @@ fun GamePlayScreen(
                             BoosterBar(
                                 hintsCount = effectiveHints,
                                 isGridLinesActive = uiState.isGridLinesActive,
-                                isFreeHintLevel = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode && !uiState.isGlassesPuzzleMode),
+                                isFreeHintLevel = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode),
                                 isIdlePromptActive = isIdlePromptActive,
-                                levelNumber = if (uiState.isGlassesPuzzleMode) null else uiState.currentLevelNumber,
-                                shapeName = if (uiState.isGlassesPuzzleMode) "Glasses" else level?.shapeName,
+                                levelNumber = uiState.currentLevelNumber,
                                 isDailyChallenge = uiState.isDailyChallengeMode,
                                 theme = theme,
                                 isHintVisible = uiState.isHintButtonVisible,
@@ -424,7 +423,7 @@ fun GamePlayScreen(
 
                 // 6. GAME OVER DIALOG
                 if (uiState.isGameOver) {
-                    val isStartingLevels = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode && !uiState.isLockPuzzleMode && !uiState.isGlassesPuzzleMode)
+                    val isStartingLevels = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode)
                     GameOverDialog(
                         theme = theme,
                         isStartingLevels = isStartingLevels,
