@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -127,6 +128,8 @@ fun SettingsScreen(
     BackHandler(onBack = onBackClick)
     val context = LocalContext.current
     var showHintTimerInfoDialog by remember { mutableStateOf(false) }
+    var showPrivacyPolicyDialog by remember { mutableStateOf(false) }
+    var showTermsDialog by remember { mutableStateOf(false) }
 
     // Dynamically query application version name from PackageManager
     val versionName = remember {
@@ -582,29 +585,13 @@ fun SettingsScreen(
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
 
-                            // Feedback & Support Row
-                            SettingsLinkRow(
-                                title = "Feedback & Support",
-                                icon = Icons.Default.Email,
-                                iconBg = itemBg,
-                                iconTint = activeTheme.textPrimary,
-                                onClick = openEmail,
-                                activeTheme = activeTheme
-                            )
-
-                            HorizontalDivider(
-                                color = cardBorder.copy(alpha = 0.6f),
-                                thickness = 1.dp,
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
-
-                            // Privacy Policy Row
+                            // Privacy Policy Row (In-app popup)
                             SettingsLinkRow(
                                 title = "Privacy Policy",
                                 icon = Icons.Default.Lock,
                                 iconBg = itemBg,
                                 iconTint = activeTheme.textSecondary,
-                                onClick = { openUrl("https://arrowaway.com/privacy") },
+                                onClick = { showPrivacyPolicyDialog = true },
                                 activeTheme = activeTheme
                             )
 
@@ -614,17 +601,15 @@ fun SettingsScreen(
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
 
-                            // Terms of Service Row
+                            // Terms & Conditions Row (In-app popup)
                             SettingsLinkRow(
-                                title = "Terms of Service",
+                                title = "Terms & Conditions",
                                 icon = Icons.Default.Policy,
                                 iconBg = itemBg,
                                 iconTint = activeTheme.textSecondary,
-                                onClick = { openUrl("https://arrowaway.com/terms") },
+                                onClick = { showTermsDialog = true },
                                 activeTheme = activeTheme
                             )
-
-
                         }
                     }
 
@@ -777,14 +762,11 @@ fun SettingsScreen(
                         Spacer(modifier = Modifier.height(10.dp))
 
                         Text(
-                            text = "The Hint Timer gently assists you when you're stuck on a tricky puzzle.\n\n" +
-                                   "• Purpose: Offers a gentle nudge without interrupting your problem-solving flow.\n\n" +
-                                   "• How it works: If you don't make a move within the chosen time (5s - 55s), the Hint button softly pulses and plays a subtle sound to remind you that a hint is available.\n\n" +
-                                   "• Note: When the Hint Button is turned off, the Hint Timer is automatically disabled.",
-                            fontSize = 13.sp,
-                            lineHeight = 19.sp,
+                            text = "When you haven't made a move for the set time, the Hint button will softly pulse to remind you that help is available.",
+                            fontSize = 14.sp,
+                            lineHeight = 21.sp,
                             color = activeTheme.textSecondary,
-                            textAlign = TextAlign.Start,
+                            textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
 
@@ -800,6 +782,188 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(42.dp)
+                        ) {
+                            Text(
+                                text = "Got It",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // PRIVACY POLICY MODAL DIALOG
+        if (showPrivacyPolicyDialog) {
+            Dialog(
+                onDismissRequest = { showPrivacyPolicyDialog = false },
+                properties = DialogProperties(usePlatformDefaultWidth = false)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(24.dp),
+                    color = cardBg,
+                    border = BorderStroke(1.2.dp, cardBorder),
+                    shadowElevation = 14.dp,
+                    modifier = Modifier
+                        .widthIn(max = 350.dp)
+                        .fillMaxWidth(0.9f)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(22.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Header Icon
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFF3B82F6).copy(alpha = 0.15f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = null,
+                                tint = Color(0xFF3B82F6),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        Text(
+                            text = "Privacy Policy",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = activeTheme.textPrimary
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 280.dp)
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            Text(
+                                text = "Your privacy is important to us. Here is how Arrow Away handles your information:\n\n" +
+                                       "• Local Game Data: Your level progress, high scores, coins, and settings are saved securely on your device.\n\n" +
+                                       "• No Personal Info: We do not collect names, phone numbers, email addresses, or personal identities.\n\n" +
+                                       "• Anonymous Diagnostics: We collect anonymized crash reports and app performance data (via Google Firebase) to keep the game stable and fix bugs.\n\n" +
+                                       "• Advertisements: Google AdMob is used to serve in-game ads. AdMob may use standard device advertising identifiers to show non-intrusive ads.\n\n" +
+                                       "• Your Control: You can customize your preferences or disable tracking anytime in Settings.",
+                                fontSize = 13.sp,
+                                lineHeight = 19.sp,
+                                color = activeTheme.textSecondary
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        Button(
+                            onClick = { showPrivacyPolicyDialog = false },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = activeTheme.arrowDefault,
+                                contentColor = Color.White
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(44.dp)
+                        ) {
+                            Text(
+                                text = "Got It",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // TERMS & CONDITIONS MODAL DIALOG
+        if (showTermsDialog) {
+            Dialog(
+                onDismissRequest = { showTermsDialog = false },
+                properties = DialogProperties(usePlatformDefaultWidth = false)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(24.dp),
+                    color = cardBg,
+                    border = BorderStroke(1.2.dp, cardBorder),
+                    shadowElevation = 14.dp,
+                    modifier = Modifier
+                        .widthIn(max = 350.dp)
+                        .fillMaxWidth(0.9f)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(22.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Header Icon
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFF10B981).copy(alpha = 0.15f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Policy,
+                                contentDescription = null,
+                                tint = Color(0xFF10B981),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        Text(
+                            text = "Terms & Conditions",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = activeTheme.textPrimary
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 280.dp)
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            Text(
+                                text = "Welcome to Arrow Away! By downloading and playing, you agree to these simple terms:\n\n" +
+                                       "• Entertainment Use: Arrow Away is a puzzle game provided for personal, non-commercial entertainment. Please play fairly and enjoy the challenges!\n\n" +
+                                       "• Virtual Items: In-game items like hints, boosters, and coins are purely virtual game features with no real-world monetary value. They cannot be sold, traded, or redeemed.\n\n" +
+                                       "• Updates & Content: We continually improve the game by adding new puzzles, features, and optimizations. Game content may be updated from time to time.\n\n" +
+                                       "• As-Is Availability: While we work hard to provide a smooth, enjoyable experience, the game is provided 'as is'. We are not responsible for lost progress resulting from device resets or clearing app data.\n\n" +
+                                       "Thank you for playing and supporting Arrow Away!",
+                                fontSize = 13.sp,
+                                lineHeight = 19.sp,
+                                color = activeTheme.textSecondary
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        Button(
+                            onClick = { showTermsDialog = false },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = activeTheme.arrowDefault,
+                                contentColor = Color.White
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(44.dp)
                         ) {
                             Text(
                                 text = "Got It",
