@@ -130,25 +130,25 @@ fun GamePlayScreen(
                                 !uiState.isGameOver && 
                                 remainingArrowsCount > 0
 
-    // Heart loss / mistake triggers stuck assistance immediately during active play
-    LaunchedEffect(uiState.heartsRemaining, isGameActivelyPlaying, uiState.isHintButtonVisible) {
-        if (uiState.heartsRemaining < prevHeartsRemaining && isGameActivelyPlaying && uiState.isHintButtonVisible) {
+    // Heart loss / mistake triggers stuck assistance immediately during active play (only when hint button is visible and hint timer is not off)
+    LaunchedEffect(uiState.heartsRemaining, isGameActivelyPlaying, uiState.isHintButtonVisible, uiState.hintTimerSeconds) {
+        if (uiState.heartsRemaining < prevHeartsRemaining && isGameActivelyPlaying && uiState.isHintButtonVisible && uiState.hintTimerSeconds > 0) {
             isIdlePromptActive = true
         }
         prevHeartsRemaining = uiState.heartsRemaining
     }
 
-    // Dynamically configurable idle timer triggers stuck assistance strictly during active gameplay (disabled when Hint Button is false)
+    // Dynamically configurable idle timer triggers stuck assistance strictly during active gameplay (disabled when Hint Button is false or timer is Off)
     LaunchedEffect(lastInteractionTime, isGameActivelyPlaying, uiState.hintTimerSeconds, uiState.isHintButtonVisible) {
-        if (!isGameActivelyPlaying || !uiState.isHintButtonVisible) {
+        if (!isGameActivelyPlaying || !uiState.isHintButtonVisible || uiState.hintTimerSeconds <= 0) {
             isIdlePromptActive = false
             hasPlayedIdleSoundForPeriod = false
             return@LaunchedEffect
         }
         isIdlePromptActive = false
         hasPlayedIdleSoundForPeriod = false
-        delay(uiState.hintTimerSeconds * 1000L) // Configurable idle duration (default 10s, range 5-55s)
-        if (isGameActivelyPlaying && uiState.isHintButtonVisible) {
+        delay(uiState.hintTimerSeconds * 1000L) // Configurable idle duration (default 10s, 0=Off, range 0-55s)
+        if (isGameActivelyPlaying && uiState.isHintButtonVisible && uiState.hintTimerSeconds > 0) {
             isIdlePromptActive = true
         }
     }
