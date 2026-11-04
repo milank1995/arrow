@@ -40,7 +40,8 @@ data class UserGameData(
     val isHintButtonVisible: Boolean = true,
     val isGridButtonVisible: Boolean = true,
     val hintTimerSeconds: Int = 10,
-    val lastReviewPromptTimestamp: Long = 0L
+    val lastReviewPromptTimestamp: Long = 0L,
+    val isAnalyticsEnabled: Boolean = !com.arrowaway.puzzle.BuildConfig.DEBUG
 )
 
 class UserPreferencesRepository(private val context: Context) {
@@ -67,6 +68,7 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_GRID_BUTTON_VISIBLE = booleanPreferencesKey("grid_button_visible")
     private val KEY_HINT_TIMER_SECONDS = intPreferencesKey("hint_timer_seconds")
     private val KEY_LAST_REVIEW_PROMPT_TIMESTAMP = longPreferencesKey("last_review_prompt_timestamp")
+    private val KEY_ANALYTICS_ENABLED = booleanPreferencesKey("analytics_tracking_enabled")
 
     private val SYNC_PREFS = "arrow_sync_prefs"
     private val KEY_SYNC_HAS_PLAYED = "has_played_before"
@@ -139,7 +141,8 @@ class UserPreferencesRepository(private val context: Context) {
             isHintButtonVisible = prefs[KEY_HINT_BUTTON_VISIBLE] ?: true,
             isGridButtonVisible = prefs[KEY_GRID_BUTTON_VISIBLE] ?: true,
             hintTimerSeconds = (prefs[KEY_HINT_TIMER_SECONDS] ?: 10).coerceIn(5, 55),
-            lastReviewPromptTimestamp = prefs[KEY_LAST_REVIEW_PROMPT_TIMESTAMP] ?: 0L
+            lastReviewPromptTimestamp = prefs[KEY_LAST_REVIEW_PROMPT_TIMESTAMP] ?: 0L,
+            isAnalyticsEnabled = prefs[KEY_ANALYTICS_ENABLED] ?: (!com.arrowaway.puzzle.BuildConfig.DEBUG)
         )
     }
 
@@ -325,6 +328,12 @@ class UserPreferencesRepository(private val context: Context) {
         val clamped = seconds.coerceIn(5, 55)
         context.dataStore.edit { prefs ->
             prefs[KEY_HINT_TIMER_SECONDS] = clamped
+        }
+    }
+
+    suspend fun setAnalyticsEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[KEY_ANALYTICS_ENABLED] = enabled
         }
     }
 

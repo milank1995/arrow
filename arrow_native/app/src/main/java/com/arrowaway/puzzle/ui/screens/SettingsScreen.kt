@@ -51,6 +51,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.automirrored.filled.VolumeMute
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.GridOn
@@ -110,6 +111,8 @@ fun SettingsScreen(
     isHintButtonVisible: Boolean = true,
     isGridButtonVisible: Boolean = true,
     hintTimerSeconds: Int = 10,
+    isAnalyticsEnabled: Boolean = true,
+    onToggleAnalytics: () -> Unit = {},
     onToggleSound: () -> Unit,
     onToggleVibration: () -> Unit,
     onToggleDailyReminders: () -> Unit = {},
@@ -618,6 +621,23 @@ fun SettingsScreen(
                                 iconBg = itemBg,
                                 iconTint = activeTheme.textSecondary,
                                 onClick = { openUrl("https://arrowaway.com/terms") },
+                                activeTheme = activeTheme
+                            )
+
+                            HorizontalDivider(
+                                color = cardBorder.copy(alpha = 0.6f),
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            // Analytics Tracking Row (Toggle OFF to disable tracking during testing)
+                            SettingsToggleRow(
+                                title = "Analytics Tracking",
+                                icon = Icons.Default.Analytics,
+                                iconBg = itemBg,
+                                iconTint = if (isAnalyticsEnabled) Color(0xFF3B82F6) else activeTheme.textSecondary.copy(alpha = 0.4f),
+                                isChecked = isAnalyticsEnabled,
+                                onCheckedChange = { onToggleAnalytics() },
                                 activeTheme = activeTheme
                             )
                         }

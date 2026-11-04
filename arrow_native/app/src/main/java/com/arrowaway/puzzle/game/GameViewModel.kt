@@ -94,7 +94,8 @@ data class GameUiState(
     val isHintButtonVisible: Boolean = true,
     val isGridButtonVisible: Boolean = true,
     val hintTimerSeconds: Int = 10,
-    val reviewPromptTrigger: Long = 0L
+    val reviewPromptTrigger: Long = 0L,
+    val isAnalyticsEnabled: Boolean = !com.arrowaway.puzzle.BuildConfig.DEBUG
 ) {
     val previewRayArrowId: String? get() = previewRayArrowIds.firstOrNull()
 }
@@ -180,9 +181,11 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         isDevMode = data.isDevMode,
                         isHintButtonVisible = data.isHintButtonVisible,
                         isGridButtonVisible = data.isGridButtonVisible,
-                        hintTimerSeconds = data.hintTimerSeconds
+                        hintTimerSeconds = data.hintTimerSeconds,
+                        isAnalyticsEnabled = data.isAnalyticsEnabled
                     )
                 }
+                analytics.setAnalyticsEnabled(data.isAnalyticsEnabled)
 
                 if (!hasLoggedSessionStart) {
                     hasLoggedSessionStart = true
@@ -223,6 +226,24 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
         _uiState.update { it.copy(isDevMode = newMode) }
         return newMode
+    }
+
+    fun toggleAnalytics(): Boolean {
+        val newState = !_uiState.value.isAnalyticsEnabled
+        _uiState.update { it.copy(isAnalyticsEnabled = newState) }
+        analytics.setAnalyticsEnabled(newState)
+        viewModelScope.launch {
+            repository.setAnalyticsEnabled(newState)
+        }
+        return newState
+    }
+
+    fun setAnalyticsEnabled(enabled: Boolean) {
+        _uiState.update { it.copy(isAnalyticsEnabled = enabled) }
+        analytics.setAnalyticsEnabled(enabled)
+        viewModelScope.launch {
+            repository.setAnalyticsEnabled(enabled)
+        }
     }
 
     fun markDailyUnlockCelebrationSeen() {
