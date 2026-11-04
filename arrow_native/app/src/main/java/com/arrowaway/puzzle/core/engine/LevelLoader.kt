@@ -50,13 +50,6 @@ object LevelLoader {
     }
 
     /**
-     * Loads the featured Lock shape puzzle level.
-     */
-    fun loadLockPuzzle(context: Context): LevelData {
-        return loadLevel(context, 150)
-    }
-
-    /**
      * Loads a daily level mapped deterministically from the 150 curated levels.
      */
     fun loadDailyLevel(context: Context, dailyIndex: Int): LevelData {

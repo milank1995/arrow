@@ -423,7 +423,7 @@ fun GamePlayScreen(
 
                 // 6. GAME OVER DIALOG
                 if (uiState.isGameOver) {
-                    val isStartingLevels = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode && !uiState.isLockPuzzleMode)
+                    val isStartingLevels = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode)
                     GameOverDialog(
                         theme = theme,
                         isStartingLevels = isStartingLevels,

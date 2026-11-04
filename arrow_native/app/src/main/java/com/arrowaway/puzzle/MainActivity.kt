@@ -231,11 +231,6 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.playClick()
                                         currentScreen = AppScreen.SETTINGS
                                     },
-                                    onLockPuzzleClick = {
-                                        gameViewModel.playClick()
-                                        gameViewModel.startLockPuzzle()
-                                        currentScreen = AppScreen.GAMEPLAY
-                                    },
                                     onDevTestClick = {
                                         gameViewModel.playClick()
                                         currentScreen = AppScreen.DEV_TEST
@@ -296,27 +291,20 @@ class MainActivity : ComponentActivity() {
                                             gameViewModel.markDailyUnlockCelebrationSeen()
                                         }
                                         val wasDaily = uiState.isDailyChallengeMode
-                                        val wasLock = uiState.isLockPuzzleMode
-                                        val curLevel = uiState.currentLevelNumber
+                                        val curLevel = if (wasDaily) 999 else uiState.currentLevelNumber
 
                                         val advance = {
                                             gameViewModel.nextLevel()
                                             if (wasDaily) {
                                                 currentScreen = AppScreen.DAILY_CHALLENGE
-                                            } else if (wasLock) {
-                                                currentScreen = AppScreen.HOME
                                             }
                                         }
 
-                                        if (!wasDaily && !wasLock) {
-                                            AdManager.showInterstitialAd(
-                                                activity = this@MainActivity,
-                                                currentLevel = curLevel,
-                                                onDismissed = { advance() }
-                                            )
-                                        } else {
-                                            advance()
-                                        }
+                                        AdManager.showInterstitialAd(
+                                            activity = this@MainActivity,
+                                            currentLevel = curLevel,
+                                            onDismissed = { advance() }
+                                        )
                                     },
                                     onStartDailyChallengeClick = {
                                         gameViewModel.playClick()
@@ -350,17 +338,32 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.markHasPlayedBefore()
                                         gameViewModel.resetGridLines()
                                         val wasDaily = uiState.isDailyChallengeMode
-                                        if (uiState.isLevelComplete) {
-                                            gameViewModel.onVictoryHomeClick()
-                                        } else if (uiState.isDailyChallengeMode || uiState.isLockPuzzleMode) {
-                                            gameViewModel.loadLevel(uiState.currentLevelNumber)
-                                        } else if (uiState.isGameOver) {
-                                            gameViewModel.loadLevel(uiState.currentLevelNumber)
+                                        val isVictory = uiState.isLevelComplete
+                                        val curLevel = if (wasDaily) 999 else uiState.currentLevelNumber
+
+                                        val exitToHome = {
+                                            if (isVictory) {
+                                                gameViewModel.onVictoryHomeClick()
+                                            } else if (wasDaily) {
+                                                gameViewModel.loadLevel(uiState.currentLevelNumber)
+                                            } else if (uiState.isGameOver) {
+                                                gameViewModel.loadLevel(uiState.currentLevelNumber)
+                                            }
+                                            currentScreen = if (wasDaily) AppScreen.DAILY_CHALLENGE else AppScreen.HOME
                                         }
-                                        currentScreen = if (wasDaily) AppScreen.DAILY_CHALLENGE else AppScreen.HOME
+
+                                        if (wasDaily && isVictory) {
+                                            AdManager.showInterstitialAd(
+                                                activity = this@MainActivity,
+                                                currentLevel = curLevel,
+                                                onDismissed = { exitToHome() }
+                                            )
+                                        } else {
+                                            exitToHome()
+                                        }
                                     },
                                     onClaimFreeLives = {
-                                        if (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode && !uiState.isLockPuzzleMode) {
+                                        if (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode) {
                                             gameViewModel.claimFreeLives(3)
                                         } else {
                                             AdManager.showRewardedAd(

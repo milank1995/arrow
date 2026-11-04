@@ -84,7 +84,6 @@ fun HomeScreen(
     onThemeClick: () -> Unit,
     onSoundToggle: () -> Unit,
     onSettingsClick: () -> Unit,
-    onLockPuzzleClick: () -> Unit = {},
     onDevTestClick: () -> Unit = {},
     onLevelChange: (Int) -> Unit = {},
     onTestNotificationClick: () -> Unit = {},
@@ -610,65 +609,29 @@ fun HomeScreen(
                     // Dev Secondary Shelf (Only visible in Dev Mode)
                     if (isDevMode) {
                         Spacer(modifier = Modifier.height(12.dp))
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.fillMaxWidth()
+                        // Jump Level Button
+                        Surface(
+                            shape = RoundedCornerShape(14.dp),
+                            color = theme.surface,
+                            border = BorderStroke(1.dp, theme.gridLine),
+                            shadowElevation = 1.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(42.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .clickable(onClick = onDevTestClick)
                         ) {
-                            // Jump Level Button
-                            Surface(
-                                shape = RoundedCornerShape(14.dp),
-                                color = theme.surface,
-                                border = BorderStroke(1.dp, theme.gridLine),
-                                shadowElevation = 1.dp,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(42.dp)
-                                    .clip(RoundedCornerShape(14.dp))
-                                    .clickable(onClick = onDevTestClick)
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxSize()
                             ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.fillMaxSize()
-                                ) {
-                                    Text(
-                                        text = "🎯 Jump Level",
-                                        fontSize = 11.5.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = theme.textPrimary
-                                    )
-                                }
-                            }
-
-                            // Lock Puzzle Button
-                            val isLockCompleted = (uiState.levelStars[150] ?: 0) > 0 || uiState.lastCompletedLevelNumber >= 150
-                            Surface(
-                                shape = RoundedCornerShape(14.dp),
-                                color = theme.surface,
-                                border = BorderStroke(1.dp, theme.gridLine),
-                                shadowElevation = 1.dp,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(42.dp)
-                                    .clip(RoundedCornerShape(14.dp))
-                                    .clickable(onClick = onLockPuzzleClick)
-                            ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.fillMaxSize()
-                                ) {
-                                    Text(
-                                        text = if (isLockCompleted) "✓ Lock Puzzle" else "🔓 Lock Puzzle",
-                                        fontSize = 11.5.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = if (isLockCompleted) {
-                                            if (theme.name == "Warm Sepia") Color(0xFFB45309) else theme.arrowClear
-                                        } else {
-                                            theme.textPrimary
-                                        }
-                                    )
-                                }
+                                Text(
+                                    text = "🎯 Jump Level",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = theme.textPrimary
+                                )
                             }
                         }
 
