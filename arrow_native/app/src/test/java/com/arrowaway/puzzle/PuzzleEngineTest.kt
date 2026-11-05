@@ -801,5 +801,30 @@ class PuzzleEngineTest {
     fun testAppleCorePuzzleSolvability() {
         verifyCustomShapeSolvability("AppleCore.json", "Apple Core", 65, 59, 81)
     }
+
+    @Test
+    fun testFacePuzzleSolvability() {
+        verifyCustomShapeSolvability("Face.json", "Face", 113, 39, 40)
+    }
+
+    @Test
+    fun testFrogAndBalloonPuzzleSolvability() {
+        verifyCustomShapeSolvability("FrogAndBalloon.json", "Frog and Balloon", 50, 36, 61)
+    }
+
+    @Test
+    fun testHeartPuzzleSolvability() {
+        verifyCustomShapeSolvability("Heart.json", "Heart", 55, 28, 24)
+    }
+
+    @Test
+    fun testLockPuzzleSolvability() {
+        verifyCustomShapeSolvability("Lock.json", "Lock", 70, 26, 36)
+    }
+
+    @Test
+    fun testMagnetPuzzleSolvability() {
+        verifyCustomShapeSolvability("Magnet.json", "Magnet", 76, 41, 41)
+    }
 }
 

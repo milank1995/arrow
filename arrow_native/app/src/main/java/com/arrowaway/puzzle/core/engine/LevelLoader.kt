@@ -162,6 +162,11 @@ object LevelLoader {
             "Octopus" -> "Octopus"
             "PalmTree", "Palm Tree" -> "Palm Tree"
             "Apple Core", "AppleCore", "Apple" -> "Apple Core"
+            "Face" -> "Face"
+            "Frog and Balloon", "FrogAndBalloon", "Frog And Baloon", "FrogAndBaloon" -> "Frog and Balloon"
+            "Heart" -> "Heart"
+            "Lock" -> "Lock"
+            "Magnet" -> "Magnet"
             else -> trimmed.replace("_", " ")
         }
     }
