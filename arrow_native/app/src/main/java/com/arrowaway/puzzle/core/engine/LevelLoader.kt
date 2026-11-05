@@ -152,6 +152,11 @@ object LevelLoader {
             "Mermaid" -> "Mermaid"
             "Sunflower" -> "Sunflower"
             "Eiffel Tower", "Tower", "EiffelTower" -> "Eiffel Tower"
+            "Cartoon" -> "Cartoon"
+            "Ice Cream Cup", "IcecreamCup" -> "Ice Cream Cup"
+            "Robot" -> "Robot"
+            "Root" -> "Root"
+            "Unknown Shape 2", "CustomDesign9", "Custom Design 9" -> "Custom Design 9"
             else -> trimmed.replace("_", " ")
         }
     }

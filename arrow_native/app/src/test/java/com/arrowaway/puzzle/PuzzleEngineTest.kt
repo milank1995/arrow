@@ -751,5 +751,30 @@ class PuzzleEngineTest {
     fun testTowerPuzzleSolvability() {
         verifyCustomShapeSolvability("Tower.json", "Eiffel Tower", 80, 60, 115)
     }
+
+    @Test
+    fun testCartoonPuzzleSolvability() {
+        verifyCustomShapeSolvability("Cartoon.json", "Cartoon", 65, 64, 64)
+    }
+
+    @Test
+    fun testIcecreamCupPuzzleSolvability() {
+        verifyCustomShapeSolvability("IcecreamCup.json", "Ice Cream Cup", 70, 83, 126)
+    }
+
+    @Test
+    fun testRobotPuzzleSolvability() {
+        verifyCustomShapeSolvability("Robot.json", "Robot", 70, 72, 84)
+    }
+
+    @Test
+    fun testRootPuzzleSolvability() {
+        verifyCustomShapeSolvability("Root.json", "Root", 80, 74, 130)
+    }
+
+    @Test
+    fun testCustomDesign9PuzzleSolvability() {
+        verifyCustomShapeSolvability("CustomDesign9.json", "Unknown Shape 2", 80, 43, 75)
+    }
 }
 
