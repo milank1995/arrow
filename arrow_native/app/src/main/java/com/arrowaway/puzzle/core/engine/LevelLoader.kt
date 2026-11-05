@@ -137,6 +137,11 @@ object LevelLoader {
             "Chameleons", "Chameleon" -> "Chameleon"
             "Knight" -> "Knight"
             "Unknown Shape 7", "CustomDesign4", "Custom Design 4" -> "Custom Design 4"
+            "Lion" -> "Lion"
+            "Unknown Shape 3", "CustomDesign5", "Custom Design 5" -> "Custom Design 5"
+            "Unknown Shape 4", "CustomDesign6", "Custom Design 6" -> "Custom Design 6"
+            "Unknown Shape 5", "CustomDesign7", "Custom Design 7" -> "Custom Design 7"
+            "Unknown Shape 6", "CustomDesign8", "Custom Design 8" -> "Custom Design 8"
             else -> trimmed.replace("_", " ")
         }
     }

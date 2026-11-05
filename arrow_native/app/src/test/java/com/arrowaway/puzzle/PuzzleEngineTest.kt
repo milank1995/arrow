@@ -676,5 +676,30 @@ class PuzzleEngineTest {
     fun testCustomDesign4PuzzleSolvability() {
         verifyCustomShapeSolvability("CustomDesign4.json", "Unknown Shape 7", 235, 67, 145)
     }
+
+    @Test
+    fun testLionPuzzleSolvability() {
+        verifyCustomShapeSolvability("Lion.json", "Lion", 180, 65, 141)
+    }
+
+    @Test
+    fun testCustomDesign5PuzzleSolvability() {
+        verifyCustomShapeSolvability("CustomDesign5.json", "Unknown Shape 3", 150, 65, 125)
+    }
+
+    @Test
+    fun testCustomDesign6PuzzleSolvability() {
+        verifyCustomShapeSolvability("CustomDesign6.json", "Unknown Shape 4", 150, 64, 125)
+    }
+
+    @Test
+    fun testCustomDesign7PuzzleSolvability() {
+        verifyCustomShapeSolvability("CustomDesign7.json", "Unknown Shape 5", 150, 74, 160)
+    }
+
+    @Test
+    fun testCustomDesign8PuzzleSolvability() {
+        verifyCustomShapeSolvability("CustomDesign8.json", "Unknown Shape 6", 170, 75, 162)
+    }
 }
 
