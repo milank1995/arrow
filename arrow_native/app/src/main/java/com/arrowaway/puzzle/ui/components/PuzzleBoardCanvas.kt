@@ -228,23 +228,44 @@ fun PuzzleBoardCanvas(
         val viewportWidth = constraints.maxWidth.toFloat()
         val viewportHeight = constraints.maxHeight.toFloat()
 
-        // Fit active puzzle board snugly into viewport with minimum required margin (8dp)
-        // Eliminates unnecessary empty border space while preserving multi-device responsiveness
-        val minMarginPx = with(LocalDensity.current) { 8.dp.toPx() }
-        val availableWidth = (viewportWidth - minMarginPx * 2f).coerceAtLeast(1f)
-        val availableHeight = (viewportHeight - minMarginPx * 2f).coerceAtLeast(1f)
-        val maxCellPx = with(LocalDensity.current) { 50.dp.toPx() }
+        // Responsive edge margins:
+        // Horizontal: 16dp on standard phones (14dp on small, 24dp on tablets) prevents edge crowding
+        // Vertical: compact 10-14dp allows tall puzzles to utilize full vertical screen height
+        val density = LocalDensity.current
+        val minHorizontalMarginDp = when {
+            viewportWidth < with(density) { 360.dp.toPx() } -> 14.dp
+            viewportWidth < with(density) { 600.dp.toPx() } -> 16.dp
+            else -> 24.dp
+        }
+        val minVerticalMarginDp = when {
+            viewportHeight < with(density) { 600.dp.toPx() } -> 10.dp
+            viewportHeight < with(density) { 900.dp.toPx() } -> 12.dp
+            else -> 20.dp
+        }
+        val horizontalMarginPx = with(density) { minHorizontalMarginDp.toPx() }
+        val verticalMarginPx = with(density) { minVerticalMarginDp.toPx() }
+
+        val availableWidth = (viewportWidth - horizontalMarginPx * 2f).coerceAtLeast(1f)
+        val availableHeight = (viewportHeight - verticalMarginPx * 2f).coerceAtLeast(1f)
+        val maxCellPx = with(density) { 50.dp.toPx() }
         val cellSize = minOf(
             availableWidth / initialActiveBounds.spanX,
             availableHeight / initialActiveBounds.spanY
         ).coerceAtMost(maxCellPx)
         val boardWidth = cellSize * initialActiveBounds.spanX
         val boardHeight = cellSize * initialActiveBounds.spanY
+
+        // Center active puzzle with subtle optical center adjustment for square/wide shapes
         val activeCenterX = (initialActiveBounds.minX + initialActiveBounds.maxX + 1) * cellSize / 2f
         val activeCenterY = (initialActiveBounds.minY + initialActiveBounds.maxY + 1) * cellSize / 2f
+        val maxOpticalShiftPx = with(density) { 10.dp.toPx() }
+        val remainingVerticalSpace = viewportHeight - boardHeight
+        val verticalSlackPx = (remainingVerticalSpace - verticalMarginPx * 2f).coerceAtLeast(0f)
+        val opticalShiftY = (verticalSlackPx * 0.035f).coerceAtMost(maxOpticalShiftPx)
+
         val boardOrigin = Offset(
             viewportWidth / 2f - activeCenterX,
-            viewportHeight / 2f - activeCenterY
+            (viewportHeight / 2f - activeCenterY) - opticalShiftY
         )
 
         // Dynamic zoom limits matching Unity's ComputeZoomLimitsForLevel (minCellScreenPx / maxCellScreenPx)
@@ -253,7 +274,6 @@ fun PuzzleBoardCanvas(
         val maxScale = (targetMaxCellPx / cellSize).coerceIn(5.0f, 18.0f)
 
         // Default overview fit scale is strictly 1.0f (full puzzle visible) matching New Unity
-        val density = LocalDensity.current
         val defaultScale = 1.0f
         val currentDefaultScale by rememberUpdatedState(defaultScale)
 
