@@ -526,5 +526,30 @@ class PuzzleEngineTest {
     fun testSoundPuzzleSolvability() {
         verifyCustomShapeSolvability("Sound.json", "Sound", 128, 50, 63)
     }
+
+    @Test
+    fun testAnimalCirclePuzzleSolvability() {
+        verifyCustomShapeSolvability("AnimalCircle.json", "AnimalCircle", 450, 49, 49)
+    }
+
+    @Test
+    fun testDeerPuzzleSolvability() {
+        verifyCustomShapeSolvability("Deer.json", "Deer", 150, 49, 53)
+    }
+
+    @Test
+    fun testJcbPuzzleSolvability() {
+        verifyCustomShapeSolvability("Jcb.json", "JCB", 210, 43, 55)
+    }
+
+    @Test
+    fun testManWithPianoPuzzleSolvability() {
+        verifyCustomShapeSolvability("ManWithPiano.json", "ManWithPiano", 130, 60, 52)
+    }
+
+    @Test
+    fun testTrophyPuzzleSolvability() {
+        verifyCustomShapeSolvability("Trophy.json", "Trophy", 130, 48, 54)
+    }
 }
 

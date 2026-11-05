@@ -107,6 +107,11 @@ object LevelLoader {
             "Chair" -> "Chair"
             "Guitar" -> "Guitar"
             "Sound" -> "Sound"
+            "AnimalCircle", "Animal Circle" -> "Animal Circle"
+            "Deer" -> "Deer"
+            "JCB", "Jcb" -> "JCB"
+            "ManWithPiano", "Man With Piano" -> "Piano Player"
+            "Trophy" -> "Trophy"
             else -> trimmed.replace("_", " ")
         }
     }
