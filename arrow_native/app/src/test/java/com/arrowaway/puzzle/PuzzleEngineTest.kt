@@ -836,5 +836,25 @@ class PuzzleEngineTest {
     fun testTennisBallPuzzleSolvability() {
         verifyCustomShapeSolvability("TennisBall.json", "TennisBall", 320, 77, 77)
     }
+
+    @Test
+    fun testBurgerPuzzleSolvability() {
+        verifyCustomShapeSolvability("Burger.json", "Burger", 320, 48, 54)
+    }
+
+    @Test
+    fun testCrownPuzzleSolvability() {
+        verifyCustomShapeSolvability("Crown.json", "Crown", 160, 44, 39)
+    }
+
+    @Test
+    fun testMindPuzzleSolvability() {
+        verifyCustomShapeSolvability("Mind.json", "Mind", 300, 52, 47)
+    }
+
+    @Test
+    fun testWolfPuzzleSolvability() {
+        verifyCustomShapeSolvability("Wolf.json", "Wolf", 450, 74, 73)
+    }
 }
 

@@ -285,6 +285,10 @@ private fun CustomShapeCard(
                 item.displayName.contains("Heart", ignoreCase = true) -> "❤️"
                 item.displayName.contains("Leaf", ignoreCase = true) -> "🍃"
                 item.displayName.contains("Tennis", ignoreCase = true) || item.displayName.contains("Ball", ignoreCase = true) -> "🎾"
+                item.displayName.contains("Burger", ignoreCase = true) -> "🍔"
+                item.displayName.contains("Crown", ignoreCase = true) -> "👑"
+                item.displayName.contains("Mind", ignoreCase = true) -> "🧠"
+                item.displayName.contains("Wolf", ignoreCase = true) -> "🐺"
                 else -> "🧩"
             }
             Box(

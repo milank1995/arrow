@@ -167,8 +167,12 @@ object LevelLoader {
             "Heart" -> "Heart"
             "Lock" -> "Lock"
             "Magnet" -> "Magnet"
-            "Leaf" -> "Leaf"
+                        "Leaf" -> "Leaf"
             "TennisBall", "Tennis Ball" -> "Tennis Ball"
+            "Burger" -> "Burger"
+            "Crown" -> "Crown"
+            "Mind" -> "Mind"
+            "Wolf" -> "Wolf"
             else -> trimmed.replace("_", " ")
         }
     }
