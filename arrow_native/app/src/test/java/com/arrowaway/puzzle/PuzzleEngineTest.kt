@@ -426,5 +426,30 @@ class PuzzleEngineTest {
     fun testCustomDesign2PuzzleSolvability() {
         verifyCustomShapeSolvability("CustomDesign2.json", "Unknown Shape 9", 500, 78, 88)
     }
+
+    @Test
+    fun testCat2PuzzleSolvability() {
+        verifyCustomShapeSolvability("Cat2.json", "Cat 2", 400, 78, 78)
+    }
+
+    @Test
+    fun testChildBirdPuzzleSolvability() {
+        verifyCustomShapeSolvability("ChildBird.json", "Child Bird", 133, 40, 40)
+    }
+
+    @Test
+    fun testTurtlePuzzleSolvability() {
+        verifyCustomShapeSolvability("Turtle.json", "Turtles", 250, 62, 37)
+    }
+
+    @Test
+    fun testCustomDesign3PuzzleSolvability() {
+        verifyCustomShapeSolvability("CustomDesign3.json", "Unknown Shape 8", 750, 96, 96)
+    }
+
+    @Test
+    fun testWarriorFacePuzzleSolvability() {
+        verifyCustomShapeSolvability("WarriorFace.json", "Warrior Face", 350, 70, 70)
+    }
 }
 

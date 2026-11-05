@@ -87,6 +87,11 @@ object LevelLoader {
             "Snake" -> "Snake"
             "Sun Flower 2", "Sunflower2", "Sunflower 2" -> "Sunflower 2"
             "Unknown Shape 9", "CustomDesign2", "Custom Design 2" -> "Custom Design 2"
+            "Cat 2", "Cat2" -> "Cat 2"
+            "Child Bird", "ChildBird" -> "Baby Bird"
+            "Turtles", "Turtle" -> "Turtle"
+            "Unknown Shape 8", "CustomDesign3", "Custom Design 3" -> "Custom Design 3"
+            "Warrior Face", "WarriorFace" -> "Warrior Face"
             else -> trimmed.replace("_", " ")
         }
     }
