@@ -117,6 +117,11 @@ object LevelLoader {
             "House" -> "House"
             "IcecreamCone", "Ice Cream Cone" -> "Ice Cream Cone"
             "MerryGoRound", "Merry Go Round" -> "Carousel"
+            "Clock" -> "Clock"
+            "Dolphin" -> "Dolphin"
+            "Mickey Mouse", "MickeyMouse" -> "Mickey Mouse"
+            "OK", "Ok" -> "OK Sign"
+            "Shark" -> "Shark"
             else -> trimmed.replace("_", " ")
         }
     }

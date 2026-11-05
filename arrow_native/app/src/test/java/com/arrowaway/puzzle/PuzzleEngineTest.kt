@@ -576,5 +576,30 @@ class PuzzleEngineTest {
     fun testMerryGoRoundPuzzleSolvability() {
         verifyCustomShapeSolvability("MerryGoRound.json", "MerryGoRound", 230, 78, 88)
     }
+
+    @Test
+    fun testClockPuzzleSolvability() {
+        verifyCustomShapeSolvability("Clock.json", "Clock", 80, 63, 71)
+    }
+
+    @Test
+    fun testDolphinPuzzleSolvability() {
+        verifyCustomShapeSolvability("Dolphin.json", "Dolphin", 200, 60, 80)
+    }
+
+    @Test
+    fun testMickeyMousePuzzleSolvability() {
+        verifyCustomShapeSolvability("MickeyMouse.json", "Mickey Mouse", 370, 73, 73)
+    }
+
+    @Test
+    fun testOkPuzzleSolvability() {
+        verifyCustomShapeSolvability("Ok.json", "OK", 100, 40, 50)
+    }
+
+    @Test
+    fun testSharkPuzzleSolvability() {
+        verifyCustomShapeSolvability("Shark.json", "Shark", 250, 84, 64)
+    }
 }
 
