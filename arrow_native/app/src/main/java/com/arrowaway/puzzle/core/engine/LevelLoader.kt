@@ -97,6 +97,11 @@ object LevelLoader {
             "Screw Driver", "Screwdriver" -> "Screwdriver"
             "Skull" -> "Skull"
             "Snake Face", "SnakeFace" -> "Snake Face"
+            "Drum" -> "Drum"
+            "Flower" -> "Flower"
+            "Om" -> "Om"
+            "Scooter" -> "Scooter"
+            "Train" -> "Train"
             else -> trimmed.replace("_", " ")
         }
     }

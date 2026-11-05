@@ -476,5 +476,30 @@ class PuzzleEngineTest {
     fun testSnakeFacePuzzleSolvability() {
         verifyCustomShapeSolvability("SnakeFace.json", "Snake Face", 90, 45, 36)
     }
+
+    @Test
+    fun testDrumPuzzleSolvability() {
+        verifyCustomShapeSolvability("Drum.json", "Drum", 125, 42, 42)
+    }
+
+    @Test
+    fun testFlowerPuzzleSolvability() {
+        verifyCustomShapeSolvability("Flower.json", "Flower", 452, 87, 85)
+    }
+
+    @Test
+    fun testOmPuzzleSolvability() {
+        verifyCustomShapeSolvability("Om.json", "Om", 110, 42, 42)
+    }
+
+    @Test
+    fun testScooterPuzzleSolvability() {
+        verifyCustomShapeSolvability("Scooter.json", "Scooter", 300, 41, 58)
+    }
+
+    @Test
+    fun testTrainPuzzleSolvability() {
+        verifyCustomShapeSolvability("Train.json", "Train", 320, 48, 45)
+    }
 }
 
