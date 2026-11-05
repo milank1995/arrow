@@ -266,6 +266,9 @@ class MainActivity : ComponentActivity() {
                             AppScreen.GAMEPLAY -> {
                                 GamePlayScreen(
                                     uiState = uiState,
+                                    onSkipCelebration = {
+                                        gameViewModel.skipCelebrationToVictory()
+                                    },
                                     onArrowClick = { arrow ->
                                         gameViewModel.onArrowClicked(arrow)
                                     },

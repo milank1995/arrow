@@ -124,6 +124,7 @@ fun PuzzleBoardCanvas(
     onArrowClick: (Arrow) -> Unit,
     onArrowLongPress: (Arrow, isPressed: Boolean) -> Unit,
     onDismissPreviewRays: () -> Unit = {},
+    onSkipCelebration: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -327,10 +328,12 @@ fun PuzzleBoardCanvas(
 
         var animTick by remember { mutableLongStateOf(0L) }
         val celebrationWaveProgress = remember { Animatable(0f) }
+        val celebrationHoldProgress = remember { Animatable(0f) }
 
         // Level Completion Animation:
-        // 1. MoveGridToCenterAndResetScale: Camera smoothly zooms OUT to 1.0f and centers the complete puzzle
-        // 2. AnimateDots_CenterOut: Circular wave ripples outward from center across all dots
+        // 1. MoveGridToCenterAndResetScale: Camera smoothly zooms OUT to 1.0f and centers the complete puzzle (650ms)
+        // 2. AnimateDots_CenterOut: Circular golden wave ripples outward across all dots (700ms)
+        // 3. Persistent Shape Hold & Breathing Aura: Completed silhouette remains glowing in gold with radiant pulse (1750ms)
         LaunchedEffect(isCelebrationBurstActive) {
             if (isCelebrationBurstActive) {
                 panInertiaJob?.cancel()
@@ -350,16 +353,25 @@ fun PuzzleBoardCanvas(
                     val pyAnim = Animatable(panY)
                     pyAnim.animateTo(0f, tween(durationMillis = 650, easing = FastOutSlowInEasing)) { panY = value }
                 }
-                // Dot ripple wave spreading outward
+                // Phase 1: Dot ripple wave spreading outward across the shape (0 to 700ms)
                 launch {
                     celebrationWaveProgress.snapTo(0f)
                     celebrationWaveProgress.animateTo(
                         targetValue = 1f,
-                        animationSpec = tween(durationMillis = 850, easing = LinearEasing)
+                        animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing)
+                    )
+                }
+                // Phase 2 & 3: Master celebration timeline (1750ms) for golden silhouette hold, breathing aura, and sparkles
+                launch {
+                    celebrationHoldProgress.snapTo(0f)
+                    celebrationHoldProgress.animateTo(
+                        targetValue = 1f,
+                        animationSpec = tween(durationMillis = 1750, easing = LinearEasing)
                     )
                 }
             } else {
                 celebrationWaveProgress.snapTo(0f)
+                celebrationHoldProgress.snapTo(0f)
             }
         }
 
@@ -395,8 +407,8 @@ fun PuzzleBoardCanvas(
         val isTutorialHandActive = showTutorialHand && tutorialTargetArrow != null && introProgress.value >= 1f
         val hasWrongFlash = arrows.any { it.state == ArrowState.WRONG_FLASH }
 
-        LaunchedEffect(isCelebrationBurstActive, celebrationWaveProgress.isRunning, activeBoosterAnimation, isTutorialHandActive, hasWrongFlash) {
-            while (isCelebrationBurstActive || celebrationWaveProgress.isRunning || activeBoosterAnimation != null || isTutorialHandActive || hasWrongFlash) {
+        LaunchedEffect(isCelebrationBurstActive, celebrationWaveProgress.isRunning, celebrationHoldProgress.isRunning, activeBoosterAnimation, isTutorialHandActive, hasWrongFlash) {
+            while (isCelebrationBurstActive || celebrationWaveProgress.isRunning || celebrationHoldProgress.isRunning || activeBoosterAnimation != null || isTutorialHandActive || hasWrongFlash) {
                 withFrameNanos { frameTimeNanos ->
                     animTick = frameTimeNanos
                 }
@@ -417,10 +429,16 @@ fun PuzzleBoardCanvas(
             modifier = Modifier
                 .fillMaxSize()
                 .clipToBounds() // Prevents drawing over top bar or bottom booster bar
-                .pointerInput(xSize, ySize) {
+                .pointerInput(xSize, ySize, isCelebrationBurstActive) {
                     awaitEachGesture {
                         val down = awaitFirstDown(requireUnconsumed = false)
                         panInertiaJob?.cancel() // Stop ongoing pan inertia immediately on new touch
+
+                        // Tap-to-skip victory animation: instantly skip celebration hold and transition to victory screen
+                        if (isCelebrationBurstActive) {
+                            onSkipCelebration()
+                            return@awaitEachGesture
+                        }
 
                         val center = Offset(currentViewportWidth / 2f, currentViewportHeight / 2f)
                         // 20dp threshold prevents natural thumb taps from falsely registering as drags
@@ -773,16 +791,45 @@ fun PuzzleBoardCanvas(
 
                 // 2. Grid Alignment & Silhouette Dots:
                 // Subtle architectural grid dots across the board eliminate "random blank gaps" and unify the UI.
-                // On level completion, dots ripple outward in a brilliant celebration wave (AnimateDots_CenterOut).
+                // On level completion, dots ripple outward in a brilliant celebration wave (AnimateDots_CenterOut),
+                // then remain illuminated in warm radiant gold so players can admire the completed shape silhouette.
                 val dotColor = theme.gridDot
                 val dotRadius = (cellSize * 0.052f).coerceIn(0.85.dp.toPx(), 2.2.dp.toPx())
                 val now = System.currentTimeMillis()
-                val isWaveActive = celebrationWaveProgress.value > 0f
+                val isWaveActive = celebrationWaveProgress.value > 0f || celebrationHoldProgress.value > 0f
+                val waveProg = celebrationWaveProgress.value
+                val holdProg = celebrationHoldProgress.value
 
                 val dotsCenterX = (xSize - 1) / 2f
                 val dotsCenterY = (ySize - 1) / 2f
                 val maxDotsDist = hypot(dotsCenterX, dotsCenterY).coerceAtLeast(1f)
 
+                // 2A. Soft Ambient Golden Aura behind the completed puzzle shape
+                if (isWaveActive && holdProg > 0.12f) {
+                    val auraEntrance = ((holdProg - 0.12f) / 0.35f).coerceIn(0f, 1f)
+                    val auraExit = if (holdProg > 0.88f) (1f - (holdProg - 0.88f) / 0.12f).coerceIn(0f, 1f) else 1f
+                    val auraAlpha = 0.18f * auraEntrance * auraExit
+                    val auraCenter = Offset(
+                        boardOrigin.x + (dotsCenterX + 0.5f) * cellSize,
+                        boardOrigin.y + (dotsCenterY + 0.5f) * cellSize
+                    )
+                    val auraRadius = (maxDotsDist + 2.0f) * cellSize
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color(0xFFFFB800).copy(alpha = auraAlpha),
+                                Color(0xFFFFC72C).copy(alpha = auraAlpha * 0.45f),
+                                Color.Transparent
+                            ),
+                            center = auraCenter,
+                            radius = auraRadius
+                        ),
+                        radius = auraRadius,
+                        center = auraCenter
+                    )
+                }
+
+                // 2B. Draw cleared cell dots with persistent golden silhouette illumination
                 for (coord in clearedCells) {
                     val cx = coord.x
                     val cy = coord.y
@@ -792,36 +839,62 @@ fun PuzzleBoardCanvas(
                     )
 
                     if (isWaveActive) {
-                        // AnimateDots_CenterOut: circular ripple wave spreading from center outward
                         val dotDist = hypot(cx - dotsCenterX, cy - dotsCenterY)
                         val normDist = (dotDist / maxDotsDist).coerceIn(0f, 1f)
-                        val waveProg = celebrationWaveProgress.value
-                        val dotHitTime = normDist * 0.65f
-                        val dotLocalProg = ((waveProg - dotHitTime) / 0.35f).coerceIn(0f, 1f)
+                        val dotHitTime = normDist * 0.60f
 
-                        if (dotLocalProg in 0.001f..0.999f) {
-                            val waveCurve = sin(dotLocalProg * PI.toFloat())
-                            val popScale = 1.0f + 1.25f * waveCurve
-                            val waveColor = Color(0xFFFFB800) // Golden celebration highlight
-
-                            // Radiant halo
-                            drawCircle(
-                                color = waveColor.copy(alpha = waveCurve * 0.35f),
-                                radius = dotRadius * (1.2f + 2.4f * waveCurve),
-                                center = dotCenter
-                            )
-                            // Golden popping dot
-                            drawCircle(
-                                color = androidx.compose.ui.graphics.lerp(dotColor.copy(alpha = 0.45f), waveColor, waveCurve),
-                                radius = dotRadius * popScale,
-                                center = dotCenter
-                            )
-                        } else {
+                        if (waveProg < dotHitTime) {
+                            // Wave has not reached this dot yet
                             drawCircle(
                                 color = dotColor.copy(alpha = 0.45f),
                                 radius = dotRadius,
                                 center = dotCenter
                             )
+                        } else {
+                            // Wave has reached this dot!
+                            val localPop = ((waveProg - dotHitTime) / 0.22f).coerceIn(0f, 1f)
+                            val waveColor = Color(0xFFFFB800) // Golden celebration highlight
+
+                            if (localPop < 1.0f) {
+                                // Dynamic expansion pop as the wave hits
+                                val popCurve = sin(localPop * PI.toFloat())
+                                val popScale = 1.0f + 1.40f * popCurve
+
+                                // Radiant flare halo
+                                drawCircle(
+                                    color = waveColor.copy(alpha = popCurve * 0.45f),
+                                    radius = dotRadius * (1.2f + 3.0f * popCurve),
+                                    center = dotCenter
+                                )
+                                // Golden popping dot
+                                drawCircle(
+                                    color = androidx.compose.ui.graphics.lerp(dotColor.copy(alpha = 0.45f), waveColor, popCurve),
+                                    radius = dotRadius * popScale,
+                                    center = dotCenter
+                                )
+                            } else {
+                                // Luminous persistent gold hold & gentle breathing pulse across the entire shape silhouette
+                                val breathWindow = ((holdProg - 0.35f) / 0.55f).coerceIn(0f, 1f)
+                                val breathCurve = sin(breathWindow * PI.toFloat())
+                                val fadeAlpha = if (holdProg > 0.88f) (1f - (holdProg - 0.88f) / 0.12f).coerceIn(0f, 1f) else 1.0f
+
+                                val steadyScale = 1.18f + 0.22f * breathCurve
+                                val haloAlpha = (0.22f + 0.18f * breathCurve) * fadeAlpha
+                                val coreAlpha = (0.92f + 0.08f * breathCurve) * fadeAlpha
+
+                                // Radiant persistent golden halo
+                                drawCircle(
+                                    color = waveColor.copy(alpha = haloAlpha),
+                                    radius = dotRadius * (1.6f + 1.2f * breathCurve),
+                                    center = dotCenter
+                                )
+                                // Luminous golden dot forming the complete shape silhouette
+                                drawCircle(
+                                    color = waveColor.copy(alpha = coreAlpha),
+                                    radius = dotRadius * steadyScale,
+                                    center = dotCenter
+                                )
+                            }
                         }
                     } else {
                         val spawnTime = clearedCellTimestamps[coord] ?: 0L
@@ -840,6 +913,48 @@ fun PuzzleBoardCanvas(
                             radius = dotRadius * popScale,
                             center = dotCenter
                         )
+                    }
+                }
+
+                // 2C. Golden Stardust Sparkle Particles
+                if (isWaveActive && holdProg in 0.18f..0.90f && clearedCells.isNotEmpty()) {
+                    val sparkleColor = Color(0xFFFFD54F)
+                    val cellsList = clearedCells.toList()
+                    val sparkleCount = minOf(16, cellsList.size)
+                    val step = (cellsList.size / sparkleCount).coerceAtLeast(1)
+
+                    for (i in 0 until sparkleCount) {
+                        val cellIndex = (i * step) % cellsList.size
+                        val cell = cellsList[cellIndex]
+                        val seed = (cell.x * 37 + cell.y * 19 + i * 43).toFloat()
+                        val phaseOffset = ((seed % 100f) / 100f) * 0.42f
+                        val sparkleStart = 0.22f + phaseOffset
+                        val sparkleDuration = 0.36f
+
+                        if (holdProg in sparkleStart..(sparkleStart + sparkleDuration)) {
+                            val localT = (holdProg - sparkleStart) / sparkleDuration
+                            val shimmerCurve = sin(localT * PI.toFloat())
+                            val driftDistance = cellSize * 0.35f * localT
+                            val angleRad = (seed % 360f) * (PI.toFloat() / 180f)
+
+                            val sparkCenter = Offset(
+                                boardOrigin.x + (cell.x + 0.5f) * cellSize + cos(angleRad) * driftDistance,
+                                boardOrigin.y + (cell.y + 0.5f) * cellSize + sin(angleRad) * driftDistance
+                            )
+                            val starSize = (cellSize * 0.13f).coerceIn(3.5.dp.toPx(), 7.0.dp.toPx()) * shimmerCurve
+
+                            if (starSize > 0.5f) {
+                                val starPath = Path().apply {
+                                    moveTo(sparkCenter.x, sparkCenter.y - starSize)
+                                    quadraticTo(sparkCenter.x, sparkCenter.y, sparkCenter.x + starSize, sparkCenter.y)
+                                    quadraticTo(sparkCenter.x, sparkCenter.y, sparkCenter.x, sparkCenter.y + starSize)
+                                    quadraticTo(sparkCenter.x, sparkCenter.y, sparkCenter.x - starSize, sparkCenter.y)
+                                    quadraticTo(sparkCenter.x, sparkCenter.y, sparkCenter.x, sparkCenter.y - starSize)
+                                    close()
+                                }
+                                drawPath(starPath, color = sparkleColor.copy(alpha = shimmerCurve * 0.85f))
+                            }
+                        }
                     }
                 }
 

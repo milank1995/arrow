@@ -118,6 +118,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private var occupancyMap = GridOccupancyMap(4, 4)
     private var cheerDismissJob: Job? = null
+    private var celebrationJob: Job? = null
     private var accumulatedActivePlayTimeMs: Long = 0L
     private var currentSegmentStartTimeMs: Long = 0L
     private var isTimerRunning: Boolean = false
@@ -430,6 +431,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun loadLevel(levelNumber: Int) {
+        celebrationJob?.cancel()
         stopAutoSolve()
         resetLevelMetrics()
         levelsAttemptedInSession++
@@ -1092,6 +1094,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun restartLevel(restartSource: String = "game_over") {
+        celebrationJob?.cancel()
         analytics.logLevelRestart(_uiState.value.currentLevelNumber, restartSource)
         stopAutoSolve()
         resetGridLines()
@@ -1193,8 +1196,16 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
         audioHapticManager.playLevelWin()
         val streakResult = repository.recordStreakOnLevelCompletion()
-        delay(950)
+        celebrationJob?.cancel()
+        celebrationJob = viewModelScope.launch {
+            delay(1800)
+            completeVictoryTransition(completedLvl, streakResult)
+        }
+    }
+
+    private fun completeVictoryTransition(completedLvl: Int, streakResult: Pair<Boolean, Int>) {
         _uiState.update { state ->
+            if (state.isLevelComplete) return@update state
             state.copy(
                 isLevelComplete = true,
                 isCelebrationBurstActive = false,
@@ -1203,6 +1214,17 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             )
         }
         handleLevelComplete(completedLvl)
+    }
+
+    fun skipCelebrationToVictory() {
+        if (_uiState.value.isCelebrationBurstActive && !_uiState.value.isLevelComplete) {
+            val job = celebrationJob
+            celebrationJob = null
+            job?.cancel()
+            val completedLvl = _uiState.value.lastCompletedLevelNumber.takeIf { it > 0 } ?: _uiState.value.currentLevelNumber
+            val streakResult = Pair(_uiState.value.isStreakEarnedThisLevel, _uiState.value.streakDays)
+            completeVictoryTransition(completedLvl, streakResult)
+        }
     }
 
     fun claimDoubleCoins(amount: Int) {

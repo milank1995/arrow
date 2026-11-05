@@ -87,6 +87,7 @@ fun GamePlayScreen(
     onAutoSolveClick: () -> Unit = {},
     onGameplayStarted: () -> Unit = {},
     onPauseStateChanged: (Boolean) -> Unit = {},
+    onSkipCelebration: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(uiState.currentLevelNumber, uiState.activeDailyDate) {
@@ -285,7 +286,8 @@ fun GamePlayScreen(
                                     isIdlePromptActive = false
                                     onArrowLongPress(arrow, isPressed)
                                 },
-                                onDismissPreviewRays = onDismissPreviewRays
+                                onDismissPreviewRays = onDismissPreviewRays,
+                                onSkipCelebration = onSkipCelebration
                             )
                         }
 
