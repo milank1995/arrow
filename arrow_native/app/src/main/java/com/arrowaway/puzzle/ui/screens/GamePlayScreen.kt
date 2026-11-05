@@ -119,7 +119,7 @@ fun GamePlayScreen(
             val rawName = level?.shapeName?.takeIf { it.isNotBlank() }
                 ?: uiState.activeCustomShapeFileName?.removeSuffix(".json")?.replace("_", " ")
                 ?: "Shape"
-            if (rawName == "CustomDesign1") "Custom Design 1" else rawName
+            com.arrowaway.puzzle.core.engine.LevelLoader.resolveCustomShapeDisplayName(rawName)
         } else {
             level?.shapeName
         }

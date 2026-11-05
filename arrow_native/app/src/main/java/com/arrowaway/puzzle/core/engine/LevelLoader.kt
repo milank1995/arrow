@@ -60,6 +60,28 @@ object LevelLoader {
     )
 
     /**
+     * Resolves user-friendly display name for custom shapes.
+     */
+    fun resolveCustomShapeDisplayName(rawName: String?): String {
+        if (rawName.isNullOrBlank()) return "Shape"
+        val trimmed = rawName.trim()
+        return when (trimmed) {
+            "CustomDesign1" -> "Custom Design 1"
+            "Headphone" -> "Headphones"
+            "Teddy" -> "Teddy Bear"
+            "Recycle" -> "Recycle"
+            "Android" -> "Android"
+            "Rocket" -> "Rocket"
+            "Car" -> "Car"
+            "Ghost" -> "Ghost"
+            "Glasses" -> "Glasses"
+            "Pot" -> "Pot"
+            "Telephone" -> "Telephone"
+            else -> trimmed.replace("_", " ")
+        }
+    }
+
+    /**
      * Scans and returns all custom shape levels stored in the assets/New Own Shape folder.
      */
     fun listCustomShapeLevels(context: Context): List<CustomShapeItem> {
@@ -75,7 +97,7 @@ object LevelLoader {
                     if (level != null) {
                         val rawName = level.shapeName?.takeIf { it.isNotBlank() }
                             ?: file.removeSuffix(".json").replace("_", " ")
-                        val displayName = if (rawName == "CustomDesign1") "Custom Design 1" else rawName
+                        val displayName = resolveCustomShapeDisplayName(rawName)
                         list.add(
                             CustomShapeItem(
                                 fileName = file,

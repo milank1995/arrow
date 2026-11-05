@@ -352,4 +352,29 @@ class PuzzleEngineTest {
         verifyCustomShapeSolvability("Telephone.json", "Telephone", 130, 34, 32)
     }
 
+    @Test
+    fun testAndroidPuzzleSolvability() {
+        verifyCustomShapeSolvability("Android.json", "Android", 100, 28, 40)
+    }
+
+    @Test
+    fun testHeadphonePuzzleSolvability() {
+        verifyCustomShapeSolvability("Headphone.json", "Headphone", 260, 75, 86)
+    }
+
+    @Test
+    fun testRecyclePuzzleSolvability() {
+        verifyCustomShapeSolvability("Recycle.json", "Recycle", 150, 33, 42)
+    }
+
+    @Test
+    fun testRocketPuzzleSolvability() {
+        verifyCustomShapeSolvability("Rocket.json", "Rocket", 180, 33, 49)
+    }
+
+    @Test
+    fun testTeddyPuzzleSolvability() {
+        verifyCustomShapeSolvability("Teddy.json", "Teddy", 300, 48, 64)
+    }
 }
+
