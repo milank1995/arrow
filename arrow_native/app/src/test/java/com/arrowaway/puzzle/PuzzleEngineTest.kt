@@ -826,5 +826,15 @@ class PuzzleEngineTest {
     fun testMagnetPuzzleSolvability() {
         verifyCustomShapeSolvability("Magnet.json", "Magnet", 76, 41, 41)
     }
+
+    @Test
+    fun testLeafPuzzleSolvability() {
+        verifyCustomShapeSolvability("Leaf.json", "Leaf", 300, 54, 54)
+    }
+
+    @Test
+    fun testTennisBallPuzzleSolvability() {
+        verifyCustomShapeSolvability("TennisBall.json", "TennisBall", 320, 77, 77)
+    }
 }
 
