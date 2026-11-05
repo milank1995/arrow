@@ -147,6 +147,11 @@ object LevelLoader {
             "Cat Poster", "CatPoster" -> "Cat Poster"
             "Nature" -> "Nature"
             "Panda" -> "Panda"
+            "Conch Shell", "ConchShell" -> "Conch Shell"
+            "Helicopter" -> "Helicopter"
+            "Mermaid" -> "Mermaid"
+            "Sunflower" -> "Sunflower"
+            "Eiffel Tower", "Tower", "EiffelTower" -> "Eiffel Tower"
             else -> trimmed.replace("_", " ")
         }
     }

@@ -726,5 +726,30 @@ class PuzzleEngineTest {
     fun testPandaPuzzleSolvability() {
         verifyCustomShapeSolvability("Panda.json", "Panda", 100, 56, 120)
     }
+
+    @Test
+    fun testConchShellPuzzleSolvability() {
+        verifyCustomShapeSolvability("ConchShell.json", "Conch Shell", 90, 56, 120)
+    }
+
+    @Test
+    fun testHelicopterPuzzleSolvability() {
+        verifyCustomShapeSolvability("Helicopter.json", "Helicopter", 403, 46, 45)
+    }
+
+    @Test
+    fun testMermaidPuzzleSolvability() {
+        verifyCustomShapeSolvability("Mermaid.json", "Mermaid", 349, 41, 60)
+    }
+
+    @Test
+    fun testSunflowerPuzzleSolvability() {
+        verifyCustomShapeSolvability("Sunflower.json", "Sunflower", 80, 56, 120)
+    }
+
+    @Test
+    fun testTowerPuzzleSolvability() {
+        verifyCustomShapeSolvability("Tower.json", "Eiffel Tower", 80, 60, 115)
+    }
 }
 
