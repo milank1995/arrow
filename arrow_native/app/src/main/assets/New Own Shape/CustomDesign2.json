@@ -1,0 +1,4925 @@
+{
+  "XSize": 78,
+  "YSize": 88,
+  "MaxHearts": 3,
+  "Hash": "unknown_shape9_level_hash",
+  "ShapeName": "Unknown Shape 9",
+  "Arrows": [
+    {
+      "Indices": [
+        638,
+        639,
+        561
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        869,
+        870,
+        792
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1069,
+        1225,
+        1226,
+        1070
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1041,
+        885,
+        884,
+        962
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1031,
+        953,
+        955
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1101,
+        1102,
+        1024,
+        1025,
+        947,
+        946
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 4
+    },
+    {
+      "Indices": [
+        948,
+        949,
+        715,
+        717
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        718,
+        720,
+        642
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1256,
+        1257,
+        1179,
+        1180
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1258,
+        1414,
+        1415,
+        1103
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1338,
+        1260,
+        1261
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1725,
+        1491,
+        1492,
+        1570
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1880,
+        1646
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2035,
+        1723
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1645,
+        1567,
+        1568,
+        1412,
+        1413,
+        1335,
+        1334
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 5
+    },
+    {
+      "Indices": [
+        2175,
+        2174,
+        2096
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2410,
+        2409,
+        2253,
+        2252
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2368,
+        2371,
+        2293,
+        2292
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2603,
+        2609
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3073,
+        2839
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2372,
+        2294,
+        2295,
+        2139
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        3388,
+        3310,
+        3313,
+        3391
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        3625,
+        3469,
+        3467,
+        3389,
+        3390
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        3235,
+        3079,
+        3076,
+        2920
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        3783,
+        3788
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3893,
+        3892,
+        3814
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        4020,
+        3942,
+        3941
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        4177,
+        4178,
+        4100,
+        4099
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        4334,
+        4335,
+        4257,
+        4256
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        5141,
+        4907
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4361,
+        3971
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3815,
+        3503
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        6151,
+        6073,
+        6075,
+        5919
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        6133,
+        5899
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5821,
+        5665
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5587,
+        5197
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        6130,
+        6052,
+        6051,
+        5895
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        5193,
+        4647
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5350,
+        5351,
+        5117
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        5428,
+        5430,
+        5118
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        6212,
+        6056,
+        6058
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        6303,
+        6225,
+        6227
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        6294,
+        6060
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        6293,
+        6059
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        6292,
+        6136,
+        6135,
+        6213
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        6375,
+        6377
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        442,
+        437
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        436,
+        433
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        340,
+        336,
+        492,
+        491
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        413,
+        412,
+        490
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        597,
+        595
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        594,
+        589
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        410,
+        411,
+        489,
+        488,
+        566,
+        567
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 4
+    },
+    {
+      "Indices": [
+        485,
+        563,
+        562,
+        640,
+        641
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        564,
+        565,
+        487,
+        486
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        568,
+        573
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        643,
+        646
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        508,
+        509,
+        587
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        574,
+        576,
+        654,
+        653
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        771,
+        768
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        766,
+        844,
+        842
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        583,
+        661,
+        659,
+        815
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        582,
+        580,
+        814
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        579,
+        577,
+        655
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        732,
+        810,
+        811,
+        733,
+        735,
+        813,
+        812
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 5
+    },
+    {
+      "Indices": [
+        850,
+        849,
+        927
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        731,
+        887
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        848,
+        846,
+        1080,
+        1079,
+        1001
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        925,
+        1003,
+        1004,
+        926
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        841,
+        1075
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        840,
+        1074
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        888,
+        1044
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1937,
+        2015,
+        2016,
+        1938,
+        1939
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        749,
+        744
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        827,
+        823
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        822,
+        819
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        917,
+        916
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        908,
+        906
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        905,
+        983,
+        982
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        904,
+        897
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        896,
+        893
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        892,
+        889,
+        1123,
+        1124
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1978,
+        1980,
+        2058,
+        2056,
+        2134
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        2214,
+        2136,
+        2135,
+        2213,
+        2212,
+        2290,
+        2291
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 5
+    },
+    {
+      "Indices": [
+        2407,
+        2719
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2723,
+        2879,
+        2875
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2957,
+        3269
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3033,
+        3031
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3234,
+        3156,
+        3154,
+        3232,
+        3233
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        2765,
+        2767,
+        2689
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3001,
+        3002,
+        2924,
+        2923
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        3425,
+        3424
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3862,
+        3865,
+        3943
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        4021,
+        4023,
+        4179
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        5041,
+        5043,
+        5433
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        5044,
+        5049
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5119,
+        5120,
+        5510
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        5122,
+        5127
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5200,
+        5205
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5278,
+        5282
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5283,
+        5285
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5286,
+        5291
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5292,
+        5293
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5356,
+        5358
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5434,
+        5437
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5438,
+        5439
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5360,
+        5362,
+        5518,
+        5516
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        6301,
+        6299
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1746,
+        1824
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1139,
+        1295,
+        1296,
+        1374,
+        1375,
+        1453,
+        1452,
+        1608,
+        1607,
+        1373,
+        1372,
+        1138,
+        1137
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 11
+    },
+    {
+      "Indices": [
+        1450,
+        1606
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1215,
+        1761
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        650,
+        652
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        656,
+        657
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        873,
+        874
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        729,
+        730
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        741,
+        743,
+        665,
+        663
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        968,
+        970
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1046,
+        1047
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1125,
+        1359
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1437,
+        1671
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1749,
+        1905
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1591,
+        1513,
+        1514,
+        1592
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1435,
+        1279,
+        1280,
+        1436
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1666,
+        1354
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1823,
+        1355
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3705,
+        3709
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4569,
+        4491,
+        4492,
+        4336,
+        4338,
+        4416
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 4
+    },
+    {
+      "Indices": [
+        4570,
+        4571,
+        4961,
+        4962
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2769,
+        2223
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3628,
+        3631
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3632,
+        3633,
+        3165
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2800,
+        2799
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3502,
+        3736
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4048,
+        4438
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4047,
+        4045,
+        3967
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        4044,
+        4041
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4039,
+        4037,
+        4193,
+        4194,
+        4116,
+        4117
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 4
+    },
+    {
+      "Indices": [
+        3961,
+        3958,
+        4192,
+        4190
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        5374,
+        5686
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5842,
+        5998
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        6076,
+        6154,
+        6152
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        5841,
+        5451
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5373,
+        5061
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        6150,
+        6144,
+        6066
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        6072,
+        6067
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3891,
+        3423
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1690,
+        2080
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2158,
+        2392,
+        2391,
+        2313
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1056,
+        1134,
+        1128
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        5996,
+        5684
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5606,
+        5450,
+        5447
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        5372,
+        4982
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4904,
+        4592
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4514,
+        4124
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5995,
+        5989
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5917,
+        5605
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5215,
+        5207
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5371,
+        5366
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5446,
+        5443
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5527,
+        5521
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5364,
+        5363,
+        5441,
+        5442,
+        5520,
+        5519
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 4
+    },
+    {
+      "Indices": [
+        5515,
+        5511
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5604,
+        5599
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5598,
+        5594
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5593,
+        5588
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3550,
+        3238,
+        3242
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2614,
+        2224
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2146,
+        1756,
+        1759
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3246,
+        3248
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3551,
+        3553
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3249,
+        3250,
+        3484
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        5508,
+        5507
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5586,
+        5585,
+        5663,
+        5664,
+        5976
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        5909,
+        5675,
+        5676
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2851,
+        2852
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2529,
+        2373,
+        2374,
+        2062
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2530,
+        2452
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2250,
+        2248,
+        2170,
+        2171
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        3475,
+        3397,
+        3396
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2531,
+        2141
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2454,
+        2456
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2532,
+        2534
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1362,
+        1370
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1779,
+        1778,
+        1700,
+        1699
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        6131,
+        5975,
+        5974,
+        5818
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        5740,
+        5506
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4960,
+        4648
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4258,
+        4024,
+        4027
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        4103,
+        4105
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5897,
+        5741
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        6132,
+        6054
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4884,
+        4494,
+        4493,
+        4415
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        4417,
+        4420
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4495,
+        4497
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4573,
+        4576,
+        4498,
+        4501
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        4502,
+        4505
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4577,
+        4583
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4651,
+        4655
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4656,
+        4661
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4421,
+        4428
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4429,
+        4430
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4506,
+        4511
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3944,
+        3866,
+        3867
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3554,
+        3320
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3868,
+        3870,
+        3636
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3945,
+        3949
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3009,
+        2853,
+        2854,
+        2776,
+        2773
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        3558,
+        3559,
+        3871
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3560,
+        3561,
+        3483,
+        3481,
+        3403,
+        3404
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 4
+    },
+    {
+      "Indices": [
+        3267,
+        3266,
+        3188,
+        3189,
+        3111,
+        3110
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 4
+    },
+    {
+      "Indices": [
+        3345,
+        3344
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3109,
+        3107
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3106,
+        3104
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4123,
+        4591
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4747,
+        5137,
+        5136
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        5135,
+        5129
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5058,
+        5051
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3186,
+        3185
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3184,
+        3182
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3181,
+        3180,
+        3024,
+        3025,
+        3103
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        1376,
+        1377,
+        1221
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2874,
+        2873,
+        2639
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2794,
+        2793,
+        2637
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2872,
+        2871,
+        2949,
+        2951
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2792,
+        2787
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2786,
+        2785,
+        2239
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2870,
+        2865
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1078,
+        1156
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1936,
+        2014,
+        2013,
+        1857
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2012,
+        2011,
+        1933,
+        1930
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1077,
+        1389
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1055,
+        1050
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1304,
+        1302,
+        1380,
+        1379,
+        1223
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        1381,
+        1383
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1298,
+        1297,
+        1219,
+        1220
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1277,
+        1276,
+        1198,
+        1199
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1201,
+        1202
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2298,
+        2376,
+        2378,
+        2300,
+        2299
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        1599,
+        1604
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1049,
+        1048,
+        1126,
+        1127
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1140,
+        1143
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1145,
+        1146,
+        1224
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1229,
+        1232
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1531,
+        1609
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1467,
+        1701
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1540,
+        1538,
+        1694,
+        1691
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1682,
+        1838,
+        1839
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1684,
+        1689
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1762,
+        1767
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1856,
+        1934
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2010,
+        2009,
+        2087,
+        2090
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2168,
+        2480,
+        2477
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1769,
+        1772,
+        1928
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1386,
+        1464,
+        1462,
+        1384,
+        1385
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        1387,
+        1465
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1461,
+        1457,
+        1613
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1536,
+        1614,
+        1615,
+        1537
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1777,
+        1855,
+        1852
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2165,
+        2321,
+        2322,
+        2166
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1849,
+        1847
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1845,
+        1840
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1927,
+        2005,
+        2006
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1837,
+        1835,
+        2069
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1914,
+        1917
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1918,
+        1920
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1921,
+        1923
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2008,
+        2164
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1929,
+        2163
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2077,
+        2155,
+        2153
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1996,
+        2230
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2167,
+        2401,
+        2399
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2242,
+        2476
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1992,
+        2460
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2147,
+        2615
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2383,
+        2387
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2388,
+        2390,
+        2312,
+        2310
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2461,
+        2466
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2467,
+        2468
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2469,
+        2470,
+        2548,
+        2547
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2241,
+        2709
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2538,
+        2772
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2539,
+        2545
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2617,
+        2622
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2695,
+        2699
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2306,
+        2072,
+        2073,
+        2229
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1993,
+        1995
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2071,
+        2305
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2159,
+        2162,
+        2084,
+        2082
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2231,
+        2235
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2307,
+        2309
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2932,
+        3010,
+        3011,
+        2777
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        4181,
+        4259,
+        4260,
+        4182
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        3480,
+        3324,
+        3327,
+        3405
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        3168,
+        3090,
+        3093
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3012,
+        2700
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2240,
+        2708
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2704,
+        2938
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2546,
+        3014
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2623,
+        3013
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4183,
+        4261
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4729,
+        4963,
+        4965
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        4730,
+        4733
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4734,
+        4739
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4740,
+        4744
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4808,
+        4811
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4886,
+        4889
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4966,
+        4971
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2939,
+        2942
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2943,
+        2945
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2946,
+        2948
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3019,
+        3331,
+        3330,
+        3252
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        3020,
+        3410
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3488,
+        3644,
+        3641
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3562,
+        3640
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3563,
+        3565,
+        3487,
+        3485
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        3718,
+        3874
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        6141,
+        6142,
+        5986
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        6063,
+        5985
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3952,
+        4186
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3956,
+        3955,
+        3877
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3021,
+        3022
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3099,
+        3333
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3473,
+        3474
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3395,
+        3317,
+        3319
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3407,
+        3409
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5900,
+        5822
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5744,
+        5666,
+        5668
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        4028,
+        3872,
+        3873
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3794,
+        3638,
+        3639
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        5669,
+        5670
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5824,
+        5825,
+        5747,
+        5746
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        5901,
+        5903
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4343,
+        3875
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5904,
+        5905,
+        5671
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        4029,
+        3951
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3795,
+        3717
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3719,
+        3722
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3797,
+        3798,
+        3876
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3329,
+        3173,
+        3174
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2861,
+        2237
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2081,
+        1925,
+        1926,
+        2004
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2632,
+        2636
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2710,
+        2714
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3799,
+        3800,
+        3878
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2091,
+        2094,
+        2172
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2952,
+        3030
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3264,
+        3732
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3026,
+        3029
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2405,
+        2561
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2326,
+        2716
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3337,
+        3493,
+        3494,
+        3260
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        3261,
+        3495
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3263,
+        3575
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4033,
+        4267,
+        4272
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        5673,
+        5907,
+        5908
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        5830,
+        5674
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5206,
+        4972
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4973,
+        4979
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4662,
+        4584
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4121,
+        4433
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4120,
+        4432
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4119,
+        4431
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4122,
+        4512
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4746,
+        4980
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4745,
+        4901
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5682,
+        5916,
+        5915
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        5914,
+        5911,
+        5833
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        5755,
+        5677,
+        5679
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        5680,
+        5681
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5835,
+        5836,
+        5758,
+        5757
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2221,
+        1597
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1519,
+        1441,
+        1448
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3015,
+        2625,
+        2626
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1072,
+        1306,
+        1310
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1388,
+        1622,
+        1621,
+        1543,
+        1541
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        2017,
+        2329,
+        2330,
+        2408
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2486,
+        2564,
+        2565,
+        2487,
+        2488,
+        2644,
+        2642
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 5
+    },
+    {
+      "Indices": [
+        2222,
+        1676
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1598,
+        1520,
+        1526
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3731,
+        3724
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3646,
+        3100
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3704,
+        3236
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3158,
+        3080,
+        3086
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3653,
+        3647
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3569,
+        3023
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1026,
+        1027,
+        1105,
+        1104,
+        1182,
+        1184
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 4
+    },
+    {
+      "Indices": [
+        1106,
+        950,
+        951,
+        1029,
+        1030,
+        952
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 4
+    },
+    {
+      "Indices": [
+        3789,
+        3791,
+        3479
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3087,
+        3089,
+        3401
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        6295,
+        6298,
+        6220,
+        6218
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        6140,
+        5672
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3809,
+        3803
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3802,
+        3801,
+        3411
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3887,
+        3881
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3880,
+        3879,
+        4113,
+        4112,
+        4034
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        3262,
+        3574,
+        3572
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3571,
+        3570,
+        3258,
+        3259
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        3309,
+        2919
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2841,
+        2685,
+        2681
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2999,
+        2843,
+        2842,
+        2686
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2687,
+        2688,
+        2610,
+        2612,
+        2768
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        726,
+        728,
+        806,
+        808
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        886,
+        964,
+        965,
+        1043,
+        1042,
+        1120,
+        1121
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 5
+    },
+    {
+      "Indices": [
+        1144,
+        1534
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1612,
+        1610,
+        1454,
+        1455,
+        1533
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        2722,
+        2720,
+        2798,
+        2796
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2327,
+        2328,
+        2718
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3966,
+        3962,
+        4040
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        4118,
+        4352,
+        4351,
+        4195
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        4669,
+        4664
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4590,
+        4585,
+        4663
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1620,
+        1776,
+        1774,
+        1696,
+        1697
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        1619,
+        1617,
+        1851
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2692,
+        2693,
+        2849,
+        2850,
+        2928
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        2927,
+        3005,
+        3008,
+        2930,
+        2929
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        6302,
+        6224,
+        6221,
+        6143
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        6065,
+        5987,
+        5988,
+        5754
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        981,
+        1059,
+        1062,
+        984
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        985,
+        987,
+        1065,
+        1063
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        971,
+        976
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        977,
+        980,
+        1058,
+        1057
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        3627,
+        3237
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3159,
+        3164
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4983,
+        4593
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4515,
+        4125
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3889,
+        3888,
+        3810,
+        3811,
+        3655
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        3187,
+        3577
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3954,
+        4344
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4345,
+        4350
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3000,
+        2844,
+        2847,
+        2925
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        3003,
+        3004,
+        2770
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1205,
+        1210
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1211,
+        1214,
+        1136,
+        1135
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        423,
+        420,
+        498
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        499,
+        504
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1904,
+        1748,
+        1747,
+        1903,
+        1901
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        1900,
+        1744
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2145,
+        1833
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1755,
+        1677,
+        1681
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        4516,
+        4828
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4906,
+        5296
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4339,
+        4340,
+        4106
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        4341,
+        4342,
+        4264,
+        4263,
+        4107
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        2864,
+        2862,
+        2706
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2238,
+        2628
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1440,
+        1752
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1830,
+        2220
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1997,
+        2075,
+        2076,
+        1998,
+        1999
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        2000,
+        2001,
+        2079,
+        2078,
+        2156,
+        2157
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 4
+    },
+    {
+      "Indices": [
+        4812,
+        4816
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4817,
+        4822
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4890,
+        4894
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        4895,
+        4900
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2554,
+        2558
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2169,
+        2559
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1984,
+        1672
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1594,
+        1204
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        767,
+        923,
+        922
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1000,
+        999,
+        921,
+        920,
+        1154
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        1153,
+        1151,
+        995
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        994,
+        993,
+        1305
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        880,
+        883,
+        805,
+        804
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        803,
+        647,
+        649
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3152,
+        2840
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2916,
+        2760,
+        2762
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3347,
+        3346,
+        3034
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        2956,
+        2953
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        419,
+        497,
+        496,
+        418,
+        417
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 3
+    },
+    {
+      "Indices": [
+        416,
+        415,
+        493,
+        495
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        586,
+        584,
+        740
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        818,
+        816,
+        738,
+        739
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        1122,
+        1434
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1512,
+        1668,
+        1670
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        1983,
+        2061,
+        2060,
+        2216
+      ],
+      "Dx": 0,
+      "Dy": -1,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2215,
+        1981,
+        1982
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3710,
+        3712,
+        3556
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3478,
+        3166
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3970,
+        3968,
+        3812
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3734,
+        3422
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        872,
+        794,
+        797
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        875,
+        879
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        673,
+        669
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        668,
+        666,
+        510
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        511,
+        515
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        516,
+        520
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2063,
+        1751
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1673,
+        1361
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1292,
+        1288
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        1287,
+        1283
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        3169,
+        3172,
+        3094
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        3095,
+        3096,
+        3018,
+        3016
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 2
+    },
+    {
+      "Indices": [
+        2525,
+        2528
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        2446,
+        2450
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5427,
+        5271,
+        5272
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        5194,
+        5038,
+        5040
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 1
+    },
+    {
+      "Indices": [
+        721,
+        724
+      ],
+      "Dx": -1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        802,
+        798
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        6217,
+        5983
+      ],
+      "Dx": 0,
+      "Dy": 1,
+      "BendCount": 0
+    },
+    {
+      "Indices": [
+        5982,
+        5978
+      ],
+      "Dx": 1,
+      "Dy": 0,
+      "BendCount": 0
+    }
+  ]
+}

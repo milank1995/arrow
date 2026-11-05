@@ -82,6 +82,11 @@ object LevelLoader {
             "Pig" -> "Pig"
             "Puppy" -> "Puppy"
             "WomanFace", "Woman Face" -> "Woman Face"
+            "Duck" -> "Duck"
+            "Face Mask", "FaceMask" -> "Face Mask"
+            "Snake" -> "Snake"
+            "Sun Flower 2", "Sunflower2", "Sunflower 2" -> "Sunflower 2"
+            "Unknown Shape 9", "CustomDesign2", "Custom Design 2" -> "Custom Design 2"
             else -> trimmed.replace("_", " ")
         }
     }
