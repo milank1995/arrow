@@ -132,6 +132,11 @@ object LevelLoader {
             "Pikachu" -> "Pikachu"
             "Squirrel" -> "Squirrel"
             "Woman Poster", "WomanPoster" -> "Woman Poster"
+            "Cancer", "Crab" -> "Crab"
+            "Cat" -> "Cat"
+            "Chameleons", "Chameleon" -> "Chameleon"
+            "Knight" -> "Knight"
+            "Unknown Shape 7", "CustomDesign4", "Custom Design 4" -> "Custom Design 4"
             else -> trimmed.replace("_", " ")
         }
     }

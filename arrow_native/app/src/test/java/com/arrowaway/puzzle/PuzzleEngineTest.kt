@@ -651,5 +651,30 @@ class PuzzleEngineTest {
     fun testWomanPosterPuzzleSolvability() {
         verifyCustomShapeSolvability("WomanPoster.json", "Woman Poster", 300, 65, 79)
     }
+
+    @Test
+    fun testCrabPuzzleSolvability() {
+        verifyCustomShapeSolvability("Crab.json", "Cancer", 200, 80, 172)
+    }
+
+    @Test
+    fun testCatPuzzleSolvability() {
+        verifyCustomShapeSolvability("Cat.json", "Cat", 255, 78, 169)
+    }
+
+    @Test
+    fun testChameleonPuzzleSolvability() {
+        verifyCustomShapeSolvability("Chameleon.json", "Chameleons", 236, 122, 264)
+    }
+
+    @Test
+    fun testKnightPuzzleSolvability() {
+        verifyCustomShapeSolvability("Knight.json", "Knight", 275, 75, 162)
+    }
+
+    @Test
+    fun testCustomDesign4PuzzleSolvability() {
+        verifyCustomShapeSolvability("CustomDesign4.json", "Unknown Shape 7", 235, 67, 145)
+    }
 }
 
