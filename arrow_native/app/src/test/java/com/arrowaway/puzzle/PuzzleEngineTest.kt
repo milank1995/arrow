@@ -376,5 +376,30 @@ class PuzzleEngineTest {
     fun testTeddyPuzzleSolvability() {
         verifyCustomShapeSolvability("Teddy.json", "Teddy", 300, 48, 64)
     }
+
+    @Test
+    fun testCartoon2PuzzleSolvability() {
+        verifyCustomShapeSolvability("Cartoon2.json", "Cartoon 2", 200, 48, 76)
+    }
+
+    @Test
+    fun testFrogPuzzleSolvability() {
+        verifyCustomShapeSolvability("Frog.json", "Frog", 250, 55, 81)
+    }
+
+    @Test
+    fun testPigPuzzleSolvability() {
+        verifyCustomShapeSolvability("Pig.json", "Pig", 160, 44, 40)
+    }
+
+    @Test
+    fun testPuppyPuzzleSolvability() {
+        verifyCustomShapeSolvability("Puppy.json", "Puppy", 300, 64, 76)
+    }
+
+    @Test
+    fun testWomanFacePuzzleSolvability() {
+        verifyCustomShapeSolvability("WomanFace.json", "WomanFace", 317, 60, 85)
+    }
 }
 

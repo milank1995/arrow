@@ -77,6 +77,11 @@ object LevelLoader {
             "Glasses" -> "Glasses"
             "Pot" -> "Pot"
             "Telephone" -> "Telephone"
+            "Cartoon 2", "Cartoon2" -> "Cartoon 2"
+            "Frog" -> "Frog"
+            "Pig" -> "Pig"
+            "Puppy" -> "Puppy"
+            "WomanFace", "Woman Face" -> "Woman Face"
             else -> trimmed.replace("_", " ")
         }
     }
