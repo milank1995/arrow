@@ -238,7 +238,7 @@ fun DevTestScreen(
             if (allCleared) {
                 isCelebrationBurstActive = true
                 audioHapticManager.playLevelWin()
-                delay(950)
+                delay(1800)
                 isLevelComplete = true
                 isCelebrationBurstActive = false
             } else {
