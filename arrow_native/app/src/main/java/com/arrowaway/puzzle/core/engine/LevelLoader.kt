@@ -127,6 +127,11 @@ object LevelLoader {
             "Dog" -> "Dog"
             "Elephant" -> "Elephant"
             "Pigeon" -> "Pigeon"
+            "Man" -> "Man"
+            "Parrot" -> "Parrot"
+            "Pikachu" -> "Pikachu"
+            "Squirrel" -> "Squirrel"
+            "Woman Poster", "WomanPoster" -> "Woman Poster"
             else -> trimmed.replace("_", " ")
         }
     }

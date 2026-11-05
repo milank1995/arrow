@@ -626,5 +626,30 @@ class PuzzleEngineTest {
     fun testPigeonPuzzleSolvability() {
         verifyCustomShapeSolvability("Pigeon.json", "Pigeon", 400, 75, 76)
     }
+
+    @Test
+    fun testManPuzzleSolvability() {
+        verifyCustomShapeSolvability("Man.json", "Man", 305, 80, 174)
+    }
+
+    @Test
+    fun testParrotPuzzleSolvability() {
+        verifyCustomShapeSolvability("Parrot.json", "Parrot", 305, 63, 68)
+    }
+
+    @Test
+    fun testPikachuPuzzleSolvability() {
+        verifyCustomShapeSolvability("Pikachu.json", "Pikachu", 350, 71, 71)
+    }
+
+    @Test
+    fun testSquirrelPuzzleSolvability() {
+        verifyCustomShapeSolvability("Squirrel.json", "Squirrel", 300, 55, 55)
+    }
+
+    @Test
+    fun testWomanPosterPuzzleSolvability() {
+        verifyCustomShapeSolvability("WomanPoster.json", "Woman Poster", 300, 65, 79)
+    }
 }
 
