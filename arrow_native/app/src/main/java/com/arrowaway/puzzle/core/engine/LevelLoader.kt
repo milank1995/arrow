@@ -142,6 +142,11 @@ object LevelLoader {
             "Unknown Shape 4", "CustomDesign6", "Custom Design 6" -> "Custom Design 6"
             "Unknown Shape 5", "CustomDesign7", "Custom Design 7" -> "Custom Design 7"
             "Unknown Shape 6", "CustomDesign8", "Custom Design 8" -> "Custom Design 8"
+            "Bird" -> "Bird"
+            "Butterfly Hand", "ButterflyHand" -> "Butterfly Hand"
+            "Cat Poster", "CatPoster" -> "Cat Poster"
+            "Nature" -> "Nature"
+            "Panda" -> "Panda"
             else -> trimmed.replace("_", " ")
         }
     }
