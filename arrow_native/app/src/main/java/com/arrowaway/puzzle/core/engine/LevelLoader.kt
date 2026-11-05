@@ -102,6 +102,11 @@ object LevelLoader {
             "Om" -> "Om"
             "Scooter" -> "Scooter"
             "Train" -> "Train"
+            "2026", "Year2026", "Year 2026" -> "2026"
+            "Basket" -> "Basket"
+            "Chair" -> "Chair"
+            "Guitar" -> "Guitar"
+            "Sound" -> "Sound"
             else -> trimmed.replace("_", " ")
         }
     }

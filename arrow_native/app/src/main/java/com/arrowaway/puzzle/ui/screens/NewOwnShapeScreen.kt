@@ -230,6 +230,11 @@ private fun CustomShapeCard(
                 item.displayName.contains("Planet", ignoreCase = true) -> "🪐"
                 item.displayName.contains("Screw", ignoreCase = true) -> "🪛"
                 item.displayName.contains("Skull", ignoreCase = true) -> "💀"
+                item.displayName.contains("2026") -> "🎆"
+                item.displayName.contains("Basket", ignoreCase = true) -> "🧺"
+                item.displayName.contains("Chair", ignoreCase = true) -> "🪑"
+                item.displayName.contains("Guitar", ignoreCase = true) -> "🎸"
+                item.displayName.contains("Sound", ignoreCase = true) -> "🔊"
                 item.displayName.contains("Custom", ignoreCase = true) || item.displayName.contains("Design", ignoreCase = true) -> "🎨"
                 item.displayName.contains("Lock", ignoreCase = true) -> "🔒"
                 item.displayName.contains("Heart", ignoreCase = true) -> "❤️"
@@ -308,6 +313,7 @@ private fun CustomShapeCard(
         }
     }
 }
+
 
 
 

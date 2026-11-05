@@ -501,5 +501,30 @@ class PuzzleEngineTest {
     fun testTrainPuzzleSolvability() {
         verifyCustomShapeSolvability("Train.json", "Train", 320, 48, 45)
     }
+
+    @Test
+    fun test2026PuzzleSolvability() {
+        verifyCustomShapeSolvability("Year2026.json", "2026", 188, 48, 56)
+    }
+
+    @Test
+    fun testBasketPuzzleSolvability() {
+        verifyCustomShapeSolvability("Basket.json", "Basket", 198, 44, 53)
+    }
+
+    @Test
+    fun testChairPuzzleSolvability() {
+        verifyCustomShapeSolvability("Chair.json", "Chair", 170, 45, 55)
+    }
+
+    @Test
+    fun testGuitarPuzzleSolvability() {
+        verifyCustomShapeSolvability("Guitar.json", "Guitar", 188, 43, 60)
+    }
+
+    @Test
+    fun testSoundPuzzleSolvability() {
+        verifyCustomShapeSolvability("Sound.json", "Sound", 128, 50, 63)
+    }
 }
 
