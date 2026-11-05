@@ -93,6 +93,16 @@ private data class VelSample(
     val timeMs: Long
 )
 
+private data class ActiveBounds(
+    val minX: Int,
+    val maxX: Int,
+    val minY: Int,
+    val maxY: Int
+) {
+    val spanX: Int get() = (maxX - minX + 1).coerceAtLeast(1)
+    val spanY: Int get() = (maxY - minY + 1).coerceAtLeast(1)
+}
+
 private data class TouchRecord(
     val downPos: Offset,
     val downTime: Long,
@@ -140,6 +150,21 @@ fun PuzzleBoardCanvas(
     val initialLevelCells = remember(xSize, ySize, arrows.size, arrows.firstOrNull()?.id, restartTrigger) {
         arrows.flatMap { it.allPoints }.toSet()
     }
+    // Remember initial active bounding box of all arrows in the puzzle to frame the board snugly
+    val initialActiveBounds = remember(xSize, ySize, arrows.size, arrows.firstOrNull()?.id, restartTrigger) {
+        val allPoints = arrows.flatMap { it.allPoints }
+        if (allPoints.isEmpty()) {
+            ActiveBounds(0, (xSize - 1).coerceAtLeast(0), 0, (ySize - 1).coerceAtLeast(0))
+        } else {
+            ActiveBounds(
+                minX = allPoints.minOf { it.x },
+                maxX = allPoints.maxOf { it.x },
+                minY = allPoints.minOf { it.y },
+                maxY = allPoints.maxOf { it.y }
+            )
+        }
+    }
+
     val clearedCellTimestamps = remember(xSize, ySize, arrows.firstOrNull()?.id, restartTrigger) { mutableMapOf<GridCoordinate, Long>() }
     val clearedCells = remember(arrows, initialLevelCells) {
         // Only show dots for truly CLEARED arrows.
@@ -202,16 +227,23 @@ fun PuzzleBoardCanvas(
         val viewportWidth = constraints.maxWidth.toFloat()
         val viewportHeight = constraints.maxHeight.toFloat()
 
-        // Fit board into viewport with comfortable margin (96% width, 94% height for maximum board visibility)
-        val availableWidth = viewportWidth * 0.96f
-        val availableHeight = viewportHeight * 0.94f
+        // Fit active puzzle board snugly into viewport with minimum required margin (8dp)
+        // Eliminates unnecessary empty border space while preserving multi-device responsiveness
+        val minMarginPx = with(LocalDensity.current) { 8.dp.toPx() }
+        val availableWidth = (viewportWidth - minMarginPx * 2f).coerceAtLeast(1f)
+        val availableHeight = (viewportHeight - minMarginPx * 2f).coerceAtLeast(1f)
         val maxCellPx = with(LocalDensity.current) { 50.dp.toPx() }
-        val cellSize = minOf(availableWidth / xSize, availableHeight / ySize).coerceAtMost(maxCellPx)
-        val boardWidth = cellSize * xSize
-        val boardHeight = cellSize * ySize
+        val cellSize = minOf(
+            availableWidth / initialActiveBounds.spanX,
+            availableHeight / initialActiveBounds.spanY
+        ).coerceAtMost(maxCellPx)
+        val boardWidth = cellSize * initialActiveBounds.spanX
+        val boardHeight = cellSize * initialActiveBounds.spanY
+        val activeCenterX = (initialActiveBounds.minX + initialActiveBounds.maxX + 1) * cellSize / 2f
+        val activeCenterY = (initialActiveBounds.minY + initialActiveBounds.maxY + 1) * cellSize / 2f
         val boardOrigin = Offset(
-            (viewportWidth - boardWidth) / 2f,
-            (viewportHeight - boardHeight) / 2f
+            viewportWidth / 2f - activeCenterX,
+            viewportHeight / 2f - activeCenterY
         )
 
         // Dynamic zoom limits matching Unity's ComputeZoomLimitsForLevel (minCellScreenPx / maxCellScreenPx)
@@ -418,7 +450,7 @@ fun PuzzleBoardCanvas(
             modifier = Modifier
                 .fillMaxSize()
                 .clipToBounds() // Prevents drawing over top bar or bottom booster bar
-                .pointerInput(xSize, ySize) {
+                .pointerInput(xSize, ySize, restartTrigger, initialActiveBounds) {
                     awaitEachGesture {
                         val down = awaitFirstDown(requireUnconsumed = false)
                         panInertiaJob?.cancel() // Stop ongoing pan inertia immediately on new touch
@@ -768,7 +800,7 @@ fun PuzzleBoardCanvas(
 
                 // 1. Full Grid Lines (background) only if user activated via '#' Booster button
                 if (isGridLinesActive) {
-                    drawCorridorGuideLines(boardOrigin, xSize, ySize, cellSize, arrows, theme)
+                    drawCorridorGuideLines(boardOrigin, initialActiveBounds.minX, initialActiveBounds.maxX, initialActiveBounds.minY, initialActiveBounds.maxY, cellSize, arrows, theme)
 
                 }
 
@@ -780,9 +812,9 @@ fun PuzzleBoardCanvas(
                 val now = System.currentTimeMillis()
                 val isWaveActive = celebrationWaveProgress.value > 0f
 
-                val dotsCenterX = (xSize - 1) / 2f
-                val dotsCenterY = (ySize - 1) / 2f
-                val maxDotsDist = hypot(dotsCenterX, dotsCenterY).coerceAtLeast(1f)
+                val dotsCenterX = (initialActiveBounds.minX + initialActiveBounds.maxX) / 2f
+                val dotsCenterY = (initialActiveBounds.minY + initialActiveBounds.maxY) / 2f
+                val maxDotsDist = hypot(initialActiveBounds.spanX / 2f, initialActiveBounds.spanY / 2f).coerceAtLeast(1f)
 
                 for (coord in clearedCells) {
                     val cx = coord.x
@@ -847,14 +879,14 @@ fun PuzzleBoardCanvas(
                 // 3. Draw Preview Rays for all active preview arrows simultaneously (smooth animated fade matching Unity lineCg.DOFade)
                 if (activePreviewArrows.isNotEmpty() && previewAlpha > 0.01f) {
                     for (previewArrow in activePreviewArrows) {
-                        drawPreviewRay(boardOrigin, previewArrow, xSize, ySize, cellSize, previewAlpha, theme.arrowClear)
+                        drawPreviewRay(boardOrigin, previewArrow, initialActiveBounds.minX, initialActiveBounds.maxX, initialActiveBounds.minY, initialActiveBounds.maxY, cellSize, previewAlpha, theme.arrowClear)
                     }
                 }
 
                 // 4. Draw All Arrows (Progressive Path Drawing, drawn ON TOP of the background dots)
-                val boardCenterX = xSize / 2f
-                val boardCenterY = ySize / 2f
-                val maxBoardDist = hypot(boardCenterX, boardCenterY).coerceAtLeast(1f)
+                val boardCenterX = (initialActiveBounds.minX + initialActiveBounds.maxX) / 2f
+                val boardCenterY = (initialActiveBounds.minY + initialActiveBounds.maxY) / 2f
+                val maxBoardDist = hypot(initialActiveBounds.spanX / 2f, initialActiveBounds.spanY / 2f).coerceAtLeast(1f)
                 val isIntroActive = introProgress.value < 1f
                 val hasHintedArrow = arrows.any { it.state == ArrowState.HINTED }
                 val effectiveHintPulseScale = if (hasHintedArrow) hintPulseScale else 1.0f
@@ -922,7 +954,8 @@ fun PuzzleBoardCanvas(
                 (boardHeight * 0.20f).coerceIn(28.dp.toPx(), 46.dp.toPx())
             }
             val pillHeightPx = with(density) { 52.dp.toPx() }
-            val pillTopPx = (boardOrigin.y - dynamicGapPx - pillHeightPx).coerceAtLeast(with(density) { 24.dp.toPx() })
+            val activeTopPx = boardOrigin.y + initialActiveBounds.minY * cellSize
+            val pillTopPx = (activeTopPx - dynamicGapPx - pillHeightPx).coerceAtLeast(with(density) { 24.dp.toPx() })
             val pillTopDp = with(density) { pillTopPx.toDp() }
 
             Box(
@@ -1727,8 +1760,10 @@ private fun lerpOffset(p0: Offset, p1: Offset, t: Float): Offset {
 
 private fun DrawScope.drawCorridorGuideLines(
     origin: Offset,
-    xSize: Int,
-    ySize: Int,
+    minCellX: Int,
+    maxCellX: Int,
+    minCellY: Int,
+    maxCellY: Int,
     cellSize: Float,
     arrows: List<Arrow>,
     theme: ThemePreset
@@ -1787,10 +1822,10 @@ private fun DrawScope.drawCorridorGuideLines(
     }
 
     val fadeMargin = cellSize * 2.0f
-    val boardLeft = origin.x
-    val boardRight = origin.x + xSize * cellSize
-    val boardTop = origin.y
-    val boardBottom = origin.y + ySize * cellSize
+    val boardLeft = origin.x + minCellX * cellSize
+    val boardRight = origin.x + (maxCellX + 1) * cellSize
+    val boardTop = origin.y + minCellY * cellSize
+    val boardBottom = origin.y + (maxCellY + 1) * cellSize
 
     // Slightly increased thickness for clear visibility while remaining subtle
     val strokeW = (cellSize * 0.046f).coerceIn(1.5.dp.toPx(), 2.4.dp.toPx())
@@ -1906,8 +1941,10 @@ private fun DrawScope.drawCorridorGuideLines(
 private fun DrawScope.drawPreviewRay(
     origin: Offset,
     arrow: Arrow,
-    xSize: Int,
-    ySize: Int,
+    minCellX: Int,
+    maxCellX: Int,
+    minCellY: Int,
+    maxCellY: Int,
     cellSize: Float,
     previewAlpha: Float,
     rayColor: Color
@@ -1919,10 +1956,10 @@ private fun DrawScope.drawPreviewRay(
 
     var endOffset = headCenter
     when (arrow.direction) {
-        Direction.UP -> endOffset = Offset(headCenter.x, origin.y - cellSize * 1.5f)
-        Direction.DOWN -> endOffset = Offset(headCenter.x, origin.y + (ySize + 1.5f) * cellSize)
-        Direction.LEFT -> endOffset = Offset(origin.x - cellSize * 1.5f, headCenter.y)
-        Direction.RIGHT -> endOffset = Offset(origin.x + (xSize + 1.5f) * cellSize, headCenter.y)
+        Direction.UP -> endOffset = Offset(headCenter.x, origin.y + (minCellY - 1.5f) * cellSize)
+        Direction.DOWN -> endOffset = Offset(headCenter.x, origin.y + (maxCellY + 2.5f) * cellSize)
+        Direction.LEFT -> endOffset = Offset(origin.x + (minCellX - 1.5f) * cellSize, headCenter.y)
+        Direction.RIGHT -> endOffset = Offset(origin.x + (maxCellX + 2.5f) * cellSize, headCenter.y)
     }
 
     // Start line seamlessly from the forward tip of the arrowhead
