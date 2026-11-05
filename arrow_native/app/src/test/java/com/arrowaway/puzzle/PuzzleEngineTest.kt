@@ -451,5 +451,30 @@ class PuzzleEngineTest {
     fun testWarriorFacePuzzleSolvability() {
         verifyCustomShapeSolvability("WarriorFace.json", "Warrior Face", 350, 70, 70)
     }
+
+    @Test
+    fun testPaintboardPuzzleSolvability() {
+        verifyCustomShapeSolvability("Paintboard.json", "Paintboard", 150, 48, 49)
+    }
+
+    @Test
+    fun testPlanetPuzzleSolvability() {
+        verifyCustomShapeSolvability("Planet.json", "Planet", 198, 51, 51)
+    }
+
+    @Test
+    fun testScrewdriverPuzzleSolvability() {
+        verifyCustomShapeSolvability("Screwdriver.json", "Screw Driver", 92, 44, 44)
+    }
+
+    @Test
+    fun testSkullPuzzleSolvability() {
+        verifyCustomShapeSolvability("Skull.json", "Skull", 200, 37, 37)
+    }
+
+    @Test
+    fun testSnakeFacePuzzleSolvability() {
+        verifyCustomShapeSolvability("SnakeFace.json", "Snake Face", 90, 45, 36)
+    }
 }
 

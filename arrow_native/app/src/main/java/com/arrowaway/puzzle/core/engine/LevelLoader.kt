@@ -92,6 +92,11 @@ object LevelLoader {
             "Turtles", "Turtle" -> "Turtle"
             "Unknown Shape 8", "CustomDesign3", "Custom Design 3" -> "Custom Design 3"
             "Warrior Face", "WarriorFace" -> "Warrior Face"
+            "Paintboard", "Paint Board" -> "Paint Board"
+            "Planet" -> "Planet"
+            "Screw Driver", "Screwdriver" -> "Screwdriver"
+            "Skull" -> "Skull"
+            "Snake Face", "SnakeFace" -> "Snake Face"
             else -> trimmed.replace("_", " ")
         }
     }
