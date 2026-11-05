@@ -43,6 +43,7 @@ import com.arrowaway.puzzle.ui.screens.DailyChallengeScreen
 import com.arrowaway.puzzle.ui.screens.DevTestScreen
 import com.arrowaway.puzzle.ui.screens.GamePlayScreen
 import com.arrowaway.puzzle.ui.screens.HomeScreen
+import com.arrowaway.puzzle.ui.screens.NewOwnShapeScreen
 import com.arrowaway.puzzle.ui.screens.SettingsScreen
 import java.time.LocalDate
 
@@ -51,7 +52,8 @@ enum class AppScreen {
     GAMEPLAY,
     DAILY_CHALLENGE,
     DEV_TEST,
-    SETTINGS
+    SETTINGS,
+    NEW_OWN_SHAPE
 }
 
 class MainActivity : ComponentActivity() {
@@ -243,6 +245,10 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.playClick()
                                         currentScreen = AppScreen.SETTINGS
                                     },
+                                    onNewOwnShapeClick = {
+                                        gameViewModel.playClick()
+                                        currentScreen = AppScreen.NEW_OWN_SHAPE
+                                    },
                                     onDevTestClick = {
                                         gameViewModel.playClick()
                                         currentScreen = AppScreen.DEV_TEST
@@ -303,20 +309,27 @@ class MainActivity : ComponentActivity() {
                                             gameViewModel.markDailyUnlockCelebrationSeen()
                                         }
                                         val wasDaily = uiState.isDailyChallengeMode
-                                        val curLevel = if (wasDaily) 999 else uiState.currentLevelNumber
+                                        val wasCustom = uiState.isCustomShapeMode || uiState.isGlassesPuzzleMode
+                                        val curLevel = if (wasDaily || wasCustom) 999 else uiState.currentLevelNumber
 
                                         val advance = {
                                             gameViewModel.nextLevel()
-                                            if (wasDaily) {
-                                                currentScreen = AppScreen.DAILY_CHALLENGE
+                                            currentScreen = when {
+                                                wasDaily -> AppScreen.DAILY_CHALLENGE
+                                                wasCustom -> AppScreen.NEW_OWN_SHAPE
+                                                else -> AppScreen.HOME
                                             }
                                         }
 
-                                        AdManager.showInterstitialAd(
-                                            activity = this@MainActivity,
-                                            currentLevel = curLevel,
-                                            onDismissed = { advance() }
-                                        )
+                                        if (!wasDaily && !wasCustom) {
+                                            AdManager.showInterstitialAd(
+                                                activity = this@MainActivity,
+                                                currentLevel = curLevel,
+                                                onDismissed = { advance() }
+                                            )
+                                        } else {
+                                            advance()
+                                        }
                                     },
                                     onStartDailyChallengeClick = {
                                         gameViewModel.playClick()
@@ -350,21 +363,26 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.markHasPlayedBefore()
                                         gameViewModel.resetGridLines()
                                         val wasDaily = uiState.isDailyChallengeMode
+                                        val wasCustom = uiState.isCustomShapeMode || uiState.isGlassesPuzzleMode
                                         val isVictory = uiState.isLevelComplete
-                                        val curLevel = if (wasDaily) 999 else uiState.currentLevelNumber
+                                        val curLevel = if (wasDaily || wasCustom) 999 else uiState.currentLevelNumber
 
                                         val exitToHome = {
                                             if (isVictory) {
                                                 gameViewModel.onVictoryHomeClick()
-                                            } else if (wasDaily) {
+                                            } else if (wasDaily || wasCustom) {
                                                 gameViewModel.loadLevel(uiState.currentLevelNumber)
                                             } else if (uiState.isGameOver) {
                                                 gameViewModel.loadLevel(uiState.currentLevelNumber)
                                             }
-                                            currentScreen = if (wasDaily) AppScreen.DAILY_CHALLENGE else AppScreen.HOME
+                                            currentScreen = when {
+                                                wasDaily -> AppScreen.DAILY_CHALLENGE
+                                                wasCustom -> AppScreen.NEW_OWN_SHAPE
+                                                else -> AppScreen.HOME
+                                            }
                                         }
 
-                                        if (isVictory) {
+                                        if (isVictory && !wasDaily && !wasCustom) {
                                             AdManager.showInterstitialAd(
                                                 activity = this@MainActivity,
                                                 currentLevel = curLevel,
@@ -375,7 +393,7 @@ class MainActivity : ComponentActivity() {
                                         }
                                     },
                                     onClaimFreeLives = {
-                                        if (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode) {
+                                        if (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode && !uiState.isCustomShapeMode && !uiState.isGlassesPuzzleMode) {
                                             gameViewModel.claimFreeLives(3)
                                         } else {
                                             AdManager.showRewardedAd(
@@ -580,6 +598,19 @@ class MainActivity : ComponentActivity() {
                                     onBackClick = {
                                         gameViewModel.playClick()
                                         currentScreen = AppScreen.HOME
+                                    }
+                                )
+                            }
+                            AppScreen.NEW_OWN_SHAPE -> {
+                                NewOwnShapeScreen(
+                                    theme = uiState.activeTheme,
+                                    onBackClick = { currentScreen = AppScreen.HOME },
+                                    onLevelSelected = { fileName ->
+                                        gameViewModel.playClick()
+                                        gameViewModel.startCustomShapeLevel(fileName)
+                                        launchGameplayWithPendingAdCheck {
+                                            currentScreen = AppScreen.GAMEPLAY
+                                        }
                                     }
                                 )
                             }

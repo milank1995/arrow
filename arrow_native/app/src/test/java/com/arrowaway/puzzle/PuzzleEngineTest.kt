@@ -281,4 +281,75 @@ class PuzzleEngineTest {
         assertTrue("All 156 arrows in Glasses puzzle must be solved without deadlock", currentArrows.all { it.state == ArrowState.CLEARED })
         assertEquals("Glasses puzzle should be cleared in exactly 156 steps", 156, steps)
     }
+
+    private fun verifyCustomShapeSolvability(
+        fileName: String,
+        expectedShapeName: String,
+        expectedArrows: Int,
+        expectedX: Int,
+        expectedY: Int
+    ) {
+        val file = java.io.File("src/main/assets/New Own Shape/$fileName")
+        assertTrue("$fileName must exist in assets", file.exists())
+        val json = file.readText()
+        val level = com.arrowaway.puzzle.core.engine.LevelLoader.parseLevelJson(999, json)
+        assertNotNull("$fileName level should parse successfully", level)
+        assertEquals("ShapeName must be $expectedShapeName", expectedShapeName, level!!.shapeName)
+        assertEquals("$fileName must have $expectedArrows arrows", expectedArrows, level.arrows.size)
+        assertEquals("XSize must be $expectedX", expectedX, level.xSize)
+        assertEquals("YSize must be $expectedY", expectedY, level.ySize)
+
+        val occupancy = GridOccupancyMap(level.xSize, level.ySize).apply {
+            rebuild(level.arrows)
+        }
+
+        val initialMovable = PuzzleSolver.findAllMovableArrows(level.arrows, occupancy)
+        assertTrue("$fileName puzzle must have at least one valid starting move", initialMovable.isNotEmpty())
+
+        val currentArrows = level.arrows.map { it.copy() }.toMutableList()
+        var steps = 0
+        val maxSteps = currentArrows.size + 10
+
+        while (currentArrows.any { it.state != ArrowState.CLEARED } && steps < maxSteps) {
+            steps++
+            val movable = PuzzleSolver.findAllMovableArrows(
+                currentArrows.filter { it.state != ArrowState.CLEARED },
+                occupancy
+            ).firstOrNull()
+
+            assertNotNull("$fileName puzzle reached deadlock at step $steps", movable)
+            occupancy.release(movable!!)
+            val idx = currentArrows.indexOfFirst { it.id == movable.id }
+            currentArrows[idx] = movable.copyWithState(ArrowState.CLEARED)
+        }
+
+        assertTrue("All $expectedArrows arrows in $fileName puzzle must be solved without deadlock", currentArrows.all { it.state == ArrowState.CLEARED })
+        assertEquals("$fileName puzzle should be cleared in exactly $expectedArrows steps", expectedArrows, steps)
+    }
+
+    @Test
+    fun testCarPuzzleSolvability() {
+        verifyCustomShapeSolvability("Car.json", "Car", 120, 39, 30)
+    }
+
+    @Test
+    fun testCustomDesign1PuzzleSolvability() {
+        verifyCustomShapeSolvability("CustomDesign1.json", "CustomDesign1", 544, 75, 64)
+    }
+
+    @Test
+    fun testGhostPuzzleSolvability() {
+        verifyCustomShapeSolvability("Ghost.json", "Ghost", 160, 39, 38)
+    }
+
+    @Test
+    fun testPotPuzzleSolvability() {
+        verifyCustomShapeSolvability("Pot.json", "Pot", 180, 38, 38)
+    }
+
+    @Test
+    fun testTelephonePuzzleSolvability() {
+        verifyCustomShapeSolvability("Telephone.json", "Telephone", 130, 34, 32)
+    }
+
 }

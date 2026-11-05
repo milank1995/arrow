@@ -199,9 +199,13 @@ private fun CustomShapeCard(
             // Icon pod
             val iconEmoji = when {
                 item.displayName.contains("Glass", ignoreCase = true) -> "👓"
+                item.displayName.contains("Car", ignoreCase = true) -> "🚗"
+                item.displayName.contains("Ghost", ignoreCase = true) -> "👻"
+                item.displayName.contains("Pot", ignoreCase = true) -> "🏺"
+                item.displayName.contains("Telephone", ignoreCase = true) || item.displayName.contains("Phone", ignoreCase = true) -> "☎️"
+                item.displayName.contains("Custom", ignoreCase = true) || item.displayName.contains("Design", ignoreCase = true) -> "🎨"
                 item.displayName.contains("Lock", ignoreCase = true) -> "🔒"
                 item.displayName.contains("Heart", ignoreCase = true) -> "❤️"
-                item.displayName.contains("Car", ignoreCase = true) -> "🚗"
                 else -> "🧩"
             }
             Box(

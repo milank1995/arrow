@@ -64,6 +64,9 @@ data class GameUiState(
     val hammersAvailable: Int = 2,
     val wandsAvailable: Int = 2,
     val isDailyChallengeMode: Boolean = false,
+    val isGlassesPuzzleMode: Boolean = false,
+    val isCustomShapeMode: Boolean = false,
+    val activeCustomShapeFileName: String? = null,
     val activeDailyDate: String? = null,
     val activeDailyIndex: Int = 1,
     val completedDailyDates: Set<String> = emptySet(),
@@ -469,6 +472,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 isGridLinesActive = false,
                 previewRayArrowIds = emptySet(),
                 isDailyChallengeMode = false,
+                isGlassesPuzzleMode = false,
+                isCustomShapeMode = false,
+                activeCustomShapeFileName = null,
                 activeDailyDate = null,
                 activeDailyIndex = 1,
                 dailyComplimentaryHintsRemaining = if (levelNumber <= 10) 999 else 0,
@@ -529,6 +535,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 isGridLinesActive = false,
                 previewRayArrowIds = emptySet(),
                 isDailyChallengeMode = true,
+                isGlassesPuzzleMode = false,
+                isCustomShapeMode = false,
+                activeCustomShapeFileName = null,
                 activeDailyDate = date.toString(),
                 activeDailyIndex = dailyIndex,
                 dailyComplimentaryHintsRemaining = 0,
@@ -538,6 +547,62 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 restartTrigger = System.currentTimeMillis()
             )
         }
+    }
+
+    fun startCustomShapeLevel(fileName: String) {
+        stopAutoSolve()
+        resetLevelMetrics()
+        levelsAttemptedInSession++
+        levelStartWallTimeMs = System.currentTimeMillis()
+        hasInteractedWithArrowThisLevel = false
+
+        val level = LevelLoader.loadCustomShapeLevel(app, fileName) ?: LevelLoader.loadLevel(app, 1)
+        occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
+            rebuild(level.arrows)
+        }
+
+        analytics.logLevelStart(
+            levelNumber = 999,
+            gameMode = "custom_shape",
+            totalArrows = level.arrows.size,
+            gridDimensions = "${level.xSize}x${level.ySize}",
+            attemptNumber = 1
+        )
+        CrashLogger.setCustomKey("current_level", 999)
+        CrashLogger.setCustomKey("game_mode", "custom_shape")
+        CrashLogger.setCustomKey("custom_shape_file", fileName)
+
+        _uiState.update {
+            it.copy(
+                levelData = level,
+                arrows = level.arrows,
+                heartsRemaining = level.maxHearts,
+                maxHearts = level.maxHearts,
+                isLevelComplete = false,
+                isStreakEarnedThisLevel = false,
+                isGameOver = false,
+                comboCount = 0,
+                cheerMessage = null,
+                isHammerModeActive = false,
+                isGridLinesActive = false,
+                previewRayArrowIds = emptySet(),
+                isDailyChallengeMode = false,
+                isGlassesPuzzleMode = fileName.equals("Glasses.json", ignoreCase = true),
+                isCustomShapeMode = true,
+                activeCustomShapeFileName = fileName,
+                activeDailyDate = null,
+                activeDailyIndex = 1,
+                dailyComplimentaryHintsRemaining = 0,
+                levelFreeHintsRemaining = 0,
+                showHintAdPrompt = false,
+                isGamePaused = false,
+                restartTrigger = System.currentTimeMillis()
+            )
+        }
+    }
+
+    fun startGlassesPuzzle() {
+        startCustomShapeLevel("Glasses.json")
     }
 
     fun onArrowClicked(clickedArrow: Arrow) {
@@ -686,7 +751,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         } + 1
 
         val currentLvl = _uiState.value.currentLevelNumber
-        val isSpecialMode = _uiState.value.isDailyChallengeMode
+        val isSpecialMode = _uiState.value.isDailyChallengeMode || _uiState.value.isCustomShapeMode || _uiState.value.isGlassesPuzzleMode
 
         val milestoneCheer = evaluateMilestone(clearedCount, totalArrows, currentLvl, isSpecialMode)
         // Combo praise appears with no "Combo x5" label, silenced around milestones to avoid overlap
@@ -836,7 +901,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         dismissAllPreviewRays()
     }
 
-    val isFreeHintLevel: Boolean get() = (_uiState.value.currentLevelNumber <= 10 && !_uiState.value.isDailyChallengeMode)
+    val isFreeHintLevel: Boolean get() = (_uiState.value.currentLevelNumber <= 10 && !_uiState.value.isDailyChallengeMode && !_uiState.value.isCustomShapeMode && !_uiState.value.isGlassesPuzzleMode)
 
     fun useHint() {
         viewModelScope.launch(Dispatchers.Default) {
@@ -1009,7 +1074,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun nextLevel() {
         resetGridLines()
-        if (_uiState.value.isDailyChallengeMode) {
+        if (_uiState.value.isDailyChallengeMode || _uiState.value.isCustomShapeMode || _uiState.value.isGlassesPuzzleMode) {
             // When completing a daily or special level, reload current campaign level so player returns to campaign
             loadLevel(_uiState.value.currentLevelNumber)
         } else {
@@ -1070,7 +1135,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun onVictoryHomeClick() {
         stopAutoSolve()
-        if (_uiState.value.isDailyChallengeMode) {
+        if (_uiState.value.isDailyChallengeMode || _uiState.value.isCustomShapeMode || _uiState.value.isGlassesPuzzleMode) {
             loadLevel(_uiState.value.currentLevelNumber)
         } else {
             val nextLvl = _uiState.value.currentLevelNumber + 1
@@ -1098,6 +1163,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         if (_uiState.value.isDailyChallengeMode) {
             val dateStr = _uiState.value.activeDailyDate ?: LocalDate.now().toString()
             startDailyChallenge(dateStr)
+        } else if (_uiState.value.isCustomShapeMode || _uiState.value.isGlassesPuzzleMode) {
+            val file = _uiState.value.activeCustomShapeFileName ?: "Glasses.json"
+            startCustomShapeLevel(file)
         } else {
             loadLevel(_uiState.value.currentLevelNumber)
         }
@@ -1151,7 +1219,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         val finalScore = (baseClear + healthPoints + hintPoints + speedPoints).coerceIn(50, 100)
 
         levelsCompletedInSession++
-        val gameMode = if (_uiState.value.isDailyChallengeMode) "daily" else "campaign"
+        val gameMode = if (_uiState.value.isDailyChallengeMode) "daily" else if (_uiState.value.isCustomShapeMode || _uiState.value.isGlassesPuzzleMode) "custom_shape" else "campaign"
         analytics.logLevelComplete(
             levelNumber = completedLvl,
             gameMode = gameMode,
@@ -1284,7 +1352,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
         viewModelScope.launch {
             val dailyRewardCoins = RemoteConfigManager.dailyCompletionCoins
-            val baseCoins = if (_uiState.value.isDailyChallengeMode) dailyRewardCoins else 50 + (_uiState.value.comboCount * 5)
+            val baseCoins = if (_uiState.value.isDailyChallengeMode || _uiState.value.isCustomShapeMode || _uiState.value.isGlassesPuzzleMode) dailyRewardCoins else 50 + (_uiState.value.comboCount * 5)
             if (_uiState.value.isDailyChallengeMode) {
                 val dateStr = _uiState.value.activeDailyDate ?: LocalDate.now().toString()
                 repository.recordDailyCompletion(dateStr)
@@ -1294,6 +1362,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     newStreakDays = _uiState.value.streakDays,
                     rewardCoinsClaimed = dailyRewardCoins
                 )
+            } else if (_uiState.value.isCustomShapeMode || _uiState.value.isGlassesPuzzleMode) {
+                repository.recordSpecialLevelCompletion(999, stars)
             } else {
                 repository.recordLevelCompletion(completedLevel, stars)
             }

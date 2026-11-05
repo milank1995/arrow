@@ -84,6 +84,7 @@ fun HomeScreen(
     onThemeClick: () -> Unit,
     onSoundToggle: () -> Unit,
     onSettingsClick: () -> Unit,
+    onNewOwnShapeClick: () -> Unit = {},
     onDevTestClick: () -> Unit = {},
     onLevelChange: (Int) -> Unit = {},
     onTestNotificationClick: () -> Unit = {},
@@ -609,6 +610,35 @@ fun HomeScreen(
                     // Dev Secondary Shelf (Only visible in Dev Mode)
                     if (isDevMode) {
                         Spacer(modifier = Modifier.height(12.dp))
+
+                        // New Own Shape Folder Button
+                        Surface(
+                            shape = RoundedCornerShape(14.dp),
+                            color = theme.surface,
+                            border = BorderStroke(1.dp, Color(0xFF6366F1).copy(alpha = 0.5f)),
+                            shadowElevation = 1.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(40.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .clickable(onClick = onNewOwnShapeClick)
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Text(
+                                    text = "🎨 New Shape",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF6366F1)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
                         // Jump Level Button
                         Surface(
                             shape = RoundedCornerShape(14.dp),
