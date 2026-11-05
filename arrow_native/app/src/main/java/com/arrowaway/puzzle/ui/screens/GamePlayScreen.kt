@@ -87,6 +87,8 @@ fun GamePlayScreen(
     onAutoSolveClick: () -> Unit = {},
     onGameplayStarted: () -> Unit = {},
     onPauseStateChanged: (Boolean) -> Unit = {},
+    onPrevShapeClick: () -> Unit = {},
+    onNextShapeClick: () -> Unit = {},
     onSkipCelebration: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -113,6 +115,16 @@ fun GamePlayScreen(
     }
 
     val level = uiState.levelData
+    val resolvedShapeName = remember(uiState.isCustomShapeMode, level?.shapeName, uiState.activeCustomShapeFileName) {
+        if (uiState.isCustomShapeMode) {
+            val rawName = level?.shapeName?.takeIf { it.isNotBlank() }
+                ?: uiState.activeCustomShapeFileName?.removeSuffix(".json")?.replace("_", " ")
+                ?: "Shape"
+            com.arrowaway.puzzle.core.engine.LevelLoader.resolveCustomShapeDisplayName(rawName)
+        } else {
+            level?.shapeName
+        }
+    }
     val theme = uiState.activeTheme
     val remainingArrowsCount = uiState.arrows.count { 
         it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT 
@@ -184,7 +196,7 @@ fun GamePlayScreen(
             isStreakEarnedToday = uiState.isStreakEarnedThisLevel,
             heartsRemaining = uiState.heartsRemaining,
             maxHearts = uiState.maxHearts,
-            shapeName = level?.shapeName,
+            shapeName = resolvedShapeName,
             isDailyChallenge = uiState.isDailyChallengeMode,
             completionTimeSeconds = uiState.levelCompletionTimeSeconds,
             movesCount = uiState.levelMovesCount,
@@ -205,7 +217,7 @@ fun GamePlayScreen(
             modifier = modifier
         )
     } else {
-        val isInitialLevel1 = uiState.currentLevelNumber == 1 && !uiState.isDailyChallengeMode
+        val isInitialLevel1 = uiState.currentLevelNumber == 1 && !uiState.isDailyChallengeMode && !uiState.isCustomShapeMode
 
         Surface(
             color = theme.background,
@@ -239,8 +251,17 @@ fun GamePlayScreen(
                                 theme = theme,
                                 isDailyChallenge = uiState.isDailyChallengeMode,
                                 dailyDateString = uiState.activeDailyDate,
-                                shapeName = null,
+                                shapeName = resolvedShapeName,
                                 isTestMode = false,
+                                showShapeNavigation = uiState.isCustomShapeMode,
+                                onPrevShapeClick = {
+                                    onPlayClickSound()
+                                    onPrevShapeClick()
+                                },
+                                onNextShapeClick = {
+                                    onPlayClickSound()
+                                    onNextShapeClick()
+                                },
                                 showArrowCount = false,
                                 showHearts = true,
                                 onPauseClick = {
@@ -276,6 +297,8 @@ fun GamePlayScreen(
                                 activeBoosterAnimation = uiState.activeBoosterAnimation,
                                 currentLevelNumber = uiState.currentLevelNumber,
                                 isDailyChallengeMode = uiState.isDailyChallengeMode,
+                                isCustomShapeMode = uiState.isCustomShapeMode,
+                                showTutorialHand = (uiState.currentLevelNumber == 1 && !uiState.isDailyChallengeMode && !uiState.isCustomShapeMode),
                                 onArrowClick = { arrow ->
                                     lastInteractionTime = System.currentTimeMillis()
                                     isIdlePromptActive = false
@@ -324,7 +347,7 @@ fun GamePlayScreen(
                                 .padding(horizontal = 4.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            val effectiveHints = if (uiState.isDailyChallengeMode) {
+                            val effectiveHints = if (uiState.isDailyChallengeMode || uiState.isCustomShapeMode) {
                                 uiState.levelFreeHintsRemaining
                             } else if (uiState.currentLevelNumber <= 10) {
                                 999
@@ -334,9 +357,11 @@ fun GamePlayScreen(
                             BoosterBar(
                                 hintsCount = effectiveHints,
                                 isGridLinesActive = uiState.isGridLinesActive,
-                                isFreeHintLevel = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode),
+                                isFreeHintLevel = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode && !uiState.isCustomShapeMode),
                                 isIdlePromptActive = isIdlePromptActive,
-                                levelNumber = uiState.currentLevelNumber,
+                                levelNumber = if (uiState.isCustomShapeMode) null else uiState.currentLevelNumber,
+                                shapeName = resolvedShapeName,
+                                remainingArrowsCount = if (uiState.isCustomShapeMode) remainingArrowsCount else null,
                                 isDailyChallenge = uiState.isDailyChallengeMode,
                                 theme = theme,
                                 isHintVisible = uiState.isHintButtonVisible,
