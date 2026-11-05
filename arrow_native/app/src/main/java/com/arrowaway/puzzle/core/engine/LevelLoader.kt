@@ -112,6 +112,11 @@ object LevelLoader {
             "JCB", "Jcb" -> "JCB"
             "ManWithPiano", "Man With Piano" -> "Piano Player"
             "Trophy" -> "Trophy"
+            "DogFace", "Dog Face" -> "Dog Face"
+            "Dragon" -> "Dragon"
+            "House" -> "House"
+            "IcecreamCone", "Ice Cream Cone" -> "Ice Cream Cone"
+            "MerryGoRound", "Merry Go Round" -> "Carousel"
             else -> trimmed.replace("_", " ")
         }
     }

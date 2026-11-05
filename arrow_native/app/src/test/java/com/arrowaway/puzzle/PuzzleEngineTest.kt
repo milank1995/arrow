@@ -551,5 +551,30 @@ class PuzzleEngineTest {
     fun testTrophyPuzzleSolvability() {
         verifyCustomShapeSolvability("Trophy.json", "Trophy", 130, 48, 54)
     }
+
+    @Test
+    fun testDogFacePuzzleSolvability() {
+        verifyCustomShapeSolvability("DogFace.json", "DogFace", 300, 70, 75)
+    }
+
+    @Test
+    fun testDragonPuzzleSolvability() {
+        verifyCustomShapeSolvability("Dragon.json", "Dragon", 220, 64, 66)
+    }
+
+    @Test
+    fun testHousePuzzleSolvability() {
+        verifyCustomShapeSolvability("House.json", "House", 200, 89, 102)
+    }
+
+    @Test
+    fun testIcecreamConePuzzleSolvability() {
+        verifyCustomShapeSolvability("IcecreamCone.json", "IcecreamCone", 200, 55, 86)
+    }
+
+    @Test
+    fun testMerryGoRoundPuzzleSolvability() {
+        verifyCustomShapeSolvability("MerryGoRound.json", "MerryGoRound", 230, 78, 88)
+    }
 }
 
