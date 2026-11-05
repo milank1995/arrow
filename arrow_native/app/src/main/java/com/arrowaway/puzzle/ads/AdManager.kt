@@ -47,8 +47,58 @@ object AdManager {
     private var cachedInterstitialAd: InterstitialAd? = null
     private var isInterstitialLoading = false
 
-    private var lastInterstitialTimeMs: Long = 0L
+    private const val PREFS_NAME = "arrow_ad_prefs"
+    private const val KEY_LAST_INTERSTITIAL_TIME = "last_interstitial_time_ms"
+    private const val KEY_PENDING_INTERSTITIAL_TIME = "pending_interstitial_time_ms"
+    const val PENDING_INTERSTITIAL_TTL_MS = 5 * 60 * 1000L // 5 minutes TTL
+
     private val mainHandler = Handler(Looper.getMainLooper())
+
+    fun getLastInterstitialTime(context: Context): Long {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getLong(KEY_LAST_INTERSTITIAL_TIME, 0L)
+    }
+
+    fun setLastInterstitialTime(context: Context, timestamp: Long) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putLong(KEY_LAST_INTERSTITIAL_TIME, timestamp)
+            .apply()
+    }
+
+    fun getPendingInterstitialTime(context: Context): Long {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getLong(KEY_PENDING_INTERSTITIAL_TIME, 0L)
+    }
+
+    fun setPendingInterstitialTime(context: Context, timestamp: Long) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putLong(KEY_PENDING_INTERSTITIAL_TIME, timestamp)
+            .apply()
+    }
+
+    fun clearPendingInterstitial(context: Context) {
+        setPendingInterstitialTime(context, 0L)
+    }
+
+    fun hasPendingInterstitial(context: Context): Boolean {
+        if (!RemoteConfigManager.isAdsEnabled || !RemoteConfigManager.isInterstitialAdsEnabled) {
+            clearPendingInterstitial(context)
+            return false
+        }
+        val pendingTime = getPendingInterstitialTime(context)
+        if (pendingTime <= 0L) return false
+
+        val elapsed = System.currentTimeMillis() - pendingTime
+        return if (elapsed in 0L..PENDING_INTERSTITIAL_TTL_MS) {
+            true
+        } else {
+            // Expired (> 5 minutes) -> discard gracefully so returning users aren't surprised
+            clearPendingInterstitial(context)
+            false
+        }
+    }
 
     fun initialize(context: Context) {
         try {
@@ -229,8 +279,9 @@ object AdManager {
             // Rule 2: Enforce cooldown between interstitials (default 360s)
             val now = System.currentTimeMillis()
             val cooldownMs = RemoteConfigManager.interstitialCooldownSeconds * 1000L
-            if (lastInterstitialTimeMs > 0L && (now - lastInterstitialTimeMs) < cooldownMs) {
-                val remainingSec = (cooldownMs - (now - lastInterstitialTimeMs)) / 1000L
+            val lastTime = getLastInterstitialTime(activity)
+            if (lastTime > 0L && (now - lastTime) < cooldownMs) {
+                val remainingSec = (cooldownMs - (now - lastTime)) / 1000L
                 Log.d(TAG, "Interstitial skipped due to active cooldown ($remainingSec seconds remaining).")
                 onDismissed()
                 return
@@ -244,6 +295,9 @@ object AdManager {
             return
         }
 
+        // Record pending ad timestamp to prevent force-quit bypass
+        setPendingInterstitialTime(activity, System.currentTimeMillis())
+
         ad.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdShowedFullScreenContent() {
                 Log.d(TAG, "Interstitial ad showing.")
@@ -252,13 +306,67 @@ object AdManager {
 
             override fun onAdDismissedFullScreenContent() {
                 Log.d(TAG, "Interstitial ad dismissed.")
-                lastInterstitialTimeMs = System.currentTimeMillis()
+                clearPendingInterstitial(activity)
+                setLastInterstitialTime(activity, System.currentTimeMillis())
                 preloadInterstitialAd(activity.applicationContext)
                 onDismissed()
             }
 
             override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                 Log.e(TAG, "Interstitial ad failed to show: ${adError.message}")
+                clearPendingInterstitial(activity)
+                cachedInterstitialAd = null
+                preloadInterstitialAd(activity.applicationContext)
+                onDismissed()
+            }
+        }
+
+        ad.show(activity)
+    }
+
+    /**
+     * Displays a pending interstitial ad that was interrupted (e.g. by force quitting).
+     * If the ad fails or cannot be shown, clears the pending state and proceeds gracefully.
+     */
+    fun showPendingInterstitialAd(
+        activity: Activity,
+        onDismissed: () -> Unit
+    ) {
+        if (!RemoteConfigManager.isAdsEnabled || !RemoteConfigManager.isInterstitialAdsEnabled) {
+            clearPendingInterstitial(activity)
+            onDismissed()
+            return
+        }
+
+        val ad = cachedInterstitialAd
+        if (ad == null) {
+            Log.d(TAG, "Pending interstitial could not be shown (not cached). Resuming game.")
+            clearPendingInterstitial(activity)
+            preloadInterstitialAd(activity.applicationContext)
+            onDismissed()
+            return
+        }
+
+        // Refresh timestamp while showing pending ad
+        setPendingInterstitialTime(activity, System.currentTimeMillis())
+
+        ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdShowedFullScreenContent() {
+                Log.d(TAG, "Pending interstitial showing.")
+                cachedInterstitialAd = null
+            }
+
+            override fun onAdDismissedFullScreenContent() {
+                Log.d(TAG, "Pending interstitial dismissed.")
+                clearPendingInterstitial(activity)
+                setLastInterstitialTime(activity, System.currentTimeMillis())
+                preloadInterstitialAd(activity.applicationContext)
+                onDismissed()
+            }
+
+            override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                Log.e(TAG, "Pending interstitial failed to show: ${adError.message}")
+                clearPendingInterstitial(activity)
                 cachedInterstitialAd = null
                 preloadInterstitialAd(activity.applicationContext)
                 onDismissed()

@@ -63,6 +63,16 @@ class MainActivity : ComponentActivity() {
         setIntent(intent)
     }
 
+    private fun launchGameplayWithPendingAdCheck(onProceed: () -> Unit) {
+        if (AdManager.hasPendingInterstitial(this)) {
+            AdManager.showPendingInterstitialAd(this) {
+                onProceed()
+            }
+        } else {
+            onProceed()
+        }
+    }
+
     private fun hideSystemBars() {
         val insetsController = WindowCompat.getInsetsController(window, window.decorView)
         insetsController.systemBarsBehavior =
@@ -195,7 +205,9 @@ class MainActivity : ComponentActivity() {
                                     isDevMode = uiState.isDevMode,
                                     onPlayClick = {
                                         gameViewModel.playClick()
-                                        currentScreen = AppScreen.GAMEPLAY
+                                        launchGameplayWithPendingAdCheck {
+                                            currentScreen = AppScreen.GAMEPLAY
+                                        }
                                     },
                                     onDailyChallengeClick = {
                                         gameViewModel.playClick()
@@ -352,7 +364,7 @@ class MainActivity : ComponentActivity() {
                                             currentScreen = if (wasDaily) AppScreen.DAILY_CHALLENGE else AppScreen.HOME
                                         }
 
-                                        if (wasDaily && isVictory) {
+                                        if (isVictory) {
                                             AdManager.showInterstitialAd(
                                                 activity = this@MainActivity,
                                                 currentLevel = curLevel,
@@ -561,7 +573,9 @@ class MainActivity : ComponentActivity() {
                                     onPlayDate = { dateString ->
                                         gameViewModel.playClick()
                                         gameViewModel.startDailyChallenge(dateString)
-                                        currentScreen = AppScreen.GAMEPLAY
+                                        launchGameplayWithPendingAdCheck {
+                                            currentScreen = AppScreen.GAMEPLAY
+                                        }
                                     },
                                     onBackClick = {
                                         gameViewModel.playClick()
@@ -582,7 +596,9 @@ class MainActivity : ComponentActivity() {
                                 gameViewModel.dismissDailyLaunchPrompt()
                                 val today = LocalDate.now().toString()
                                 gameViewModel.startDailyChallenge(today)
-                                currentScreen = AppScreen.GAMEPLAY
+                                launchGameplayWithPendingAdCheck {
+                                    currentScreen = AppScreen.GAMEPLAY
+                                }
                             },
                             onDismiss = {
                                 gameViewModel.playClick()
