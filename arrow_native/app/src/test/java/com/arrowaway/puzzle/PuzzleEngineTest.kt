@@ -776,5 +776,30 @@ class PuzzleEngineTest {
     fun testCustomDesign9PuzzleSolvability() {
         verifyCustomShapeSolvability("CustomDesign9.json", "Unknown Shape 2", 80, 43, 75)
     }
+
+    @Test
+    fun testCatAndUmbrellaPuzzleSolvability() {
+        verifyCustomShapeSolvability("CatAndUmbrella.json", "CatAndUmbrella", 54, 67, 77)
+    }
+
+    @Test
+    fun testFlowerPotPuzzleSolvability() {
+        verifyCustomShapeSolvability("FlowerPot.json", "Flower Pot", 55, 59, 98)
+    }
+
+    @Test
+    fun testOctopusPuzzleSolvability() {
+        verifyCustomShapeSolvability("Octopus.json", "Octopus", 46, 51, 70)
+    }
+
+    @Test
+    fun testPalmTreePuzzleSolvability() {
+        verifyCustomShapeSolvability("PalmTree.json", "PalmTree", 55, 47, 52)
+    }
+
+    @Test
+    fun testAppleCorePuzzleSolvability() {
+        verifyCustomShapeSolvability("AppleCore.json", "Apple Core", 65, 59, 81)
+    }
 }
 

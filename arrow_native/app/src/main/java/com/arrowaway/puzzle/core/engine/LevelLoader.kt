@@ -157,6 +157,11 @@ object LevelLoader {
             "Robot" -> "Robot"
             "Root" -> "Root"
             "Unknown Shape 2", "CustomDesign9", "Custom Design 9" -> "Custom Design 9"
+            "CatAndUmbrella", "Cat and Umbrella" -> "Cat and Umbrella"
+            "Flower Pot", "FlowerPot", "Flower Port", "FlowerPort" -> "Flower Pot"
+            "Octopus" -> "Octopus"
+            "PalmTree", "Palm Tree" -> "Palm Tree"
+            "Apple Core", "AppleCore", "Apple" -> "Apple Core"
             else -> trimmed.replace("_", " ")
         }
     }
@@ -168,9 +173,8 @@ object LevelLoader {
         val list = mutableListOf<CustomShapeItem>()
         try {
             val files = context.assets.list("New Own Shape") ?: emptyArray()
-            val sortedFiles = files.filter { it.endsWith(".json", ignoreCase = true) }
-                .sortedWith(compareBy({ if (it.equals("Glasses.json", ignoreCase = true)) 0 else 1 }, { it }))
-            for (file in sortedFiles) {
+            val jsonFiles = files.filter { it.endsWith(".json", ignoreCase = true) }
+            for (file in jsonFiles) {
                 try {
                     val jsonStr = context.assets.open("New Own Shape/$file").bufferedReader().use { it.readText() }
                     val level = parseLevelJson(999, jsonStr)
@@ -194,6 +198,7 @@ object LevelLoader {
                     com.arrowaway.puzzle.analytics.CrashLogger.recordException(e, "LevelLoader.listCustomShapeLevels($file)")
                 }
             }
+            list.sortBy { it.displayName.lowercase() }
         } catch (e: Exception) {
             com.arrowaway.puzzle.analytics.CrashLogger.recordException(e, "LevelLoader.listCustomShapeLevels")
         }
