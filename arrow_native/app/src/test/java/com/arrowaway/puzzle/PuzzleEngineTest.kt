@@ -601,5 +601,30 @@ class PuzzleEngineTest {
     fun testSharkPuzzleSolvability() {
         verifyCustomShapeSolvability("Shark.json", "Shark", 250, 84, 64)
     }
+
+    @Test
+    fun testBorderHeartPuzzleSolvability() {
+        verifyCustomShapeSolvability("BorderHeart.json", "Full Heart", 479, 82, 54)
+    }
+
+    @Test
+    fun testChickenPuzzleSolvability() {
+        verifyCustomShapeSolvability("Chicken.json", "Chicken", 350, 73, 74)
+    }
+
+    @Test
+    fun testDogPuzzleSolvability() {
+        verifyCustomShapeSolvability("Dog.json", "Dog", 430, 67, 79)
+    }
+
+    @Test
+    fun testElephantPuzzleSolvability() {
+        verifyCustomShapeSolvability("Elephant.json", "Elephant", 400, 72, 75)
+    }
+
+    @Test
+    fun testPigeonPuzzleSolvability() {
+        verifyCustomShapeSolvability("Pigeon.json", "Pigeon", 400, 75, 76)
+    }
 }
 

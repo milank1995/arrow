@@ -249,6 +249,9 @@ private fun CustomShapeCard(
                 item.displayName.contains("Mickey", ignoreCase = true) || item.displayName.contains("Mouse", ignoreCase = true) -> "🐭"
                 item.displayName.contains("OK", ignoreCase = true) -> "👌"
                 item.displayName.contains("Shark", ignoreCase = true) -> "🦈"
+                item.displayName.contains("Chicken", ignoreCase = true) -> "🐔"
+                item.displayName.contains("Elephant", ignoreCase = true) -> "🐘"
+                item.displayName.contains("Pigeon", ignoreCase = true) -> "🕊️"
                 item.displayName.contains("Custom", ignoreCase = true) || item.displayName.contains("Design", ignoreCase = true) -> "🎨"
                 item.displayName.contains("Lock", ignoreCase = true) -> "🔒"
                 item.displayName.contains("Heart", ignoreCase = true) -> "❤️"
@@ -327,6 +330,7 @@ private fun CustomShapeCard(
         }
     }
 }
+
 
 
 

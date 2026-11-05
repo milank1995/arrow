@@ -122,6 +122,11 @@ object LevelLoader {
             "Mickey Mouse", "MickeyMouse" -> "Mickey Mouse"
             "OK", "Ok" -> "OK Sign"
             "Shark" -> "Shark"
+            "Full Heart", "BorderHeart", "Border Heart" -> "Full Heart"
+            "Chicken" -> "Chicken"
+            "Dog" -> "Dog"
+            "Elephant" -> "Elephant"
+            "Pigeon" -> "Pigeon"
             else -> trimmed.replace("_", " ")
         }
     }
