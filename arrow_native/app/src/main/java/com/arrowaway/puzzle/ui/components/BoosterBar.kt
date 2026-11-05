@@ -79,6 +79,7 @@ fun BoosterBar(
     isIdlePromptActive: Boolean = false,
     levelNumber: Int? = null,
     shapeName: String? = null,
+    remainingArrowsCount: Int? = null,
     isDailyChallenge: Boolean = false,
     heartsRemaining: Int? = null,
     maxHearts: Int = 3,
@@ -235,6 +236,7 @@ fun BoosterBar(
                     Text(
                         text = when {
                             isDailyChallenge -> "Daily Challenge"
+                            shapeName != null && remainingArrowsCount != null -> "$shapeName - $remainingArrowsCount"
                             shapeName != null -> shapeName
                             else -> "Level $levelNumber"
                         },

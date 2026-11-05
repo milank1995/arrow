@@ -605,6 +605,32 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         startCustomShapeLevel("Glasses.json")
     }
 
+    fun navigateToNextCustomShape() {
+        val currentFile = _uiState.value.activeCustomShapeFileName ?: "Glasses.json"
+        val shapes = LevelLoader.listCustomShapeLevels(app)
+        if (shapes.isEmpty()) return
+        val currentIndex = shapes.indexOfFirst { it.fileName.equals(currentFile, ignoreCase = true) }
+        val nextIndex = if (currentIndex != -1) {
+            (currentIndex + 1) % shapes.size
+        } else {
+            0
+        }
+        startCustomShapeLevel(shapes[nextIndex].fileName)
+    }
+
+    fun navigateToPreviousCustomShape() {
+        val currentFile = _uiState.value.activeCustomShapeFileName ?: "Glasses.json"
+        val shapes = LevelLoader.listCustomShapeLevels(app)
+        if (shapes.isEmpty()) return
+        val currentIndex = shapes.indexOfFirst { it.fileName.equals(currentFile, ignoreCase = true) }
+        val prevIndex = if (currentIndex != -1) {
+            (currentIndex - 1 + shapes.size) % shapes.size
+        } else {
+            shapes.size - 1
+        }
+        startCustomShapeLevel(shapes[prevIndex].fileName)
+    }
+
     fun onArrowClicked(clickedArrow: Arrow) {
         if (_uiState.value.isLevelComplete || _uiState.value.isGameOver) return
 

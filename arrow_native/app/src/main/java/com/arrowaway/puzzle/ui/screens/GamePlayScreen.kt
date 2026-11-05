@@ -87,6 +87,8 @@ fun GamePlayScreen(
     onAutoSolveClick: () -> Unit = {},
     onGameplayStarted: () -> Unit = {},
     onPauseStateChanged: (Boolean) -> Unit = {},
+    onPrevShapeClick: () -> Unit = {},
+    onNextShapeClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(uiState.currentLevelNumber, uiState.activeDailyDate) {
@@ -112,6 +114,16 @@ fun GamePlayScreen(
     }
 
     val level = uiState.levelData
+    val resolvedShapeName = remember(uiState.isCustomShapeMode, level?.shapeName, uiState.activeCustomShapeFileName) {
+        if (uiState.isCustomShapeMode) {
+            val rawName = level?.shapeName?.takeIf { it.isNotBlank() }
+                ?: uiState.activeCustomShapeFileName?.removeSuffix(".json")?.replace("_", " ")
+                ?: "Shape"
+            if (rawName == "CustomDesign1") "Custom Design 1" else rawName
+        } else {
+            level?.shapeName
+        }
+    }
     val theme = uiState.activeTheme
     val remainingArrowsCount = uiState.arrows.count { 
         it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT 
@@ -183,7 +195,7 @@ fun GamePlayScreen(
             isStreakEarnedToday = uiState.isStreakEarnedThisLevel,
             heartsRemaining = uiState.heartsRemaining,
             maxHearts = uiState.maxHearts,
-            shapeName = if (uiState.isCustomShapeMode) (level?.shapeName ?: uiState.activeCustomShapeFileName?.removeSuffix(".json")) else level?.shapeName,
+            shapeName = resolvedShapeName,
             isDailyChallenge = uiState.isDailyChallengeMode,
             completionTimeSeconds = uiState.levelCompletionTimeSeconds,
             movesCount = uiState.levelMovesCount,
@@ -238,8 +250,17 @@ fun GamePlayScreen(
                                 theme = theme,
                                 isDailyChallenge = uiState.isDailyChallengeMode,
                                 dailyDateString = uiState.activeDailyDate,
-                                shapeName = if (uiState.isCustomShapeMode) (level?.shapeName ?: uiState.activeCustomShapeFileName?.removeSuffix(".json")) else null,
+                                shapeName = resolvedShapeName,
                                 isTestMode = false,
+                                showShapeNavigation = uiState.isCustomShapeMode,
+                                onPrevShapeClick = {
+                                    onPlayClickSound()
+                                    onPrevShapeClick()
+                                },
+                                onNextShapeClick = {
+                                    onPlayClickSound()
+                                    onNextShapeClick()
+                                },
                                 showArrowCount = false,
                                 showHearts = true,
                                 onPauseClick = {
@@ -275,6 +296,8 @@ fun GamePlayScreen(
                                 activeBoosterAnimation = uiState.activeBoosterAnimation,
                                 currentLevelNumber = uiState.currentLevelNumber,
                                 isDailyChallengeMode = uiState.isDailyChallengeMode,
+                                isCustomShapeMode = uiState.isCustomShapeMode,
+                                showTutorialHand = (uiState.currentLevelNumber == 1 && !uiState.isDailyChallengeMode && !uiState.isCustomShapeMode),
                                 onArrowClick = { arrow ->
                                     lastInteractionTime = System.currentTimeMillis()
                                     isIdlePromptActive = false
@@ -335,7 +358,8 @@ fun GamePlayScreen(
                                 isFreeHintLevel = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode && !uiState.isCustomShapeMode),
                                 isIdlePromptActive = isIdlePromptActive,
                                 levelNumber = if (uiState.isCustomShapeMode) null else uiState.currentLevelNumber,
-                                shapeName = if (uiState.isCustomShapeMode) (level?.shapeName ?: uiState.activeCustomShapeFileName?.removeSuffix(".json")) else level?.shapeName,
+                                shapeName = resolvedShapeName,
+                                remainingArrowsCount = if (uiState.isCustomShapeMode) remainingArrowsCount else null,
                                 isDailyChallenge = uiState.isDailyChallengeMode,
                                 theme = theme,
                                 isHintVisible = uiState.isHintButtonVisible,

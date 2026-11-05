@@ -465,6 +465,14 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onPauseStateChanged = { isPaused ->
                                         gameViewModel.setGamePaused(isPaused)
+                                    },
+                                    onPrevShapeClick = {
+                                        gameViewModel.playClick()
+                                        gameViewModel.navigateToPreviousCustomShape()
+                                    },
+                                    onNextShapeClick = {
+                                        gameViewModel.playClick()
+                                        gameViewModel.navigateToNextCustomShape()
                                     }
                                 )
                             }

@@ -75,6 +75,9 @@ fun GameHeader(
     dailyDateString: String? = null,
     shapeName: String? = null,
     isTestMode: Boolean = false,
+    showShapeNavigation: Boolean = false,
+    onPrevShapeClick: (() -> Unit)? = null,
+    onNextShapeClick: (() -> Unit)? = null,
     onPrevLevelClick: (() -> Unit)? = null,
     onNextLevelClick: (() -> Unit)? = null,
     onLevelNumberClick: (() -> Unit)? = null,
@@ -174,12 +177,67 @@ fun GameHeader(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    if (showHearts) {
-                        HeartIndicatorPill(
-                            heartsRemaining = heartsRemaining,
-                            maxHearts = maxHearts,
-                            theme = theme
-                        )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        if (showShapeNavigation && onPrevShapeClick != null) {
+                            Surface(
+                                shape = RoundedCornerShape(percent = 50),
+                                color = theme.boosterBg,
+                                border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
+                                shadowElevation = 1.dp,
+                                modifier = Modifier
+                                    .size(34.dp)
+                                    .clip(RoundedCornerShape(percent = 50))
+                                    .clickable(onClick = onPrevShapeClick)
+                            ) {
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "Previous Shape",
+                                        tint = theme.textPrimary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        if (showHearts) {
+                            HeartIndicatorPill(
+                                heartsRemaining = heartsRemaining,
+                                maxHearts = maxHearts,
+                                theme = theme
+                            )
+                        }
+
+                        if (showShapeNavigation && onNextShapeClick != null) {
+                            Surface(
+                                shape = RoundedCornerShape(percent = 50),
+                                color = theme.boosterBg,
+                                border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
+                                shadowElevation = 1.dp,
+                                modifier = Modifier
+                                    .size(34.dp)
+                                    .clip(RoundedCornerShape(percent = 50))
+                                    .clickable(onClick = onNextShapeClick)
+                            ) {
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                        contentDescription = "Next Shape",
+                                        tint = theme.textPrimary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+                        }
                     }
 
                     // In dev test mode: show level switch buttons directly under hearts

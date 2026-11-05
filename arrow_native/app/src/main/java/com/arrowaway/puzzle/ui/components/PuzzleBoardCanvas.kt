@@ -120,7 +120,8 @@ fun PuzzleBoardCanvas(
     activeBoosterAnimation: BoosterEffectAnimation? = null,
     currentLevelNumber: Int = 0,
     isDailyChallengeMode: Boolean = false,
-    showTutorialHand: Boolean = (currentLevelNumber == 1 && !isDailyChallengeMode),
+    isCustomShapeMode: Boolean = false,
+    showTutorialHand: Boolean = (currentLevelNumber == 1 && !isDailyChallengeMode && !isCustomShapeMode),
     onArrowClick: (Arrow) -> Unit,
     onArrowLongPress: (Arrow, isPressed: Boolean) -> Unit,
     onDismissPreviewRays: () -> Unit = {},
@@ -386,7 +387,7 @@ fun PuzzleBoardCanvas(
 
         // Tutorial hand indicator: active strictly during Level 1 until all arrows are cleared
         val tutorialTargetArrow = remember(arrows, currentLevelNumber, isDailyChallengeMode, showTutorialHand, occupancyMap) {
-            if (showTutorialHand && currentLevelNumber == 1 && !isDailyChallengeMode) {
+            if (showTutorialHand && currentLevelNumber == 1 && !isDailyChallengeMode && !isCustomShapeMode) {
                 arrows.firstOrNull { it.state == ArrowState.IDLE && PuzzleSolver.canMoveOut(it, occupancyMap) }
                     ?: arrows.firstOrNull { it.state == ArrowState.IDLE }
             } else null
@@ -915,7 +916,7 @@ fun PuzzleBoardCanvas(
         }
 
         // Prominent "Tap to move" banner positioned directly above the puzzle grid with a dynamic responsive gap
-        if (showTutorialHand && currentLevelNumber == 1 && !isDailyChallengeMode && hasUnclearedArrows && introProgress.value >= 1f) {
+        if (showTutorialHand && currentLevelNumber == 1 && !isDailyChallengeMode && !isCustomShapeMode && hasUnclearedArrows && introProgress.value >= 1f) {
             val density = LocalDensity.current
             val dynamicGapPx = with(density) {
                 (boardHeight * 0.20f).coerceIn(28.dp.toPx(), 46.dp.toPx())
