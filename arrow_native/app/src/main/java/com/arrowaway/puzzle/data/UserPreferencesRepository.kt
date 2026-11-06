@@ -42,7 +42,8 @@ data class UserGameData(
     val isGridButtonVisible: Boolean = true,
     val hintTimerSeconds: Int = 10,
     val lastReviewPromptTimestamp: Long = 0L,
-    val isAnalyticsEnabled: Boolean = !com.arrowaway.puzzle.BuildConfig.DEBUG
+    val isAnalyticsEnabled: Boolean = !com.arrowaway.puzzle.BuildConfig.DEBUG,
+    val isHandGestureEnabled: Boolean = true
 )
 
 class UserPreferencesRepository(private val context: Context) {
@@ -71,6 +72,7 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_HINT_TIMER_SECONDS = intPreferencesKey("hint_timer_seconds")
     private val KEY_LAST_REVIEW_PROMPT_TIMESTAMP = longPreferencesKey("last_review_prompt_timestamp")
     private val KEY_ANALYTICS_ENABLED = booleanPreferencesKey("analytics_tracking_enabled")
+    private val KEY_HAND_GESTURE_ENABLED = booleanPreferencesKey("is_hand_gesture_enabled")
 
     private val SYNC_PREFS = "arrow_sync_prefs"
     private val KEY_SYNC_HAS_PLAYED = "has_played_before"
@@ -189,7 +191,8 @@ class UserPreferencesRepository(private val context: Context) {
             isGridButtonVisible = prefs[KEY_GRID_BUTTON_VISIBLE] ?: true,
             hintTimerSeconds = (prefs[KEY_HINT_TIMER_SECONDS] ?: 10).coerceIn(0, 55),
             lastReviewPromptTimestamp = prefs[KEY_LAST_REVIEW_PROMPT_TIMESTAMP] ?: 0L,
-            isAnalyticsEnabled = prefs[KEY_ANALYTICS_ENABLED] ?: (!com.arrowaway.puzzle.BuildConfig.DEBUG)
+            isAnalyticsEnabled = prefs[KEY_ANALYTICS_ENABLED] ?: (!com.arrowaway.puzzle.BuildConfig.DEBUG),
+            isHandGestureEnabled = prefs[KEY_HAND_GESTURE_ENABLED] ?: true
         )
     }
 
@@ -416,6 +419,12 @@ class UserPreferencesRepository(private val context: Context) {
     suspend fun setAnalyticsEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[KEY_ANALYTICS_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setHandGestureEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[KEY_HAND_GESTURE_ENABLED] = enabled
         }
     }
 

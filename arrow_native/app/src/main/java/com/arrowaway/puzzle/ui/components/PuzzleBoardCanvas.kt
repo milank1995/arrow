@@ -80,6 +80,7 @@ import com.arrowaway.puzzle.core.model.Direction
 import com.arrowaway.puzzle.core.model.GridCoordinate
 import com.arrowaway.puzzle.ui.theme.ThemePreset
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -132,6 +133,9 @@ fun PuzzleBoardCanvas(
     isDailyChallengeMode: Boolean = false,
     isCustomShapeMode: Boolean = false,
     showTutorialHand: Boolean = (currentLevelNumber == 1 && !isDailyChallengeMode && !isCustomShapeMode),
+    isAutoSolving: Boolean = false,
+    isHandGestureEnabled: Boolean = true,
+    onStopAutoSolve: () -> Unit = {},
     onArrowClick: (Arrow) -> Unit,
     onArrowLongPress: (Arrow, isPressed: Boolean) -> Unit,
     onDismissPreviewRays: () -> Unit = {},
@@ -457,11 +461,175 @@ fun PuzzleBoardCanvas(
             } else null
         }
 
+        // -------------------------------------------------------------
+        // AUTO PLAY HAND GESTURE ANIMATION (Ad Video Recording Mode)
+        // -------------------------------------------------------------
+        var autoPlayHandPos by remember { mutableStateOf<Offset?>(null) }
+        var autoPlayHandAngle by remember { mutableFloatStateOf(-35f) }
+        var autoPlayTapProgress by remember { mutableFloatStateOf(0f) }
+        var autoPlayScaleFactor by remember { mutableFloatStateOf(1f) }
+        var autoPlayRippleRadius by remember { mutableFloatStateOf(0f) }
+        var autoPlayRippleAlpha by remember { mutableFloatStateOf(0f) }
+        var isAutoPlayHandActive by remember { mutableStateOf(false) }
+
+        val currentIsAutoSolving by rememberUpdatedState(isAutoSolving)
+        val currentIsHandGestureEnabled by rememberUpdatedState(isHandGestureEnabled)
+
+        LaunchedEffect(isAutoSolving, isHandGestureEnabled, restartTrigger) {
+            if (!isAutoSolving || !isHandGestureEnabled) {
+                isAutoPlayHandActive = false
+                autoPlayHandPos = null
+                return@LaunchedEffect
+            }
+
+            // Wait until board intro zoom finishes
+            while (introProgress.value < 1f) {
+                delay(30)
+            }
+
+            isAutoPlayHandActive = true
+
+            // Initial starting point: gracefully entering from bottom-right of viewport
+            var lastScreenPos = autoPlayHandPos ?: Offset(
+                currentViewportWidth * 0.86f,
+                currentViewportHeight * 0.96f
+            )
+            autoPlayHandPos = lastScreenPos
+            var lastAngle = -35f
+
+            while (isActive && currentIsAutoSolving && currentIsHandGestureEnabled) {
+                // Find uncleared arrows
+                val uncleared = currentArrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
+                if (uncleared.isEmpty()) {
+                    break
+                }
+
+                // Check for unblocked arrow
+                val unblocked = currentArrows.filter { it.state == ArrowState.IDLE && PuzzleSolver.canMoveOut(it, currentOccupancyMap) }
+                if (unblocked.isEmpty()) {
+                    // Preceding arrow may still be flying out; wait briefly for grid cells to free up
+                    delay(50)
+                    continue
+                }
+
+                val targetArrow = PuzzleSolver.getBestHint(currentArrows, currentOccupancyMap) ?: unblocked.first()
+
+                // Target center in local board coordinates
+                val allCoords = targetArrow.allPoints
+                val midCoord = allCoords[allCoords.size / 2]
+                val localTarget = Offset(
+                    currentBoardOrigin.x + (midCoord.x.toFloat() + 0.5f) * currentCellSize,
+                    currentBoardOrigin.y + (midCoord.y.toFloat() + 0.5f) * currentCellSize
+                )
+                // Convert to screen space accounting for zoom and pan
+                val effScale = scale
+                val screenCenter = Offset(currentViewportWidth / 2f, currentViewportHeight / 2f)
+                val targetScreenPos = screenCenter + Offset(panX, panY) + (localTarget - screenCenter) * effScale
+
+                // Optimal approach angle (so hand doesn't block arrow's flight path)
+                val candidateAngles = when (targetArrow.direction) {
+                    Direction.UP -> listOf(-38f, 38f)
+                    Direction.DOWN -> listOf(142f, -142f)
+                    Direction.RIGHT -> listOf(38f, 142f)
+                    Direction.LEFT -> listOf(-38f, -142f)
+                }
+                val targetAngle = candidateAngles.firstOrNull { angle ->
+                    val rad = angle * (PI.toFloat() / 180f)
+                    val hW = with(density) { 76.dp.toPx() }
+                    val hH = with(density) { 92.dp.toPx() }
+                    val bX = targetScreenPos.x - sin(rad) * hH * 0.55f
+                    val bY = targetScreenPos.y + cos(rad) * hH * 0.55f
+                    bX in (hW * 0.5f)..(currentViewportWidth - hW * 0.5f) &&
+                    bY in (hH * 0.5f)..(currentViewportHeight - hH * 0.5f)
+                } ?: candidateAngles.first()
+
+                // 1. Smooth glide to target position
+                val glideDurationMs = 380L
+                val glideStartPos = autoPlayHandPos ?: lastScreenPos
+                val glideStartAngle = autoPlayHandAngle
+                val glideStartTime = System.currentTimeMillis()
+
+                while (true) {
+                    val elapsed = System.currentTimeMillis() - glideStartTime
+                    val frac = (elapsed.toFloat() / glideDurationMs.toFloat()).coerceIn(0f, 1f)
+                    // Natural human ease: fast out, slow in
+                    val ease = CubicBezierEasing(0.35f, 0.0f, 0.15f, 1.0f).transform(frac)
+
+                    autoPlayHandPos = Offset(
+                        glideStartPos.x + (targetScreenPos.x - glideStartPos.x) * ease,
+                        glideStartPos.y + (targetScreenPos.y - glideStartPos.y) * ease
+                    )
+                    autoPlayHandAngle = glideStartAngle + (targetAngle - glideStartAngle) * ease
+
+                    if (frac >= 1f) break
+                    delay(16)
+                }
+
+                autoPlayHandPos = targetScreenPos
+                autoPlayHandAngle = targetAngle
+                lastScreenPos = targetScreenPos
+
+                // 2. Realistic 3D Tap: Press down
+                val pressDurationMs = 140L
+                val pressStartTime = System.currentTimeMillis()
+                while (true) {
+                    val elapsed = System.currentTimeMillis() - pressStartTime
+                    val frac = (elapsed.toFloat() / pressDurationMs.toFloat()).coerceIn(0f, 1f)
+                    val ease = (1f - cos(frac * PI.toFloat())) / 2f
+                    autoPlayTapProgress = ease
+                    autoPlayScaleFactor = 1f - 0.13f * ease
+                    if (frac >= 1f) break
+                    delay(16)
+                }
+
+                // Peak contact moment: Trigger tap!
+                currentOnArrowClick(targetArrow)
+
+                // Spawn contact ripple effect at fingertip
+                val rippleDurationMs = 280L
+                val maxRipple = with(density) { 24.dp.toPx() }
+                val rippleStart = System.currentTimeMillis()
+                launch {
+                    while (true) {
+                        val elapsed = System.currentTimeMillis() - rippleStart
+                        val frac = (elapsed.toFloat() / rippleDurationMs.toFloat()).coerceIn(0f, 1f)
+                        autoPlayRippleRadius = frac * maxRipple
+                        autoPlayRippleAlpha = (1f - frac) * 0.7f
+                        if (frac >= 1f) break
+                        delay(16)
+                    }
+                    autoPlayRippleAlpha = 0f
+                }
+
+                // 3. Realistic 3D Tap: Spring release
+                val releaseDurationMs = 120L
+                val releaseStartTime = System.currentTimeMillis()
+                while (true) {
+                    val elapsed = System.currentTimeMillis() - releaseStartTime
+                    val frac = (elapsed.toFloat() / releaseDurationMs.toFloat()).coerceIn(0f, 1f)
+                    val ease = (1f + cos(frac * PI.toFloat())) / 2f
+                    autoPlayTapProgress = ease
+                    autoPlayScaleFactor = 0.87f + 0.13f * (1f - ease)
+                    if (frac >= 1f) break
+                    delay(16)
+                }
+                autoPlayTapProgress = 0f
+                autoPlayScaleFactor = 1f
+
+                // 4. Natural human observation pause (150ms)
+                delay(150L)
+            }
+
+            // Done or stopped: smoothly fade out hand
+            isAutoPlayHandActive = false
+            autoPlayHandPos = null
+        }
+
         val isTutorialHandActive = showTutorialHand && tutorialTargetArrow != null && introProgress.value >= 1f
         val hasWrongFlash = arrows.any { it.state == ArrowState.WRONG_FLASH }
 
-        LaunchedEffect(isCelebrationBurstActive, celebrationWaveProgress.isRunning, celebrationHoldProgress.isRunning, activeBoosterAnimation, isTutorialHandActive, hasWrongFlash) {
-            while (isCelebrationBurstActive || celebrationWaveProgress.isRunning || celebrationHoldProgress.isRunning || activeBoosterAnimation != null || isTutorialHandActive || hasWrongFlash) {
+        LaunchedEffect(isCelebrationBurstActive, celebrationWaveProgress.isRunning, celebrationHoldProgress.isRunning, activeBoosterAnimation, isTutorialHandActive, hasWrongFlash, isAutoPlayHandActive) {
+            while (isCelebrationBurstActive || celebrationWaveProgress.isRunning || celebrationHoldProgress.isRunning || activeBoosterAnimation != null || isTutorialHandActive || hasWrongFlash || isAutoPlayHandActive) {
                 withFrameNanos { frameTimeNanos ->
                     animTick = frameTimeNanos
                 }
@@ -482,10 +650,14 @@ fun PuzzleBoardCanvas(
             modifier = Modifier
                 .fillMaxSize()
                 .clipToBounds() // Prevents drawing over top bar or bottom booster bar
-                .pointerInput(xSize, ySize, isCelebrationBurstActive) {
+                .pointerInput(xSize, ySize, isCelebrationBurstActive, isAutoSolving) {
                     awaitEachGesture {
                         val down = awaitFirstDown(requireUnconsumed = false)
                         panInertiaJob?.cancel() // Stop ongoing pan inertia immediately on new touch
+
+                        if (isAutoSolving) {
+                            onStopAutoSolve()
+                        }
 
                         // Tap-to-skip victory animation: instantly skip celebration hold and transition to victory screen
                         if (isCelebrationBurstActive) {
@@ -511,7 +683,7 @@ fun PuzzleBoardCanvas(
 
                         // Converts a screen point to local board space accounting for pan, scale, and intro zoom
                         fun screenToLocal(screenPos: Offset): Offset {
-                            val effScale = scale * currentIntroZoom
+                            val effScale = scale
                             return center + (screenPos - Offset(panX, panY) - center) / effScale
                         }
 
@@ -1077,6 +1249,20 @@ fun PuzzleBoardCanvas(
                 // 4C. Interactive Tutorial Guidance Hand (Level 1 only, matching Unity)
                 if (showTutorialHand && tutorialTargetArrow != null && introProgress.value >= 1f) {
                     drawTutorialGuidance(boardOrigin, tutorialTargetArrow, cellSize, theme)
+                }
+
+                // 4D. Auto Play Hand Gesture Animation (Ad Video Recording Mode)
+                if (isAutoPlayHandActive && autoPlayHandPos != null) {
+                    drawAutoPlayHand(
+                        tipPos = autoPlayHandPos!!,
+                        angle = autoPlayHandAngle,
+                        tapProgress = autoPlayTapProgress,
+                        scaleFactor = autoPlayScaleFactor,
+                        rippleRadius = autoPlayRippleRadius,
+                        rippleAlpha = autoPlayRippleAlpha,
+                        cellSize = cellSize,
+                        theme = theme
+                    )
                 }
 
             }
@@ -2472,5 +2658,155 @@ private fun DrawScope.drawTutorialGuidance(
             color = handBorder,
             style = Stroke(width = outlineStrokePx, cap = StrokeCap.Round, join = StrokeJoin.Round)
         )
+    }
+}
+
+
+/**
+ * Draws an authentic, realistic human hand vector with smooth 3D tap gesture and touch ripple for Auto Play ad videos.
+ */
+private fun DrawScope.drawAutoPlayHand(
+    tipPos: Offset,
+    angle: Float,
+    tapProgress: Float,
+    scaleFactor: Float,
+    rippleRadius: Float,
+    rippleAlpha: Float,
+    cellSize: Float,
+    theme: ThemePreset
+) {
+    // 1. Expanding Touch Ripple at the exact fingertip touch point
+    if (rippleAlpha > 0.01f) {
+        // Outer pulsing wave
+        drawCircle(
+            color = theme.arrowDefault.copy(alpha = rippleAlpha * 0.85f),
+            radius = rippleRadius,
+            center = tipPos,
+            style = Stroke(width = 2.4.dp.toPx())
+        )
+        // Inner luminous pulse disk
+        drawCircle(
+            color = theme.arrowDefault.copy(alpha = rippleAlpha * 0.28f),
+            radius = rippleRadius * 0.55f,
+            center = tipPos
+        )
+    }
+
+    // 2. Realistic Hand Dimensions (proportional to cell and screen density)
+    val handWidth = maxOf(cellSize * 0.72f, 68.dp.toPx()).coerceAtMost(88.dp.toPx())
+    val handHeight = maxOf(cellSize * 0.94f, 82.dp.toPx()).coerceAtMost(106.dp.toPx())
+    val fw = handWidth * 0.24f // Natural index finger width
+    val fl = handHeight * 0.44f // Index finger length
+
+    val handRad = angle * (PI.toFloat() / 180f)
+    val dirX = sin(handRad)
+    val dirY = -cos(handRad)
+
+    // Dynamic 3D touch elevation: finger presses down toward targetPoint
+    val restDistance = 14.dp.toPx()
+    val currentDistance = restDistance * (1f - tapProgress)
+
+    val actualTip = Offset(
+        tipPos.x - dirX * currentDistance,
+        tipPos.y - dirY * currentDistance
+    )
+
+    // Dynamic physical shadow offset: contracts closer as finger presses against screen glass
+    val shadowOffsetX = (3.5.dp.toPx() * (1f - 0.65f * tapProgress))
+    val shadowOffsetY = (4.8.dp.toPx() * (1f - 0.65f * tapProgress))
+    val shadowAlpha = 0.22f + 0.12f * tapProgress
+    val outlineStrokePx = 2.0.dp.toPx()
+    val creaseStrokePx = 1.4.dp.toPx()
+
+    // 3. Realistic Natural Human Hand Vector Path (index finger pointing at (0, 0))
+    val handPath = Path().apply {
+        // Natural rounded fingertip pad
+        moveTo(-fw * 0.5f, fw * 0.40f)
+        cubicTo(-fw * 0.5f, 0f, fw * 0.5f, 0f, fw * 0.5f, fw * 0.40f)
+
+        // Outer side of index finger flaring naturally to first knuckle
+        lineTo(fw * 0.55f, fl * 0.88f)
+
+        // First knuckle (middle finger)
+        cubicTo(fw * 0.60f, fl * 0.96f, handWidth * 0.42f, fl * 1.05f, handWidth * 0.42f, fl * 1.25f)
+
+        // Smooth, natural rounded contour of curled fingers
+        cubicTo(handWidth * 0.42f, handHeight * 0.68f, handWidth * 0.36f, handHeight * 0.82f, handWidth * 0.22f, handHeight * 0.90f)
+
+        // Outer heel of palm to wrist
+        lineTo(handWidth * 0.10f, handHeight * 1.02f)
+
+        // Wrist cuff base
+        cubicTo(0f, handHeight * 1.05f, -handWidth * 0.14f, handHeight * 1.05f, -handWidth * 0.24f, handHeight * 1.0f)
+
+        // Base of palm / thenar muscle
+        cubicTo(-handWidth * 0.30f, handHeight * 0.90f, -handWidth * 0.34f, handHeight * 0.76f, -handWidth * 0.32f, handHeight * 0.62f)
+
+        // Natural folded thumb
+        cubicTo(-handWidth * 0.38f, handHeight * 0.52f, -handWidth * 0.34f, fl * 1.05f, -handWidth * 0.20f, fl * 0.95f)
+        cubicTo(-handWidth * 0.15f, fl * 0.92f, -fw * 0.55f, fl * 0.88f, -fw * 0.52f, fl * 0.82f)
+
+        // Inner side of index finger back up to tip
+        lineTo(-fw * 0.5f, fw * 0.40f)
+        close()
+    }
+
+    // Folded thumb crease
+    val creaseThumb = Path().apply {
+        moveTo(-handWidth * 0.20f, fl * 0.95f)
+        cubicTo(-handWidth * 0.10f, handHeight * 0.55f, -handWidth * 0.08f, handHeight * 0.68f, -handWidth * 0.16f, handHeight * 0.80f)
+    }
+
+    // Knuckle folds
+    val creaseMiddle = Path().apply {
+        moveTo(handWidth * 0.40f, fl * 1.25f)
+        cubicTo(handWidth * 0.28f, fl * 1.23f, handWidth * 0.16f, fl * 1.22f, handWidth * 0.06f, fl * 1.24f)
+    }
+
+    val creaseRing = Path().apply {
+        moveTo(handWidth * 0.34f, handHeight * 0.70f)
+        cubicTo(handWidth * 0.24f, handHeight * 0.69f, handWidth * 0.14f, handHeight * 0.68f, handWidth * 0.05f, handHeight * 0.70f)
+    }
+
+    // Middle joint crease on index finger
+    val creaseFingerJoint = Path().apply {
+        moveTo(-fw * 0.42f, fl * 0.46f)
+        lineTo(fw * 0.42f, fl * 0.46f)
+    }
+
+    // Subtle natural fingernail highlight on index finger
+    val nailPath = Path().apply {
+        moveTo(-fw * 0.32f, fw * 0.38f)
+        cubicTo(-fw * 0.32f, fw * 0.12f, fw * 0.32f, fw * 0.12f, fw * 0.32f, fw * 0.38f)
+        close()
+    }
+
+    val handBorder = if (theme.isDark) Color(0xFF0F172A) else Color(0xFF1E293B)
+    val handFill = Color.White
+
+    withTransform({
+        translate(actualTip.x, actualTip.y)
+        rotate(angle, pivot = Offset.Zero)
+        scale(scaleFactor, scaleFactor, pivot = Offset.Zero)
+    }) {
+        // Soft tactile drop shadow with realistic physical depth
+        withTransform({ translate(shadowOffsetX, shadowOffsetY) }) {
+            drawPath(path = handPath, color = Color.Black.copy(alpha = shadowAlpha))
+        }
+
+        // Crisp clean hand fill
+        drawPath(path = handPath, color = handFill)
+
+        // Subtle fingernail detail
+        drawPath(path = nailPath, color = Color(0xFFE2E8F0).copy(alpha = 0.85f))
+
+        // Crease details
+        drawPath(path = creaseMiddle, color = handBorder.copy(alpha = 0.75f), style = Stroke(width = creaseStrokePx, cap = StrokeCap.Round))
+        drawPath(path = creaseRing, color = handBorder.copy(alpha = 0.75f), style = Stroke(width = creaseStrokePx, cap = StrokeCap.Round))
+        drawPath(path = creaseThumb, color = handBorder.copy(alpha = 0.75f), style = Stroke(width = creaseStrokePx, cap = StrokeCap.Round))
+        drawPath(path = creaseFingerJoint, color = handBorder.copy(alpha = 0.45f), style = Stroke(width = creaseStrokePx * 0.9f, cap = StrokeCap.Round))
+
+        // Bold, crisp, clean dark outline
+        drawPath(path = handPath, color = handBorder, style = Stroke(width = outlineStrokePx, cap = StrokeCap.Round, join = StrokeJoin.Round))
     }
 }

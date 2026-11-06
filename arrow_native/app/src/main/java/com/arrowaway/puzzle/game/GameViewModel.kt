@@ -95,7 +95,8 @@ data class GameUiState(
     val isGridButtonVisible: Boolean = true,
     val hintTimerSeconds: Int = 10,
     val reviewPromptTrigger: Long = 0L,
-    val isAnalyticsEnabled: Boolean = !com.arrowaway.puzzle.BuildConfig.DEBUG
+    val isAnalyticsEnabled: Boolean = !com.arrowaway.puzzle.BuildConfig.DEBUG,
+    val isHandGestureEnabled: Boolean = true
 ) {
     val previewRayArrowId: String? get() = previewRayArrowIds.firstOrNull()
 }
@@ -183,7 +184,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         isHintButtonVisible = data.isHintButtonVisible,
                         isGridButtonVisible = data.isGridButtonVisible,
                         hintTimerSeconds = data.hintTimerSeconds,
-                        isAnalyticsEnabled = data.isAnalyticsEnabled
+                        isAnalyticsEnabled = data.isAnalyticsEnabled,
+                        isHandGestureEnabled = data.isHandGestureEnabled
                     )
                 }
                 analytics.setAnalyticsEnabled(data.isAnalyticsEnabled)
@@ -1136,28 +1138,44 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun toggleHandGesture() {
+        val newVal = !_uiState.value.isHandGestureEnabled
+        _uiState.update { it.copy(isHandGestureEnabled = newVal) }
+        viewModelScope.launch {
+            repository.setHandGestureEnabled(newVal)
+        }
+        // If auto-solving while toggled, restart solve loop appropriately
+        if (_uiState.value.isAutoSolving) {
+            startAutoSolve()
+        }
+    }
+
     fun startAutoSolve() {
         if (_uiState.value.isLevelComplete || _uiState.value.isGameOver) return
         stopAutoSolve()
         _uiState.update { it.copy(isAutoSolving = true) }
 
-        autoSolveJob = viewModelScope.launch {
-            while (_uiState.value.isAutoSolving && !_uiState.value.isLevelComplete && !_uiState.value.isGameOver) {
-                val currentArrows = _uiState.value.arrows
-                val uncleared = currentArrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
-                if (uncleared.isEmpty()) break
+        // If hand gesture animation is enabled, the UI drives the taps with realistic motion and timing.
+        // Otherwise, fall back to rapid programmatic auto-solve taps.
+        if (!_uiState.value.isHandGestureEnabled) {
+            autoSolveJob = viewModelScope.launch {
+                while (_uiState.value.isAutoSolving && !_uiState.value.isLevelComplete && !_uiState.value.isGameOver) {
+                    val currentArrows = _uiState.value.arrows
+                    val uncleared = currentArrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
+                    if (uncleared.isEmpty()) break
 
-                val movable = PuzzleSolver.findAllMovableArrows(currentArrows, occupancyMap)
-                val nextArrow = PuzzleSolver.getBestHint(currentArrows, occupancyMap) ?: movable.firstOrNull()
+                    val movable = PuzzleSolver.findAllMovableArrows(currentArrows, occupancyMap)
+                    val nextArrow = PuzzleSolver.getBestHint(currentArrows, occupancyMap) ?: movable.firstOrNull()
 
-                if (nextArrow != null) {
-                    onArrowClicked(nextArrow)
-                    delay(220) // Smooth interval between taps for responsive cascading flight
-                } else {
-                    delay(60)
+                    if (nextArrow != null) {
+                        onArrowClicked(nextArrow)
+                        delay(220) // Smooth interval between taps for responsive cascading flight
+                    } else {
+                        delay(60)
+                    }
                 }
+                _uiState.update { it.copy(isAutoSolving = false) }
             }
-            _uiState.update { it.copy(isAutoSolving = false) }
         }
     }
 
