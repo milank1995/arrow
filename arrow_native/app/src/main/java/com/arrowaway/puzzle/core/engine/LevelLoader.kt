@@ -178,7 +178,7 @@ object LevelLoader {
                         direction = direction,
                         body = body,
                         bendCount = bendCount,
-                        colorIndex = arrowObj.optInt("ColorIndex", 0)
+                        colorIndex = 0
                     )
                 )
             }

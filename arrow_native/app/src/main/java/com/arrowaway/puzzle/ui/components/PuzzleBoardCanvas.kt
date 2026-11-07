@@ -1342,14 +1342,7 @@ private fun DrawScope.drawArrowEntity(
         arrow.isHighlighted -> theme.arrowWrong
         isPreviewHold -> theme.arrowClear
         arrow.state == ArrowState.HINTED -> theme.arrowHint
-        else -> when (arrow.colorIndex) {
-            1 -> Color(0xFFF59E0B) // Amber Sunset
-            2 -> Color(0xFF10B981) // Emerald Forest
-            3 -> Color(0xFF8B5CF6) // Royal Violet
-            4 -> Color(0xFFF43F5E) // Crimson Rose
-            5 -> Color(0xFF06B6D4) // Ocean Cyan
-            else -> theme.arrowDefault
-        }
+        else -> theme.arrowDefault
     }
 
     val minStroke = 1.2.dp.toPx()
