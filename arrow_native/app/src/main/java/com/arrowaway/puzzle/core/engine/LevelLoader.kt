@@ -10,14 +10,16 @@ import org.json.JSONObject
 
 object LevelLoader {
 
+    const val TOTAL_HANDCRAFTED_LEVELS = 300
+
     /**
      * Loads the authentic Unity level from assets/levels/Level_{N}.json.
-     * The original game has 1001 handcrafted levels (Level 1 to Level 1001).
-     * For any levelNumber > 1001, it wraps cleanly into the authentic level pool,
+     * The game has 300 curated handcrafted levels (Level 1 to Level 300).
+     * For any levelNumber > 300, it wraps cleanly into the authentic level pool,
      * ensuring every level displays the true intended handcrafted puzzle layout.
      */
     fun loadLevel(context: Context, levelNumber: Int): LevelData {
-        val totalHandcraftedLevels = 300
+        val totalHandcraftedLevels = TOTAL_HANDCRAFTED_LEVELS
         val actualLevelNumber = ((levelNumber - 1) % totalHandcraftedLevels) + 1
         val assetName = "levels/Level_$actualLevelNumber.json"
         try {
@@ -50,11 +52,10 @@ object LevelLoader {
     }
 
     /**
-     * Loads a daily level mapped deterministically from the 150 curated levels.
+     * Loads a daily level mapped deterministically from the 300 curated levels.
      */
     fun loadDailyLevel(context: Context, dailyIndex: Int): LevelData {
-        val totalHandcraftedLevels = 300
-        val actualIndex = ((dailyIndex - 1) % totalHandcraftedLevels) + 1
+        val actualIndex = ((dailyIndex - 1) % TOTAL_HANDCRAFTED_LEVELS) + 1
         return loadLevel(context, actualIndex)
     }
 

@@ -110,7 +110,7 @@ fun DevTestScreen(
         autoSolveJob?.cancel()
         autoSolveJob = null
         isAutoSolving = false
-        val boundedLevel = levelNum.coerceIn(1, 150)
+        val boundedLevel = levelNum.coerceIn(1, LevelLoader.TOTAL_HANDCRAFTED_LEVELS)
         val level = LevelLoader.loadLevel(context, boundedLevel)
         levelData = level
         arrows = level.arrows
@@ -385,7 +385,7 @@ fun DevTestScreen(
                             }
                         },
                         onNextLevelClick = {
-                            if (currentLevelNumber < 150) {
+                            if (currentLevelNumber < LevelLoader.TOTAL_HANDCRAFTED_LEVELS) {
                                 loadLevel(currentLevelNumber + 1)
                             }
                         },
@@ -578,6 +578,29 @@ private fun LevelSelectorDialog(
             name.contains("Rose", ignoreCase = true) -> "🌹"
             name.contains("Thinker", ignoreCase = true) -> "🧠"
             name.contains("Window", ignoreCase = true) -> "🪟"
+            name.contains("Knight", ignoreCase = true) -> "♞"
+            name.contains("Glider", ignoreCase = true) || name.contains("Delta", ignoreCase = true) -> "📐"
+            name.contains("Video", ignoreCase = true) -> "📼"
+            name.contains("Plant", ignoreCase = true) -> "🪴"
+            name.contains("Slipper", ignoreCase = true) -> "🩴"
+            name.contains("Pillow", ignoreCase = true) -> "🛋️"
+            name.contains("Footprint", ignoreCase = true) -> "👣"
+            name.contains("Pencil", ignoreCase = true) -> "✏️"
+            name.contains("Bicycle", ignoreCase = true) -> "🚲"
+            name.contains("Truck", ignoreCase = true) -> "🚚"
+            name.contains("Hat", ignoreCase = true) -> "🎩"
+            name.contains("Cap", ignoreCase = true) -> "🧢"
+            name.contains("Fish", ignoreCase = true) -> "🐟"
+            name.contains("Ring", ignoreCase = true) -> "💍"
+            name.contains("Fan", ignoreCase = true) -> "🪭"
+            name.contains("Anchor", ignoreCase = true) -> "⚓"
+            name.contains("Falcon", ignoreCase = true) -> "🦅"
+            name.contains("Snowflake", ignoreCase = true) -> "❄️"
+            name.contains("Phoenix", ignoreCase = true) -> "🐦‍🔥"
+            name.contains("Scroll", ignoreCase = true) -> "📜"
+            name.contains("Peak", ignoreCase = true) || name.contains("Mountain", ignoreCase = true) -> "⛰️"
+            name.contains("Mosaic", ignoreCase = true) || name.contains("Sunburst", ignoreCase = true) -> "☀️"
+            name.contains("Galleon", ignoreCase = true) || name.contains("Ship", ignoreCase = true) -> "⛵"
             else -> "🐾"
         }
     }
@@ -635,7 +658,7 @@ private fun LevelSelectorDialog(
                             modifier = Modifier.padding(vertical = 8.dp)
                         ) {
                             Text(
-                                text = "📋 All (150)",
+                                text = "📋 All (${manifest.size})",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = if (!isShapesOnly) Color.White else Color(0xFF334155)
@@ -658,7 +681,7 @@ private fun LevelSelectorDialog(
                             modifier = Modifier.padding(vertical = 8.dp)
                         ) {
                             Text(
-                                text = "🧩 Shapes Only (30)",
+                                text = "🧩 Shapes Only (${shapeLevels.size})",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = if (isShapesOnly) Color.White else Color(0xFF334155)
@@ -752,7 +775,14 @@ private fun LevelSelectorDialog(
                         45 to "🍷 Wine Cat (54)",
                         50 to "🐈‍⬛ Black Cat (57)",
                         100 to "🐦 Winter Bird (110)",
-                        150 to "🧠 The Thinker (262)"
+                        150 to "🧠 The Thinker (262)",
+                        155 to "🍏 Fresh Apple (48)",
+                        165 to "♞ Chess Knight (46)",
+                        200 to "🚲 Bicycle (170)",
+                        225 to "🧢 Cap With Man (190)",
+                        250 to "🦋 Butterfly Hand (110)",
+                        275 to "👑 Royal Falcon (190)",
+                        300 to "⛵ Legendary Galleon (240)"
                     )
 
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -813,14 +843,14 @@ private fun LevelSelectorDialog(
                     OutlinedTextField(
                         value = inputLevelText,
                         onValueChange = { inputLevelText = it },
-                        label = { Text("Level # (1-150)") },
+                        label = { Text("Level # (1-${LevelLoader.TOTAL_HANDCRAFTED_LEVELS})") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
                     Button(
                         onClick = {
-                            val lvl = inputLevelText.toIntOrNull()?.coerceIn(1, 150) ?: currentLevel
+                            val lvl = inputLevelText.toIntOrNull()?.coerceIn(1, LevelLoader.TOTAL_HANDCRAFTED_LEVELS) ?: currentLevel
                             onLevelSelected(lvl)
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4F46E5)),
@@ -831,7 +861,7 @@ private fun LevelSelectorDialog(
                     if (onPlayInRegularGame != null) {
                         Button(
                             onClick = {
-                                val lvl = inputLevelText.toIntOrNull()?.coerceIn(1, 150) ?: currentLevel
+                                val lvl = inputLevelText.toIntOrNull()?.coerceIn(1, LevelLoader.TOTAL_HANDCRAFTED_LEVELS) ?: currentLevel
                                 onPlayInRegularGame(lvl)
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF059669)),

@@ -1,5 +1,7 @@
 package com.arrowaway.puzzle.ui.screens
 
+import com.arrowaway.puzzle.core.engine.LevelLoader
+
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -404,7 +406,7 @@ fun HomeScreen(
                                             .size(36.dp)
                                             .clip(CircleShape)
                                             .clickable {
-                                                val next = (uiState.currentLevelNumber + 1).coerceAtMost(150)
+                                                val next = (uiState.currentLevelNumber + 1).coerceAtMost(LevelLoader.TOTAL_HANDCRAFTED_LEVELS)
                                                 onLevelChange(next)
                                             }
                                     ) {
