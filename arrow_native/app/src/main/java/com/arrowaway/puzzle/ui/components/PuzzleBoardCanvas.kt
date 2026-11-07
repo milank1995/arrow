@@ -270,8 +270,13 @@ fun PuzzleBoardCanvas(
                 var targetPanX = -(arrowBoardX - center.x) * targetScale
                 var targetPanY = -(arrowBoardY - center.y) * targetScale
 
-                val maxPanX = (boardWidth * (targetScale - 1f).coerceAtLeast(0f) / 2f) + (viewportWidth * 0.20f)
-                val maxPanY = (boardHeight * (targetScale - 1f).coerceAtLeast(0f) / 2f) + (viewportHeight * 0.20f)
+                val (maxPanX, maxPanY) = calculatePanLimits(
+                    boardWidth = boardWidth,
+                    boardHeight = boardHeight,
+                    scale = targetScale,
+                    viewportWidth = viewportWidth,
+                    viewportHeight = viewportHeight
+                )
 
                 targetPanX = targetPanX.coerceIn(-maxPanX, maxPanX)
                 targetPanY = targetPanY.coerceIn(-maxPanY, maxPanY)
@@ -570,8 +575,13 @@ fun PuzzleBoardCanvas(
                                             )
                                         } else currentPan
 
-                                        val maxPanX = (currentBoardWidth * (newScale - 1f).coerceAtLeast(0f) / 2f) + (currentViewportWidth * 0.35f)
-                                        val maxPanY = (currentBoardHeight * (newScale - 1f).coerceAtLeast(0f) / 2f) + (currentViewportHeight * 0.35f)
+                                        val (maxPanX, maxPanY) = calculatePanLimits(
+                                            boardWidth = currentBoardWidth,
+                                            boardHeight = currentBoardHeight,
+                                            scale = newScale,
+                                            viewportWidth = currentViewportWidth,
+                                            viewportHeight = currentViewportHeight
+                                        )
 
                                         scale = newScale
                                         panX = newPan.x.coerceIn(-maxPanX, maxPanX)
@@ -592,8 +602,13 @@ fun PuzzleBoardCanvas(
 
                                     if (isPanning) {
                                         val delta = change.positionChange()
-                                        val maxPanX = (currentBoardWidth * scale / 2f) + (currentViewportWidth * 0.45f)
-                                        val maxPanY = (currentBoardHeight * scale / 2f) + (currentViewportHeight * 0.45f)
+                                        val (maxPanX, maxPanY) = calculatePanLimits(
+                                            boardWidth = currentBoardWidth,
+                                            boardHeight = currentBoardHeight,
+                                            scale = scale,
+                                            viewportWidth = currentViewportWidth,
+                                            viewportHeight = currentViewportHeight
+                                        )
 
                                         panX = (panX + delta.x).coerceIn(-maxPanX, maxPanX)
                                         panY = (panY + delta.y).coerceIn(-maxPanY, maxPanY)
@@ -734,8 +749,13 @@ fun PuzzleBoardCanvas(
                             panInertiaJob = coroutineScope.launch {
                                 var vx = inertiaVel.x * 0.75f
                                 var vy = inertiaVel.y * 0.75f
-                                val maxPX = (currentBoardWidth * scale / 2f) + (currentViewportWidth * 0.45f)
-                                val maxPY = (currentBoardHeight * scale / 2f) + (currentViewportHeight * 0.45f)
+                                val (maxPX, maxPY) = calculatePanLimits(
+                                    boardWidth = currentBoardWidth,
+                                    boardHeight = currentBoardHeight,
+                                    scale = scale,
+                                    viewportWidth = currentViewportWidth,
+                                    viewportHeight = currentViewportHeight
+                                )
                                 while (hypot(vx, vy) > 25f) {
                                     val curPX = panX + vx * 0.016f
                                     val curPY = panY + vy * 0.016f
@@ -2416,3 +2436,29 @@ private fun DrawScope.drawTutorialGuidance(
         )
     }
 }
+
+/**
+ * Calculates symmetric maximum pan boundaries for X and Y axes, ensuring that at least
+ * [minVisibleFraction] (default 20%, within the recommended 10%–25% range) of the puzzle
+ * remains visible within the display screen boundaries [0..viewportWidth, 0..viewportHeight].
+ */
+private fun calculatePanLimits(
+    boardWidth: Float,
+    boardHeight: Float,
+    scale: Float,
+    viewportWidth: Float,
+    viewportHeight: Float,
+    minVisibleFraction: Float = 0.20f
+): Pair<Float, Float> {
+    val scaledW = boardWidth * scale
+    val scaledH = boardHeight * scale
+
+    val minVisibleW = minOf(scaledW, viewportWidth) * minVisibleFraction
+    val minVisibleH = minOf(scaledH, viewportHeight) * minVisibleFraction
+
+    val maxPanX = maxOf(0f, (viewportWidth + scaledW) / 2f - minVisibleW)
+    val maxPanY = maxOf(0f, (viewportHeight + scaledH) / 2f - minVisibleH)
+
+    return Pair(maxPanX, maxPanY)
+}
+
