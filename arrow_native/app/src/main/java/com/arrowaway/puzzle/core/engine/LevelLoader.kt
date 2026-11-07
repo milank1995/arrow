@@ -17,7 +17,7 @@ object LevelLoader {
      * ensuring every level displays the true intended handcrafted puzzle layout.
      */
     fun loadLevel(context: Context, levelNumber: Int): LevelData {
-        val totalHandcraftedLevels = 150
+        val totalHandcraftedLevels = 300
         val actualLevelNumber = ((levelNumber - 1) % totalHandcraftedLevels) + 1
         val assetName = "levels/Level_$actualLevelNumber.json"
         try {
@@ -53,7 +53,7 @@ object LevelLoader {
      * Loads a daily level mapped deterministically from the 150 curated levels.
      */
     fun loadDailyLevel(context: Context, dailyIndex: Int): LevelData {
-        val totalHandcraftedLevels = 150
+        val totalHandcraftedLevels = 300
         val actualIndex = ((dailyIndex - 1) % totalHandcraftedLevels) + 1
         return loadLevel(context, actualIndex)
     }
@@ -177,7 +177,7 @@ object LevelLoader {
                         direction = direction,
                         body = body,
                         bendCount = bendCount,
-                        colorIndex = 0
+                        colorIndex = arrowObj.optInt("ColorIndex", 0)
                     )
                 )
             }

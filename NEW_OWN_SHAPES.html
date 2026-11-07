@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Own Shapes Interactive Review</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #3b82f6;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .toggle-pill {
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease-in-out;
+    }
+    .toggle-pill:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+<body class="p-6">
+  <div class="max-w-[1400px] mx-auto space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-700">
+      <div>
+        <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+          <span>🧩</span> New Own Shapes Interactive Review
+        </h1>
+        <p class="text-sm text-slate-400 mt-1">
+          Review shape puzzles, toggle checkboxes and Yes/No options, and add comments directly. All changes auto-save.
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="copyMdBtn" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium rounded-lg border border-slate-600 shadow transition flex items-center gap-2">
+          📋 <span>Copy Markdown</span>
+        </button>
+        <button id="downloadMdBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg shadow transition flex items-center gap-2">
+          💾 <span>Save NEW_OWN_SHAPES.md</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Stats Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
+      <div class="bg-slate-800/80 border border-slate-700 p-4 rounded-xl">
+        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Shapes</div>
+        <div class="text-2xl font-bold text-white mt-1" id="statTotal">0</div>
+      </div>
+      <div class="bg-slate-800/80 border border-slate-700 p-4 rounded-xl">
+        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Reviewed (Checked)</div>
+        <div class="text-2xl font-bold text-emerald-400 mt-1" id="statChecked">0</div>
+      </div>
+      <div class="bg-slate-800/80 border border-slate-700 p-4 rounded-xl">
+        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Improvement Needed</div>
+        <div class="text-2xl font-bold text-amber-400 mt-1" id="statImp">0</div>
+      </div>
+      <div class="bg-slate-800/80 border border-slate-700 p-4 rounded-xl">
+        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Fit Issues</div>
+        <div class="text-2xl font-bold text-rose-400 mt-1" id="statFit">0</div>
+      </div>
+      <div class="bg-slate-800/80 border border-slate-700 p-4 rounded-xl">
+        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">With Comments</div>
+        <div class="text-2xl font-bold text-cyan-400 mt-1" id="statComment">0</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-800/50 p-4 rounded-xl border border-slate-700/60">
+      <div class="w-full sm:w-80">
+        <input type="text" id="searchInput" placeholder="Search by name, file, dimensions, or comments..." 
+               class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+      </div>
+      <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+        <span class="text-xs text-slate-400 mr-1">Filter:</span>
+        <button data-filter="all" class="filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-blue-600 text-white">All</button>
+        <button data-filter="unchecked" class="filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-700 text-slate-300 hover:bg-slate-600">Unchecked</button>
+        <button data-filter="checked" class="filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-700 text-slate-300 hover:bg-slate-600">Checked</button>
+        <button data-filter="imp" class="filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-700 text-slate-300 hover:bg-slate-600">Improvement</button>
+        <button data-filter="fit" class="filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-700 text-slate-300 hover:bg-slate-600">Fit Issues</button>
+        <button data-filter="hasComment" class="filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-700 text-slate-300 hover:bg-slate-600">With Comments</button>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto rounded-xl border border-slate-700 bg-slate-900 shadow-xl">
+      <table class="w-full text-left text-sm text-slate-300">
+        <thead class="bg-slate-800 text-xs font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-700">
+          <tr>
+            <th class="py-3.5 px-4 text-center w-16">Checked</th>
+            <th class="py-3.5 px-4">Puzzle File</th>
+            <th class="py-3.5 px-4">Raw Name</th>
+            <th class="py-3.5 px-4">Display Name</th>
+            <th class="py-3.5 px-4 text-center">Arrows</th>
+            <th class="py-3.5 px-4 text-center">Dimensions</th>
+            <th class="py-3.5 px-4 text-center">Solvability</th>
+            <th class="py-3.5 px-4 min-w-[160px]">Level Checked</th>
+            <th class="py-3.5 px-4 min-w-[160px]">Level Fixed</th>
+            <th class="py-3.5 px-4 text-center w-36">Improvement?</th>
+            <th class="py-3.5 px-4 text-center w-32">Fit Issue?</th>
+            <th class="py-3.5 px-4 min-w-[240px]">Comment</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody" class="divide-y divide-slate-800">
+          <!-- Dynamically populated -->
+        </tbody>
+      </table>
+    </div>
+
+    <div id="statusToast" class="fixed bottom-6 right-6 hidden bg-emerald-600 text-white px-4 py-2.5 rounded-lg shadow-xl text-sm font-medium items-center gap-2">
+      <span>✓</span> <span id="toastMsg">Updated</span>
+    </div>
+  </div>
+
+  <script>
+    const INITIAL_DATA = [{"checked": false, "file": "Year2026.json", "raw": "2026", "disp": "2026", "arrow": "188", "dims": "48 \u00d7 56", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "2026 - 188", "levelFixed": "2026 - 188"}, {"checked": false, "file": "Android.json", "raw": "Android", "disp": "Android", "arrow": "100", "dims": "28 \u00d7 40", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Android - 100", "levelFixed": "Android - 100"}, {"checked": false, "file": "AnimalCircle.json", "raw": "AnimalCircle", "disp": "Animal Circle", "arrow": "450", "dims": "49 \u00d7 49", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Animal Circle - 450", "levelFixed": "Animal Circle - 450"}, {"checked": false, "file": "AppleCore.json", "raw": "Apple Core", "disp": "Apple Core", "arrow": "65", "dims": "59 \u00d7 81", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Apple Core - 65", "levelFixed": "Apple Core - 65"}, {"checked": false, "file": "ChildBird.json", "raw": "Child Bird", "disp": "Baby Bird", "arrow": "133", "dims": "40 \u00d7 40", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Baby Bird - 133", "levelFixed": "Baby Bird - 133"}, {"checked": false, "file": "Basket.json", "raw": "Basket", "disp": "Basket", "arrow": "198", "dims": "44 \u00d7 53", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Basket - 198", "levelFixed": "Basket - 198"}, {"checked": false, "file": "Bird.json", "raw": "Bird", "disp": "Bird", "arrow": "130", "dims": "56 \u00d7 120", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Bird - 130", "levelFixed": "Bird - 130"}, {"checked": false, "file": "Burger.json", "raw": "Burger", "disp": "Burger", "arrow": "320", "dims": "48 \u00d7 54", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Burger - 320", "levelFixed": "Burger - 320"}, {"checked": false, "file": "ButterflyHand.json", "raw": "Butterfly Hand", "disp": "Butterfly Hand", "arrow": "110", "dims": "110 \u00d7 170", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Butterfly Hand - 110", "levelFixed": "Butterfly Hand - 110"}, {"checked": false, "file": "Car.json", "raw": "Car", "disp": "Car", "arrow": "120", "dims": "39 \u00d7 30", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Car - 120", "levelFixed": "Car - 120"}, {"checked": false, "file": "MerryGoRound.json", "raw": "MerryGoRound", "disp": "Carousel", "arrow": "230", "dims": "78 \u00d7 88", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Carousel - 230", "levelFixed": "Carousel - 230"}, {"checked": false, "file": "Cartoon.json", "raw": "Cartoon", "disp": "Cartoon", "arrow": "65", "dims": "64 \u00d7 64", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Cartoon - 65", "levelFixed": "Cartoon - 65"}, {"checked": false, "file": "Cartoon2.json", "raw": "Cartoon 2", "disp": "Cartoon 2", "arrow": "200", "dims": "48 \u00d7 76", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Cartoon 2 - 200", "levelFixed": "Cartoon 2 - 200"}, {"checked": false, "file": "Cat.json", "raw": "Cat", "disp": "Cat", "arrow": "255", "dims": "78 \u00d7 169", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Cat - 255", "levelFixed": "Cat - 255"}, {"checked": false, "file": "Cat2.json", "raw": "Cat 2", "disp": "Cat 2", "arrow": "400", "dims": "78 \u00d7 78", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Cat 2 - 400", "levelFixed": "Cat 2 - 400"}, {"checked": false, "file": "CatAndUmbrella.json", "raw": "CatAndUmbrella", "disp": "Cat and Umbrella", "arrow": "54", "dims": "67 \u00d7 77", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Cat and Umbrella - 54", "levelFixed": "Cat and Umbrella - 54"}, {"checked": false, "file": "CatPoster.json", "raw": "Cat Poster", "disp": "Cat Poster", "arrow": "90", "dims": "60 \u00d7 120", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Cat Poster - 90", "levelFixed": "Cat Poster - 90"}, {"checked": false, "file": "Chair.json", "raw": "Chair", "disp": "Chair", "arrow": "170", "dims": "45 \u00d7 55", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Chair - 170", "levelFixed": "Chair - 170"}, {"checked": false, "file": "Chameleon.json", "raw": "Chameleons", "disp": "Chameleon", "arrow": "236", "dims": "122 \u00d7 264", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Chameleon - 236", "levelFixed": "Chameleon - 236"}, {"checked": false, "file": "Chicken.json", "raw": "Chicken", "disp": "Chicken", "arrow": "350", "dims": "73 \u00d7 74", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Chicken - 350", "levelFixed": "Chicken - 350"}, {"checked": false, "file": "Clock.json", "raw": "Clock", "disp": "Clock", "arrow": "80", "dims": "63 \u00d7 71", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Clock - 80", "levelFixed": "Clock - 80"}, {"checked": false, "file": "ConchShell.json", "raw": "Conch Shell", "disp": "Conch Shell", "arrow": "90", "dims": "56 \u00d7 120", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Conch Shell - 90", "levelFixed": "Conch Shell - 90"}, {"checked": false, "file": "Crab.json", "raw": "Cancer", "disp": "Crab", "arrow": "200", "dims": "80 \u00d7 172", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Crab - 200", "levelFixed": "Crab - 200"}, {"checked": false, "file": "Crown.json", "raw": "Crown", "disp": "Crown", "arrow": "160", "dims": "44 \u00d7 39", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Crown - 160", "levelFixed": "Crown - 160"}, {"checked": false, "file": "CustomDesign1.json", "raw": "CustomDesign1", "disp": "Custom Design 1", "arrow": "544", "dims": "75 \u00d7 64", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Custom Design 1 - 544", "levelFixed": "Custom Design 1 - 544"}, {"checked": false, "file": "CustomDesign2.json", "raw": "Unknown Shape 9", "disp": "Custom Design 2", "arrow": "500", "dims": "78 \u00d7 88", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Custom Design 2 - 500", "levelFixed": "Custom Design 2 - 500"}, {"checked": false, "file": "CustomDesign3.json", "raw": "Unknown Shape 8", "disp": "Custom Design 3", "arrow": "750", "dims": "96 \u00d7 96", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Custom Design 3 - 750", "levelFixed": "Custom Design 3 - 750"}, {"checked": false, "file": "CustomDesign4.json", "raw": "Unknown Shape 7", "disp": "Custom Design 4", "arrow": "235", "dims": "67 \u00d7 145", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Custom Design 4 - 235", "levelFixed": "Custom Design 4 - 235"}, {"checked": false, "file": "CustomDesign5.json", "raw": "Unknown Shape 3", "disp": "Custom Design 5", "arrow": "150", "dims": "65 \u00d7 125", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Custom Design 5 - 150", "levelFixed": "Custom Design 5 - 150"}, {"checked": false, "file": "CustomDesign6.json", "raw": "Unknown Shape 4", "disp": "Custom Design 6", "arrow": "150", "dims": "64 \u00d7 125", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Custom Design 6 - 150", "levelFixed": "Custom Design 6 - 150"}, {"checked": false, "file": "CustomDesign7.json", "raw": "Unknown Shape 5", "disp": "Custom Design 7", "arrow": "150", "dims": "74 \u00d7 160", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Custom Design 7 - 150", "levelFixed": "Custom Design 7 - 150"}, {"checked": false, "file": "CustomDesign8.json", "raw": "Unknown Shape 6", "disp": "Custom Design 8", "arrow": "170", "dims": "75 \u00d7 162", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Custom Design 8 - 170", "levelFixed": "Custom Design 8 - 170"}, {"checked": false, "file": "CustomDesign9.json", "raw": "Unknown Shape 2", "disp": "Custom Design 9", "arrow": "80", "dims": "43 \u00d7 75", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Custom Design 9 - 80", "levelFixed": "Custom Design 9 - 80"}, {"checked": false, "file": "Deer.json", "raw": "Deer", "disp": "Deer", "arrow": "150", "dims": "49 \u00d7 53", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Deer - 150", "levelFixed": "Deer - 150"}, {"checked": false, "file": "Dog.json", "raw": "Dog", "disp": "Dog", "arrow": "430", "dims": "67 \u00d7 79", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Dog - 430", "levelFixed": "Dog - 430"}, {"checked": false, "file": "DogFace.json", "raw": "DogFace", "disp": "Dog Face", "arrow": "300", "dims": "70 \u00d7 75", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Dog Face - 300", "levelFixed": "Dog Face - 300"}, {"checked": false, "file": "Dolphin.json", "raw": "Dolphin", "disp": "Dolphin", "arrow": "200", "dims": "60 \u00d7 80", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Dolphin - 200", "levelFixed": "Dolphin - 200"}, {"checked": false, "file": "Dragon.json", "raw": "Dragon", "disp": "Dragon", "arrow": "220", "dims": "64 \u00d7 66", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Dragon - 220", "levelFixed": "Dragon - 220"}, {"checked": false, "file": "Drum.json", "raw": "Drum", "disp": "Drum", "arrow": "125", "dims": "42 \u00d7 42", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Drum - 125", "levelFixed": "Drum - 125"}, {"checked": false, "file": "Duck.json", "raw": "Duck", "disp": "Duck", "arrow": "350", "dims": "68 \u00d7 68", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Duck - 350", "levelFixed": "Duck - 350"}, {"checked": false, "file": "Tower.json", "raw": "Eiffel Tower", "disp": "Eiffel Tower", "arrow": "80", "dims": "60 \u00d7 115", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Eiffel Tower - 80", "levelFixed": "Eiffel Tower - 80"}, {"checked": false, "file": "Elephant.json", "raw": "Elephant", "disp": "Elephant", "arrow": "400", "dims": "72 \u00d7 75", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Elephant - 400", "levelFixed": "Elephant - 400"}, {"checked": false, "file": "Face.json", "raw": "Face", "disp": "Face", "arrow": "113", "dims": "39 \u00d7 40", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Face - 113", "levelFixed": "Face - 113"}, {"checked": false, "file": "FaceMask.json", "raw": "Face Mask", "disp": "Face Mask", "arrow": "120", "dims": "42 \u00d7 42", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Face Mask - 120", "levelFixed": "Face Mask - 120"}, {"checked": false, "file": "Flower.json", "raw": "Flower", "disp": "Flower", "arrow": "452", "dims": "87 \u00d7 85", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Flower - 452", "levelFixed": "Flower - 452"}, {"checked": false, "file": "FlowerPot.json", "raw": "Flower Pot", "disp": "Flower Pot", "arrow": "55", "dims": "59 \u00d7 98", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Flower Pot - 55", "levelFixed": "Flower Pot - 55"}, {"checked": false, "file": "Frog.json", "raw": "Frog", "disp": "Frog", "arrow": "250", "dims": "55 \u00d7 81", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Frog - 250", "levelFixed": "Frog - 250"}, {"checked": false, "file": "FrogAndBalloon.json", "raw": "Frog and Balloon", "disp": "Frog and Balloon", "arrow": "50", "dims": "36 \u00d7 61", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Frog and Balloon - 50", "levelFixed": "Frog and Balloon - 50"}, {"checked": false, "file": "BorderHeart.json", "raw": "Full Heart", "disp": "Full Heart", "arrow": "479", "dims": "82 \u00d7 54", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Full Heart - 479", "levelFixed": "Full Heart - 479"}, {"checked": false, "file": "Ghost.json", "raw": "Ghost", "disp": "Ghost", "arrow": "160", "dims": "39 \u00d7 38", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Ghost - 160", "levelFixed": "Ghost - 160"}, {"checked": false, "file": "Glasses.json", "raw": "Glasses", "disp": "Glasses", "arrow": "156", "dims": "60 \u00d7 35", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Glasses - 156", "levelFixed": "Glasses - 156"}, {"checked": false, "file": "Guitar.json", "raw": "Guitar", "disp": "Guitar", "arrow": "188", "dims": "43 \u00d7 60", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Guitar - 188", "levelFixed": "Guitar - 188"}, {"checked": false, "file": "Headphone.json", "raw": "Headphone", "disp": "Headphones", "arrow": "260", "dims": "75 \u00d7 86", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Headphones - 260", "levelFixed": "Headphones - 260"}, {"checked": false, "file": "Heart.json", "raw": "Heart", "disp": "Heart", "arrow": "55", "dims": "28 \u00d7 24", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Heart - 55", "levelFixed": "Heart - 55"}, {"checked": false, "file": "Helicopter.json", "raw": "Helicopter", "disp": "Helicopter", "arrow": "403", "dims": "46 \u00d7 45", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Helicopter - 403", "levelFixed": "Helicopter - 403"}, {"checked": false, "file": "House.json", "raw": "House", "disp": "House", "arrow": "200", "dims": "89 \u00d7 102", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "House - 200", "levelFixed": "House - 200"}, {"checked": false, "file": "IcecreamCone.json", "raw": "IcecreamCone", "disp": "Ice Cream Cone", "arrow": "200", "dims": "55 \u00d7 86", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Ice Cream Cone - 200", "levelFixed": "Ice Cream Cone - 200"}, {"checked": false, "file": "IcecreamCup.json", "raw": "Ice Cream Cup", "disp": "Ice Cream Cup", "arrow": "70", "dims": "83 \u00d7 126", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Ice Cream Cup - 70", "levelFixed": "Ice Cream Cup - 70"}, {"checked": false, "file": "Jcb.json", "raw": "JCB", "disp": "JCB", "arrow": "210", "dims": "43 \u00d7 55", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "JCB - 210", "levelFixed": "JCB - 210"}, {"checked": false, "file": "Knight.json", "raw": "Knight", "disp": "Knight", "arrow": "275", "dims": "75 \u00d7 162", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Knight - 275", "levelFixed": "Knight - 275"}, {"checked": false, "file": "Leaf.json", "raw": "Leaf", "disp": "Leaf", "arrow": "300", "dims": "54 \u00d7 54", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Leaf - 300", "levelFixed": "Leaf - 300"}, {"checked": false, "file": "Lion.json", "raw": "Lion", "disp": "Lion", "arrow": "180", "dims": "65 \u00d7 141", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Lion - 180", "levelFixed": "Lion - 180"}, {"checked": false, "file": "Lock.json", "raw": "Lock", "disp": "Lock", "arrow": "70", "dims": "26 \u00d7 36", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Lock - 70", "levelFixed": "Lock - 70"}, {"checked": false, "file": "Magnet.json", "raw": "Magnet", "disp": "Magnet", "arrow": "76", "dims": "41 \u00d7 41", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Magnet - 76", "levelFixed": "Magnet - 76"}, {"checked": false, "file": "Man.json", "raw": "Man", "disp": "Man", "arrow": "305", "dims": "80 \u00d7 174", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Man - 305", "levelFixed": "Man - 305"}, {"checked": false, "file": "Mermaid.json", "raw": "Mermaid", "disp": "Mermaid", "arrow": "349", "dims": "41 \u00d7 60", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Mermaid - 349", "levelFixed": "Mermaid - 349"}, {"checked": false, "file": "MickeyMouse.json", "raw": "Mickey Mouse", "disp": "Mickey Mouse", "arrow": "370", "dims": "73 \u00d7 73", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Mickey Mouse - 370", "levelFixed": "Mickey Mouse - 370"}, {"checked": false, "file": "Mind.json", "raw": "Mind", "disp": "Mind", "arrow": "300", "dims": "52 \u00d7 47", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Mind - 300", "levelFixed": "Mind - 300"}, {"checked": false, "file": "Nature.json", "raw": "Nature", "disp": "Nature", "arrow": "100", "dims": "88 \u00d7 145", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Nature - 100", "levelFixed": "Nature - 100"}, {"checked": false, "file": "Octopus.json", "raw": "Octopus", "disp": "Octopus", "arrow": "46", "dims": "51 \u00d7 70", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Octopus - 46", "levelFixed": "Octopus - 46"}, {"checked": false, "file": "Ok.json", "raw": "OK", "disp": "OK Sign", "arrow": "100", "dims": "40 \u00d7 50", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "OK Sign - 100", "levelFixed": "OK Sign - 100"}, {"checked": false, "file": "Om.json", "raw": "Om", "disp": "Om", "arrow": "110", "dims": "42 \u00d7 42", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Om - 110", "levelFixed": "Om - 110"}, {"checked": false, "file": "Paintboard.json", "raw": "Paintboard", "disp": "Paint Board", "arrow": "150", "dims": "48 \u00d7 49", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Paint Board - 150", "levelFixed": "Paint Board - 150"}, {"checked": false, "file": "PalmTree.json", "raw": "PalmTree", "disp": "Palm Tree", "arrow": "55", "dims": "47 \u00d7 52", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Palm Tree - 55", "levelFixed": "Palm Tree - 55"}, {"checked": false, "file": "Panda.json", "raw": "Panda", "disp": "Panda", "arrow": "100", "dims": "56 \u00d7 120", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Panda - 100", "levelFixed": "Panda - 100"}, {"checked": false, "file": "Parrot.json", "raw": "Parrot", "disp": "Parrot", "arrow": "305", "dims": "63 \u00d7 68", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Parrot - 305", "levelFixed": "Parrot - 305"}, {"checked": false, "file": "ManWithPiano.json", "raw": "ManWithPiano", "disp": "Piano Player", "arrow": "130", "dims": "60 \u00d7 52", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Piano Player - 130", "levelFixed": "Piano Player - 130"}, {"checked": false, "file": "Pig.json", "raw": "Pig", "disp": "Pig", "arrow": "160", "dims": "44 \u00d7 40", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Pig - 160", "levelFixed": "Pig - 160"}, {"checked": false, "file": "Pigeon.json", "raw": "Pigeon", "disp": "Pigeon", "arrow": "400", "dims": "75 \u00d7 76", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Pigeon - 400", "levelFixed": "Pigeon - 400"}, {"checked": false, "file": "Pikachu.json", "raw": "Pikachu", "disp": "Pikachu", "arrow": "350", "dims": "71 \u00d7 71", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Pikachu - 350", "levelFixed": "Pikachu - 350"}, {"checked": false, "file": "Planet.json", "raw": "Planet", "disp": "Planet", "arrow": "198", "dims": "51 \u00d7 51", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Planet - 198", "levelFixed": "Planet - 198"}, {"checked": false, "file": "Pot.json", "raw": "Pot", "disp": "Pot", "arrow": "180", "dims": "38 \u00d7 38", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Pot - 180", "levelFixed": "Pot - 180"}, {"checked": false, "file": "Puppy.json", "raw": "Puppy", "disp": "Puppy", "arrow": "300", "dims": "64 \u00d7 76", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Puppy - 300", "levelFixed": "Puppy - 300"}, {"checked": false, "file": "Recycle.json", "raw": "Recycle", "disp": "Recycle", "arrow": "150", "dims": "33 \u00d7 42", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Recycle - 150", "levelFixed": "Recycle - 150"}, {"checked": false, "file": "Robot.json", "raw": "Robot", "disp": "Robot", "arrow": "70", "dims": "72 \u00d7 84", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Robot - 70", "levelFixed": "Robot - 70"}, {"checked": false, "file": "Rocket.json", "raw": "Rocket", "disp": "Rocket", "arrow": "180", "dims": "33 \u00d7 49", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Rocket - 180", "levelFixed": "Rocket - 180"}, {"checked": false, "file": "Root.json", "raw": "Root", "disp": "Root", "arrow": "80", "dims": "74 \u00d7 130", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Root - 80", "levelFixed": "Root - 80"}, {"checked": false, "file": "Scooter.json", "raw": "Scooter", "disp": "Scooter", "arrow": "300", "dims": "41 \u00d7 58", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Scooter - 300", "levelFixed": "Scooter - 300"}, {"checked": false, "file": "Screwdriver.json", "raw": "Screw Driver", "disp": "Screwdriver", "arrow": "92", "dims": "44 \u00d7 44", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Screwdriver - 92", "levelFixed": "Screwdriver - 92"}, {"checked": false, "file": "Shark.json", "raw": "Shark", "disp": "Shark", "arrow": "250", "dims": "84 \u00d7 64", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Shark - 250", "levelFixed": "Shark - 250"}, {"checked": false, "file": "Skull.json", "raw": "Skull", "disp": "Skull", "arrow": "200", "dims": "37 \u00d7 37", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Skull - 200", "levelFixed": "Skull - 200"}, {"checked": false, "file": "Snake.json", "raw": "Snake", "disp": "Snake", "arrow": "200", "dims": "50 \u00d7 50", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Snake - 200", "levelFixed": "Snake - 200"}, {"checked": false, "file": "SnakeFace.json", "raw": "Snake Face", "disp": "Snake Face", "arrow": "90", "dims": "45 \u00d7 36", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Snake Face - 90", "levelFixed": "Snake Face - 90"}, {"checked": false, "file": "Sound.json", "raw": "Sound", "disp": "Sound", "arrow": "128", "dims": "50 \u00d7 63", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Sound - 128", "levelFixed": "Sound - 128"}, {"checked": false, "file": "Squirrel.json", "raw": "Squirrel", "disp": "Squirrel", "arrow": "300", "dims": "55 \u00d7 55", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Squirrel - 300", "levelFixed": "Squirrel - 300"}, {"checked": false, "file": "Sunflower.json", "raw": "Sunflower", "disp": "Sunflower", "arrow": "80", "dims": "56 \u00d7 120", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Sunflower - 80", "levelFixed": "Sunflower - 80"}, {"checked": false, "file": "Sunflower2.json", "raw": "Sun Flower 2", "disp": "Sunflower 2", "arrow": "550", "dims": "78 \u00d7 78", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Sunflower 2 - 550", "levelFixed": "Sunflower 2 - 550"}, {"checked": false, "file": "Teddy.json", "raw": "Teddy", "disp": "Teddy Bear", "arrow": "300", "dims": "48 \u00d7 64", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Teddy Bear - 300", "levelFixed": "Teddy Bear - 300"}, {"checked": false, "file": "Telephone.json", "raw": "Telephone", "disp": "Telephone", "arrow": "130", "dims": "34 \u00d7 32", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Telephone - 130", "levelFixed": "Telephone - 130"}, {"checked": false, "file": "TennisBall.json", "raw": "TennisBall", "disp": "Tennis Ball", "arrow": "320", "dims": "77 \u00d7 77", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Tennis Ball - 320", "levelFixed": "Tennis Ball - 320"}, {"checked": false, "file": "Train.json", "raw": "Train", "disp": "Train", "arrow": "320", "dims": "48 \u00d7 45", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Train - 320", "levelFixed": "Train - 320"}, {"checked": false, "file": "Trophy.json", "raw": "Trophy", "disp": "Trophy", "arrow": "130", "dims": "48 \u00d7 54", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Trophy - 130", "levelFixed": "Trophy - 130"}, {"checked": false, "file": "Turtle.json", "raw": "Turtles", "disp": "Turtle", "arrow": "250", "dims": "62 \u00d7 37", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Turtle - 250", "levelFixed": "Turtle - 250"}, {"checked": false, "file": "WarriorFace.json", "raw": "Warrior Face", "disp": "Warrior Face", "arrow": "350", "dims": "70 \u00d7 70", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Warrior Face - 350", "levelFixed": "Warrior Face - 350"}, {"checked": false, "file": "Wolf.json", "raw": "Wolf", "disp": "Wolf", "arrow": "450", "dims": "74 \u00d7 73", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Wolf - 450", "levelFixed": "Wolf - 450"}, {"checked": false, "file": "WomanFace.json", "raw": "WomanFace", "disp": "Woman Face", "arrow": "317", "dims": "60 \u00d7 85", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Woman Face - 317", "levelFixed": "Woman Face - 317"}, {"checked": false, "file": "WomanPoster.json", "raw": "Woman Poster", "disp": "Woman Poster", "arrow": "300", "dims": "65 \u00d7 79", "solv": "100%", "imp": "No", "fit": "No", "comment": "", "levelChecked": "Woman Poster - 300", "levelFixed": "Woman Poster - 300"}];
+    const STORAGE_KEY = "NEW_OWN_SHAPES_DATA_V2";
+
+    let shapes = [];
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const map = new Map(parsed.map(item => [item.file, item]));
+        shapes = INITIAL_DATA.map(item => {
+          const prev = map.get(item.file);
+          if (prev) {
+            return {
+              ...item,
+              checked: prev.checked,
+              imp: prev.imp,
+              fit: prev.fit,
+              comment: prev.comment !== undefined ? prev.comment : item.comment,
+              levelChecked: (prev.levelChecked !== undefined && prev.levelChecked !== "") ? prev.levelChecked : item.levelChecked,
+              levelFixed: (prev.levelFixed !== undefined && prev.levelFixed !== "") ? prev.levelFixed : item.levelFixed
+            };
+          }
+          return item;
+        });
+      } else {
+        shapes = INITIAL_DATA;
+      }
+    } catch (e) {
+      shapes = INITIAL_DATA;
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(shapes));
+      updateStats();
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("statusToast");
+      document.getElementById("toastMsg").innerText = msg;
+      toast.classList.remove("hidden");
+      toast.classList.add("flex");
+      setTimeout(() => {
+        toast.classList.add("hidden");
+        toast.classList.remove("flex");
+      }, 2500);
+    }
+
+    function updateStats() {
+      document.getElementById("statTotal").innerText = shapes.length;
+      document.getElementById("statChecked").innerText = shapes.filter(s => s.checked).length;
+      document.getElementById("statImp").innerText = shapes.filter(s => s.imp === "Yes").length;
+      document.getElementById("statFit").innerText = shapes.filter(s => s.fit === "Yes").length;
+      document.getElementById("statComment").innerText = shapes.filter(s => s.comment && s.comment.trim().length > 0).length;
+    }
+
+    let currentFilter = "all";
+    let searchQuery = "";
+
+    function renderTable() {
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = "";
+
+      const filtered = shapes.filter(s => {
+        if (currentFilter === "checked" && !s.checked) return false;
+        if (currentFilter === "unchecked" && s.checked) return false;
+        if (currentFilter === "imp" && s.imp !== "Yes") return false;
+        if (currentFilter === "fit" && s.fit !== "Yes") return false;
+        if (currentFilter === "hasComment" && (!s.comment || s.comment.trim() === "")) return false;
+
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          return s.file.toLowerCase().includes(q) ||
+                 s.raw.toLowerCase().includes(q) ||
+                 s.disp.toLowerCase().includes(q) ||
+                 s.dims.toLowerCase().includes(q) ||
+                 (s.levelChecked && s.levelChecked.toLowerCase().includes(q)) ||
+                 (s.levelFixed && s.levelFixed.toLowerCase().includes(q)) ||
+                 (s.comment && s.comment.toLowerCase().includes(q));
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-500 text-sm">No shapes match your filter.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(s => {
+        const tr = document.createElement("tr");
+        tr.className = s.checked ? "bg-slate-900/40 hover:bg-slate-800/40" : "hover:bg-slate-800/60";
+
+        // Checked checkbox
+        const tdChecked = document.createElement("td");
+        tdChecked.className = "py-3 px-4 text-center";
+        const chk = document.createElement("input");
+        chk.type = "checkbox";
+        chk.checked = s.checked;
+        chk.className = "w-4 h-4 rounded text-blue-600 bg-slate-800 border-slate-600 focus:ring-0 focus:ring-offset-0 cursor-pointer";
+        chk.addEventListener("change", (e) => {
+          s.checked = e.target.checked;
+          saveState();
+          renderTable();
+          showToast(`Updated "${s.disp}": Checked = ${s.checked}`);
+        });
+        tdChecked.appendChild(chk);
+
+        // File
+        const tdFile = document.createElement("td");
+        tdFile.className = "py-3 px-4 font-mono text-xs text-blue-400";
+        tdFile.innerText = s.file;
+
+        // Raw
+        const tdRaw = document.createElement("td");
+        tdRaw.className = "py-3 px-4 text-slate-400 text-xs";
+        tdRaw.innerText = s.raw;
+
+        // Disp
+        const tdDisp = document.createElement("td");
+        tdDisp.className = "py-3 px-4 font-medium text-white";
+        tdDisp.innerText = s.disp;
+
+        // Arrow
+        const tdArrow = document.createElement("td");
+        tdArrow.className = "py-3 px-4 text-center text-slate-300";
+        tdArrow.innerText = s.arrow;
+
+        // Dims
+        const tdDims = document.createElement("td");
+        tdDims.className = "py-3 px-4 text-center text-slate-400 text-xs font-mono";
+        tdDims.innerText = s.dims;
+
+        // Solv
+        const tdSolv = document.createElement("td");
+        tdSolv.className = "py-3 px-4 text-center";
+        tdSolv.innerHTML = `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800">${s.solv}</span>`;
+
+        // Level Checked
+        const tdLvlChk = document.createElement("td");
+        tdLvlChk.className = "py-3 px-4";
+        const inputLvlChk = document.createElement("input");
+        inputLvlChk.type = "text";
+        inputLvlChk.value = s.levelChecked || `${s.disp} - ${s.arrow}`;
+        inputLvlChk.placeholder = "Level checked...";
+        inputLvlChk.className = "w-40 px-2 py-1 bg-slate-800/80 border border-slate-700 rounded text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors";
+        inputLvlChk.addEventListener("change", (e) => {
+          s.levelChecked = e.target.value.trim();
+          saveState();
+          showToast(`Updated "${s.disp}": Level Checked = ${s.levelChecked}`);
+        });
+        tdLvlChk.appendChild(inputLvlChk);
+
+        // Level Fixed
+        const tdLvlFix = document.createElement("td");
+        tdLvlFix.className = "py-3 px-4";
+        const inputLvlFix = document.createElement("input");
+        inputLvlFix.type = "text";
+        inputLvlFix.value = s.levelFixed || `${s.disp} - ${s.arrow}`;
+        inputLvlFix.placeholder = "Level fixed...";
+        inputLvlFix.className = "w-40 px-2 py-1 bg-slate-800/80 border border-slate-700 rounded text-xs text-emerald-400 font-medium placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors";
+        inputLvlFix.addEventListener("change", (e) => {
+          s.levelFixed = e.target.value.trim();
+          saveState();
+          showToast(`Updated "${s.disp}": Level Fixed = ${s.levelFixed}`);
+        });
+        tdLvlFix.appendChild(inputLvlFix);
+
+        // Improvement toggle
+        const tdImp = document.createElement("td");
+        tdImp.className = "py-3 px-4 text-center";
+        const impBtn = document.createElement("button");
+        impBtn.className = s.imp === "Yes"
+          ? "toggle-pill px-3 py-1 rounded-full text-xs font-semibold bg-amber-900/60 text-amber-300 border border-amber-600/80 hover:bg-amber-900"
+          : "toggle-pill px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700 hover:text-white";
+        impBtn.innerText = s.imp;
+        impBtn.addEventListener("click", () => {
+          s.imp = s.imp === "Yes" ? "No" : "Yes";
+          saveState();
+          renderTable();
+          showToast(`"${s.disp}": Improvement Needed = ${s.imp}`);
+        });
+        tdImp.appendChild(impBtn);
+
+        // Fit Issue toggle
+        const tdFit = document.createElement("td");
+        tdFit.className = "py-3 px-4 text-center";
+        const fitBtn = document.createElement("button");
+        fitBtn.className = s.fit === "Yes"
+          ? "toggle-pill px-3 py-1 rounded-full text-xs font-semibold bg-rose-900/60 text-rose-300 border border-rose-600/80 hover:bg-rose-900"
+          : "toggle-pill px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700 hover:text-white";
+        fitBtn.innerText = s.fit;
+        fitBtn.addEventListener("click", () => {
+          s.fit = s.fit === "Yes" ? "No" : "Yes";
+          saveState();
+          renderTable();
+          showToast(`"${s.disp}": Fit Issue = ${s.fit}`);
+        });
+        tdFit.appendChild(fitBtn);
+
+        // Comment textarea
+        const tdComment = document.createElement("td");
+        tdComment.className = "py-2 px-4";
+        const txt = document.createElement("textarea");
+        txt.rows = 1;
+        txt.value = s.comment || "";
+        txt.placeholder = "Add comment...";
+        txt.className = "w-full px-2.5 py-1.5 bg-slate-950/70 border border-slate-700/80 rounded-lg text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-y transition";
+        txt.addEventListener("input", (e) => {
+          s.comment = e.target.value;
+          saveState();
+        });
+        txt.addEventListener("change", (e) => {
+          saveState();
+          showToast(`Saved comment for "${s.disp}"`);
+        });
+        tdComment.appendChild(txt);
+
+        tr.append(tdChecked, tdFile, tdRaw, tdDisp, tdArrow, tdDims, tdSolv, tdLvlChk, tdLvlFix, tdImp, tdFit, tdComment);
+        tbody.appendChild(tr);
+      });
+    }
+
+    function generateMarkdown() {
+      let md = "# New Own Shapes Catalog\n\n";
+      md += "Central record of all shapes in New Own Shape mode, tracking puzzle asset files, shape names, display names, arrow counts, grid dimensions, verified solvability, review status, quality flags, and reviewer comments.\n\n";
+      md += "| Checked | Puzzle File | Raw Shape Name | Display Name | Arrow | Dimensions | Solvability | Puzzle Improvement Needed | Puzzle Fit Issue | Comment |\n";
+      md += "| :---: | :--- | :--- | :--- | :--- | :--- | :---: | :---: | :---: | :--- |\n";
+      shapes.forEach(s => {
+        const chk = s.checked ? "[x]" : "[ ]";
+        const cmt = (s.comment && s.comment.trim().length > 0) ? s.comment.trim().replace(/\|/g, "/") : "-";
+        md += `| ${chk} | \`${s.file}\` | ${s.raw} | **${s.disp}** | ${s.arrow} | ${s.dims} | ${s.solv} | ${s.imp} | ${s.fit} | ${cmt} |\n`;
+      });
+      return md;
+    }
+
+    // Copy to clipboard
+    document.getElementById("copyMdBtn").addEventListener("click", async () => {
+      const md = generateMarkdown();
+      try {
+        await navigator.clipboard.writeText(md);
+        showToast("Markdown copied to clipboard!");
+      } catch (e) {
+        const ta = document.createElement("textarea");
+        ta.value = md;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showToast("Markdown copied to clipboard!");
+      }
+    });
+
+    // Download / Save file
+    document.getElementById("downloadMdBtn").addEventListener("click", () => {
+      const md = generateMarkdown();
+      const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "NEW_OWN_SHAPES.md";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("Downloaded NEW_OWN_SHAPES.md!");
+    });
+
+    // Search input
+    document.getElementById("searchInput").addEventListener("input", (e) => {
+      searchQuery = e.target.value.trim();
+      renderTable();
+    });
+
+    // Filter buttons
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".filter-btn").forEach(b => {
+          b.className = "filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-700 text-slate-300 hover:bg-slate-600";
+        });
+        btn.className = "filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-blue-600 text-white";
+        currentFilter = btn.getAttribute("data-filter");
+        renderTable();
+      });
+    });
+
+    updateStats();
+    renderTable();
+  </script>
+</body>
+</html>

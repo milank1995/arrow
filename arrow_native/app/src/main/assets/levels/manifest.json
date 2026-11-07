@@ -1498,5 +1498,1505 @@
     "SourceCategory": "Arrow Away Handcrafted Curated",
     "XSize": 50,
     "YSize": 92
+  },
+  {
+    "LevelNumber": 151,
+    "ArrowCount": 55,
+    "Difficulty": "Easy",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 18,
+    "YSize": 34
+  },
+  {
+    "LevelNumber": 152,
+    "ArrowCount": 56,
+    "Difficulty": "Easy",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 21,
+    "YSize": 29
+  },
+  {
+    "LevelNumber": 153,
+    "ArrowCount": 58,
+    "Difficulty": "Easy",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 21,
+    "YSize": 30
+  },
+  {
+    "LevelNumber": 154,
+    "ArrowCount": 60,
+    "Difficulty": "Easy",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 22,
+    "YSize": 30
+  },
+  {
+    "LevelNumber": 155,
+    "ArrowCount": 48,
+    "Difficulty": "Medium",
+    "ShapeName": "Fresh Apple",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 30,
+    "YSize": 41
+  },
+  {
+    "LevelNumber": 156,
+    "ArrowCount": 64,
+    "Difficulty": "Easy",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 38,
+    "YSize": 38
+  },
+  {
+    "LevelNumber": 157,
+    "ArrowCount": 45,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 20,
+    "YSize": 27
+  },
+  {
+    "LevelNumber": 158,
+    "ArrowCount": 68,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 27,
+    "YSize": 30
+  },
+  {
+    "LevelNumber": 159,
+    "ArrowCount": 70,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 35,
+    "YSize": 52
+  },
+  {
+    "LevelNumber": 160,
+    "ArrowCount": 45,
+    "Difficulty": "Medium",
+    "ShapeName": "Wild Goose",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 37,
+    "YSize": 47
+  },
+  {
+    "LevelNumber": 161,
+    "ArrowCount": 73,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 45,
+    "YSize": 42
+  },
+  {
+    "LevelNumber": 162,
+    "ArrowCount": 75,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 28,
+    "YSize": 32
+  },
+  {
+    "LevelNumber": 163,
+    "ArrowCount": 50,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 22,
+    "YSize": 26
+  },
+  {
+    "LevelNumber": 164,
+    "ArrowCount": 79,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 24,
+    "YSize": 37
+  },
+  {
+    "LevelNumber": 165,
+    "ArrowCount": 46,
+    "Difficulty": "Medium",
+    "ShapeName": "Chess Knight",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 68,
+    "YSize": 58
+  },
+  {
+    "LevelNumber": 166,
+    "ArrowCount": 83,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 28,
+    "YSize": 39
+  },
+  {
+    "LevelNumber": 167,
+    "ArrowCount": 85,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 23,
+    "YSize": 40
+  },
+  {
+    "LevelNumber": 168,
+    "ArrowCount": 87,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 28,
+    "YSize": 36
+  },
+  {
+    "LevelNumber": 169,
+    "ArrowCount": 57,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 20,
+    "YSize": 27
+  },
+  {
+    "LevelNumber": 170,
+    "ArrowCount": 61,
+    "Difficulty": "Medium",
+    "ShapeName": "Ancient Scroll",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 75,
+    "YSize": 74
+  },
+  {
+    "LevelNumber": 171,
+    "ArrowCount": 92,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 36,
+    "YSize": 40
+  },
+  {
+    "LevelNumber": 172,
+    "ArrowCount": 94,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 27,
+    "YSize": 44
+  },
+  {
+    "LevelNumber": 173,
+    "ArrowCount": 96,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 31,
+    "YSize": 39
+  },
+  {
+    "LevelNumber": 174,
+    "ArrowCount": 98,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 28,
+    "YSize": 41
+  },
+  {
+    "LevelNumber": 175,
+    "ArrowCount": 52,
+    "Difficulty": "Medium",
+    "ShapeName": "Golden Wheat",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 63,
+    "YSize": 102
+  },
+  {
+    "LevelNumber": 176,
+    "ArrowCount": 102,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 50,
+    "YSize": 52
+  },
+  {
+    "LevelNumber": 177,
+    "ArrowCount": 104,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 38,
+    "YSize": 38
+  },
+  {
+    "LevelNumber": 178,
+    "ArrowCount": 106,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 28,
+    "YSize": 40
+  },
+  {
+    "LevelNumber": 179,
+    "ArrowCount": 108,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 33,
+    "YSize": 44
+  },
+  {
+    "LevelNumber": 180,
+    "ArrowCount": 57,
+    "Difficulty": "Medium",
+    "ShapeName": "Pelican",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 37,
+    "YSize": 80
+  },
+  {
+    "LevelNumber": 181,
+    "ArrowCount": 55,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 22,
+    "YSize": 32
+  },
+  {
+    "LevelNumber": 182,
+    "ArrowCount": 86,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 26,
+    "YSize": 43
+  },
+  {
+    "LevelNumber": 183,
+    "ArrowCount": 88,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 39,
+    "YSize": 37
+  },
+  {
+    "LevelNumber": 184,
+    "ArrowCount": 90,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 29,
+    "YSize": 43
+  },
+  {
+    "LevelNumber": 185,
+    "ArrowCount": 62,
+    "Difficulty": "Medium",
+    "ShapeName": "World Globe",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 45,
+    "YSize": 59
+  },
+  {
+    "LevelNumber": 186,
+    "ArrowCount": 93,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 34,
+    "YSize": 39
+  },
+  {
+    "LevelNumber": 187,
+    "ArrowCount": 61,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 22,
+    "YSize": 33
+  },
+  {
+    "LevelNumber": 188,
+    "ArrowCount": 96,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 28,
+    "YSize": 40
+  },
+  {
+    "LevelNumber": 189,
+    "ArrowCount": 98,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 23,
+    "YSize": 42
+  },
+  {
+    "LevelNumber": 190,
+    "ArrowCount": 74,
+    "Difficulty": "Medium",
+    "ShapeName": "Thinker Silhouette",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 63,
+    "YSize": 86
+  },
+  {
+    "LevelNumber": 191,
+    "ArrowCount": 101,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 41,
+    "YSize": 41
+  },
+  {
+    "LevelNumber": 192,
+    "ArrowCount": 103,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 28,
+    "YSize": 40
+  },
+  {
+    "LevelNumber": 193,
+    "ArrowCount": 68,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 22,
+    "YSize": 30
+  },
+  {
+    "LevelNumber": 194,
+    "ArrowCount": 106,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 38,
+    "YSize": 38
+  },
+  {
+    "LevelNumber": 195,
+    "ArrowCount": 78,
+    "Difficulty": "Hard",
+    "ShapeName": "Flower Pot",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 40,
+    "YSize": 44
+  },
+  {
+    "LevelNumber": 196,
+    "ArrowCount": 110,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 38,
+    "YSize": 38
+  },
+  {
+    "LevelNumber": 197,
+    "ArrowCount": 111,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 30,
+    "YSize": 45
+  },
+  {
+    "LevelNumber": 198,
+    "ArrowCount": 113,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 29,
+    "YSize": 47
+  },
+  {
+    "LevelNumber": 199,
+    "ArrowCount": 74,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 24,
+    "YSize": 35
+  },
+  {
+    "LevelNumber": 200,
+    "ArrowCount": 83,
+    "Difficulty": "Hard",
+    "ShapeName": "Ferris Wheel",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 72,
+    "YSize": 93
+  },
+  {
+    "LevelNumber": 201,
+    "ArrowCount": 118,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 30,
+    "YSize": 42
+  },
+  {
+    "LevelNumber": 202,
+    "ArrowCount": 120,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 34,
+    "YSize": 45
+  },
+  {
+    "LevelNumber": 203,
+    "ArrowCount": 121,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 35,
+    "YSize": 44
+  },
+  {
+    "LevelNumber": 204,
+    "ArrowCount": 123,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 30,
+    "YSize": 44
+  },
+  {
+    "LevelNumber": 205,
+    "ArrowCount": 86,
+    "Difficulty": "Hard",
+    "ShapeName": "Angelfish",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 44,
+    "YSize": 48
+  },
+  {
+    "LevelNumber": 206,
+    "ArrowCount": 126,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 38,
+    "YSize": 38
+  },
+  {
+    "LevelNumber": 207,
+    "ArrowCount": 128,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 32,
+    "YSize": 49
+  },
+  {
+    "LevelNumber": 208,
+    "ArrowCount": 130,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 42,
+    "YSize": 42
+  },
+  {
+    "LevelNumber": 209,
+    "ArrowCount": 131,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 40,
+    "YSize": 47
+  },
+  {
+    "LevelNumber": 210,
+    "ArrowCount": 88,
+    "Difficulty": "Hard",
+    "ShapeName": "Classic Locomotive",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 57,
+    "YSize": 53
+  },
+  {
+    "LevelNumber": 211,
+    "ArrowCount": 87,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 26,
+    "YSize": 37
+  },
+  {
+    "LevelNumber": 212,
+    "ArrowCount": 136,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 37,
+    "YSize": 57
+  },
+  {
+    "LevelNumber": 213,
+    "ArrowCount": 138,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 42,
+    "YSize": 42
+  },
+  {
+    "LevelNumber": 214,
+    "ArrowCount": 140,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 42,
+    "YSize": 42
+  },
+  {
+    "LevelNumber": 215,
+    "ArrowCount": 100,
+    "Difficulty": "Hard",
+    "ShapeName": "Cozy Sofa",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 44,
+    "YSize": 74
+  },
+  {
+    "LevelNumber": 216,
+    "ArrowCount": 143,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 44,
+    "YSize": 37
+  },
+  {
+    "LevelNumber": 217,
+    "ArrowCount": 94,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 27,
+    "YSize": 38
+  },
+  {
+    "LevelNumber": 218,
+    "ArrowCount": 146,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 42,
+    "YSize": 42
+  },
+  {
+    "LevelNumber": 219,
+    "ArrowCount": 148,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 34,
+    "YSize": 48
+  },
+  {
+    "LevelNumber": 220,
+    "ArrowCount": 108,
+    "Difficulty": "Hard",
+    "ShapeName": "Starship Cruiser",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 57,
+    "YSize": 61
+  },
+  {
+    "LevelNumber": 221,
+    "ArrowCount": 110,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 30,
+    "YSize": 42
+  },
+  {
+    "LevelNumber": 222,
+    "ArrowCount": 111,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 35,
+    "YSize": 37
+  },
+  {
+    "LevelNumber": 223,
+    "ArrowCount": 73,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 26,
+    "YSize": 36
+  },
+  {
+    "LevelNumber": 224,
+    "ArrowCount": 115,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 32,
+    "YSize": 48
+  },
+  {
+    "LevelNumber": 225,
+    "ArrowCount": 105,
+    "Difficulty": "Hard",
+    "ShapeName": "Grand Gear",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 62,
+    "YSize": 92
+  },
+  {
+    "LevelNumber": 226,
+    "ArrowCount": 118,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 32,
+    "YSize": 50
+  },
+  {
+    "LevelNumber": 227,
+    "ArrowCount": 120,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 55,
+    "YSize": 82
+  },
+  {
+    "LevelNumber": 228,
+    "ArrowCount": 122,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 42,
+    "YSize": 42
+  },
+  {
+    "LevelNumber": 229,
+    "ArrowCount": 80,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 24,
+    "YSize": 34
+  },
+  {
+    "LevelNumber": 230,
+    "ArrowCount": 115,
+    "Difficulty": "Hard",
+    "ShapeName": "Twin Koi",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 66,
+    "YSize": 60
+  },
+  {
+    "LevelNumber": 231,
+    "ArrowCount": 127,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 32,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 232,
+    "ArrowCount": 129,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 43,
+    "YSize": 51
+  },
+  {
+    "LevelNumber": 233,
+    "ArrowCount": 131,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 66,
+    "YSize": 67
+  },
+  {
+    "LevelNumber": 234,
+    "ArrowCount": 133,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 37,
+    "YSize": 49
+  },
+  {
+    "LevelNumber": 235,
+    "ArrowCount": 131,
+    "Difficulty": "Hard",
+    "ShapeName": "Astronaut",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 62,
+    "YSize": 92
+  },
+  {
+    "LevelNumber": 236,
+    "ArrowCount": 136,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 66,
+    "YSize": 91
+  },
+  {
+    "LevelNumber": 237,
+    "ArrowCount": 138,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 32,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 238,
+    "ArrowCount": 140,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 34,
+    "YSize": 48
+  },
+  {
+    "LevelNumber": 239,
+    "ArrowCount": 142,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 34,
+    "YSize": 48
+  },
+  {
+    "LevelNumber": 240,
+    "ArrowCount": 149,
+    "Difficulty": "Hard",
+    "ShapeName": "Folding Fan",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 75,
+    "YSize": 88
+  },
+  {
+    "LevelNumber": 241,
+    "ArrowCount": 94,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 26,
+    "YSize": 47
+  },
+  {
+    "LevelNumber": 242,
+    "ArrowCount": 147,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 62,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 243,
+    "ArrowCount": 149,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 42,
+    "YSize": 45
+  },
+  {
+    "LevelNumber": 244,
+    "ArrowCount": 151,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 42,
+    "YSize": 50
+  },
+  {
+    "LevelNumber": 245,
+    "ArrowCount": 146,
+    "Difficulty": "Hard",
+    "ShapeName": "Master Portrait",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 52,
+    "YSize": 72
+  },
+  {
+    "LevelNumber": 246,
+    "ArrowCount": 154,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 40,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 247,
+    "ArrowCount": 101,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 56,
+    "YSize": 37
+  },
+  {
+    "LevelNumber": 248,
+    "ArrowCount": 158,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 40,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 249,
+    "ArrowCount": 160,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 53,
+    "YSize": 96
+  },
+  {
+    "LevelNumber": 250,
+    "ArrowCount": 164,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Treasure Urn",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 62,
+    "YSize": 75
+  },
+  {
+    "LevelNumber": 251,
+    "ArrowCount": 163,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 35,
+    "YSize": 54
+  },
+  {
+    "LevelNumber": 252,
+    "ArrowCount": 165,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 37,
+    "YSize": 56
+  },
+  {
+    "LevelNumber": 253,
+    "ArrowCount": 108,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 28,
+    "YSize": 40
+  },
+  {
+    "LevelNumber": 254,
+    "ArrowCount": 169,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 43,
+    "YSize": 51
+  },
+  {
+    "LevelNumber": 255,
+    "ArrowCount": 165,
+    "Difficulty": "Hard",
+    "ShapeName": "Celebration Cake",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 72,
+    "YSize": 53
+  },
+  {
+    "LevelNumber": 256,
+    "ArrowCount": 172,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 42,
+    "YSize": 52
+  },
+  {
+    "LevelNumber": 257,
+    "ArrowCount": 174,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 46,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 258,
+    "ArrowCount": 176,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 42,
+    "YSize": 49
+  },
+  {
+    "LevelNumber": 259,
+    "ArrowCount": 115,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 40,
+    "YSize": 40
+  },
+  {
+    "LevelNumber": 260,
+    "ArrowCount": 166,
+    "Difficulty": "Hard",
+    "ShapeName": "Vintage Roadster",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 84,
+    "YSize": 48
+  },
+  {
+    "LevelNumber": 261,
+    "ArrowCount": 135,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 32,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 262,
+    "ArrowCount": 137,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 39,
+    "YSize": 48
+  },
+  {
+    "LevelNumber": 263,
+    "ArrowCount": 139,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 34,
+    "YSize": 48
+  },
+  {
+    "LevelNumber": 264,
+    "ArrowCount": 141,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 34,
+    "YSize": 48
+  },
+  {
+    "LevelNumber": 265,
+    "ArrowCount": 175,
+    "Difficulty": "Hard",
+    "ShapeName": "Tropical Parrot",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 41,
+    "YSize": 112
+  },
+  {
+    "LevelNumber": 266,
+    "ArrowCount": 145,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 34,
+    "YSize": 48
+  },
+  {
+    "LevelNumber": 267,
+    "ArrowCount": 148,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 42,
+    "YSize": 42
+  },
+  {
+    "LevelNumber": 268,
+    "ArrowCount": 150,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 34,
+    "YSize": 48
+  },
+  {
+    "LevelNumber": 269,
+    "ArrowCount": 152,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 40,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 270,
+    "ArrowCount": 176,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Celestial Goldfish",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 72,
+    "YSize": 72
+  },
+  {
+    "LevelNumber": 271,
+    "ArrowCount": 101,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 28,
+    "YSize": 43
+  },
+  {
+    "LevelNumber": 272,
+    "ArrowCount": 158,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 46,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 273,
+    "ArrowCount": 161,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 35,
+    "YSize": 55
+  },
+  {
+    "LevelNumber": 274,
+    "ArrowCount": 163,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 38,
+    "YSize": 48
+  },
+  {
+    "LevelNumber": 275,
+    "ArrowCount": 180,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Porcelain Cat",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 55,
+    "YSize": 80
+  },
+  {
+    "LevelNumber": 276,
+    "ArrowCount": 167,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 37,
+    "YSize": 53
+  },
+  {
+    "LevelNumber": 277,
+    "ArrowCount": 109,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 30,
+    "YSize": 42
+  },
+  {
+    "LevelNumber": 278,
+    "ArrowCount": 172,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 37,
+    "YSize": 60
+  },
+  {
+    "LevelNumber": 279,
+    "ArrowCount": 174,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 62,
+    "YSize": 45
+  },
+  {
+    "LevelNumber": 280,
+    "ArrowCount": 186,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Hermit Crab",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 50,
+    "YSize": 76
+  },
+  {
+    "LevelNumber": 281,
+    "ArrowCount": 178,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 39,
+    "YSize": 54
+  },
+  {
+    "LevelNumber": 282,
+    "ArrowCount": 180,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 44,
+    "YSize": 49
+  },
+  {
+    "LevelNumber": 283,
+    "ArrowCount": 118,
+    "Difficulty": "Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 51,
+    "YSize": 50
+  },
+  {
+    "LevelNumber": 284,
+    "ArrowCount": 185,
+    "Difficulty": "Super Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 52,
+    "YSize": 72
+  },
+  {
+    "LevelNumber": 285,
+    "ArrowCount": 202,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Ancient Temple",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 66,
+    "YSize": 82
+  },
+  {
+    "LevelNumber": 286,
+    "ArrowCount": 189,
+    "Difficulty": "Super Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 39,
+    "YSize": 63
+  },
+  {
+    "LevelNumber": 287,
+    "ArrowCount": 191,
+    "Difficulty": "Super Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 41,
+    "YSize": 51
+  },
+  {
+    "LevelNumber": 288,
+    "ArrowCount": 193,
+    "Difficulty": "Super Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 42,
+    "YSize": 55
+  },
+  {
+    "LevelNumber": 289,
+    "ArrowCount": 127,
+    "Difficulty": "Super Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 32,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 290,
+    "ArrowCount": 212,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Sea Turtle",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 92,
+    "YSize": 46
+  },
+  {
+    "LevelNumber": 291,
+    "ArrowCount": 200,
+    "Difficulty": "Super Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 50,
+    "YSize": 50
+  },
+  {
+    "LevelNumber": 292,
+    "ArrowCount": 202,
+    "Difficulty": "Super Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 43,
+    "YSize": 53
+  },
+  {
+    "LevelNumber": 293,
+    "ArrowCount": 204,
+    "Difficulty": "Super Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 50,
+    "YSize": 50
+  },
+  {
+    "LevelNumber": 294,
+    "ArrowCount": 206,
+    "Difficulty": "Super Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 44,
+    "YSize": 53
+  },
+  {
+    "LevelNumber": 295,
+    "ArrowCount": 233,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Sunburst Mosaic",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 62,
+    "YSize": 77
+  },
+  {
+    "LevelNumber": 296,
+    "ArrowCount": 211,
+    "Difficulty": "Super Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 44,
+    "YSize": 53
+  },
+  {
+    "LevelNumber": 297,
+    "ArrowCount": 213,
+    "Difficulty": "Super Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 44,
+    "YSize": 50
+  },
+  {
+    "LevelNumber": 298,
+    "ArrowCount": 215,
+    "Difficulty": "Super Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 45,
+    "YSize": 44
+  },
+  {
+    "LevelNumber": 299,
+    "ArrowCount": 217,
+    "Difficulty": "Super Hard",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 47,
+    "YSize": 55
+  },
+  {
+    "LevelNumber": 300,
+    "ArrowCount": 240,
+    "Difficulty": "Super Hard",
+    "ShapeName": "Legendary Galleon",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Handcrafted Curated Expansion",
+    "XSize": 86,
+    "YSize": 62
   }
 ]

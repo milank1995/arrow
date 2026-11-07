@@ -239,7 +239,7 @@ fun PuzzleBoardCanvas(
         val currentOnDismissPreviewRays by rememberUpdatedState(onDismissPreviewRays)
         val minTouchTargetPx = with(LocalDensity.current) { 15.dp.toPx() }
         val currentMinTouchTargetPx by rememberUpdatedState(minTouchTargetPx)
-        val minStrokePx = 1.0f
+        val minStrokePx = with(LocalDensity.current) { 1.2.dp.toPx() }
         val maxStrokePx = with(LocalDensity.current) { 4.8.dp.toPx() }
         val baseStrokeWidth = (cellSize * 0.20f).coerceIn(minStrokePx, maxStrokePx)
         val baseHeadWidth = (cellSize * 0.52f).coerceIn(baseStrokeWidth * 2.2f, baseStrokeWidth * 3.2f)
@@ -1342,10 +1342,17 @@ private fun DrawScope.drawArrowEntity(
         arrow.isHighlighted -> theme.arrowWrong
         isPreviewHold -> theme.arrowClear
         arrow.state == ArrowState.HINTED -> theme.arrowHint
-        else -> theme.arrowDefault
+        else -> when (arrow.colorIndex) {
+            1 -> Color(0xFFF59E0B) // Amber Sunset
+            2 -> Color(0xFF10B981) // Emerald Forest
+            3 -> Color(0xFF8B5CF6) // Royal Violet
+            4 -> Color(0xFFF43F5E) // Crimson Rose
+            5 -> Color(0xFF06B6D4) // Ocean Cyan
+            else -> theme.arrowDefault
+        }
     }
 
-    val minStroke = 1.0f
+    val minStroke = 1.2.dp.toPx()
     val maxStroke = 4.8.dp.toPx()
     val scaleMultiplier = when {
         isPreviewHold -> 1.0f
