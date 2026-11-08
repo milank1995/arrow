@@ -29,7 +29,7 @@ object RemoteConfigManager {
           "daily_challenge_unlock_level": 10,
           "daily_completion_coins": 100,
           "is_daily_challenge_enabled": true,
-          "review_prompt_min_level": 10,
+          "review_prompt_min_level": 8,
           "review_prompt_cooldown_days": 30
         }
     """.trimIndent()
@@ -177,7 +177,7 @@ object RemoteConfigManager {
         get() = configJson.optBoolean("is_daily_challenge_enabled", true)
 
     val reviewPromptMinLevel: Int
-        get() = configJson.optInt("review_prompt_min_level", 10)
+        get() = configJson.optInt("review_prompt_min_level", 8)
 
     val reviewPromptCooldownDays: Int
         get() = configJson.optInt("review_prompt_cooldown_days", 30)

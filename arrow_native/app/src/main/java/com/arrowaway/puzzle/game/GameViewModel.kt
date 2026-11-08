@@ -184,6 +184,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     )
                 }
                 analytics.setAnalyticsEnabled(data.isAnalyticsEnabled)
+                analytics.setUserPropertyMaxLevel(data.currentLevel)
+                analytics.setUserPropertyStreakDays(data.streakDays)
+                analytics.setUserPropertyTotalLevelsCompleted(data.levelStars.size)
 
                 if (!hasLoggedSessionStart) {
                     hasLoggedSessionStart = true
@@ -1094,6 +1097,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun restartLevel(restartSource: String = "game_over") {
+        if (_uiState.value.isGameOver) {
+            analytics.logGameOverDecision(_uiState.value.currentLevelNumber, "restart", _uiState.value.isDailyChallengeMode)
+        }
         celebrationJob?.cancel()
         analytics.logLevelRestart(_uiState.value.currentLevelNumber, restartSource)
         stopAutoSolve()
@@ -1107,6 +1113,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun claimFreeLives(count: Int = 3) {
+        val decision = if (_uiState.value.currentLevelNumber <= 10 && !_uiState.value.isDailyChallengeMode) "claim_free_lives" else "rewarded_ad"
+        analytics.logGameOverDecision(_uiState.value.currentLevelNumber, decision, _uiState.value.isDailyChallengeMode)
         viewModelScope.launch {
             audioHapticManager.playClick()
             resumeActiveTimer()
@@ -1169,15 +1177,31 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
         val lastPrompt = repository.getLastReviewPromptTimestampSynchronous()
         val cooldown = RemoteConfigManager.reviewPromptCooldownDays
-        val shouldPromptReview = InAppReviewManager.shouldPromptReview(
+        val minLevel = RemoteConfigManager.reviewPromptMinLevel
+        val reviewEligibility = InAppReviewManager.checkReviewEligibility(
             currentLevel = completedLvl,
             starsEarned = stars,
             scoreEarned = finalScore,
             currentStreakDays = _uiState.value.streakDays,
             lastPromptTimestamp = lastPrompt,
             cooldownDays = cooldown,
+            minEligibleLevel = minLevel,
             isDailyMode = _uiState.value.isDailyChallengeMode
         )
+
+        if (reviewEligibility.shouldPrompt) {
+            analytics.logInAppReviewPrompted(
+                levelNumber = completedLvl,
+                triggerReason = reviewEligibility.triggerReason,
+                scoreEarned = finalScore,
+                starsEarned = stars,
+                streakDays = _uiState.value.streakDays
+            )
+        }
+
+        if (!_uiState.value.isDailyChallengeMode) {
+            analytics.setUserPropertyMaxLevel(completedLvl)
+        }
 
         _uiState.update { state ->
             state.copy(
@@ -1191,7 +1215,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 levelMistakesCount = mistakes,
                 levelHintsUsedCount = levelHintsUsedCount,
                 levelStarsEarned = stars,
-                reviewPromptTrigger = if (shouldPromptReview) System.currentTimeMillis() else 0L
+                reviewPromptTrigger = if (reviewEligibility.shouldPrompt) System.currentTimeMillis() else 0L
             )
         }
         audioHapticManager.playLevelWin()

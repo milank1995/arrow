@@ -9,7 +9,7 @@
     },
     "app_config": {
       "defaultValue": {
-        "value": "{\n  \"maintenance_mode\": false,\n  \"support_email\": \"support@arrowaway.com\",\n  \"default_hint_timer_sec\": 10,\n  \"daily_challenge_unlock_level\": 10,\n  \"daily_completion_coins\": 100,\n  \"is_daily_challenge_enabled\": true,\n  \"review_prompt_min_level\": 10,\n  \"review_prompt_cooldown_days\": 30\n}"
+        "value": "{\n  \"maintenance_mode\": false,\n  \"support_email\": \"support@arrowaway.com\",\n  \"default_hint_timer_sec\": 10,\n  \"daily_challenge_unlock_level\": 10,\n  \"daily_completion_coins\": 100,\n  \"is_daily_challenge_enabled\": true,\n  \"review_prompt_min_level\": 8,\n  \"review_prompt_cooldown_days\": 30\n}"
       },
       "description": "App support and essential gameplay parameters: maintenance mode, hint timer delay, daily challenge unlock & reward, and review prompt timing.",
       "valueType": "JSON"

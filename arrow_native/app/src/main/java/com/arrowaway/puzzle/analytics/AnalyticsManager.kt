@@ -424,4 +424,70 @@ class AnalyticsManager private constructor(context: Context) {
         }
         logEvent("asset_load_fallback", bundle)
     }
+
+    // =========================================================================
+    // Domain 8: In-App Review & Rating Feedback
+    // =========================================================================
+
+    fun logInAppReviewPrompted(
+        levelNumber: Int,
+        triggerReason: String,
+        scoreEarned: Int,
+        starsEarned: Int,
+        streakDays: Int
+    ) {
+        val bundle = Bundle().apply {
+            putInt("level_number", levelNumber)
+            putString("trigger_reason", triggerReason)
+            putInt("score_earned", scoreEarned)
+            putInt("stars_earned", starsEarned)
+            putInt("streak_days", streakDays)
+        }
+        logEvent("in_app_review_prompted", bundle)
+    }
+
+    fun logInAppReviewCompleted(success: Boolean) {
+        val bundle = Bundle().apply {
+            putBoolean("success", success)
+        }
+        logEvent("in_app_review_completed", bundle)
+    }
+
+    // =========================================================================
+    // Domain 9: User Properties (Progress & Player Segmentation)
+    // =========================================================================
+
+    fun setUserPropertyMaxLevel(maxLevel: Int) {
+        try {
+            firebaseAnalytics?.setUserProperty("max_level_reached", maxLevel.toString())
+            Log.d(TAG, "User property updated: max_level_reached = $maxLevel")
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to set user property max_level_reached: ${e.message}")
+        }
+    }
+
+    fun setUserPropertyTotalLevelsCompleted(totalCompleted: Int) {
+        try {
+            firebaseAnalytics?.setUserProperty("total_levels_completed", totalCompleted.toString())
+        } catch (_: Exception) {}
+    }
+
+    fun setUserPropertyStreakDays(streakDays: Int) {
+        try {
+            firebaseAnalytics?.setUserProperty("streak_days", streakDays.toString())
+        } catch (_: Exception) {}
+    }
+
+    // =========================================================================
+    // Domain 10: Game Over Decision Funnel (Rewarded Ad vs Restart)
+    // =========================================================================
+
+    fun logGameOverDecision(levelNumber: Int, decision: String, isDailyMode: Boolean) {
+        val bundle = Bundle().apply {
+            putInt("level_number", levelNumber)
+            putString("decision", decision)
+            putBoolean("is_daily_mode", isDailyMode)
+        }
+        logEvent("game_over_decision", bundle)
+    }
 }

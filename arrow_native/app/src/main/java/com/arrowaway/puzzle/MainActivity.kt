@@ -143,7 +143,8 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(uiState.reviewPromptTrigger) {
                 if (uiState.reviewPromptTrigger > 0L) {
-                    inAppReviewManager.launchReviewFlow {
+                    inAppReviewManager.launchReviewFlow { success ->
+                        gameViewModel.analytics.logInAppReviewCompleted(success)
                         gameViewModel.onReviewPromptHandled()
                     }
                 }
