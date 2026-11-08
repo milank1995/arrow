@@ -158,6 +158,11 @@ object AdManager {
                 cachedRewardedAd = null
                 isRewardedLoading = false
                 Log.w(TAG, "Rewarded ad failed to preload: ${loadAdError.message} (code: ${loadAdError.code})")
+                AnalyticsManager.getInstance(context).logAdLoadFailed(
+                    adType = "rewarded",
+                    errorCode = loadAdError.code,
+                    errorMessage = loadAdError.message
+                )
                 // Retry after 20 seconds with exponential backoff buffer
                 mainHandler.postDelayed({ preloadRewardedAd(context) }, 20000L)
             }
@@ -186,6 +191,12 @@ object AdManager {
         val ad = cachedRewardedAd
         if (ad == null) {
             Toast.makeText(activity, "Ad request failed. Please try again later.", Toast.LENGTH_SHORT).show()
+            analytics.logAdDisplayFailed(
+                adType = "rewarded",
+                errorCode = -1,
+                errorMessage = "Ad not cached / ready",
+                placement = placement
+            )
             preloadRewardedAd(activity.applicationContext)
             onAdClosed(false)
             return
@@ -196,17 +207,25 @@ object AdManager {
         ad.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdShowedFullScreenContent() {
                 Log.d(TAG, "Rewarded ad showed full screen.")
+                analytics.logAdImpression(adType = "rewarded", adPlacement = placement)
                 cachedRewardedAd = null
             }
 
             override fun onAdDismissedFullScreenContent() {
                 Log.d(TAG, "Rewarded ad dismissed. Reward granted: $rewardGranted")
+                analytics.logAdDismissed(adType = "rewarded", adPlacement = placement, rewardEarned = rewardGranted)
                 preloadRewardedAd(activity.applicationContext)
                 onAdClosed(rewardGranted)
             }
 
             override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                 Log.e(TAG, "Rewarded ad failed to show: ${adError.message}")
+                analytics.logAdDisplayFailed(
+                    adType = "rewarded",
+                    errorCode = adError.code,
+                    errorMessage = adError.message,
+                    placement = placement
+                )
                 Toast.makeText(activity, "Ad request failed. Please try again later.", Toast.LENGTH_SHORT).show()
                 cachedRewardedAd = null
                 preloadRewardedAd(activity.applicationContext)
@@ -217,6 +236,11 @@ object AdManager {
         ad.show(activity) { rewardItem ->
             rewardGranted = true
             Log.i(TAG, "User earned reward: ${rewardItem.type} amount=${rewardItem.amount}")
+            analytics.logAdRewardCompleted(
+                adPlacement = placement,
+                rewardType = if (rewardItem.type.isNullOrEmpty()) "reward" else rewardItem.type,
+                rewardAmount = rewardItem.amount
+            )
             onRewardEarned()
         }
     }
@@ -244,6 +268,11 @@ object AdManager {
                 cachedInterstitialAd = null
                 isInterstitialLoading = false
                 Log.w(TAG, "Interstitial ad failed to preload: ${loadAdError.message}")
+                AnalyticsManager.getInstance(context).logAdLoadFailed(
+                    adType = "interstitial",
+                    errorCode = loadAdError.code,
+                    errorMessage = loadAdError.message
+                )
                 mainHandler.postDelayed({ preloadInterstitialAd(context) }, 25000L)
             }
         })
@@ -288,6 +317,7 @@ object AdManager {
             }
         }
 
+        val analytics = AnalyticsManager.getInstance(activity)
         val ad = cachedInterstitialAd
         if (ad == null) {
             preloadInterstitialAd(activity.applicationContext)
@@ -301,11 +331,13 @@ object AdManager {
         ad.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdShowedFullScreenContent() {
                 Log.d(TAG, "Interstitial ad showing.")
+                analytics.logAdImpression(adType = "interstitial", adPlacement = "level_transition_$currentLevel")
                 cachedInterstitialAd = null
             }
 
             override fun onAdDismissedFullScreenContent() {
                 Log.d(TAG, "Interstitial ad dismissed.")
+                analytics.logAdDismissed(adType = "interstitial", adPlacement = "level_transition_$currentLevel")
                 clearPendingInterstitial(activity)
                 setLastInterstitialTime(activity, System.currentTimeMillis())
                 preloadInterstitialAd(activity.applicationContext)
@@ -314,6 +346,12 @@ object AdManager {
 
             override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                 Log.e(TAG, "Interstitial ad failed to show: ${adError.message}")
+                analytics.logAdDisplayFailed(
+                    adType = "interstitial",
+                    errorCode = adError.code,
+                    errorMessage = adError.message,
+                    placement = "level_transition_$currentLevel"
+                )
                 clearPendingInterstitial(activity)
                 cachedInterstitialAd = null
                 preloadInterstitialAd(activity.applicationContext)
@@ -338,6 +376,7 @@ object AdManager {
             return
         }
 
+        val analytics = AnalyticsManager.getInstance(activity)
         val ad = cachedInterstitialAd
         if (ad == null) {
             Log.d(TAG, "Pending interstitial could not be shown (not cached). Resuming game.")
@@ -353,11 +392,13 @@ object AdManager {
         ad.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdShowedFullScreenContent() {
                 Log.d(TAG, "Pending interstitial showing.")
+                analytics.logAdImpression(adType = "interstitial", adPlacement = "pending_resume")
                 cachedInterstitialAd = null
             }
 
             override fun onAdDismissedFullScreenContent() {
                 Log.d(TAG, "Pending interstitial dismissed.")
+                analytics.logAdDismissed(adType = "interstitial", adPlacement = "pending_resume")
                 clearPendingInterstitial(activity)
                 setLastInterstitialTime(activity, System.currentTimeMillis())
                 preloadInterstitialAd(activity.applicationContext)
@@ -366,6 +407,12 @@ object AdManager {
 
             override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                 Log.e(TAG, "Pending interstitial failed to show: ${adError.message}")
+                analytics.logAdDisplayFailed(
+                    adType = "interstitial",
+                    errorCode = adError.code,
+                    errorMessage = adError.message,
+                    placement = "pending_resume"
+                )
                 clearPendingInterstitial(activity)
                 cachedInterstitialAd = null
                 preloadInterstitialAd(activity.applicationContext)

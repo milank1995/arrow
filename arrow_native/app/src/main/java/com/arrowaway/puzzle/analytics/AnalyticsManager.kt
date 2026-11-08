@@ -386,6 +386,44 @@ class AnalyticsManager private constructor(context: Context) {
         logEvent("ad_reward_completed", bundle)
     }
 
+    fun logAdImpression(adType: String, adPlacement: String) {
+        val bundle = Bundle().apply {
+            putString("ad_type", adType)
+            putString("ad_placement", adPlacement)
+        }
+        logEvent("ad_impression", bundle)
+    }
+
+    fun logAdDismissed(adType: String, adPlacement: String, rewardEarned: Boolean = false) {
+        val bundle = Bundle().apply {
+            putString("ad_type", adType)
+            putString("ad_placement", adPlacement)
+            putBoolean("reward_earned", rewardEarned)
+        }
+        logEvent("ad_dismissed", bundle)
+    }
+
+    fun logAdLoadFailed(adType: String, errorCode: Int, errorMessage: String) {
+        val bundle = Bundle().apply {
+            putString("ad_type", adType)
+            putInt("error_code", errorCode)
+            putString("error_message", errorMessage)
+        }
+        logEvent("ad_load_failed", bundle)
+    }
+
+    fun logAdDisplayFailed(adType: String, errorCode: Int, errorMessage: String, placement: String = "") {
+        val bundle = Bundle().apply {
+            putString("ad_type", adType)
+            putInt("error_code", errorCode)
+            putString("error_message", errorMessage)
+            if (placement.isNotEmpty()) {
+                putString("ad_placement", placement)
+            }
+        }
+        logEvent("ad_display_failed", bundle)
+    }
+
     fun logVirtualCurrencySpent(
         currencyType: String = "coins",
         amount: Int,
