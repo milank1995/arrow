@@ -245,7 +245,7 @@ class PuzzleEngineTest {
     @Test
     fun testDailyLevelsParsingAndSolvability() {
         val levelLoader = com.arrowaway.puzzle.core.engine.LevelLoader
-        val sampleDailyFiles = listOf(1, 10, 50, 100, 200, 279)
+        val sampleDailyFiles = listOf(1, 10, 50, 100, 200, 235)
         val assetsDir = java.io.File("src/main/assets/levels")
 
         for (dailyIdx in sampleDailyFiles) {
@@ -254,7 +254,7 @@ class PuzzleEngineTest {
             val jsonStr = file.readText()
             val level = levelLoader.parseLevelJson(dailyIdx, jsonStr)
             assertNotNull("Daily level $dailyIdx must parse cleanly", level)
-            assertTrue("Daily level $dailyIdx must have > 80 arrows", level!!.arrows.size > 80)
+            assertTrue("Daily level $dailyIdx must have > 100 arrows", level!!.arrows.size > 100)
 
             val occupancy = GridOccupancyMap(level.xSize, level.ySize).apply {
                 rebuild(level.arrows)

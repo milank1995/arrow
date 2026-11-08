@@ -49,7 +49,7 @@ object LevelLoader {
         return LevelGenerator.generateProceduralLevel(levelNumber, levelNumber.toLong())
     }
 
-    const val TOTAL_DAILY_LEVELS = 279
+    const val TOTAL_DAILY_LEVELS = 235
 
     /**
      * Loads a dedicated daily challenge level from the 279 high-challenge (>80 arrows) transformed pool.

@@ -453,7 +453,7 @@ fun DevTestScreen(
                                     }
                             ) {
                                 Text(
-                                    text = "Daily Challenges (1–279)",
+                                    text = "Daily Challenges (1–235)",
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = if (isDailyMode) Color.White else theme.textSecondary,
@@ -755,7 +755,7 @@ private fun LevelSelectorDialog(
                         150 to "Expert (128 arr)",
                         200 to "Expert (116 arr)",
                         250 to "Dense (126 arr)",
-                        279 to "Finale (140 arr)"
+                        235 to "Finale (140 arr)"
                     )
 
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -948,7 +948,7 @@ private fun LevelSelectorDialog(
                     OutlinedTextField(
                         value = inputLevelText,
                         onValueChange = { inputLevelText = it },
-                        label = { Text(if (isDailyMode) "Daily Level (1-279)" else "Level # (1-150)") },
+                        label = { Text(if (isDailyMode) "Daily Level (1-235)" else "Level # (1-150)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.weight(1f)

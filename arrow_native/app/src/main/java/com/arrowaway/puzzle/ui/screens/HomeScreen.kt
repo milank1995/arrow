@@ -636,7 +636,7 @@ fun HomeScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Review Daily Levels (1–279)",
+                                text = "Review Daily Levels (1–235)",
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF2563EB)
