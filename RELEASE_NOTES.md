@@ -18,6 +18,12 @@ This document maintains a high-level changelog of all official production releas
 ## [1.0.3] - Version Code: 4 - Commit: Pending
 
 ### Key Highlights:
+* **High-Challenge Daily Challenge Expansion (235 Levels):**
+  * **Curated >100 Arrow Pool:** Integrated 235 Daily Challenge levels (`DailyLevels_1.json` through `DailyLevels_235.json`) with arrow counts strictly exceeding 100 arrows (ranging from 101 to 252 arrows) for a rewarding, deep daily puzzle experience.
+  * **Isomorphic Transformations:** Applied mathematical reflections and orthogonal rotations across all 235 puzzles, ensuring completely unique coordinate geometry with 0 raw design duplication while preserving 100% solvability.
+  * **Automated Verification:** Verified 100% solvability and constraint satisfaction across all 235 levels via unit test suite (`testDailyLevelsParsingAndSolvability`).
+  * **Developer Review Suite:** Added an internal Daily Level Review browser strictly within Developer Mode (`if (isDevMode)`) for instant auditing, board rendering inspection, and level jumping, maintaining a clean production Home Screen.
+
 * **Curated Levels (1–150) Polish & Bug Fixes:**
   * **Shape Orientation Fixes:** Corrected upright orientation across 14 canonical shape levels (Heart, Star, Butterfly, Fish, Mushroom, House, Arrow, Duck, Rabbit, Sword, Anchor, Boat, Tree, Cross) by aligning coordinate transforms.
   * **Level 138 Collision Fix:** Resolved piece collision in Level 138 to ensure valid, smooth solvable clearance path.

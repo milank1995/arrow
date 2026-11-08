@@ -462,22 +462,26 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             AppScreen.DEV_TEST -> {
-                                DevTestScreen(
-                                    theme = uiState.activeTheme,
-                                    audioHapticManager = gameViewModel.audioHapticManager,
-                                    initialDailyMode = devTestInitialDailyMode,
-                                    onBackToHomeClick = {
-                                        currentScreen = AppScreen.HOME
-                                    },
-                                    onPlayInRegularGame = { selectedLevel ->
-                                        gameViewModel.playClick()
-                                        gameViewModel.loadLevel(selectedLevel)
-                                        currentScreen = AppScreen.GAMEPLAY
-                                    },
-                                    onThemeSelect = { selectedTheme ->
-                                        gameViewModel.setTheme(selectedTheme)
-                                    }
-                                )
+                                if (uiState.isDevMode) {
+                                    DevTestScreen(
+                                        theme = uiState.activeTheme,
+                                        audioHapticManager = gameViewModel.audioHapticManager,
+                                        initialDailyMode = devTestInitialDailyMode,
+                                        onBackToHomeClick = {
+                                            currentScreen = AppScreen.HOME
+                                        },
+                                        onPlayInRegularGame = { selectedLevel ->
+                                            gameViewModel.playClick()
+                                            gameViewModel.loadLevel(selectedLevel)
+                                            currentScreen = AppScreen.GAMEPLAY
+                                        },
+                                        onThemeSelect = { selectedTheme ->
+                                            gameViewModel.setTheme(selectedTheme)
+                                        }
+                                    )
+                                } else {
+                                    currentScreen = AppScreen.HOME
+                                }
                             }
                             AppScreen.SETTINGS -> {
                                 SettingsScreen(
