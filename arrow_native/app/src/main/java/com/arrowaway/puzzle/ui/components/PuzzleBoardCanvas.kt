@@ -241,7 +241,9 @@ fun PuzzleBoardCanvas(
             viewportWidth < with(density) { 600.dp.toPx() } -> 16.dp
             else -> 24.dp
         }
+        val isLandscapeViewport = viewportWidth > viewportHeight
         val minVerticalMarginDp = when {
+            isLandscapeViewport -> 22.dp
             viewportHeight < with(density) { 600.dp.toPx() } -> 10.dp
             viewportHeight < with(density) { 900.dp.toPx() } -> 12.dp
             else -> 20.dp

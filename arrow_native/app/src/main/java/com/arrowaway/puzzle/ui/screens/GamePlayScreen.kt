@@ -263,9 +263,9 @@ fun GamePlayScreen(
                         // 1. LEFT SIDEBAR: Pause, Hearts & Shape Name, Settings Gear
                         Column(
                             modifier = Modifier
-                                .widthIn(min = 68.dp, max = 80.dp)
+                                .widthIn(min = 72.dp, max = 84.dp)
                                 .fillMaxHeight()
-                                .padding(vertical = 10.dp, horizontal = 6.dp),
+                                .padding(start = 16.dp, end = 6.dp, top = 14.dp, bottom = 14.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.SpaceBetween
                         ) {
@@ -452,12 +452,12 @@ fun GamePlayScreen(
                             )
                         }
 
-                        // 3. RIGHT SIDEBAR: Vertical Booster Controls
+                        // 3. RIGHT SIDEBAR: Vertical Booster Controls (Balanced & inset from bezel)
                         Column(
                             modifier = Modifier
-                                .widthIn(min = 60.dp, max = 74.dp)
+                                .widthIn(min = 72.dp, max = 84.dp)
                                 .fillMaxHeight()
-                                .padding(vertical = 10.dp, horizontal = 6.dp),
+                                .padding(start = 6.dp, end = 18.dp, top = 14.dp, bottom = 14.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
