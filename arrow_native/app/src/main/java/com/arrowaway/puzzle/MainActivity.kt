@@ -4,6 +4,7 @@ import com.arrowaway.puzzle.ads.AdManager
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -189,6 +190,15 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     gameViewModel.markNotificationPermissionRequested()
+                }
+            }
+
+            // Dynamic Landscape orientation specifically for ad recording in Gameplay
+            LaunchedEffect(uiState.isLandscapeModeEnabled, currentScreen) {
+                if (currentScreen == AppScreen.GAMEPLAY && uiState.isLandscapeModeEnabled) {
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                } else {
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                 }
             }
 
@@ -466,6 +476,9 @@ class MainActivity : ComponentActivity() {
                                     onToggleHandGesture = {
                                         gameViewModel.toggleHandGesture()
                                     },
+                                    onToggleLandscapeMode = {
+                                        gameViewModel.toggleLandscapeMode()
+                                    },
                                     onGameplayStarted = {
                                         gameViewModel.onGameplayStarted()
                                     },
@@ -515,9 +528,14 @@ class MainActivity : ComponentActivity() {
                                     hintTimerSeconds = uiState.hintTimerSeconds,
                                     isAnalyticsEnabled = uiState.isAnalyticsEnabled,
                                     isHandGestureEnabled = uiState.isHandGestureEnabled,
+                                    isLandscapeModeEnabled = uiState.isLandscapeModeEnabled,
                                     onToggleHandGesture = {
                                         gameViewModel.playClick()
                                         gameViewModel.toggleHandGesture()
+                                    },
+                                    onToggleLandscapeMode = {
+                                        gameViewModel.playClick()
+                                        gameViewModel.toggleLandscapeMode()
                                     },
                                     onToggleAnalytics = {
                                         gameViewModel.playClick()

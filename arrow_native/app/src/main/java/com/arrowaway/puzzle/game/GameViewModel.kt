@@ -96,7 +96,8 @@ data class GameUiState(
     val hintTimerSeconds: Int = 10,
     val reviewPromptTrigger: Long = 0L,
     val isAnalyticsEnabled: Boolean = !com.arrowaway.puzzle.BuildConfig.DEBUG,
-    val isHandGestureEnabled: Boolean = true
+    val isHandGestureEnabled: Boolean = true,
+    val isLandscapeModeEnabled: Boolean = false
 ) {
     val previewRayArrowId: String? get() = previewRayArrowIds.firstOrNull()
 }
@@ -185,7 +186,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         isGridButtonVisible = data.isGridButtonVisible,
                         hintTimerSeconds = data.hintTimerSeconds,
                         isAnalyticsEnabled = data.isAnalyticsEnabled,
-                        isHandGestureEnabled = data.isHandGestureEnabled
+                        isHandGestureEnabled = data.isHandGestureEnabled,
+                        isLandscapeModeEnabled = data.isLandscapeModeEnabled
                     )
                 }
                 analytics.setAnalyticsEnabled(data.isAnalyticsEnabled)
@@ -1147,6 +1149,14 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         // If auto-solving while toggled, restart solve loop appropriately
         if (_uiState.value.isAutoSolving) {
             startAutoSolve()
+        }
+    }
+
+    fun toggleLandscapeMode() {
+        val newVal = !_uiState.value.isLandscapeModeEnabled
+        _uiState.update { it.copy(isLandscapeModeEnabled = newVal) }
+        viewModelScope.launch {
+            repository.setLandscapeModeEnabled(newVal)
         }
     }
 

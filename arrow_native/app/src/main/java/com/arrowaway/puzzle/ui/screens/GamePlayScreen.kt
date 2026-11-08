@@ -3,6 +3,24 @@ package com.arrowaway.puzzle.ui.screens
 import com.arrowaway.puzzle.BuildConfig
 import com.arrowaway.puzzle.ui.components.AutoSolveButton
 
+import android.content.res.Configuration
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
+import com.arrowaway.puzzle.ui.components.HeartIndicatorPill
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -86,6 +104,7 @@ fun GamePlayScreen(
     onDismissPreviewRays: () -> Unit = {},
     onAutoSolveClick: () -> Unit = {},
     onToggleHandGesture: () -> Unit = {},
+    onToggleLandscapeMode: () -> Unit = {},
     onGameplayStarted: () -> Unit = {},
     onPauseStateChanged: (Boolean) -> Unit = {},
     onPrevShapeClick: () -> Unit = {},
@@ -225,15 +244,322 @@ fun GamePlayScreen(
             modifier = modifier.fillMaxSize()
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .statusBarsPadding()
-                        .navigationBarsPadding()
-                        .displayCutoutPadding()
-                ) {
+                val configuration = LocalConfiguration.current
+                val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+                if (isLandscape) {
+                    // =========================================================================
+                    // LANDSCAPE AD RECORDING LAYOUT: Left Header | Center Canvas | Right Boosters
+                    // =========================================================================
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .statusBarsPadding()
+                            .navigationBarsPadding()
+                            .displayCutoutPadding(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // 1. LEFT SIDEBAR: Pause, Hearts & Shape Name, Settings Gear
+                        Column(
+                            modifier = Modifier
+                                .widthIn(min = 68.dp, max = 80.dp)
+                                .fillMaxHeight()
+                                .padding(vertical = 10.dp, horizontal = 6.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            // Top: Pause Pod
+                            Surface(
+                                shape = CircleShape,
+                                color = theme.boosterBg,
+                                border = BorderStroke(1.dp, theme.gridLine),
+                                shadowElevation = 2.dp,
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(CircleShape)
+                                    .clickable {
+                                        onPlayClickSound()
+                                        showPauseDialog = true
+                                    }
+                            ) {
+                                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                    Icon(
+                                        imageVector = Icons.Default.Pause,
+                                        contentDescription = "Pause",
+                                        tint = theme.textPrimary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+
+                            // Middle: Hearts & Level/Shape Badge
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                HeartIndicatorPill(
+                                    heartsRemaining = uiState.heartsRemaining,
+                                    maxHearts = uiState.maxHearts,
+                                    theme = theme
+                                )
+
+                                Surface(
+                                    shape = RoundedCornerShape(percent = 50),
+                                    color = theme.textPrimary.copy(alpha = 0.05f),
+                                    border = BorderStroke(1.dp, theme.gridLine.copy(alpha = 0.45f)),
+                                    shadowElevation = 0.dp
+                                ) {
+                                    Text(
+                                        text = when {
+                                            uiState.isDailyChallengeMode -> "Daily"
+                                            uiState.isCustomShapeMode && resolvedShapeName != null -> resolvedShapeName
+                                            else -> "Level ${uiState.currentLevelNumber}"
+                                        },
+                                        fontSize = 11.5.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = theme.textPrimary.copy(alpha = 0.85f),
+                                        letterSpacing = 0.3.sp,
+                                        maxLines = 1,
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                                    )
+                                }
+
+                                if (uiState.isCustomShapeMode) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        Surface(
+                                            shape = CircleShape,
+                                            color = theme.boosterBg,
+                                            border = BorderStroke(1.dp, theme.gridLine),
+                                            modifier = Modifier
+                                                .size(28.dp)
+                                                .clip(CircleShape)
+                                                .clickable {
+                                                    onPlayClickSound()
+                                                    onPrevShapeClick()
+                                                }
+                                        ) {
+                                            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                                Icon(
+                                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                                    contentDescription = "Prev Shape",
+                                                    tint = theme.textPrimary,
+                                                    modifier = Modifier.size(13.dp)
+                                                )
+                                            }
+                                        }
+
+                                        Surface(
+                                            shape = CircleShape,
+                                            color = theme.boosterBg,
+                                            border = BorderStroke(1.dp, theme.gridLine),
+                                            modifier = Modifier
+                                                .size(28.dp)
+                                                .clip(CircleShape)
+                                                .clickable {
+                                                    onPlayClickSound()
+                                                    onNextShapeClick()
+                                                }
+                                        ) {
+                                            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                                Icon(
+                                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                                    contentDescription = "Next Shape",
+                                                    tint = theme.textPrimary,
+                                                    modifier = Modifier.size(13.dp)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Bottom: Settings Gear Pod
+                            Surface(
+                                shape = CircleShape,
+                                color = theme.boosterBg,
+                                border = BorderStroke(1.dp, theme.gridLine),
+                                shadowElevation = 2.dp,
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(CircleShape)
+                                    .clickable {
+                                        onPlayClickSound()
+                                        showSettingsDialog = true
+                                    }
+                            ) {
+                                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                    Icon(
+                                        imageVector = Icons.Default.Settings,
+                                        contentDescription = "Settings",
+                                        tint = theme.textPrimary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        // 2. CENTER STAGE: Full-Height Main Puzzle Canvas
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                        ) {
+                            if (level != null) {
+                                PuzzleBoardCanvas(
+                                    xSize = level.xSize,
+                                    ySize = level.ySize,
+                                    arrows = uiState.arrows,
+                                    theme = theme,
+                                    isGridLinesActive = uiState.isGridLinesActive,
+                                    isCelebrationBurstActive = uiState.isCelebrationBurstActive,
+                                    restartTrigger = uiState.restartTrigger,
+                                    previewRayArrowIds = uiState.previewRayArrowIds,
+                                    activeBoosterAnimation = uiState.activeBoosterAnimation,
+                                    currentLevelNumber = uiState.currentLevelNumber,
+                                    isDailyChallengeMode = uiState.isDailyChallengeMode,
+                                    isCustomShapeMode = uiState.isCustomShapeMode,
+                                    showTutorialHand = (uiState.currentLevelNumber == 1 && !uiState.isDailyChallengeMode && !uiState.isCustomShapeMode),
+                                    isAutoSolving = uiState.isAutoSolving,
+                                    isHandGestureEnabled = uiState.isHandGestureEnabled,
+                                    onStopAutoSolve = onAutoSolveClick,
+                                    onArrowClick = { arrow ->
+                                        lastInteractionTime = System.currentTimeMillis()
+                                        isIdlePromptActive = false
+                                        onArrowClick(arrow)
+                                    },
+                                    onArrowLongPress = { arrow, isPressed ->
+                                        lastInteractionTime = System.currentTimeMillis()
+                                        isIdlePromptActive = false
+                                        onArrowLongPress(arrow, isPressed)
+                                    },
+                                    onDismissPreviewRays = onDismissPreviewRays,
+                                    onSkipCelebration = onSkipCelebration
+                                )
+                            }
+
+                            CheerOverlay(
+                                message = uiState.cheerMessage,
+                                theme = uiState.activeTheme,
+                                fromLeft = uiState.cheerFromLeft,
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .padding(top = 4.dp)
+                            )
+                        }
+
+                        // 3. RIGHT SIDEBAR: Vertical Booster Controls
+                        Column(
+                            modifier = Modifier
+                                .widthIn(min = 60.dp, max = 74.dp)
+                                .fillMaxHeight()
+                                .padding(vertical = 10.dp, horizontal = 6.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            if (uiState.isHintButtonVisible) {
+                                val effectiveHints = if (uiState.isDailyChallengeMode || uiState.isCustomShapeMode) {
+                                    uiState.levelFreeHintsRemaining
+                                } else if (uiState.currentLevelNumber <= 10) {
+                                    999
+                                } else {
+                                    uiState.levelFreeHintsRemaining
+                                }
+                                val isFreeHint = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode && !uiState.isCustomShapeMode)
+                                val isAdState = !isFreeHint && effectiveHints <= 0
+
+                                Box(
+                                    modifier = Modifier
+                                        .size(46.dp)
+                                        .clickable {
+                                            lastInteractionTime = System.currentTimeMillis()
+                                            isIdlePromptActive = false
+                                            onHintClick()
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = if (isIdlePromptActive) Color(0xFFFEF3C7) else theme.boosterBg,
+                                        border = BorderStroke(1.dp, if (isIdlePromptActive) Color(0xFFF59E0B) else theme.gridLine),
+                                        shadowElevation = 2.dp,
+                                        modifier = Modifier.size(42.dp)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                            Icon(
+                                                imageVector = Icons.Default.Lightbulb,
+                                                contentDescription = "Hint",
+                                                tint = if (isIdlePromptActive) Color(0xFFD97706) else Color(0xFFF59E0B),
+                                                modifier = Modifier.size(22.dp)
+                                            )
+                                        }
+                                    }
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = if (isAdState) Color(0xFFEAB308) else theme.boosterBg,
+                                        border = BorderStroke(1.dp, if (isAdState) Color.White.copy(alpha = 0.8f) else theme.gridLine),
+                                        modifier = Modifier
+                                            .size(18.dp)
+                                            .align(Alignment.TopEnd)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                            Text(
+                                                text = if (isFreeHint) "∞" else if (isAdState) "AD" else "$effectiveHints",
+                                                fontSize = 8.5.sp,
+                                                fontWeight = FontWeight.Black,
+                                                color = if (isAdState) Color.White else theme.textPrimary
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(18.dp))
+
+                            if (uiState.isGridButtonVisible) {
+                                Surface(
+                                    shape = CircleShape,
+                                    color = if (uiState.isGridLinesActive) theme.arrowDefault.copy(alpha = 0.18f) else theme.boosterBg,
+                                    border = BorderStroke(1.dp, if (uiState.isGridLinesActive) theme.arrowDefault else theme.gridLine),
+                                    shadowElevation = 2.dp,
+                                    modifier = Modifier
+                                        .size(42.dp)
+                                        .clip(CircleShape)
+                                        .clickable {
+                                            lastInteractionTime = System.currentTimeMillis()
+                                            isIdlePromptActive = false
+                                            onGridClick()
+                                        }
+                                ) {
+                                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                        Text(
+                                            text = "#",
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.ExtraBold,
+                                            color = if (uiState.isGridLinesActive) theme.arrowDefault else theme.textPrimary.copy(alpha = 0.65f)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // =========================================================================
+                    // PORTRAIT LAYOUT: Top Header | Center Canvas | Bottom Boosters (Untouched)
+                    // =========================================================================
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .statusBarsPadding()
+                            .navigationBarsPadding()
+                            .displayCutoutPadding()
+                    ) {
                     // 1. TOP GAMEPLAY HEADER (Hidden on Level 1 FTUE; Shown on all regular levels)
                     if (!isInitialLevel1 && level != null) {
                         val totalArrowsCount = uiState.levelData?.arrows?.size ?: uiState.arrows.size
@@ -374,6 +700,8 @@ fun GamePlayScreen(
                     }
                 }
 
+                } // End of portrait Column
+
                 // 4. SUBTLE HUD FLOATING TOAST (Shown on quick Sound toggle without modal interruption)
                 AnimatedVisibility(
                     visible = hudToastMessage != null,
@@ -437,6 +765,8 @@ fun GamePlayScreen(
                         onThemeSelect = onThemeSelect,
                         onToggleAutoSolve = onAutoSolveClick,
                         onToggleHandGesture = onToggleHandGesture,
+                        onToggleLandscapeMode = onToggleLandscapeMode,
+                        isLandscapeModeEnabled = uiState.isLandscapeModeEnabled,
                         onDismiss = {
                             showSettingsDialog = false
                             lastInteractionTime = System.currentTimeMillis()

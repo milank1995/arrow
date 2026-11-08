@@ -55,6 +55,7 @@ import androidx.compose.material.icons.automirrored.filled.VolumeMute
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.TouchApp
+import androidx.compose.material.icons.filled.ScreenRotation
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.GridOn
@@ -118,8 +119,10 @@ fun SettingsScreen(
     hintTimerSeconds: Int = 10,
     isAnalyticsEnabled: Boolean = true,
     isHandGestureEnabled: Boolean = true,
+    isLandscapeModeEnabled: Boolean = false,
     onToggleAnalytics: () -> Unit = {},
     onToggleHandGesture: () -> Unit = {},
+    onToggleLandscapeMode: () -> Unit = {},
     onToggleSound: () -> Unit,
     onToggleVibration: () -> Unit,
     onToggleDailyReminders: () -> Unit = {},
@@ -717,6 +720,22 @@ fun SettingsScreen(
                                     iconTint = if (isHandGestureEnabled) activeTheme.arrowDefault else activeTheme.textSecondary.copy(alpha = 0.4f),
                                     isChecked = isHandGestureEnabled,
                                     onCheckedChange = { onToggleHandGesture() },
+                                    activeTheme = activeTheme
+                                )
+
+                                HorizontalDivider(
+                                    color = Color(0xFFDC2626).copy(alpha = 0.25f),
+                                    thickness = 1.dp,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+
+                                SettingsToggleRow(
+                                    title = "Landscape Mode (Ad Recording)",
+                                    icon = Icons.Default.ScreenRotation,
+                                    iconBg = itemBg,
+                                    iconTint = if (isLandscapeModeEnabled) activeTheme.arrowDefault else activeTheme.textSecondary.copy(alpha = 0.4f),
+                                    isChecked = isLandscapeModeEnabled,
+                                    onCheckedChange = { onToggleLandscapeMode() },
                                     activeTheme = activeTheme
                                 )
                             }

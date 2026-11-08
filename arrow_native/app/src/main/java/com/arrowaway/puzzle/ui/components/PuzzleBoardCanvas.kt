@@ -265,7 +265,7 @@ fun PuzzleBoardCanvas(
         val maxOpticalShiftPx = with(density) { 10.dp.toPx() }
         val remainingVerticalSpace = viewportHeight - boardHeight
         val verticalSlackPx = (remainingVerticalSpace - verticalMarginPx * 2f).coerceAtLeast(0f)
-        val opticalShiftY = (verticalSlackPx * 0.035f).coerceAtMost(maxOpticalShiftPx)
+        val opticalShiftY = if (viewportWidth > viewportHeight) 0f else (verticalSlackPx * 0.035f).coerceAtMost(maxOpticalShiftPx)
 
         val boardOrigin = Offset(
             viewportWidth / 2f - activeCenterX,

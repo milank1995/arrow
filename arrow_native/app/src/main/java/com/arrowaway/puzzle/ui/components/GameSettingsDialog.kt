@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.TouchApp
+import androidx.compose.material.icons.filled.ScreenRotation
 import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
@@ -84,6 +85,7 @@ fun GameSettingsDialog(
     activeTheme: ThemePreset,
     isAutoSolving: Boolean = false,
     isHandGestureEnabled: Boolean = true,
+    isLandscapeModeEnabled: Boolean = false,
     onToggleSound: () -> Unit,
     onToggleVibration: () -> Unit,
     onToggleHintButton: () -> Unit,
@@ -92,13 +94,14 @@ fun GameSettingsDialog(
     onThemeSelect: (ThemePreset) -> Unit,
     onToggleAutoSolve: () -> Unit = {},
     onToggleHandGesture: () -> Unit = {},
+    onToggleLandscapeMode: () -> Unit = {},
     onDismiss: () -> Unit
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
     val dialogWidth = minOf(screenWidth - 36.dp, 350.dp)
-    val maxScrollHeight = (screenHeight - 120.dp).coerceIn(300.dp, 600.dp)
+    val maxScrollHeight = (screenHeight - 80.dp).coerceIn(200.dp, 600.dp)
 
     var showHintTimerInfoDialog by remember { mutableStateOf(false) }
 
@@ -503,6 +506,19 @@ fun GameSettingsDialog(
                         iconTint = if (isHandGestureEnabled) activeTheme.arrowDefault else activeTheme.textSecondary,
                         isChecked = isHandGestureEnabled,
                         onCheckedChange = { onToggleHandGesture() },
+                        activeTheme = activeTheme
+                    )
+
+                    HorizontalDivider(color = dividerColor, thickness = 0.8.dp)
+
+                    // Landscape Mode (Ad Recording) Toggle
+                    GameSettingToggleRow(
+                        title = "Landscape Mode (Ad Recording)",
+                        icon = Icons.Default.ScreenRotation,
+                        iconBg = if (isLandscapeModeEnabled) activeTheme.arrowDefault.copy(alpha = 0.15f) else itemBg,
+                        iconTint = if (isLandscapeModeEnabled) activeTheme.arrowDefault else activeTheme.textSecondary,
+                        isChecked = isLandscapeModeEnabled,
+                        onCheckedChange = { onToggleLandscapeMode() },
                         activeTheme = activeTheme
                     )
 

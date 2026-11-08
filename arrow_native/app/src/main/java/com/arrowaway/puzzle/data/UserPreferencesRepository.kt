@@ -43,7 +43,8 @@ data class UserGameData(
     val hintTimerSeconds: Int = 10,
     val lastReviewPromptTimestamp: Long = 0L,
     val isAnalyticsEnabled: Boolean = !com.arrowaway.puzzle.BuildConfig.DEBUG,
-    val isHandGestureEnabled: Boolean = true
+    val isHandGestureEnabled: Boolean = true,
+    val isLandscapeModeEnabled: Boolean = false
 )
 
 class UserPreferencesRepository(private val context: Context) {
@@ -73,6 +74,7 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_LAST_REVIEW_PROMPT_TIMESTAMP = longPreferencesKey("last_review_prompt_timestamp")
     private val KEY_ANALYTICS_ENABLED = booleanPreferencesKey("analytics_tracking_enabled")
     private val KEY_HAND_GESTURE_ENABLED = booleanPreferencesKey("is_hand_gesture_enabled")
+    private val KEY_LANDSCAPE_MODE_ENABLED = booleanPreferencesKey("is_landscape_mode_enabled")
 
     private val SYNC_PREFS = "arrow_sync_prefs"
     private val KEY_SYNC_HAS_PLAYED = "has_played_before"
@@ -192,7 +194,8 @@ class UserPreferencesRepository(private val context: Context) {
             hintTimerSeconds = (prefs[KEY_HINT_TIMER_SECONDS] ?: 10).coerceIn(0, 55),
             lastReviewPromptTimestamp = prefs[KEY_LAST_REVIEW_PROMPT_TIMESTAMP] ?: 0L,
             isAnalyticsEnabled = prefs[KEY_ANALYTICS_ENABLED] ?: (!com.arrowaway.puzzle.BuildConfig.DEBUG),
-            isHandGestureEnabled = prefs[KEY_HAND_GESTURE_ENABLED] ?: true
+            isHandGestureEnabled = prefs[KEY_HAND_GESTURE_ENABLED] ?: true,
+            isLandscapeModeEnabled = prefs[KEY_LANDSCAPE_MODE_ENABLED] ?: false
         )
     }
 
@@ -425,6 +428,12 @@ class UserPreferencesRepository(private val context: Context) {
     suspend fun setHandGestureEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[KEY_HAND_GESTURE_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setLandscapeModeEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[KEY_LANDSCAPE_MODE_ENABLED] = enabled
         }
     }
 
