@@ -8,14 +8,14 @@ This document maintains a high-level changelog of all official production releas
 
 | Version Name | Version Code | Git Commit | Tag | Date | Status |
 |---|---|---|---|---|---|
-| **1.0.3** | `4` | Pending | Pending | Nov 2026 | **Prepared (Production Ready)** |
+| **1.0.3** | `5` | Pending | Pending | Nov 2026 | **Prepared (Production Ready)** |
 | **1.0.2** | `3` | `51d607a9` | `v1.0.2` | Nov 2026 | **Published on Google Play** |
 | **1.0.1** | `2` | `b2476eb1` | `v1.0.1` | Nov 2026 | **Published on Google Play** |
 | **1.0.0** | `1` | `a1517c90` | `v1.0.0` | Nov 2026 | **Initial Production Launch** |
 
 ---
 
-## [1.0.3] - Version Code: 4 - Commit: Pending
+## [1.0.3] - Version Code: 5 - Commit: Pending
 
 ### Key Highlights:
 * **High-Challenge Daily Challenge Expansion (235 Levels):**
