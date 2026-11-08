@@ -2,6 +2,7 @@ package com.arrowaway.puzzle.ui.screens
 
 import com.arrowaway.puzzle.BuildConfig
 import com.arrowaway.puzzle.ui.components.AutoSolveButton
+import androidx.compose.ui.draw.clip
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -75,6 +76,7 @@ fun DevTestScreen(
     onBackToHomeClick: () -> Unit,
     onPlayInRegularGame: ((Int) -> Unit)? = null,
     onThemeSelect: (ThemePreset) -> Unit,
+    initialDailyMode: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -105,13 +107,19 @@ fun DevTestScreen(
     var showThemeDialog by remember { mutableStateOf(false) }
     var isAutoSolving by remember { mutableStateOf(false) }
     var autoSolveJob by remember { mutableStateOf<Job?>(null) }
+    var isDailyMode by remember { mutableStateOf(initialDailyMode) }
 
-    fun loadLevel(levelNum: Int) {
+    fun loadLevel(levelNum: Int, daily: Boolean = isDailyMode) {
         autoSolveJob?.cancel()
         autoSolveJob = null
         isAutoSolving = false
-        val boundedLevel = levelNum.coerceIn(1, 150)
-        val level = LevelLoader.loadLevel(context, boundedLevel)
+        val maxLevel = if (daily) LevelLoader.TOTAL_DAILY_LEVELS else 150
+        val boundedLevel = levelNum.coerceIn(1, maxLevel)
+        val level = if (daily) {
+            LevelLoader.loadDailyLevel(context, boundedLevel)
+        } else {
+            LevelLoader.loadLevel(context, boundedLevel)
+        }
         levelData = level
         arrows = level.arrows
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
@@ -132,8 +140,9 @@ fun DevTestScreen(
         restartTrigger = System.currentTimeMillis()
     }
 
-    LaunchedEffect(Unit) {
-        loadLevel(currentLevelNumber)
+    LaunchedEffect(initialDailyMode) {
+        isDailyMode = initialDailyMode
+        loadLevel(if (initialDailyMode) 1 else currentLevelNumber, initialDailyMode)
     }
 
     fun launchArrowFlight(arrow: Arrow) {
@@ -362,13 +371,13 @@ fun DevTestScreen(
                 .navigationBarsPadding()
                 .displayCutoutPadding()
         ) {
-            // 1. TOP GAMEPLAY HEADER (Matches original game header exactly)
+            // 1. TOP GAMEPLAY HEADER
             if (currentLevel != null) {
-                Box(
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 4.dp),
-                    contentAlignment = Alignment.Center
+                        .padding(horizontal = 4.dp)
                 ) {
                     GameHeader(
                         levelNumber = currentLevelNumber,
@@ -377,7 +386,7 @@ fun DevTestScreen(
                         remainingArrowsCount = remainingArrowsCount,
                         totalArrowsCount = totalArrowsCount,
                         theme = theme,
-                        shapeName = levelData?.shapeName,
+                        shapeName = if (isDailyMode) "Daily Challenge" else levelData?.shapeName,
                         isTestMode = true,
                         onPrevLevelClick = {
                             if (currentLevelNumber > 1) {
@@ -385,7 +394,8 @@ fun DevTestScreen(
                             }
                         },
                         onNextLevelClick = {
-                            if (currentLevelNumber < 150) {
+                            val maxLevel = if (isDailyMode) LevelLoader.TOTAL_DAILY_LEVELS else 150
+                            if (currentLevelNumber < maxLevel) {
                                 loadLevel(currentLevelNumber + 1)
                             }
                         },
@@ -396,6 +406,62 @@ fun DevTestScreen(
                         onThemeClick = { showThemeDialog = true },
                         modifier = Modifier.widthIn(max = 540.dp)
                     )
+
+                    // Mode Switcher Pill (Campaign vs Daily Challenges)
+                    Surface(
+                        shape = RoundedCornerShape(percent = 50),
+                        color = theme.surface,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, theme.gridLine),
+                        shadowElevation = 1.dp,
+                        modifier = Modifier.padding(top = 4.dp, bottom = 2.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(3.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Surface(
+                                shape = RoundedCornerShape(percent = 50),
+                                color = if (!isDailyMode) theme.arrowClear else Color.Transparent,
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(percent = 50))
+                                    .clickable {
+                                        if (isDailyMode) {
+                                            isDailyMode = false
+                                            loadLevel(1, daily = false)
+                                        }
+                                    }
+                            ) {
+                                Text(
+                                    text = "Campaign (1–150)",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (!isDailyMode) Color.White else theme.textSecondary,
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
+                                )
+                            }
+
+                            Surface(
+                                shape = RoundedCornerShape(percent = 50),
+                                color = if (isDailyMode) Color(0xFF2563EB) else Color.Transparent,
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(percent = 50))
+                                    .clickable {
+                                        if (!isDailyMode) {
+                                            isDailyMode = true
+                                            loadLevel(1, daily = true)
+                                        }
+                                    }
+                            ) {
+                                Text(
+                                    text = "Daily Challenges (1–279)",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isDailyMode) Color.White else theme.textSecondary,
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
@@ -522,14 +588,15 @@ fun DevTestScreen(
         if (showLevelSelectDialog) {
             LevelSelectorDialog(
                 currentLevel = currentLevelNumber,
+                isDailyMode = isDailyMode,
                 onLevelSelected = { lvl ->
                     showLevelSelectDialog = false
                     loadLevel(lvl)
                 },
-                onPlayInRegularGame = { lvl ->
+                onPlayInRegularGame = if (!isDailyMode) { lvl ->
                     showLevelSelectDialog = false
                     onPlayInRegularGame?.invoke(lvl)
-                },
+                } else null,
                 onDismiss = { showLevelSelectDialog = false }
             )
         }
@@ -539,6 +606,7 @@ fun DevTestScreen(
 @Composable
 private fun LevelSelectorDialog(
     currentLevel: Int,
+    isDailyMode: Boolean = false,
     onLevelSelected: (Int) -> Unit,
     onPlayInRegularGame: ((Int) -> Unit)? = null,
     onDismiss: () -> Unit
@@ -602,7 +670,7 @@ private fun LevelSelectorDialog(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Dev Level Selector",
+                        text = if (isDailyMode) "Daily Challenge Level Selector" else "Dev Level Selector",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF0F172A)
@@ -614,62 +682,128 @@ private fun LevelSelectorDialog(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // FILTER BUTTONS ROW (All Levels vs Shape Puzzles Only)
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // 1. All Levels Button
-                    Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = if (!isShapesOnly) Color(0xFF4F46E5) else Color(0xFFF1F5F9),
-                        border = if (!isShapesOnly) null else androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { isShapesOnly = false }
+                if (!isDailyMode) {
+                    // FILTER BUTTONS ROW (All Levels vs Shape Puzzles Only)
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(vertical = 8.dp)
+                        // 1. All Levels Button
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = if (!isShapesOnly) Color(0xFF4F46E5) else Color(0xFFF1F5F9),
+                            border = if (!isShapesOnly) null else androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { isShapesOnly = false }
                         ) {
-                            Text(
-                                text = "📋 All (150)",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (!isShapesOnly) Color.White else Color(0xFF334155)
-                            )
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            ) {
+                                Text(
+                                    text = "📋 All (150)",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (!isShapesOnly) Color.White else Color(0xFF334155)
+                                )
+                            }
                         }
-                    }
 
-                    // 2. Shape Puzzles Only Button
-                    Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = if (isShapesOnly) Color(0xFF4F46E5) else Color(0xFFF1F5F9),
-                        border = if (isShapesOnly) null else androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { isShapesOnly = true }
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(vertical = 8.dp)
+                        // 2. Shape Puzzles Only Button
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = if (isShapesOnly) Color(0xFF4F46E5) else Color(0xFFF1F5F9),
+                            border = if (isShapesOnly) null else androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { isShapesOnly = true }
                         ) {
-                            Text(
-                                text = "🧩 Shapes Only (30)",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isShapesOnly) Color.White else Color(0xFF334155)
-                            )
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            ) {
+                                Text(
+                                    text = "🧩 Shapes Only (30)",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isShapesOnly) Color.White else Color(0xFF334155)
+                                )
+                            }
                         }
                     }
+                    Spacer(modifier = Modifier.height(14.dp))
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                if (isDailyMode) {
+                    Text(
+                        text = "Daily Challenge Key Milestones:",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF334155),
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
 
-                if (isShapesOnly) {
+                    val dailyPresets = listOf(
+                        1 to "Start (143 arr)",
+                        25 to "Dense (126 arr)",
+                        50 to "Dense (119 arr)",
+                        100 to "Expert (126 arr)",
+                        150 to "Expert (128 arr)",
+                        200 to "Expert (116 arr)",
+                        250 to "Dense (126 arr)",
+                        279 to "Finale (140 arr)"
+                    )
+
+                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        dailyPresets.chunked(2).forEach { rowPair ->
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                rowPair.forEach { (lvl, desc) ->
+                                    val isCurrent = (lvl == currentLevel)
+                                    Surface(
+                                        shape = RoundedCornerShape(10.dp),
+                                        color = if (isCurrent) Color(0xFFEFF6FF) else Color(0xFFF8FAFC),
+                                        border = androidx.compose.foundation.BorderStroke(
+                                            1.dp,
+                                            if (isCurrent) Color(0xFF2563EB) else Color(0xFFE2E8F0)
+                                        ),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .clickable { onLevelSelected(lvl) }
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp)
+                                        ) {
+                                            Text(
+                                                text = "D$lvl",
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 12.sp,
+                                                color = if (isCurrent) Color(0xFF1D4ED8) else Color(0xFF1E293B)
+                                            )
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text(
+                                                text = desc,
+                                                fontSize = 11.sp,
+                                                color = Color(0xFF64748B),
+                                                maxLines = 1
+                                            )
+                                        }
+                                    }
+                                }
+                                if (rowPair.size == 1) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
+                            }
+                        }
+                    }
+                } else if (isShapesOnly) {
                     Text(
                         text = "Authentic Shape Puzzle Levels (Every 5 Levels):",
                         fontSize = 12.sp,
@@ -810,17 +944,18 @@ private fun LevelSelectorDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
+                    val maxLevelNum = if (isDailyMode) LevelLoader.TOTAL_DAILY_LEVELS else 150
                     OutlinedTextField(
                         value = inputLevelText,
                         onValueChange = { inputLevelText = it },
-                        label = { Text("Level # (1-150)") },
+                        label = { Text(if (isDailyMode) "Daily Level (1-279)" else "Level # (1-150)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
                     Button(
                         onClick = {
-                            val lvl = inputLevelText.toIntOrNull()?.coerceIn(1, 150) ?: currentLevel
+                            val lvl = inputLevelText.toIntOrNull()?.coerceIn(1, maxLevelNum) ?: currentLevel
                             onLevelSelected(lvl)
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4F46E5)),

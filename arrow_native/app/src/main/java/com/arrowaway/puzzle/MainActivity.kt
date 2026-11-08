@@ -119,6 +119,7 @@ class MainActivity : ComponentActivity() {
             }
             var currentScreen by remember { mutableStateOf(initialScreen) }
             var showSoundSettingsDialog by remember { mutableStateOf(false) }
+            var devTestInitialDailyMode by remember { mutableStateOf(false) }
 
             val lifecycleOwner = LocalLifecycleOwner.current
             DisposableEffect(lifecycleOwner) {
@@ -246,6 +247,12 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onDevTestClick = {
                                         gameViewModel.playClick()
+                                        devTestInitialDailyMode = false
+                                        currentScreen = AppScreen.DEV_TEST
+                                    },
+                                    onReviewDailyLevelsClick = {
+                                        gameViewModel.playClick()
+                                        devTestInitialDailyMode = true
                                         currentScreen = AppScreen.DEV_TEST
                                     },
                                     onLevelChange = { newLevel ->
@@ -455,25 +462,22 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             AppScreen.DEV_TEST -> {
-                                if (uiState.isDevMode) {
-                                    DevTestScreen(
-                                        theme = uiState.activeTheme,
-                                        audioHapticManager = gameViewModel.audioHapticManager,
-                                        onBackToHomeClick = {
-                                            currentScreen = AppScreen.HOME
-                                        },
-                                        onPlayInRegularGame = { selectedLevel ->
-                                            gameViewModel.playClick()
-                                            gameViewModel.loadLevel(selectedLevel)
-                                            currentScreen = AppScreen.GAMEPLAY
-                                        },
-                                        onThemeSelect = { selectedTheme ->
-                                            gameViewModel.setTheme(selectedTheme)
-                                        }
-                                    )
-                                } else {
-                                    currentScreen = AppScreen.HOME
-                                }
+                                DevTestScreen(
+                                    theme = uiState.activeTheme,
+                                    audioHapticManager = gameViewModel.audioHapticManager,
+                                    initialDailyMode = devTestInitialDailyMode,
+                                    onBackToHomeClick = {
+                                        currentScreen = AppScreen.HOME
+                                    },
+                                    onPlayInRegularGame = { selectedLevel ->
+                                        gameViewModel.playClick()
+                                        gameViewModel.loadLevel(selectedLevel)
+                                        currentScreen = AppScreen.GAMEPLAY
+                                    },
+                                    onThemeSelect = { selectedTheme ->
+                                        gameViewModel.setTheme(selectedTheme)
+                                    }
+                                )
                             }
                             AppScreen.SETTINGS -> {
                                 SettingsScreen(

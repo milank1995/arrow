@@ -241,4 +241,42 @@ class PuzzleEngineTest {
         assertTrue("All arrows must be solved without deadlock", currentArrows.all { it.state == ArrowState.CLEARED })
         assertEquals("Level 1 should be cleared in exactly 4 steps", 4, steps)
     }
+
+    @Test
+    fun testDailyLevelsParsingAndSolvability() {
+        val levelLoader = com.arrowaway.puzzle.core.engine.LevelLoader
+        val sampleDailyFiles = listOf(1, 10, 50, 100, 200, 279)
+        val assetsDir = java.io.File("src/main/assets/levels")
+
+        for (dailyIdx in sampleDailyFiles) {
+            val file = java.io.File(assetsDir, "DailyLevels_$dailyIdx.json")
+            assertTrue("Daily level file must exist: ${file.name}", file.exists())
+            val jsonStr = file.readText()
+            val level = levelLoader.parseLevelJson(dailyIdx, jsonStr)
+            assertNotNull("Daily level $dailyIdx must parse cleanly", level)
+            assertTrue("Daily level $dailyIdx must have > 80 arrows", level!!.arrows.size > 80)
+
+            val occupancy = GridOccupancyMap(level.xSize, level.ySize).apply {
+                rebuild(level.arrows)
+            }
+            val currentArrows = level.arrows.map { it.copy() }.toMutableList()
+            var steps = 0
+            val maxSteps = currentArrows.size + 10
+
+            while (currentArrows.any { it.state != ArrowState.CLEARED } && steps < maxSteps) {
+                steps++
+                val movable = PuzzleSolver.findAllMovableArrows(
+                    currentArrows.filter { it.state != ArrowState.CLEARED },
+                    occupancy
+                ).firstOrNull()
+
+                assertNotNull("Daily Level $dailyIdx reached deadlock at step $steps", movable)
+                occupancy.release(movable!!)
+                val idx = currentArrows.indexOfFirst { it.id == movable.id }
+                currentArrows[idx] = movable.copyWithState(ArrowState.CLEARED)
+            }
+
+            assertTrue("Daily Level $dailyIdx must clear all arrows completely", currentArrows.all { it.state == ArrowState.CLEARED })
+        }
+    }
 }

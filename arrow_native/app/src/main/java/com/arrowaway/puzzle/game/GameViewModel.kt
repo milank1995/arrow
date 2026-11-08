@@ -498,7 +498,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             LocalDate.now()
         }
         val dayOfYear = date.dayOfYear
-        val dailyIndex = ((dayOfYear - 1) % 99) + 1
+        val dailyIndex = ((dayOfYear - 1) % LevelLoader.TOTAL_DAILY_LEVELS) + 1
         val level = LevelLoader.loadDailyLevel(app, dailyIndex)
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)

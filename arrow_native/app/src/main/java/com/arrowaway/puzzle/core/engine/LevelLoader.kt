@@ -49,13 +49,29 @@ object LevelLoader {
         return LevelGenerator.generateProceduralLevel(levelNumber, levelNumber.toLong())
     }
 
+    const val TOTAL_DAILY_LEVELS = 279
+
     /**
-     * Loads a daily level mapped deterministically from the 150 curated levels.
+     * Loads a dedicated daily challenge level from the 279 high-challenge (>80 arrows) transformed pool.
      */
     fun loadDailyLevel(context: Context, dailyIndex: Int): LevelData {
-        val totalHandcraftedLevels = 150
-        val actualIndex = ((dailyIndex - 1) % totalHandcraftedLevels) + 1
-        return loadLevel(context, actualIndex)
+        val actualIndex = ((dailyIndex - 1) % TOTAL_DAILY_LEVELS) + 1
+        val assetName = "levels/DailyLevels_$actualIndex.json"
+        try {
+            val jsonStr = context.assets.open(assetName).bufferedReader().use { it.readText() }
+            val level = parseLevelJson(actualIndex, jsonStr)
+            if (level != null && level.arrows.isNotEmpty()) {
+                return level
+            }
+        } catch (e: Exception) {
+            com.arrowaway.puzzle.analytics.CrashLogger.recordException(e, "LevelLoader.loadDailyLevel($dailyIndex)")
+            com.arrowaway.puzzle.analytics.AnalyticsManager.getInstance(context).logNonFatalException(
+                exceptionClass = e.javaClass.simpleName,
+                message = e.message ?: "",
+                location = "LevelLoader.loadDailyLevel"
+            )
+        }
+        return loadLevel(context, 1)
     }
 
     data class ManifestLevelItem(

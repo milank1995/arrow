@@ -85,6 +85,7 @@ fun HomeScreen(
     onSoundToggle: () -> Unit,
     onSettingsClick: () -> Unit,
     onDevTestClick: () -> Unit = {},
+    onReviewDailyLevelsClick: () -> Unit = {},
     onLevelChange: (Int) -> Unit = {},
     onTestNotificationClick: () -> Unit = {},
     isDevMode: Boolean = BuildConfig.DEBUG,
@@ -603,6 +604,43 @@ fun HomeScreen(
                                     )
                                 }
                             }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Review Daily Levels (279 New Levels) Button
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = theme.surface,
+                        border = BorderStroke(1.2.dp, Color(0xFF2563EB).copy(alpha = 0.5f)),
+                        shadowElevation = 2.dp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable(onClick = onReviewDailyLevelsClick)
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 14.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.DateRange,
+                                contentDescription = "Review Daily Levels",
+                                tint = Color(0xFF2563EB),
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Review Daily Levels (1–279)",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF2563EB)
+                            )
                         }
                     }
 
