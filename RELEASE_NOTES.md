@@ -8,9 +8,29 @@ This document maintains a high-level changelog of all official production releas
 
 | Version Name | Version Code | Git Commit | Tag | Date | Status |
 |---|---|---|---|---|---|
-| **1.0.2** | `3` | `51d607a9` | `v1.0.2` | Nov 2026 | **Prepared (Production Ready)** |
+| **1.0.3** | `4` | Pending | Pending | Nov 2026 | **Prepared (Production Ready)** |
+| **1.0.2** | `3` | `51d607a9` | `v1.0.2` | Nov 2026 | **Published on Google Play** |
 | **1.0.1** | `2` | `b2476eb1` | `v1.0.1` | Nov 2026 | **Published on Google Play** |
 | **1.0.0** | `1` | `a1517c90` | `v1.0.0` | Nov 2026 | **Initial Production Launch** |
+
+---
+
+## [1.0.3] - Version Code: 4 - Commit: Pending
+
+### Key Highlights:
+* **Curated Levels (1–150) Polish & Bug Fixes:**
+  * **Shape Orientation Fixes:** Corrected upright orientation across 14 canonical shape levels (Heart, Star, Butterfly, Fish, Mushroom, House, Arrow, Duck, Rabbit, Sword, Anchor, Boat, Tree, Cross) by aligning coordinate transforms.
+  * **Level 138 Collision Fix:** Resolved piece collision in Level 138 to ensure valid, smooth solvable clearance path.
+  * **Unified Palette:** Standardized levels to single coherent color scheme across all 150 campaign puzzles.
+* **Camera & Touch Controls:**
+  * **Viewport Drag Boundary Clamping:** Implemented minimum visible area constraint (`calculatePanLimits`) ensuring at least 20% of the puzzle remains visible on screen when panning, preventing the puzzle from drifting completely off-screen.
+  * **Zoom Stroke Floor:** Clamped rendering line stroke floor at `1.2 dp` so delicate puzzle shapes retain crisp outline clarity even when zoomed far out.
+* **In-App Review Timing & Emotional High Trigger:**
+  * Adjusted Google Play In-App Review prompt to trigger upon completing **Level 8** with high performance ($\ge 2$ stars remaining), capturing players during an optimal moment of game satisfaction.
+* **Monetization & Analytics Diagnostics:**
+  * **Rewarded Ad Completion:** Connected `ad_reward_completed` event in `AdManager` to accurately track rewarded video completion rate.
+  * **Ad Health Diagnostics:** Added `ad_load_failed` and `ad_display_failed` analytics tracking with error codes to monitor AdMob/ad network health and protect ad revenue.
+  * **Player Progression Insights:** Added Firebase User Property `max_level_reached` and tracked Game Over decisions (`replay`, `return_home`) for churn and funnel analysis.
 
 ---
 
