@@ -26,7 +26,7 @@ object RemoteConfigManager {
           "maintenance_mode": false,
           "support_email": "support@arrowaway.com",
           "default_hint_timer_sec": 10,
-          "daily_challenge_unlock_level": 10,
+          "daily_challenge_unlock_level": 5,
           "daily_completion_coins": 100,
           "easy_daily_until_level": 20,
           "is_daily_challenge_enabled": true,
@@ -56,7 +56,9 @@ object RemoteConfigManager {
 
     val DEFAULTS: Map<String, Any> = mapOf(
         KEY_APP_CONFIG to DEFAULT_APP_CONFIG_JSON,
-        KEY_ADS_CONFIG to DEFAULT_ADS_CONFIG_JSON
+        KEY_ADS_CONFIG to DEFAULT_ADS_CONFIG_JSON,
+        "daily_challenge_unlock_level" to 5L,
+        "easy_daily_until_level" to 20L
     )
 
     private var remoteConfig: FirebaseRemoteConfig? = null
@@ -166,13 +168,25 @@ object RemoteConfigManager {
         get() = configJson.optInt("initial_free_hints", 3)
 
     val dailyChallengeUnlockLevel: Int
-        get() = configJson.optInt("daily_challenge_unlock_level", 10)
+        get() {
+            val direct = remoteConfig?.getString("daily_challenge_unlock_level")?.trim()
+            if (!direct.isNullOrBlank()) {
+                direct.toIntOrNull()?.let { return it }
+            }
+            return configJson.optInt("daily_challenge_unlock_level", 5)
+        }
 
     val dailyCompletionCoins: Int
         get() = configJson.optInt("daily_completion_coins", 100)
 
     val easyDailyUntilLevel: Int
-        get() = configJson.optInt("easy_daily_until_level", 20)
+        get() {
+            val direct = remoteConfig?.getString("easy_daily_until_level")?.trim()
+            if (!direct.isNullOrBlank()) {
+                direct.toIntOrNull()?.let { return it }
+            }
+            return configJson.optInt("easy_daily_until_level", 20)
+        }
 
     val streakGracePeriodHours: Int
         get() = configJson.optInt("streak_grace_period_hours", 4)

@@ -286,14 +286,14 @@ class PuzzleEngineTest {
 
     @Test
     fun testDailyChallengeRulesUnlockBehavior() {
-        // Default unlock level is 10
+        // Default unlock level is 5
+        assertFalse(DailyChallengeRules.isDailyUnlocked(currentLevel = 5, lastCompletedLevel = 4, hasSeenCelebration = false))
+        assertTrue(DailyChallengeRules.isDailyUnlocked(currentLevel = 6, lastCompletedLevel = 5, hasSeenCelebration = false))
+
+        // Custom unlock level at 10
         assertFalse(DailyChallengeRules.isDailyUnlocked(currentLevel = 5, lastCompletedLevel = 4, hasSeenCelebration = false, unlockLevel = 10))
         assertFalse(DailyChallengeRules.isDailyUnlocked(currentLevel = 10, lastCompletedLevel = 9, hasSeenCelebration = false, unlockLevel = 10))
         assertTrue(DailyChallengeRules.isDailyUnlocked(currentLevel = 11, lastCompletedLevel = 10, hasSeenCelebration = false, unlockLevel = 10))
-
-        // Remote Config set to 5
-        assertFalse(DailyChallengeRules.isDailyUnlocked(currentLevel = 5, lastCompletedLevel = 4, hasSeenCelebration = false, unlockLevel = 5))
-        assertTrue(DailyChallengeRules.isDailyUnlocked(currentLevel = 6, lastCompletedLevel = 5, hasSeenCelebration = false, unlockLevel = 5))
 
         // Player who already saw unlock celebration keeps access permanently
         assertTrue(DailyChallengeRules.isDailyUnlocked(currentLevel = 2, lastCompletedLevel = 1, hasSeenCelebration = true, unlockLevel = 50))

@@ -115,7 +115,7 @@ fun HomeScreen(
     )
 
     // Daily Challenge status
-    val unlockLevel = remember { RemoteConfigManager.dailyChallengeUnlockLevel }
+    val unlockLevel = RemoteConfigManager.dailyChallengeUnlockLevel
     val isDailyUnlocked = DailyChallengeRules.isDailyUnlocked(
         currentLevel = uiState.currentLevelNumber,
         lastCompletedLevel = uiState.lastCompletedLevelNumber,
