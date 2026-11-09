@@ -79,7 +79,7 @@ fun NotificationPrePromptDialog(
                     text = if (isStreakPrompt) {
                         "You've built a $streakDays-day streak! Get a reminder each evening so you never lose your progress."
                     } else {
-                        "Get a friendly reminder when each new Daily Challenge is ready at 7:30 PM."
+                        "Get a reminder whenever each new Daily Challenge is ready to play."
                     },
                     fontSize = 14.sp,
                     lineHeight = 20.sp,
