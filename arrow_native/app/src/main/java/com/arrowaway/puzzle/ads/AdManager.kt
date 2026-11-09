@@ -100,7 +100,18 @@ object AdManager {
         }
     }
 
+    private val isMobileAdsInitializeCalled = java.util.concurrent.atomic.AtomicBoolean(false)
+
+    /** True once the Mobile Ads SDK has been started (only happens after consent allows it). */
+    val isInitialized: Boolean
+        get() = isMobileAdsInitializeCalled.get()
+
+    /**
+     * Starts the Mobile Ads SDK. Must only be called once [ConsentManager.canRequestAds] is true.
+     * Safe to call multiple times; only the first call has an effect.
+     */
     fun initialize(context: Context) {
+        if (!isMobileAdsInitializeCalled.compareAndSet(false, true)) return
         try {
             // Register emulator as test device
             val requestConfig = RequestConfiguration.Builder()
@@ -140,6 +151,7 @@ object AdManager {
     // =========================================================================
 
     fun preloadRewardedAd(context: Context) {
+        if (!isInitialized) return // No ad requests until consent allows the SDK to start
         if (!RemoteConfigManager.isAdsEnabled || !RemoteConfigManager.isRewardedAdsEnabled) return
         if (cachedRewardedAd != null || isRewardedLoading) return
 
@@ -250,6 +262,7 @@ object AdManager {
     // =========================================================================
 
     fun preloadInterstitialAd(context: Context) {
+        if (!isInitialized) return // No ad requests until consent allows the SDK to start
         if (!RemoteConfigManager.isAdsEnabled || !RemoteConfigManager.isInterstitialAdsEnabled) return
         if (cachedInterstitialAd != null || isInterstitialLoading) return
 

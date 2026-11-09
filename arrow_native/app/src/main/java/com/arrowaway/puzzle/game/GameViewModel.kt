@@ -1329,11 +1329,13 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             else -> 1
         }
         viewModelScope.launch {
-            val dailyRewardCoins = RemoteConfigManager.dailyCompletionCoins
-            val baseCoins = if (_uiState.value.isDailyChallengeMode) dailyRewardCoins else 50 + (_uiState.value.comboCount * 5)
             if (_uiState.value.isDailyChallengeMode) {
                 val dateStr = _uiState.value.activeDailyDate ?: LocalDate.now().toString()
-                repository.recordDailyCompletion(dateStr)
+                val isFirstCompletion = repository.recordDailyCompletion(dateStr)
+                val dailyRewardCoins = if (isFirstCompletion) RemoteConfigManager.dailyCompletionCoins else 0
+                if (dailyRewardCoins > 0) {
+                    repository.addCoins(dailyRewardCoins)
+                }
                 analytics.logDailyChallengeComplete(
                     puzzleDate = dateStr,
                     completionTimeSec = _uiState.value.levelCompletionTimeSeconds.toLong(),
@@ -1342,8 +1344,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 )
             } else {
                 repository.recordLevelCompletion(completedLevel, stars)
+                val baseCoins = 50 + (_uiState.value.comboCount * 5)
+                repository.addCoins(baseCoins)
             }
-            repository.addCoins(baseCoins)
         }
     }
 

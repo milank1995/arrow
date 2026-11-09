@@ -32,6 +32,10 @@ fun BannerAdView(
     if (!RemoteConfigManager.isAdsEnabled || !RemoteConfigManager.isBannerAdsEnabled) {
         return
     }
+    // No ad requests until the user's consent allows the Mobile Ads SDK to start
+    if (!AdManager.isInitialized) {
+        return
+    }
 
     val context = LocalContext.current
     val adView = remember {

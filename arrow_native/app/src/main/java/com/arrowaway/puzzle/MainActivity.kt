@@ -1,6 +1,7 @@
 package com.arrowaway.puzzle
 
 import com.arrowaway.puzzle.ads.AdManager
+import com.arrowaway.puzzle.ads.ConsentManager
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -103,6 +104,13 @@ class MainActivity : ComponentActivity() {
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
         }
         hideSystemBars()
+
+        // Show the GDPR / US-state consent form when required, then start ads if consent allows.
+        ConsentManager.gatherConsent(this) {
+            if (ConsentManager.canRequestAds(this)) {
+                AdManager.initialize(applicationContext)
+            }
+        }
 
         setContent {
             val uiState by gameViewModel.uiState.collectAsState()

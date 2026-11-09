@@ -97,6 +97,8 @@ dependencies {
 
     // Google Mobile Ads (AdMob)
     implementation("com.google.android.gms:play-services-ads:23.6.0")
+    // User Messaging Platform (GDPR / US-state consent form configured in AdMob > Privacy & messaging)
+    implementation("com.google.android.ump:user-messaging-platform:3.1.0")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20240303")

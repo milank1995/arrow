@@ -338,23 +338,19 @@ class UserPreferencesRepository(private val context: Context) {
         return Pair(isClaimedToday, resultingStreak)
     }
 
-    suspend fun recordDailyCompletion(dateString: String) {
+    suspend fun recordDailyCompletion(dateString: String): Boolean {
         context.getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE).let { sp ->
             val set = (sp.getStringSet("completed_dates", emptySet()) ?: emptySet()).toMutableSet()
             set.add(dateString)
             sp.edit().putStringSet("completed_dates", set).apply()
         }
+        var isFirstTimeForDate = false
         context.dataStore.edit { prefs ->
             val completed = (prefs[KEY_COMPLETED_DAILY_DATES] ?: emptySet()).toMutableSet()
-            val isFirstTimeForDate = completed.add(dateString)
+            isFirstTimeForDate = completed.add(dateString)
             prefs[KEY_COMPLETED_DAILY_DATES] = completed
-
-            // Unity DailyCompleteReward = 100 coins
-            if (isFirstTimeForDate) {
-                val currentCoins = prefs[KEY_COINS] ?: 100
-                prefs[KEY_COINS] = currentCoins + 100
-            }
         }
+        return isFirstTimeForDate
     }
 
     suspend fun markDailyUnlockCelebrationSeen() {

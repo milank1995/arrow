@@ -61,6 +61,8 @@ import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Policy
+import androidx.compose.material.icons.filled.PrivacyTip
+import com.arrowaway.puzzle.ads.ConsentManager
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
@@ -135,6 +137,8 @@ fun SettingsScreen(
     var showPrivacyPolicyDialog by remember { mutableStateOf(false) }
     var showTermsDialog by remember { mutableStateOf(false) }
     var showResetConfirmDialog by remember { mutableStateOf(false) }
+    // Shown only to users in regions where they must be able to change consent (EEA, UK, etc.)
+    val privacyOptionsRequired = remember { ConsentManager.isPrivacyOptionsRequired(context) }
 
     // Dynamically query application version name from PackageManager
     val versionName = remember {
@@ -647,6 +651,28 @@ fun SettingsScreen(
                                 activeTheme = activeTheme
                             )
 
+                            if (privacyOptionsRequired) {
+                                HorizontalDivider(
+                                    color = cardBorder.copy(alpha = 0.6f),
+                                    thickness = 1.dp,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+
+                                // Privacy Options Row (re-opens the UMP consent form)
+                                SettingsLinkRow(
+                                    title = "Privacy Options",
+                                    icon = Icons.Default.PrivacyTip,
+                                    iconBg = itemBg,
+                                    iconTint = activeTheme.textSecondary,
+                                    onClick = {
+                                        (context as? android.app.Activity)?.let { activity ->
+                                            ConsentManager.showPrivacyOptionsForm(activity)
+                                        }
+                                    },
+                                    activeTheme = activeTheme
+                                )
+                            }
+
                             HorizontalDivider(
                                 color = cardBorder.copy(alpha = 0.6f),
                                 thickness = 1.dp,
@@ -1011,11 +1037,13 @@ fun SettingsScreen(
                         ) {
                             Text(
                                 text = "Your privacy is important to us. Here is how Arrow Away handles your information:\n\n" +
-                                       "• Local Game Data: Your level progress, high scores, coins, and settings are saved securely on your device.\n\n" +
-                                       "• No Personal Info: We do not collect names, phone numbers, email addresses, or personal identities.\n\n" +
-                                       "• Anonymous Diagnostics: We collect anonymized crash reports and app performance data (via Google Firebase) to keep the game stable and fix bugs.\n\n" +
-                                       "• Advertisements: Google AdMob is used to serve in-game ads. AdMob may use standard device advertising identifiers to show non-intrusive ads.\n\n" +
-                                       "• Your Control: You can customize your preferences or disable tracking anytime in Settings.",
+                                       "• No Account Needed: We do not ask for your name, email, phone number, or contacts.\n\n" +
+                                       "• Local Game Data: Your progress, coins, and settings are stored only on your device.\n\n" +
+                                       "• Analytics & Stability: Google Firebase collects gameplay events, device info, and crash reports to help us improve the game and fix bugs.\n\n" +
+                                       "• Advertisements: Google AdMob shows ads and may use your device's advertising ID. Where required by law, we ask for your consent first.\n\n" +
+                                       "• Your Choices: Where available, change your ad consent in Settings > Privacy Options. You can reset your advertising ID in your device settings.\n\n" +
+                                       "Full policy: sites.google.com/view/arrow-away/home\n" +
+                                       "Contact: application.smart.developer@gmail.com",
                                 fontSize = 13.sp,
                                 lineHeight = 19.sp,
                                 color = activeTheme.textSecondary
