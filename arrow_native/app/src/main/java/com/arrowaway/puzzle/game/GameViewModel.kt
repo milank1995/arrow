@@ -269,6 +269,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun getStreakDaysSynchronous(): Int = repository.getStreakDaysSynchronous()
+
     fun onNotificationPermissionResult(isGranted: Boolean) {
         viewModelScope.launch {
             repository.setDailyRemindersEnabled(isGranted)
@@ -505,7 +507,10 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
         val dayOfYear = date.dayOfYear
         val easyDailyUntilLevel = RemoteConfigManager.easyDailyUntilLevel
-        val useEasyPool = _uiState.value.currentLevelNumber < easyDailyUntilLevel
+        // uiState may still hold the default level if DataStore hasn't loaded yet (e.g. app opened from the
+        // daily notification), so also read the synchronously mirrored level and use the higher value.
+        val playerLevel = maxOf(_uiState.value.currentLevelNumber, repository.getCurrentLevelSynchronous())
+        val useEasyPool = playerLevel < easyDailyUntilLevel
         val poolSize = if (useEasyPool) LevelLoader.TOTAL_EASY_DAILY_LEVELS else LevelLoader.TOTAL_DAILY_LEVELS
         val dailyIndex = ((dayOfYear - 1) % poolSize) + 1
         val level = if (useEasyPool) {

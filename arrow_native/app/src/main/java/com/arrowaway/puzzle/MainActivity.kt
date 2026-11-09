@@ -94,11 +94,22 @@ class MainActivity : ComponentActivity() {
             if (!hasPermission && state.dailyRemindersEnabled) {
                 gameViewModel.setDailyRemindersEnabled(false)
                 NotificationHelper.cancelDailyReminderAlarm(this)
-            } else if (hasPermission && !state.dailyRemindersEnabled && state.notificationPermissionAskCount > 0) {
+            } else if (hasPermission && !state.dailyRemindersEnabled && awaitingNotificationSettingsReturn) {
+                // Only re-enable when the player just granted permission via the Android settings link.
+                // Otherwise a player who turned reminders off in-app would have them switched back on.
                 gameViewModel.setDailyRemindersEnabled(true)
                 NotificationHelper.scheduleDailyReminderAlarm(this)
             }
         }
+        awaitingNotificationSettingsReturn = false
+    }
+
+    /** Set when we send the player to Android notification settings; consumed on the next onResume. */
+    private var awaitingNotificationSettingsReturn = false
+
+    override fun onSaveInstanceState(outState: android.os.Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(KEY_AWAITING_NOTIFICATION_SETTINGS, awaitingNotificationSettingsReturn)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -111,6 +122,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            awaitingNotificationSettingsReturn = savedInstanceState.getBoolean(KEY_AWAITING_NOTIFICATION_SETTINGS, false)
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.attributes.layoutInDisplayCutoutMode =
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
@@ -197,7 +211,8 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(intent) {
                 if (intent.getStringExtra("EXTRA_NAVIGATE_TO") == "daily_challenge") {
                     intent.removeExtra("EXTRA_NAVIGATE_TO")
-                    gameViewModel.analytics.logDailyNotificationClicked(uiState.streakDays, "play_challenge")
+                    val activeStreak = maxOf(uiState.streakDays, gameViewModel.getStreakDaysSynchronous())
+                    gameViewModel.analytics.logDailyNotificationClicked(activeStreak, "play_challenge")
                     gameViewModel.startDailyChallenge()
                     currentScreen = AppScreen.GAMEPLAY
                 }
@@ -690,6 +705,7 @@ class MainActivity : ComponentActivity() {
                             theme = uiState.activeTheme,
                             onOpenSettingsClick = {
                                 showNotificationSettingsDialog = false
+                                awaitingNotificationSettingsReturn = true
                                 try {
                                     val settingsIntent = Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
                                         putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, packageName)
@@ -739,5 +755,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val KEY_AWAITING_NOTIFICATION_SETTINGS = "key_awaiting_notification_settings"
     }
 }
