@@ -50,6 +50,32 @@ object LevelLoader {
     }
 
     const val TOTAL_DAILY_LEVELS = 235
+    const val TOTAL_EASY_DAILY_LEVELS = 44
+
+    /**
+     * Loads a daily challenge level from the curated easy pool (81–100 arrows) for new players.
+     */
+    fun loadEasyDailyLevel(context: Context, easyIndex: Int): LevelData {
+        val actualIndex = ((easyIndex - 1) % TOTAL_EASY_DAILY_LEVELS) + 1
+        val assetName = "levels/DailyEasy_$actualIndex.json"
+        try {
+            val jsonStr = context.assets.open(assetName).bufferedReader().use { it.readText() }
+            val level = parseLevelJson(actualIndex, jsonStr)
+            if (level != null && level.arrows.isNotEmpty()) {
+                return level
+            }
+        } catch (e: Exception) {
+            com.arrowaway.puzzle.analytics.CrashLogger.recordException(e, "LevelLoader.loadEasyDailyLevel($easyIndex)")
+            com.arrowaway.puzzle.analytics.AnalyticsManager.getInstance(context).logNonFatalException(
+                exceptionClass = e.javaClass.simpleName,
+                message = e.message ?: "",
+                location = "LevelLoader.loadEasyDailyLevel"
+            )
+        }
+
+        // Fallback to standard daily level
+        return loadDailyLevel(context, easyIndex)
+    }
 
     /**
      * Loads a dedicated daily challenge level from the 279 high-challenge (>80 arrows) transformed pool.

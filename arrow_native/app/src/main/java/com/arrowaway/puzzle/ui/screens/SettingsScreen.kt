@@ -744,8 +744,10 @@ fun SettingsScreen(
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .clip(RoundedCornerShape(8.dp))
-                            .pointerInput(isDevMode, onToggleDevMode) {
-                                awaitEachGesture {
+                            .then(
+                                if (com.arrowaway.puzzle.BuildConfig.DEBUG) {
+                                    Modifier.pointerInput(isDevMode, onToggleDevMode) {
+                                        awaitEachGesture {
                                     val down = awaitFirstDown(requireUnconsumed = false)
                                     val startPos = down.position
 
@@ -773,6 +775,10 @@ fun SettingsScreen(
                                     }
                                 }
                             }
+                                } else {
+                                    Modifier
+                                }
+                            )
                             .padding(horizontal = 16.dp, vertical = 10.dp)
                     ) {
                         Text(

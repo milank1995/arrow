@@ -37,6 +37,7 @@ data class UserGameData(
     val hasSeenDailyUnlockCelebration: Boolean = false,
     val dailyRemindersEnabled: Boolean = true,
     val hasRequestedNotificationPermission: Boolean = false,
+    val notificationPermissionAskCount: Int = 0,
     val isDevMode: Boolean = com.arrowaway.puzzle.BuildConfig.DEBUG,
     val isHintButtonVisible: Boolean = true,
     val isGridButtonVisible: Boolean = true,
@@ -65,6 +66,7 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_DAILY_UNLOCK_SEEN = booleanPreferencesKey("daily_unlock_celebration_seen")
     private val KEY_DAILY_REMINDERS_ENABLED = booleanPreferencesKey("daily_reminders_enabled")
     private val KEY_NOTIFICATION_PERMISSION_REQUESTED = booleanPreferencesKey("has_requested_notification_permission")
+    private val KEY_NOTIFICATION_ASK_COUNT = intPreferencesKey("notification_permission_ask_count")
     private val KEY_DEV_MODE = booleanPreferencesKey("is_dev_mode_enabled")
     private val KEY_HINT_BUTTON_VISIBLE = booleanPreferencesKey("hint_button_visible")
     private val KEY_GRID_BUTTON_VISIBLE = booleanPreferencesKey("grid_button_visible")
@@ -165,9 +167,16 @@ class UserPreferencesRepository(private val context: Context) {
         val rawStreak = prefs[KEY_STREAK] ?: 0
         val displayStreak = calculateDisplayStreak(lastStreakDate, todayStr, rawStreak, hasPlayed)
 
+        val rawLevel = prefs[KEY_LEVEL] ?: 1
+        val starsMap = parseLevelStars(prefs[KEY_LEVEL_STARS_MAP] ?: "")
+        val maxCompletedLevel = starsMap.keys.maxOrNull() ?: 0
+        val sanitizedLevel = rawLevel.coerceIn(1, (maxCompletedLevel + 1).coerceAtLeast(1))
+        val rawCoins = prefs[KEY_COINS] ?: 100
+        val sanitizedCoins = rawCoins.coerceIn(0, 50_000)
+
         UserGameData(
-            currentLevel = prefs[KEY_LEVEL] ?: 1,
-            coins = prefs[KEY_COINS] ?: 100,
+            currentLevel = sanitizedLevel,
+            coins = sanitizedCoins,
             freeHints = prefs[KEY_HINTS] ?: 3,
             freeHammers = prefs[KEY_HAMMERS] ?: 2,
             freeWands = prefs[KEY_WANDS] ?: 2,
@@ -184,7 +193,8 @@ class UserPreferencesRepository(private val context: Context) {
             hasSeenDailyUnlockCelebration = prefs[KEY_DAILY_UNLOCK_SEEN] ?: false,
             dailyRemindersEnabled = prefs[KEY_DAILY_REMINDERS_ENABLED] ?: true,
             hasRequestedNotificationPermission = prefs[KEY_NOTIFICATION_PERMISSION_REQUESTED] ?: false,
-            isDevMode = prefs[KEY_DEV_MODE] ?: com.arrowaway.puzzle.BuildConfig.DEBUG,
+            notificationPermissionAskCount = prefs[KEY_NOTIFICATION_ASK_COUNT] ?: 0,
+            isDevMode = if (com.arrowaway.puzzle.BuildConfig.DEBUG) (prefs[KEY_DEV_MODE] ?: true) else false,
             isHintButtonVisible = prefs[KEY_HINT_BUTTON_VISIBLE] ?: true,
             isGridButtonVisible = prefs[KEY_GRID_BUTTON_VISIBLE] ?: true,
             hintTimerSeconds = (prefs[KEY_HINT_TIMER_SECONDS] ?: 10).coerceIn(0, 55),
@@ -363,6 +373,17 @@ class UserPreferencesRepository(private val context: Context) {
         context.dataStore.edit { prefs ->
             prefs[KEY_NOTIFICATION_PERMISSION_REQUESTED] = true
         }
+    }
+
+    suspend fun incrementNotificationAskCount(): Int {
+        var count = 0
+        context.dataStore.edit { prefs ->
+            val current = prefs[KEY_NOTIFICATION_ASK_COUNT] ?: 0
+            count = current + 1
+            prefs[KEY_NOTIFICATION_ASK_COUNT] = count
+            prefs[KEY_NOTIFICATION_PERMISSION_REQUESTED] = true
+        }
+        return count
     }
 
     suspend fun setDailyRemindersEnabled(enabled: Boolean) {

@@ -1,5 +1,9 @@
 package com.arrowaway.puzzle
 
+import com.arrowaway.puzzle.core.DailyChallengeRules
+import com.arrowaway.puzzle.core.engine.LevelLoader
+
+
 import com.arrowaway.puzzle.core.engine.GridOccupancyMap
 import com.arrowaway.puzzle.core.engine.LevelGenerator
 import com.arrowaway.puzzle.core.engine.PuzzleSolver
@@ -277,6 +281,69 @@ class PuzzleEngineTest {
             }
 
             assertTrue("Daily Level $dailyIdx must clear all arrows completely", currentArrows.all { it.state == ArrowState.CLEARED })
+        }
+    }
+
+    @Test
+    fun testDailyChallengeRulesUnlockBehavior() {
+        // Default unlock level is 10
+        assertFalse(DailyChallengeRules.isDailyUnlocked(currentLevel = 5, lastCompletedLevel = 4, hasSeenCelebration = false, unlockLevel = 10))
+        assertFalse(DailyChallengeRules.isDailyUnlocked(currentLevel = 10, lastCompletedLevel = 9, hasSeenCelebration = false, unlockLevel = 10))
+        assertTrue(DailyChallengeRules.isDailyUnlocked(currentLevel = 11, lastCompletedLevel = 10, hasSeenCelebration = false, unlockLevel = 10))
+
+        // Remote Config set to 5
+        assertFalse(DailyChallengeRules.isDailyUnlocked(currentLevel = 5, lastCompletedLevel = 4, hasSeenCelebration = false, unlockLevel = 5))
+        assertTrue(DailyChallengeRules.isDailyUnlocked(currentLevel = 6, lastCompletedLevel = 5, hasSeenCelebration = false, unlockLevel = 5))
+
+        // Player who already saw unlock celebration keeps access permanently
+        assertTrue(DailyChallengeRules.isDailyUnlocked(currentLevel = 2, lastCompletedLevel = 1, hasSeenCelebration = true, unlockLevel = 50))
+    }
+
+    @Test
+    fun testEasyDailyLevelsParsingAndSolvability() {
+        val assetsDir = java.io.File("src/main/assets/levels")
+        val levelLoader = LevelLoader
+
+        assertEquals("Total easy daily levels constant must be 44", 44, LevelLoader.TOTAL_EASY_DAILY_LEVELS)
+
+        for (easyIdx in 1..LevelLoader.TOTAL_EASY_DAILY_LEVELS) {
+            val file = java.io.File(assetsDir, "DailyEasy_$easyIdx.json")
+            assertTrue("Easy daily level file must exist: ${file.name}", file.exists())
+            val jsonStr = file.readText()
+            val level = levelLoader.parseLevelJson(easyIdx, jsonStr)
+            assertNotNull("Easy daily level $easyIdx must parse cleanly", level)
+            assertTrue("Easy daily level $easyIdx must have <= 100 arrows", level!!.arrows.size <= 100)
+            assertTrue("Easy daily level $easyIdx must have >= 80 arrows", level.arrows.size >= 80)
+        }
+
+        // Test solvability on sample easy daily levels (first, middle, last)
+        val sampleEasyFiles = listOf(1, 10, 22, 35, 44)
+        for (easyIdx in sampleEasyFiles) {
+            val file = java.io.File(assetsDir, "DailyEasy_$easyIdx.json")
+            val jsonStr = file.readText()
+            val level = levelLoader.parseLevelJson(easyIdx, jsonStr)!!
+
+            val occupancy = GridOccupancyMap(level.xSize, level.ySize).apply {
+                rebuild(level.arrows)
+            }
+            val currentArrows = level.arrows.map { it.copy() }.toMutableList()
+            var steps = 0
+            val maxSteps = currentArrows.size + 10
+
+            while (currentArrows.any { it.state != ArrowState.CLEARED } && steps < maxSteps) {
+                steps++
+                val movable = PuzzleSolver.findAllMovableArrows(
+                    currentArrows.filter { it.state != ArrowState.CLEARED },
+                    occupancy
+                ).firstOrNull()
+
+                assertNotNull("Easy Daily Level $easyIdx reached deadlock at step $steps", movable)
+                occupancy.release(movable!!)
+                val idx = currentArrows.indexOfFirst { it.id == movable.id }
+                currentArrows[idx] = movable.copyWithState(ArrowState.CLEARED)
+            }
+
+            assertTrue("Easy Daily Level $easyIdx must clear all arrows completely", currentArrows.all { it.state == ArrowState.CLEARED })
         }
     }
 }

@@ -2,8 +2,10 @@ package com.arrowaway.puzzle
 
 import com.arrowaway.puzzle.ads.AdManager
 import com.arrowaway.puzzle.ads.ConsentManager
+import com.arrowaway.puzzle.core.DailyChallengeRules
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -39,6 +41,8 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.arrowaway.puzzle.game.GameViewModel
 import com.arrowaway.puzzle.notification.NotificationHelper
 import com.arrowaway.puzzle.ui.components.DailyStartPromptDialog
+import com.arrowaway.puzzle.ui.components.NotificationPrePromptDialog
+import com.arrowaway.puzzle.ui.components.NotificationSettingsDialog
 import com.arrowaway.puzzle.ui.components.SoundSettingsDialog
 import com.arrowaway.puzzle.ui.screens.DailyChallengeScreen
 import com.arrowaway.puzzle.ui.screens.DevTestScreen
@@ -84,6 +88,17 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         hideSystemBars()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val hasPermission = NotificationHelper.hasNotificationPermission(this)
+            val state = gameViewModel.uiState.value
+            if (!hasPermission && state.dailyRemindersEnabled) {
+                gameViewModel.setDailyRemindersEnabled(false)
+                NotificationHelper.cancelDailyReminderAlarm(this)
+            } else if (hasPermission && !state.dailyRemindersEnabled && state.notificationPermissionAskCount > 0) {
+                gameViewModel.setDailyRemindersEnabled(true)
+                NotificationHelper.scheduleDailyReminderAlarm(this)
+            }
+        }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -168,35 +183,46 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
+            var showNotificationPrePrompt by remember { mutableStateOf(false) }
+            var prePromptType by remember { mutableStateOf("unlock") }
+            var showNotificationSettingsDialog by remember { mutableStateOf(false) }
+
             val notificationPermissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestPermission()
             ) { isGranted ->
+                gameViewModel.analytics.logNotificationPermissionResult(if (isGranted) "granted" else "denied")
                 gameViewModel.onNotificationPermissionResult(isGranted)
             }
 
             LaunchedEffect(intent) {
                 if (intent.getStringExtra("EXTRA_NAVIGATE_TO") == "daily_challenge") {
                     intent.removeExtra("EXTRA_NAVIGATE_TO")
+                    gameViewModel.analytics.logDailyNotificationClicked(uiState.streakDays, "play_challenge")
                     gameViewModel.startDailyChallenge()
                     currentScreen = AppScreen.GAMEPLAY
                 }
             }
 
-            // Automatically request Android notification permission on app launch if daily challenge unlock level has already been reached
-            LaunchedEffect(uiState.currentLevelNumber, uiState.lastCompletedLevelNumber, uiState.hasRequestedNotificationPermission) {
-                val unlockLevel = com.arrowaway.puzzle.config.RemoteConfigManager.dailyChallengeUnlockLevel
-                val isPastLevel10 = uiState.currentLevelNumber > unlockLevel || uiState.lastCompletedLevelNumber >= unlockLevel
-                if (isPastLevel10 && !uiState.hasRequestedNotificationPermission) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        val hasPermission = ContextCompat.checkSelfPermission(
-                            this@MainActivity,
-                            Manifest.permission.POST_NOTIFICATIONS
-                        ) == PackageManager.PERMISSION_GRANTED
-                        if (!hasPermission) {
-                            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            // Soft-ask notification pre-prompt on unlock (first time) or 3-day streak (second chance)
+            LaunchedEffect(uiState.currentLevelNumber, uiState.lastCompletedLevelNumber, uiState.notificationPermissionAskCount, uiState.streakDays) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val hasPermission = NotificationHelper.hasNotificationPermission(this@MainActivity)
+                    if (!hasPermission) {
+                        val isUnlocked = DailyChallengeRules.isDailyUnlocked(
+                            currentLevel = uiState.currentLevelNumber,
+                            lastCompletedLevel = uiState.lastCompletedLevelNumber,
+                            hasSeenCelebration = uiState.hasSeenDailyUnlockCelebration
+                        )
+                        if (isUnlocked && uiState.notificationPermissionAskCount == 0) {
+                            prePromptType = "unlock"
+                            showNotificationPrePrompt = true
+                            gameViewModel.analytics.logNotificationPrePromptShown("unlock")
+                        } else if (uiState.streakDays >= 3 && uiState.notificationPermissionAskCount == 1) {
+                            prePromptType = "streak_3"
+                            showNotificationPrePrompt = true
+                            gameViewModel.analytics.logNotificationPrePromptShown("streak_3")
                         }
                     }
-                    gameViewModel.markNotificationPermissionRequested()
                 }
             }
 
@@ -226,9 +252,12 @@ class MainActivity : ComponentActivity() {
                                             return@HomeScreen
                                         }
                                         val unlockLevel = com.arrowaway.puzzle.config.RemoteConfigManager.dailyChallengeUnlockLevel
-                                        val isUnlocked = uiState.currentLevelNumber > unlockLevel || 
-                                            uiState.lastCompletedLevelNumber >= unlockLevel || 
-                                            uiState.hasSeenDailyUnlockCelebration
+                                        val isUnlocked = DailyChallengeRules.isDailyUnlocked(
+                                            currentLevel = uiState.currentLevelNumber,
+                                            lastCompletedLevel = uiState.lastCompletedLevelNumber,
+                                            hasSeenCelebration = uiState.hasSeenDailyUnlockCelebration,
+                                            unlockLevel = unlockLevel
+                                        )
 
                                         if (isUnlocked) {
                                             currentScreen = AppScreen.DAILY_CHALLENGE
@@ -318,7 +347,8 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.playClick()
                                         gameViewModel.markHasPlayedBefore()
                                         gameViewModel.resetGridLines()
-                                        if (uiState.currentLevelNumber == 10 && !uiState.hasSeenDailyUnlockCelebration) {
+                                        val unlockLevel = com.arrowaway.puzzle.config.RemoteConfigManager.dailyChallengeUnlockLevel
+                                        if (uiState.currentLevelNumber == unlockLevel && !uiState.hasSeenDailyUnlockCelebration) {
                                             gameViewModel.markDailyUnlockCelebrationSeen()
                                         }
                                         val wasDaily = uiState.isDailyChallengeMode
@@ -345,16 +375,12 @@ class MainActivity : ComponentActivity() {
                                         currentScreen = AppScreen.GAMEPLAY
                                     },
                                     onRequestNotificationPermission = {
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                            val hasPermission = ContextCompat.checkSelfPermission(
-                                                this@MainActivity,
-                                                Manifest.permission.POST_NOTIFICATIONS
-                                            ) == PackageManager.PERMISSION_GRANTED
-                                            if (!hasPermission) {
-                                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                                            }
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                            !NotificationHelper.hasNotificationPermission(this@MainActivity)) {
+                                            prePromptType = "unlock"
+                                            showNotificationPrePrompt = true
+                                            gameViewModel.analytics.logNotificationPrePromptShown("unlock")
                                         }
-                                        gameViewModel.markNotificationPermissionRequested()
                                     },
                                     onClaimDoubleCoins = { amount ->
                                         gameViewModel.claimDoubleCoins(amount)
@@ -551,22 +577,31 @@ class MainActivity : ComponentActivity() {
                                         val isCurrentlyEnabled = uiState.dailyRemindersEnabled
                                         gameViewModel.analytics.logSettingPreferenceChanged("daily_reminders", isCurrentlyEnabled, !isCurrentlyEnabled)
                                         if (!isCurrentlyEnabled) {
-                                            // User wants to turn ON reminders: check OS permission
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                                val hasPermission = ContextCompat.checkSelfPermission(
-                                                    this@MainActivity,
-                                                    Manifest.permission.POST_NOTIFICATIONS
-                                                ) == PackageManager.PERMISSION_GRANTED
+                                                val hasPermission = NotificationHelper.hasNotificationPermission(this@MainActivity)
                                                 if (!hasPermission) {
-                                                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                                    val canShowRationale = androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale(
+                                                        this@MainActivity,
+                                                        Manifest.permission.POST_NOTIFICATIONS
+                                                    )
+                                                    if (!canShowRationale && uiState.notificationPermissionAskCount > 0) {
+                                                        showNotificationSettingsDialog = true
+                                                    } else {
+                                                        prePromptType = "settings"
+                                                        showNotificationPrePrompt = true
+                                                        gameViewModel.analytics.logNotificationPrePromptShown("settings")
+                                                    }
                                                 } else {
-                                                    gameViewModel.toggleDailyReminders()
+                                                    gameViewModel.setDailyRemindersEnabled(true)
+                                                    NotificationHelper.scheduleDailyReminderAlarm(this@MainActivity)
                                                 }
                                             } else {
-                                                gameViewModel.toggleDailyReminders()
+                                                gameViewModel.setDailyRemindersEnabled(true)
+                                                NotificationHelper.scheduleDailyReminderAlarm(this@MainActivity)
                                             }
                                         } else {
-                                            gameViewModel.toggleDailyReminders()
+                                            gameViewModel.setDailyRemindersEnabled(false)
+                                            NotificationHelper.cancelDailyReminderAlarm(this@MainActivity)
                                         }
                                     },
                                     onThemeSelect = { selectedTheme ->
@@ -623,6 +658,52 @@ class MainActivity : ComponentActivity() {
                             onDismiss = {
                                 gameViewModel.playClick()
                                 gameViewModel.dismissDailyLaunchPrompt()
+                            }
+                        )
+                    }
+
+                    // Notification Pre-Prompt Soft Ask Dialog
+                    if (showNotificationPrePrompt) {
+                        NotificationPrePromptDialog(
+                            theme = uiState.activeTheme,
+                            isStreakPrompt = (prePromptType == "streak_3"),
+                            streakDays = uiState.streakDays,
+                            onTurnOnClick = {
+                                showNotificationPrePrompt = false
+                                gameViewModel.incrementNotificationAskCount()
+                                gameViewModel.analytics.logNotificationPrePromptResult(prePromptType, "accept")
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                }
+                            },
+                            onNotNowClick = {
+                                showNotificationPrePrompt = false
+                                gameViewModel.incrementNotificationAskCount()
+                                gameViewModel.analytics.logNotificationPrePromptResult(prePromptType, "not_now")
+                            }
+                        )
+                    }
+
+                    // Notification Settings Deep-link Dialog (for permanently denied permissions)
+                    if (showNotificationSettingsDialog) {
+                        NotificationSettingsDialog(
+                            theme = uiState.activeTheme,
+                            onOpenSettingsClick = {
+                                showNotificationSettingsDialog = false
+                                try {
+                                    val settingsIntent = Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                        putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, packageName)
+                                    }
+                                    startActivity(settingsIntent)
+                                } catch (e: Exception) {
+                                    val settingsIntent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                        data = android.net.Uri.fromParts("package", packageName, null)
+                                    }
+                                    startActivity(settingsIntent)
+                                }
+                            },
+                            onDismiss = {
+                                showNotificationSettingsDialog = false
                             }
                         )
                     }

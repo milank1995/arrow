@@ -16,7 +16,8 @@ import java.util.Calendar
 
 object NotificationHelper {
 
-    const val CHANNEL_ID = "daily_challenge_channel"
+    const val CHANNEL_ID = "daily_challenge_channel_v2"
+    private const val OLD_CHANNEL_ID = "daily_challenge_channel"
     private const val CHANNEL_NAME = "Daily Challenge Reminders"
     private const val CHANNEL_DESCRIPTION = "Friendly reminders for new daily puzzles and streak protection"
     const val NOTIFICATION_ID = 2001
@@ -24,17 +25,22 @@ object NotificationHelper {
 
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager ?: return
+            // Clean up legacy high-importance channel if present
+            try {
+                manager.deleteNotificationChannel(OLD_CHANNEL_ID)
+            } catch (_: Exception) {}
+
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_DEFAULT
             ).apply {
                 description = CHANNEL_DESCRIPTION
                 enableLights(true)
                 enableVibration(true)
             }
-            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-            manager?.createNotificationChannel(channel)
+            manager.createNotificationChannel(channel)
         }
     }
 
@@ -79,11 +85,12 @@ object NotificationHelper {
         }
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(com.arrowaway.puzzle.R.mipmap.ic_launcher)
+            .setSmallIcon(com.arrowaway.puzzle.R.drawable.ic_stat_notification)
+            .setColor(0xFF10B981.toInt())
             .setContentTitle(title)
             .setContentText(message)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message))
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .addAction(

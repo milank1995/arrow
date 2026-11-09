@@ -28,6 +28,7 @@ object RemoteConfigManager {
           "default_hint_timer_sec": 10,
           "daily_challenge_unlock_level": 10,
           "daily_completion_coins": 100,
+          "easy_daily_until_level": 20,
           "is_daily_challenge_enabled": true,
           "review_prompt_min_level": 8,
           "review_prompt_cooldown_days": 30
@@ -169,6 +170,9 @@ object RemoteConfigManager {
 
     val dailyCompletionCoins: Int
         get() = configJson.optInt("daily_completion_coins", 100)
+
+    val easyDailyUntilLevel: Int
+        get() = configJson.optInt("easy_daily_until_level", 20)
 
     val streakGracePeriodHours: Int
         get() = configJson.optInt("streak_grace_period_hours", 4)

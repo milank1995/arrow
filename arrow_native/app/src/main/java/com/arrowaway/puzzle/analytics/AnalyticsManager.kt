@@ -298,11 +298,17 @@ class AnalyticsManager private constructor(context: Context) {
         logEvent("daily_date_selected", bundle)
     }
 
-    fun logDailyChallengeStart(puzzleDate: String, dailyLevelIndex: Int, arrowCount: Int) {
+    fun logDailyChallengeStart(
+        puzzleDate: String,
+        dailyLevelIndex: Int,
+        arrowCount: Int,
+        dailyPool: String = "standard"
+    ) {
         val bundle = Bundle().apply {
             putString("puzzle_date", puzzleDate)
             putInt("daily_level_index", dailyLevelIndex)
             putInt("arrow_count", arrowCount)
+            putString("daily_pool", dailyPool)
         }
         logEvent("daily_challenge_start", bundle)
     }
@@ -311,13 +317,15 @@ class AnalyticsManager private constructor(context: Context) {
         puzzleDate: String,
         completionTimeSec: Long,
         newStreakDays: Int,
-        rewardCoinsClaimed: Int
+        rewardCoinsClaimed: Int,
+        dailyPool: String = "standard"
     ) {
         val bundle = Bundle().apply {
             putString("puzzle_date", puzzleDate)
             putLong("completion_time_sec", completionTimeSec)
             putInt("new_streak_days", newStreakDays)
             putInt("reward_coins_claimed", rewardCoinsClaimed)
+            putString("daily_pool", dailyPool)
         }
         logEvent("daily_challenge_complete", bundle)
     }
@@ -328,6 +336,28 @@ class AnalyticsManager private constructor(context: Context) {
             putString("action_button", actionButton)
         }
         logEvent("daily_notification_clicked", bundle)
+    }
+
+    fun logNotificationPrePromptShown(promptType: String) {
+        val bundle = Bundle().apply {
+            putString("prompt_type", promptType)
+        }
+        logEvent("notification_preprompt_shown", bundle)
+    }
+
+    fun logNotificationPrePromptResult(promptType: String, result: String) {
+        val bundle = Bundle().apply {
+            putString("prompt_type", promptType)
+            putString("result", result)
+        }
+        logEvent("notification_preprompt_result", bundle)
+    }
+
+    fun logNotificationPermissionResult(result: String) {
+        val bundle = Bundle().apply {
+            putString("result", result)
+        }
+        logEvent("notification_permission_result", bundle)
     }
 
     // =========================================================================

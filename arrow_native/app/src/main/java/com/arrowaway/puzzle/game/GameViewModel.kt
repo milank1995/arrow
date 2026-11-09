@@ -7,6 +7,7 @@ import com.arrowaway.puzzle.analytics.AnalyticsManager
 import com.arrowaway.puzzle.analytics.CrashLogger
 import com.arrowaway.puzzle.audio.AudioHapticManager
 import com.arrowaway.puzzle.config.RemoteConfigManager
+import com.arrowaway.puzzle.core.DailyChallengeRules
 import com.arrowaway.puzzle.review.InAppReviewManager
 import com.arrowaway.puzzle.core.engine.GridOccupancyMap
 import com.arrowaway.puzzle.core.engine.LevelGenerator
@@ -66,6 +67,7 @@ data class GameUiState(
     val isDailyChallengeMode: Boolean = false,
     val activeDailyDate: String? = null,
     val activeDailyIndex: Int = 1,
+    val activeDailyPool: String = "standard",
     val completedDailyDates: Set<String> = emptySet(),
     val levelStars: Map<Int, Int> = emptyMap(),
     val hasPlayedBefore: Boolean = false,
@@ -82,6 +84,7 @@ data class GameUiState(
     val hasSeenDailyUnlockCelebration: Boolean = false,
     val dailyRemindersEnabled: Boolean = true,
     val hasRequestedNotificationPermission: Boolean = false,
+    val notificationPermissionAskCount: Int = 0,
     val showDailyLaunchPrompt: Boolean = false,
     val restartTrigger: Long = 0L,
     val isAutoSolving: Boolean = false,
@@ -153,7 +156,10 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
                 val todayStr = LocalDate.now().toString()
                 val isDailyCompletedToday = data.completedDailyDates.contains(todayStr)
-                val isDailyUnlocked = data.currentLevel > RemoteConfigManager.dailyChallengeUnlockLevel || data.hasSeenDailyUnlockCelebration
+                val isDailyUnlocked = DailyChallengeRules.isDailyUnlocked(
+                    currentLevel = data.currentLevel,
+                    hasSeenCelebration = data.hasSeenDailyUnlockCelebration
+                )
                 val shouldShowDailyPrompt = isDailyUnlocked && !isDailyCompletedToday && !hasDismissedDailyLaunchPromptThisSession
 
                 _uiState.update { current ->
@@ -175,6 +181,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         hasSeenDailyUnlockCelebration = data.hasSeenDailyUnlockCelebration,
                         dailyRemindersEnabled = data.dailyRemindersEnabled,
                         hasRequestedNotificationPermission = data.hasRequestedNotificationPermission,
+                        notificationPermissionAskCount = data.notificationPermissionAskCount,
                         showDailyLaunchPrompt = shouldShowDailyPrompt,
                         isDevMode = data.isDevMode,
                         isHintButtonVisible = data.isHintButtonVisible,
@@ -221,12 +228,20 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun toggleDevMode(): Boolean {
+        if (!com.arrowaway.puzzle.BuildConfig.DEBUG) return false
         val newMode = !_uiState.value.isDevMode
         viewModelScope.launch {
             repository.setDevMode(newMode)
         }
         _uiState.update { it.copy(isDevMode = newMode) }
         return newMode
+    }
+
+    fun incrementNotificationAskCount() {
+        viewModelScope.launch {
+            val count = repository.incrementNotificationAskCount()
+            _uiState.update { it.copy(notificationPermissionAskCount = count, hasRequestedNotificationPermission = true) }
+        }
     }
 
     fun toggleAnalytics(): Boolean {
@@ -279,16 +294,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun toggleDailyReminders() {
-        viewModelScope.launch {
-            val nextState = !_uiState.value.dailyRemindersEnabled
-            repository.setDailyRemindersEnabled(nextState)
-            _uiState.update { it.copy(dailyRemindersEnabled = nextState) }
-            if (nextState) {
-                NotificationHelper.scheduleDailyReminderAlarm(app)
-            } else {
-                NotificationHelper.cancelDailyReminderAlarm(app)
-            }
-        }
+        setDailyRemindersEnabled(!_uiState.value.dailyRemindersEnabled)
     }
 
     fun resumeActiveTimer() {
@@ -498,8 +504,16 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             LocalDate.now()
         }
         val dayOfYear = date.dayOfYear
-        val dailyIndex = ((dayOfYear - 1) % LevelLoader.TOTAL_DAILY_LEVELS) + 1
-        val level = LevelLoader.loadDailyLevel(app, dailyIndex)
+        val easyDailyUntilLevel = RemoteConfigManager.easyDailyUntilLevel
+        val useEasyPool = _uiState.value.currentLevelNumber < easyDailyUntilLevel
+        val poolSize = if (useEasyPool) LevelLoader.TOTAL_EASY_DAILY_LEVELS else LevelLoader.TOTAL_DAILY_LEVELS
+        val dailyIndex = ((dayOfYear - 1) % poolSize) + 1
+        val level = if (useEasyPool) {
+            LevelLoader.loadEasyDailyLevel(app, dailyIndex)
+        } else {
+            LevelLoader.loadDailyLevel(app, dailyIndex)
+        }
+        val dailyPool = if (useEasyPool) "easy" else "standard"
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)
         }
@@ -507,7 +521,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         analytics.logDailyChallengeStart(
             puzzleDate = date.toString(),
             dailyLevelIndex = dailyIndex,
-            arrowCount = level.arrows.size
+            arrowCount = level.arrows.size,
+            dailyPool = dailyPool
         )
         analytics.logLevelStart(
             levelNumber = dailyIndex,
@@ -536,6 +551,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 isDailyChallengeMode = true,
                 activeDailyDate = date.toString(),
                 activeDailyIndex = dailyIndex,
+                activeDailyPool = dailyPool,
                 dailyComplimentaryHintsRemaining = 0,
                 levelFreeHintsRemaining = 0,
                 showHintAdPrompt = false,
@@ -1340,7 +1356,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     puzzleDate = dateStr,
                     completionTimeSec = _uiState.value.levelCompletionTimeSeconds.toLong(),
                     newStreakDays = _uiState.value.streakDays,
-                    rewardCoinsClaimed = dailyRewardCoins
+                    rewardCoinsClaimed = dailyRewardCoins,
+                    dailyPool = _uiState.value.activeDailyPool
                 )
             } else {
                 repository.recordLevelCompletion(completedLevel, stars)

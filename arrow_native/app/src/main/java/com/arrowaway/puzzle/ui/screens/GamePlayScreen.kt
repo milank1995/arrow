@@ -1,6 +1,7 @@
 package com.arrowaway.puzzle.ui.screens
 
 import com.arrowaway.puzzle.BuildConfig
+import com.arrowaway.puzzle.config.RemoteConfigManager
 import com.arrowaway.puzzle.ui.components.AutoSolveButton
 
 import androidx.activity.compose.BackHandler
@@ -171,7 +172,8 @@ fun GamePlayScreen(
 
     if (uiState.isLevelComplete) {
         val baseCoins = if (uiState.isDailyChallengeMode) 100 else 50 + (uiState.comboCount * 5)
-        val isDailyUnlockMilestone = uiState.currentLevelNumber == 10 && 
+        val unlockLevel = RemoteConfigManager.dailyChallengeUnlockLevel
+        val isDailyUnlockMilestone = uiState.currentLevelNumber == unlockLevel && 
             !uiState.isDailyChallengeMode && 
             !uiState.hasSeenDailyUnlockCelebration
 

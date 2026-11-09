@@ -61,6 +61,8 @@ import com.arrowaway.puzzle.BuildConfig
 import com.arrowaway.puzzle.game.GameUiState
 import com.arrowaway.puzzle.ui.components.SculptedStar3D
 import com.arrowaway.puzzle.ui.components.StreakChip
+import com.arrowaway.puzzle.config.RemoteConfigManager
+import com.arrowaway.puzzle.core.DailyChallengeRules
 import com.arrowaway.puzzle.ui.theme.ThemePreset
 import java.time.LocalDate
 
@@ -113,9 +115,13 @@ fun HomeScreen(
     )
 
     // Daily Challenge status
-    val isDailyUnlocked = uiState.currentLevelNumber > 10 ||
-            uiState.lastCompletedLevelNumber >= 10 ||
-            uiState.hasSeenDailyUnlockCelebration
+    val unlockLevel = remember { RemoteConfigManager.dailyChallengeUnlockLevel }
+    val isDailyUnlocked = DailyChallengeRules.isDailyUnlocked(
+        currentLevel = uiState.currentLevelNumber,
+        lastCompletedLevel = uiState.lastCompletedLevelNumber,
+        hasSeenCelebration = uiState.hasSeenDailyUnlockCelebration,
+        unlockLevel = unlockLevel
+    )
     val todayStr = remember { LocalDate.now().toString() }
     val isDailyCompletedToday = uiState.completedDailyDates.contains(todayStr)
 
@@ -556,7 +562,7 @@ fun HomeScreen(
                                 } else {
                                     Text(
                                         text = when {
-                                            !isDailyUnlocked -> "Unlocks after Level 10"
+                                            !isDailyUnlocked -> "Unlocks after Level $unlockLevel"
                                             isDailyCompletedToday -> "✓ Completed Today"
                                             else -> "Special Daily Puzzle"
                                         },
