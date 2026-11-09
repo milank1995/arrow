@@ -119,7 +119,6 @@ class AnalyticsManager private constructor(context: Context) {
             }
         }
         logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle)
-        logEvent("screen_view", bundle)
     }
 
     // =========================================================================
@@ -142,7 +141,6 @@ class AnalyticsManager private constructor(context: Context) {
             putString(FirebaseAnalytics.Param.LEVEL_NAME, "Level_$levelNumber")
         }
         logEvent(FirebaseAnalytics.Event.LEVEL_START, bundle)
-        logEvent("level_start", bundle)
     }
 
     fun logLevelFirstInteraction(levelNumber: Int, inspectionTimeSec: Long) {
@@ -391,7 +389,8 @@ class AnalyticsManager private constructor(context: Context) {
             putString("ad_type", adType)
             putString("ad_placement", adPlacement)
         }
-        logEvent("ad_impression", bundle)
+        // Not "ad_impression": that name is reserved for the AdMob SDK's automatic event, which carries revenue.
+        logEvent("ad_shown", bundle)
     }
 
     fun logAdDismissed(adType: String, adPlacement: String, rewardEarned: Boolean = false) {

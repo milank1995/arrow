@@ -37,6 +37,7 @@ This document maintains a high-level changelog of all official production releas
   * **Rewarded Ad Completion:** Connected `ad_reward_completed` event in `AdManager` to accurately track rewarded video completion rate.
   * **Ad Health Diagnostics:** Added `ad_load_failed` and `ad_display_failed` analytics tracking with error codes to monitor AdMob/ad network health and protect ad revenue.
   * **Player Progression Insights:** Added Firebase User Property `max_level_reached` and tracked Game Over decisions (`replay`, `return_home`) for churn and funnel analysis.
+  * **Telemetry Cleanliness & AdMob Collision Prevention:** Deduplicated redundant `screen_view` and `level_start` calls, and renamed custom impression logging to `ad_shown` to prevent collisions with AdMob's automated, revenue-carrying `ad_impression` event.
 
 ---
 
