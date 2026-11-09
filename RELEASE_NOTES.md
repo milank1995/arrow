@@ -8,14 +8,37 @@ This document maintains a high-level changelog of all official production releas
 
 | Version Name | Version Code | Git Commit | Tag | Date | Status |
 |---|---|---|---|---|---|
-| **1.0.3** | `5` | Pending | Pending | Nov 2026 | **Prepared (Production Ready)** |
+| **1.0.4** | `6` | Pending | Pending | Nov 2026 | **Prepared (Production Ready)** |
+| **1.0.3** | `5` | `96e5c2d` | `v1.0.3` | Nov 2026 | **Published on Google Play** |
 | **1.0.2** | `3` | `51d607a9` | `v1.0.2` | Nov 2026 | **Published on Google Play** |
 | **1.0.1** | `2` | `b2476eb1` | `v1.0.1` | Nov 2026 | **Published on Google Play** |
 | **1.0.0** | `1` | `a1517c90` | `v1.0.0` | Nov 2026 | **Initial Production Launch** |
 
 ---
 
-## [1.0.3] - Version Code: 5 - Commit: Pending
+## [1.0.4] - Version Code: 6 - Commit: Pending
+
+### Key Highlights:
+* **Dynamic Daily Challenge System & Progression Tuning:**
+  * **Dynamic Dual-Pool Daily Puzzles:** Introduced an adaptive daily pool system. Early-game players (< Level 20) are automatically routed to a curated 44-level easy daily pool (81-100 arrows) to prevent early cognitive churn, while experienced players receive high-challenge puzzles (101-252 arrows).
+  * **Server-Driven Unlock Threshold:** Centralized Daily Challenge unlock rules into a unified single source of truth (`DailyChallengeRules`), allowing the unlock level threshold to be tuned dynamically via Firebase Remote Config (`daily_challenge_unlock_level = 5`).
+  * **Cold-Start Race Protection:** Guarded against asynchronous DataStore initialization delay on cold notification launches by falling back to synchronously mirrored player levels and streaks.
+* **Smart Notification Pre-Prompt & Android 13+ Compliance:**
+  * **Soft-Ask Dialog:** Implemented a non-intrusive pre-prompt explaining the value of daily reminders before requesting the OS `POST_NOTIFICATIONS` permission, avoiding accidental permanent denial.
+  * **Second-Chance Prompt:** Added an intelligent re-prompt when a player achieves a 3-day streak.
+  * **Channel Importance Upgrade:** Upgraded notification channel to `daily_challenge_channel_v2` with default importance and dedicated vector branding (`ic_stat_notification`).
+  * **Settings Synchronization:** Added a deep-link dialog to app notification settings for permanently denied states, while strictly preserving user choices made in the in-game settings.
+* **Content Protection & Dev Mode Hardening:**
+  * Strictly restricted Dev Mode gestures, tools, and debug panels to `BuildConfig.DEBUG` builds; release builds force dev mode off.
+  * Enforced DataStore sanity limits to prevent coin balance tampering and level skipping.
+* **Policy Compliance & Quality:**
+  * Integrated Google UMP (User Messaging Platform) GDPR/privacy consent form for EEA/UK compliance.
+  * Fixed daily coin payout duplication so completion rewards are strictly granted once per day.
+  * Resolved Android cut-out layout lint warning for display cutouts on Android 8.1+ (`values-v27/themes.xml`).
+
+---
+
+## [1.0.3] - Version Code: 5 - Commit: `96e5c2d`
 
 ### Key Highlights:
 * **High-Challenge Daily Challenge Expansion (235 Levels):**
