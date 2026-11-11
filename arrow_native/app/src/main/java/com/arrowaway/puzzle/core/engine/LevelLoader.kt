@@ -16,8 +16,10 @@ object LevelLoader {
      * For any levelNumber > 1001, it wraps cleanly into the authentic level pool,
      * ensuring every level displays the true intended handcrafted puzzle layout.
      */
+    const val TOTAL_CAMPAIGN_LEVELS = 350
+
     fun loadLevel(context: Context, levelNumber: Int): LevelData {
-        val totalHandcraftedLevels = 150
+        val totalHandcraftedLevels = TOTAL_CAMPAIGN_LEVELS
         val actualLevelNumber = ((levelNumber - 1) % totalHandcraftedLevels) + 1
         val assetName = "levels/Level_$actualLevelNumber.json"
         try {
@@ -108,7 +110,9 @@ object LevelLoader {
         val isShape: Boolean,
         val sourceCategory: String,
         val xSize: Int,
-        val ySize: Int
+        val ySize: Int,
+        val emoji: String? = null,
+        val category: String? = null
     )
 
     private var cachedManifest: List<ManifestLevelItem>? = null
@@ -123,6 +127,8 @@ object LevelLoader {
             for (i in 0 until array.length()) {
                 val obj = array.getJSONObject(i)
                 val sName = obj.optString("ShapeName").takeIf { it.isNotBlank() && it != "null" }
+                val emoji = obj.optString("Emoji").takeIf { it.isNotBlank() && it != "null" }
+                val category = obj.optString("Category").takeIf { it.isNotBlank() && it != "null" }
                 items.add(
                     ManifestLevelItem(
                         levelNumber = obj.getInt("LevelNumber"),
@@ -132,7 +138,9 @@ object LevelLoader {
                         isShape = obj.optBoolean("IsShape", sName != null),
                         sourceCategory = obj.optString("SourceCategory", ""),
                         xSize = obj.optInt("XSize", 0),
-                        ySize = obj.optInt("YSize", 0)
+                        ySize = obj.optInt("YSize", 0),
+                        emoji = emoji,
+                        category = category
                     )
                 )
             }

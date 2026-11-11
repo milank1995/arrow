@@ -163,6 +163,7 @@ class MainActivity : ComponentActivity() {
             var currentScreen by remember { mutableStateOf(initialScreen) }
             var showSoundSettingsDialog by remember { mutableStateOf(false) }
             var devTestInitialDailyMode by remember { mutableStateOf(false) }
+            var devTestInitialShapesMode by remember { mutableStateOf(false) }
 
             val lifecycleOwner = LocalLifecycleOwner.current
             DisposableEffect(lifecycleOwner) {
@@ -319,6 +320,12 @@ class MainActivity : ComponentActivity() {
                                     onDevTestClick = {
                                         gameViewModel.playClick()
                                         devTestInitialDailyMode = false
+                                        currentScreen = AppScreen.DEV_TEST
+                                    },
+                                    onUniqueShapesClick = {
+                                        gameViewModel.playClick()
+                                        devTestInitialDailyMode = false
+                                        devTestInitialShapesMode = true
                                         currentScreen = AppScreen.DEV_TEST
                                     },
                                     onReviewDailyLevelsClick = {
@@ -545,6 +552,7 @@ class MainActivity : ComponentActivity() {
                                         theme = uiState.activeTheme,
                                         audioHapticManager = gameViewModel.audioHapticManager,
                                         initialDailyMode = devTestInitialDailyMode,
+                                        initialShapesMode = devTestInitialShapesMode,
                                         onBackToHomeClick = {
                                             currentScreen = AppScreen.HOME
                                         },

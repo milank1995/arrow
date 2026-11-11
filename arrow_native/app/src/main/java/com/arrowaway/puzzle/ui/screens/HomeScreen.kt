@@ -87,6 +87,7 @@ fun HomeScreen(
     onSoundToggle: () -> Unit,
     onSettingsClick: () -> Unit,
     onDevTestClick: () -> Unit = {},
+    onUniqueShapesClick: () -> Unit = {},
     onReviewDailyLevelsClick: () -> Unit = {},
     onLevelChange: (Int) -> Unit = {},
     onTestNotificationClick: () -> Unit = {},
@@ -411,7 +412,7 @@ fun HomeScreen(
                                             .size(36.dp)
                                             .clip(CircleShape)
                                             .clickable {
-                                                val next = (uiState.currentLevelNumber + 1).coerceAtMost(150)
+                                                val next = (uiState.currentLevelNumber + 1).coerceAtMost(com.arrowaway.puzzle.core.engine.LevelLoader.TOTAL_CAMPAIGN_LEVELS)
                                                 onLevelChange(next)
                                             }
                                     ) {
@@ -616,6 +617,37 @@ fun HomeScreen(
                     // Dev Secondary Shelf (Only visible in Dev Mode)
                     if (isDevMode) {
                         Spacer(modifier = Modifier.height(12.dp))
+
+                        // Unique Shape Levels (383 Levels) Button (Dev Mode only)
+                        Surface(
+                            shape = RoundedCornerShape(14.dp),
+                            color = theme.surface,
+                            border = BorderStroke(1.2.dp, Color(0xFF6366F1).copy(alpha = 0.8f)),
+                            shadowElevation = 1.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(44.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .clickable(onClick = onUniqueShapesClick)
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 14.dp)
+                            ) {
+                                Text(
+                                    text = "⭐ Unique Shapes (350 Levels)",
+                                    fontSize = 12.5.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF6366F1)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
                         // Jump Level Button
                         Surface(
                             shape = RoundedCornerShape(14.dp),
