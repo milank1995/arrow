@@ -17,6 +17,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class PuzzleEngineTest {
@@ -424,5 +425,26 @@ class PuzzleEngineTest {
             isDailyMode = false
         )
         assertFalse("Never prompt before Level 5 in campaign mode", earlyLevelResult.shouldPrompt)
+    }
+
+    @Test
+    fun testRewardedErrorMapping() {
+        assertEquals(AdManager.RewardedStatus.NO_INTERNET, AdManager.statusForLoadError(2)) // network / DNS
+        assertEquals(AdManager.RewardedStatus.NO_FILL, AdManager.statusForLoadError(3))     // no fill
+        assertEquals(AdManager.RewardedStatus.NO_FILL, AdManager.statusForLoadError(9))     // mediation no fill
+        assertEquals(AdManager.RewardedStatus.ERROR, AdManager.statusForLoadError(0))       // internal
+        assertEquals(AdManager.RewardedStatus.ERROR, AdManager.statusForLoadError(1))       // invalid request
+    }
+
+    @Test
+    fun testRewardedButtonStateAndMessages() {
+        val s = AdManager.RewardedStatus.LOADING
+        assertEquals(AdManager.RewardedStatus.LOADING, com.arrowaway.puzzle.ui.components.effectiveRewardedStatus(s, timedOut = false))
+        assertEquals(AdManager.RewardedStatus.NO_FILL, com.arrowaway.puzzle.ui.components.effectiveRewardedStatus(s, timedOut = true))
+        assertEquals(AdManager.RewardedStatus.READY, com.arrowaway.puzzle.ui.components.effectiveRewardedStatus(AdManager.RewardedStatus.READY, timedOut = true))
+        assertNull(com.arrowaway.puzzle.ui.components.rewardedStatusMessage(AdManager.RewardedStatus.READY))
+        assertNull(com.arrowaway.puzzle.ui.components.rewardedStatusMessage(AdManager.RewardedStatus.LOADING))
+        assertEquals("No internet connection. Connect to watch an ad.",
+            com.arrowaway.puzzle.ui.components.rewardedStatusMessage(AdManager.RewardedStatus.NO_INTERNET))
     }
 }

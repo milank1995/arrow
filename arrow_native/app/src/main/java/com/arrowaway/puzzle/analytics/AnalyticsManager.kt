@@ -413,11 +413,23 @@ class AnalyticsManager private constructor(context: Context) {
         logEvent("ad_reward_prompt_shown", bundle)
     }
 
-    fun logAdRewardUnavailable(adPlacement: String) {
+    /** reason: still_loading | no_internet | no_fill | error */
+    fun logAdRewardUnavailable(adPlacement: String, reason: String = "unknown") {
         val bundle = Bundle().apply {
             putString("ad_placement", adPlacement)
+            putString("reason", reason)
         }
         logEvent("ad_reward_unavailable", bundle)
+    }
+
+    /** A level-complete interstitial was due but not shown. reason: cooldown | not_ready. Level 999 = Daily Challenge. */
+    fun logInterstitialSkipped(reason: String, levelNumber: Int) {
+        val bundle = Bundle().apply {
+            putString("reason", reason)
+            putInt("level_number", levelNumber)
+            putString("game_mode", if (levelNumber == 999) "daily" else "campaign")
+        }
+        logEvent("interstitial_skipped", bundle)
     }
 
     fun logAdRewardPromptAccepted(adPlacement: String) {

@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.arrowaway.puzzle.ads.AdManager
 import com.arrowaway.puzzle.ui.theme.ThemePreset
 
 @Composable
@@ -52,7 +53,7 @@ fun GameOverDialog(
     theme: ThemePreset,
     isStartingLevels: Boolean = false,
     hasGlobalLives: Boolean = false,
-    isRewardedAdReady: Boolean = false,
+    rewardedStatus: AdManager.RewardedStatus = AdManager.RewardedStatus.LOADING,
     onTriggerAdPreload: () -> Unit = {},
     onClaimLives: () -> Unit,
     onRestartClick: () -> Unit
@@ -123,36 +124,25 @@ fun GameOverDialog(
 
                 Spacer(modifier = Modifier.height(22.dp))
 
-                // Track 8s timeout for ad readiness
-                var isTimedOut by remember { mutableStateOf(false) }
-
-                LaunchedEffect(isRewardedAdReady) {
-                    if (!isStartingLevels && !isRewardedAdReady) {
-                        onTriggerAdPreload()
-                        delay(8000L)
-                        if (!isRewardedAdReady) {
-                            isTimedOut = true
-                        }
-                    }
-                }
-
-                val (buttonText, isButtonEnabled) = when {
-                    isStartingLevels -> Pair("Claim 3 Lives", true)
-                    isRewardedAdReady -> Pair("Watch Ad (+3 Lives)", true)
-                    !isTimedOut -> Pair("Loading ad…", false)
-                    else -> Pair("No ad available right now", false)
-                }
-
                 // Primary Action
-                AppPrimaryButton(
-                    text = buttonText,
-                    onClick = onClaimLives,
-                    enabled = isButtonEnabled,
-                    isLoading = !isStartingLevels && !isRewardedAdReady && !isTimedOut,
-                    theme = theme,
-                    containerColor = if (isStartingLevels) Color(0xFF10B981) else Color(0xFFEF4444),
-                    modifier = Modifier.fillMaxWidth()
-                )
+                if (isStartingLevels) {
+                    AppPrimaryButton(
+                        text = "Claim 3 Lives",
+                        onClick = onClaimLives,
+                        theme = theme,
+                        containerColor = Color(0xFF10B981),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                } else {
+                    RewardedAdButton(
+                        status = rewardedStatus,
+                        readyText = "Watch Ad (+3 Lives)",
+                        containerColor = Color(0xFFEF4444),
+                        theme = theme,
+                        onWatchAd = onClaimLives,
+                        onRequestAd = onTriggerAdPreload
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(10.dp))
 

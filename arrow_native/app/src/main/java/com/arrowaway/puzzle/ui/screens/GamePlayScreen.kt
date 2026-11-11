@@ -89,7 +89,7 @@ fun GamePlayScreen(
     onGameplayStarted: () -> Unit = {},
     onPauseStateChanged: (Boolean) -> Unit = {},
     onSkipCelebration: () -> Unit = {},
-    isRewardedAdReady: Boolean = false,
+    rewardedStatus: com.arrowaway.puzzle.ads.AdManager.RewardedStatus = com.arrowaway.puzzle.ads.AdManager.RewardedStatus.LOADING,
     onTriggerAdPreload: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -434,7 +434,7 @@ fun GamePlayScreen(
                         theme = theme,
                         isStartingLevels = isStartingLevels,
                         hasGlobalLives = false,
-                        isRewardedAdReady = isRewardedAdReady,
+                        rewardedStatus = rewardedStatus,
                         onTriggerAdPreload = onTriggerAdPreload,
                         onClaimLives = onClaimFreeLives,
                         onRestartClick = onRestartClick
@@ -445,7 +445,7 @@ fun GamePlayScreen(
                 if (uiState.showHintAdPrompt) {
                     HintRefillDialog(
                         theme = theme,
-                        isRewardedAdReady = isRewardedAdReady,
+                        rewardedStatus = rewardedStatus,
                         onTriggerAdPreload = onTriggerAdPreload,
                         onWatchAdClick = onClaimAdHints,
                         onDismiss = onDismissHintAdPrompt

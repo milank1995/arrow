@@ -2,6 +2,8 @@ package com.arrowaway.puzzle.ads
 
 import android.app.Activity
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -79,6 +81,51 @@ object AdManager {
     private val _rewardedReady = MutableStateFlow(false)
     val rewardedReady: StateFlow<Boolean> = _rewardedReady.asStateFlow()
 
+    /** What the "Watch Ad" buttons should show. LOADING is also the state before the first request. */
+    enum class RewardedStatus { LOADING, READY, NO_INTERNET, NO_FILL, ERROR }
+
+    private val _rewardedStatus = MutableStateFlow(RewardedStatus.LOADING)
+    val rewardedStatus: StateFlow<RewardedStatus> = _rewardedStatus.asStateFlow()
+
+    private fun setRewardedStatus(status: RewardedStatus) {
+        _rewardedStatus.value = status
+        _rewardedReady.value = status == RewardedStatus.READY
+    }
+
+    /** Maps an AdMob load error code to a player-facing category (raw message still goes to analytics). */
+    fun statusForLoadError(errorCode: Int): RewardedStatus = when (errorCode) {
+        AdRequest.ERROR_CODE_NETWORK_ERROR -> RewardedStatus.NO_INTERNET
+        AdRequest.ERROR_CODE_NO_FILL, AdRequest.ERROR_CODE_MEDIATION_NO_FILL -> RewardedStatus.NO_FILL
+        else -> RewardedStatus.ERROR
+    }
+
+    fun isOnline(context: Context): Boolean {
+        return try {
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return true
+            val caps = cm.getNetworkCapabilities(cm.activeNetwork) ?: return false
+            caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        } catch (e: Exception) {
+            true // If we can't tell, let the ad request decide
+        }
+    }
+
+    /**
+     * Called when a reward dialog opens or the player taps Retry: loads right away (skipping the
+     * backoff wait), or reports NO_INTERNET immediately when the device is offline.
+     */
+    fun requestRewardedNow(context: Context) {
+        if (cachedRewardedAd != null && !isRewardedAdExpired()) {
+            setRewardedStatus(RewardedStatus.READY)
+            return
+        }
+        if (!isOnline(context)) {
+            setRewardedStatus(RewardedStatus.NO_INTERNET)
+            return
+        }
+        setRewardedStatus(RewardedStatus.LOADING)
+        preloadRewardedAd(context)
+    }
+
     fun isRewardedAdExpired(): Boolean {
         if (cachedRewardedAd == null) return false
         val elapsed = System.currentTimeMillis() - rewardedAdLoadedTimeMs
@@ -100,7 +147,7 @@ object AdManager {
         if (isRewardedAdExpired()) {
             Log.d(TAG, "Cached rewarded ad expired (>55m). Discarding.")
             cachedRewardedAd = null
-            _rewardedReady.value = false
+            setRewardedStatus(RewardedStatus.LOADING)
         }
         if (cachedRewardedAd == null && !isRewardedLoading) {
             preloadRewardedAd(appContext)
@@ -232,7 +279,7 @@ object AdManager {
         if (isRewardedAdExpired()) {
             Log.d(TAG, "Cached rewarded ad expired (>55m). Discarding.")
             cachedRewardedAd = null
-            _rewardedReady.value = false
+            setRewardedStatus(RewardedStatus.LOADING)
         }
         if (cachedRewardedAd != null || isRewardedLoading) return
 
@@ -240,6 +287,7 @@ object AdManager {
         rewardedRetryRunnable = null
 
         isRewardedLoading = true
+        setRewardedStatus(RewardedStatus.LOADING)
         val adRequest = AdRequest.Builder().build()
         val unitId = getRewardedAdUnitId()
 
@@ -249,14 +297,14 @@ object AdManager {
                 rewardedAdLoadedTimeMs = System.currentTimeMillis()
                 isRewardedLoading = false
                 rewardedRetryAttempt = 0
-                _rewardedReady.value = true
+                setRewardedStatus(RewardedStatus.READY)
                 Log.d(TAG, "Rewarded ad successfully preloaded (Unit: $unitId).")
             }
 
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                 cachedRewardedAd = null
                 isRewardedLoading = false
-                _rewardedReady.value = false
+                setRewardedStatus(statusForLoadError(loadAdError.code))
                 Log.w(TAG, "Rewarded ad failed to preload: ${loadAdError.message} (code: ${loadAdError.code})")
 
                 val delaySec = getBackoffDelaySec(rewardedRetryAttempt)
@@ -305,7 +353,7 @@ object AdManager {
         if (isRewardedAdExpired()) {
             Log.d(TAG, "Cached rewarded ad expired (>55m) at show time. Discarding.")
             cachedRewardedAd = null
-            _rewardedReady.value = false
+            setRewardedStatus(RewardedStatus.LOADING)
         }
 
         val ad = cachedRewardedAd
@@ -328,13 +376,13 @@ object AdManager {
                 Log.d(TAG, "Rewarded ad showed full screen.")
                 analytics.logAdImpression(adType = "rewarded", adPlacement = placement)
                 cachedRewardedAd = null
-                _rewardedReady.value = false
+                setRewardedStatus(RewardedStatus.LOADING)
             }
 
             override fun onAdDismissedFullScreenContent() {
                 Log.d(TAG, "Rewarded ad dismissed. Reward granted: $rewardGranted")
                 analytics.logAdDismissed(adType = "rewarded", adPlacement = placement, rewardEarned = rewardGranted)
-                _rewardedReady.value = false
+                setRewardedStatus(RewardedStatus.LOADING)
                 preloadRewardedAd(activity.applicationContext)
                 onAdClosed(rewardGranted)
             }
@@ -348,7 +396,7 @@ object AdManager {
                     placement = placement
                 )
                 cachedRewardedAd = null
-                _rewardedReady.value = false
+                setRewardedStatus(RewardedStatus.LOADING)
                 preloadRewardedAd(activity.applicationContext)
                 onAdClosed(false)
             }
@@ -465,6 +513,7 @@ object AdManager {
             if (lastTime > 0L && (now - lastTime) < cooldownMs) {
                 val remainingSec = (cooldownMs - (now - lastTime)) / 1000L
                 Log.d(TAG, "Interstitial skipped due to active cooldown ($remainingSec seconds remaining).")
+                AnalyticsManager.getInstance(activity).logInterstitialSkipped("cooldown", currentLevel)
                 onDismissed()
                 return
             }
@@ -478,6 +527,8 @@ object AdManager {
         val analytics = AnalyticsManager.getInstance(activity)
         val ad = cachedInterstitialAd
         if (ad == null) {
+            Log.d(TAG, "Interstitial skipped: no ad loaded yet.")
+            analytics.logInterstitialSkipped("not_ready", currentLevel)
             preloadInterstitialAd(activity.applicationContext)
             onDismissed()
             return

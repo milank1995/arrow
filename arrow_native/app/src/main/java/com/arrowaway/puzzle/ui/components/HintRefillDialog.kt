@@ -43,12 +43,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.arrowaway.puzzle.ads.AdManager
 import com.arrowaway.puzzle.ui.theme.ThemePreset
 
 @Composable
 fun HintRefillDialog(
     theme: ThemePreset,
-    isRewardedAdReady: Boolean = false,
+    rewardedStatus: AdManager.RewardedStatus = AdManager.RewardedStatus.LOADING,
     onTriggerAdPreload: () -> Unit = {},
     onWatchAdClick: () -> Unit,
     onDismiss: () -> Unit
@@ -118,33 +119,14 @@ fun HintRefillDialog(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                var isTimedOut by remember { mutableStateOf(false) }
-
-                LaunchedEffect(isRewardedAdReady) {
-                    if (!isRewardedAdReady) {
-                        onTriggerAdPreload()
-                        delay(8000L)
-                        if (!isRewardedAdReady) {
-                            isTimedOut = true
-                        }
-                    }
-                }
-
-                val (buttonText, isButtonEnabled) = when {
-                    isRewardedAdReady -> Pair("Watch Ad (+1 Hint)", true)
-                    !isTimedOut -> Pair("Loading ad…", false)
-                    else -> Pair("No ad available right now", false)
-                }
-
-                // Primary Action: Watch Ad for +1 Hint
-                AppPrimaryButton(
-                    text = buttonText,
-                    onClick = onWatchAdClick,
-                    enabled = isButtonEnabled,
-                    isLoading = !isRewardedAdReady && !isTimedOut,
-                    theme = theme,
+                // Primary Action: Watch Ad for +1 Hint (or a clear reason + Retry)
+                RewardedAdButton(
+                    status = rewardedStatus,
+                    readyText = "Watch Ad (+1 Hint)",
                     containerColor = Color(0xFFD97706),
-                    modifier = Modifier.fillMaxWidth()
+                    theme = theme,
+                    onWatchAd = onWatchAdClick,
+                    onRequestAd = onTriggerAdPreload
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))

@@ -144,6 +144,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             val uiState by gameViewModel.uiState.collectAsState()
             val isRewardedAdReady by AdManager.rewardedReady.collectAsState()
+            val rewardedStatus by AdManager.rewardedStatus.collectAsState()
+            val rewardedUnavailableReason = when (rewardedStatus) {
+                AdManager.RewardedStatus.LOADING -> "still_loading"
+                else -> rewardedStatus.name.lowercase()
+            }
             val initialScreen = remember {
                 if (intent.getStringExtra("EXTRA_NAVIGATE_TO") == "daily_challenge") {
                     intent.removeExtra("EXTRA_NAVIGATE_TO")
@@ -416,7 +421,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onRestartClick = {
                                         if (uiState.isGameOver && (uiState.currentLevelNumber > 10 || uiState.isDailyChallengeMode) && !isRewardedAdReady) {
-                                            gameViewModel.analytics.logAdRewardUnavailable("lives_expiry")
+                                            gameViewModel.analytics.logAdRewardUnavailable("lives_expiry", rewardedUnavailableReason)
                                         }
                                         gameViewModel.playClick()
                                         gameViewModel.restartLevel()
@@ -477,7 +482,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onDismissHintAdPrompt = {
                                         if (!isRewardedAdReady) {
-                                            gameViewModel.analytics.logAdRewardUnavailable("hint_refill")
+                                            gameViewModel.analytics.logAdRewardUnavailable("hint_refill", rewardedUnavailableReason)
                                         }
                                         gameViewModel.dismissHintAdPrompt()
                                     },
@@ -528,9 +533,9 @@ class MainActivity : ComponentActivity() {
                                     onPauseStateChanged = { isPaused ->
                                         gameViewModel.setGamePaused(isPaused)
                                     },
-                                    isRewardedAdReady = isRewardedAdReady,
+                                    rewardedStatus = rewardedStatus,
                                     onTriggerAdPreload = {
-                                        AdManager.preloadRewardedAd(this@MainActivity)
+                                        AdManager.requestRewardedNow(this@MainActivity)
                                     }
                                 )
                             }
