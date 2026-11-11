@@ -141,8 +141,9 @@ fun HintRefillDialog(
                     text = buttonText,
                     onClick = onWatchAdClick,
                     enabled = isButtonEnabled,
+                    isLoading = !isRewardedAdReady && !isTimedOut,
                     theme = theme,
-                    containerColor = if (isRewardedAdReady) Color(0xFFD97706) else Color(0xFFD97706).copy(alpha = 0.5f),
+                    containerColor = Color(0xFFD97706),
                     modifier = Modifier.fillMaxWidth()
                 )
 

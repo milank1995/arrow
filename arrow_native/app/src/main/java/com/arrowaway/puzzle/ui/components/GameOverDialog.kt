@@ -148,12 +148,9 @@ fun GameOverDialog(
                     text = buttonText,
                     onClick = onClaimLives,
                     enabled = isButtonEnabled,
+                    isLoading = !isStartingLevels && !isRewardedAdReady && !isTimedOut,
                     theme = theme,
-                    containerColor = when {
-                        isStartingLevels -> Color(0xFF10B981)
-                        isRewardedAdReady -> Color(0xFFEF4444)
-                        else -> Color(0xFFEF4444).copy(alpha = 0.5f)
-                    },
+                    containerColor = if (isStartingLevels) Color(0xFF10B981) else Color(0xFFEF4444),
                     modifier = Modifier.fillMaxWidth()
                 )
 

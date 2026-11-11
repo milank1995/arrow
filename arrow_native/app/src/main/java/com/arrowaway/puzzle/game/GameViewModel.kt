@@ -905,7 +905,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     }
                 } else {
                     // Out of free hints for this level / Daily Challenge -> prompt rewarded ad dialog
-                    analytics.logAdRewardPromptShown("hint_refill")
+                    // ad_reward_prompt_shown (with ad_ready) is logged in MainActivity when the dialog opens
                     _uiState.update { it.copy(showHintAdPrompt = true) }
                 }
             }

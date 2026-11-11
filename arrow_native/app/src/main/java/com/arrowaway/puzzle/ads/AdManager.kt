@@ -475,11 +475,6 @@ object AdManager {
             cachedInterstitialAd = null
         }
 
-        if (isInterstitialAdExpired()) {
-            Log.d(TAG, "Cached interstitial ad expired (>55m) at show time. Discarding.")
-            cachedInterstitialAd = null
-        }
-
         val analytics = AnalyticsManager.getInstance(activity)
         val ad = cachedInterstitialAd
         if (ad == null) {
