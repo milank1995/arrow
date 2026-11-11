@@ -304,7 +304,12 @@ object AdManager {
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                 cachedRewardedAd = null
                 isRewardedLoading = false
-                setRewardedStatus(statusForLoadError(loadAdError.code))
+                // A "network error" while the device is online usually means ads are blocked
+                // (private DNS / ad blocker), so don't tell the player their internet is off.
+                val mapped = statusForLoadError(loadAdError.code)
+                setRewardedStatus(
+                    if (mapped == RewardedStatus.NO_INTERNET && isOnline(appContext)) RewardedStatus.ERROR else mapped
+                )
                 Log.w(TAG, "Rewarded ad failed to preload: ${loadAdError.message} (code: ${loadAdError.code})")
 
                 val delaySec = getBackoffDelaySec(rewardedRetryAttempt)
