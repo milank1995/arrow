@@ -34,7 +34,7 @@ class InAppReviewManager(private val activity: Activity) {
     companion object {
         private const val TAG = "ArrowAwayReview"
         const val DEFAULT_COOLDOWN_DAYS = 30
-        const val MIN_ELIGIBLE_LEVEL = 8
+        const val MIN_ELIGIBLE_LEVEL = 5
 
         /**
          * Checks whether the player is in an optimal "Emotional High" state for a rating prompt,
@@ -48,7 +48,8 @@ class InAppReviewManager(private val activity: Activity) {
             lastPromptTimestamp: Long,
             cooldownDays: Int = DEFAULT_COOLDOWN_DAYS,
             minEligibleLevel: Int = MIN_ELIGIBLE_LEVEL,
-            isDailyMode: Boolean = false
+            isDailyMode: Boolean = false,
+            completedDailiesCount: Int = 0
         ): ReviewTriggerResult {
             val now = System.currentTimeMillis()
             val cooldownMillis = cooldownDays.toLong() * 24L * 60L * 60L * 1000L
@@ -71,14 +72,20 @@ class InAppReviewManager(private val activity: Activity) {
                 return ReviewTriggerResult(true, "milestone_level_$minEligibleLevel")
             }
 
-            // Trigger Scenario B: 3-Day or 7-Day Daily Challenge Streak Reached
+            // Trigger Scenario B1: First Daily Challenge Completed Ever
+            if (isDailyMode && completedDailiesCount == 1) {
+                Log.i(TAG, "Review prompt eligible: First Daily Challenge completed ever!")
+                return ReviewTriggerResult(true, "first_daily_complete")
+            }
+
+            // Trigger Scenario B2: 3-Day or 7-Day Daily Challenge Streak Reached
             if (isDailyMode && (currentStreakDays == 3 || currentStreakDays == 7)) {
                 Log.i(TAG, "Review prompt eligible: Daily Challenge streak milestone ($currentStreakDays days)!")
                 return ReviewTriggerResult(true, "daily_streak_$currentStreakDays")
             }
 
             // Trigger Scenario C: High Mastery Triumph (100 Pts, 3 Stars on Level >= minEligibleLevel)
-            if (currentLevel >= minEligibleLevel && starsEarned == 3 && scoreEarned >= 100) {
+            if (!isDailyMode && currentLevel >= minEligibleLevel && starsEarned == 3 && scoreEarned >= 100) {
                 Log.i(TAG, "Review prompt eligible: Perfect 100 Pt & 3-Star mastery on Level $currentLevel!")
                 return ReviewTriggerResult(true, "perfect_mastery_level_$currentLevel")
             }
@@ -97,7 +104,8 @@ class InAppReviewManager(private val activity: Activity) {
             lastPromptTimestamp: Long,
             cooldownDays: Int = DEFAULT_COOLDOWN_DAYS,
             minEligibleLevel: Int = MIN_ELIGIBLE_LEVEL,
-            isDailyMode: Boolean = false
+            isDailyMode: Boolean = false,
+            completedDailiesCount: Int = 0
         ): Boolean {
             return checkReviewEligibility(
                 currentLevel = currentLevel,
@@ -107,7 +115,8 @@ class InAppReviewManager(private val activity: Activity) {
                 lastPromptTimestamp = lastPromptTimestamp,
                 cooldownDays = cooldownDays,
                 minEligibleLevel = minEligibleLevel,
-                isDailyMode = isDailyMode
+                isDailyMode = isDailyMode,
+                completedDailiesCount = completedDailiesCount
             ).shouldPrompt
         }
     }

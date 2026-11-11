@@ -26,6 +26,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +48,8 @@ import com.arrowaway.puzzle.ui.theme.ThemePreset
 @Composable
 fun HintRefillDialog(
     theme: ThemePreset,
+    isRewardedAdReady: Boolean = false,
+    onTriggerAdPreload: () -> Unit = {},
     onWatchAdClick: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -110,12 +118,31 @@ fun HintRefillDialog(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Primary Action: Watch Ad for +3 Hints
+                var isTimedOut by remember { mutableStateOf(false) }
+
+                LaunchedEffect(isRewardedAdReady) {
+                    if (!isRewardedAdReady) {
+                        onTriggerAdPreload()
+                        delay(8000L)
+                        if (!isRewardedAdReady) {
+                            isTimedOut = true
+                        }
+                    }
+                }
+
+                val (buttonText, isButtonEnabled) = when {
+                    isRewardedAdReady -> Pair("Watch Ad (+1 Hint)", true)
+                    !isTimedOut -> Pair("Loading ad…", false)
+                    else -> Pair("No ad available right now", false)
+                }
+
+                // Primary Action: Watch Ad for +1 Hint
                 AppPrimaryButton(
-                    text = "Watch Ad (+1 Hint)",
+                    text = buttonText,
                     onClick = onWatchAdClick,
+                    enabled = isButtonEnabled,
                     theme = theme,
-                    containerColor = Color(0xFFD97706),
+                    containerColor = if (isRewardedAdReady) Color(0xFFD97706) else Color(0xFFD97706).copy(alpha = 0.5f),
                     modifier = Modifier.fillMaxWidth()
                 )
 

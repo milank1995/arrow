@@ -89,6 +89,8 @@ fun GamePlayScreen(
     onGameplayStarted: () -> Unit = {},
     onPauseStateChanged: (Boolean) -> Unit = {},
     onSkipCelebration: () -> Unit = {},
+    isRewardedAdReady: Boolean = false,
+    onTriggerAdPreload: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(uiState.currentLevelNumber, uiState.activeDailyDate) {
@@ -432,6 +434,8 @@ fun GamePlayScreen(
                         theme = theme,
                         isStartingLevels = isStartingLevels,
                         hasGlobalLives = false,
+                        isRewardedAdReady = isRewardedAdReady,
+                        onTriggerAdPreload = onTriggerAdPreload,
                         onClaimLives = onClaimFreeLives,
                         onRestartClick = onRestartClick
                     )
@@ -441,6 +445,8 @@ fun GamePlayScreen(
                 if (uiState.showHintAdPrompt) {
                     HintRefillDialog(
                         theme = theme,
+                        isRewardedAdReady = isRewardedAdReady,
+                        onTriggerAdPreload = onTriggerAdPreload,
                         onWatchAdClick = onClaimAdHints,
                         onDismiss = onDismissHintAdPrompt
                     )

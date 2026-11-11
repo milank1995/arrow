@@ -2,6 +2,8 @@ package com.arrowaway.puzzle
 
 import com.arrowaway.puzzle.core.DailyChallengeRules
 import com.arrowaway.puzzle.core.engine.LevelLoader
+import com.arrowaway.puzzle.ads.AdManager
+import com.arrowaway.puzzle.review.InAppReviewManager
 
 
 import com.arrowaway.puzzle.core.engine.GridOccupancyMap
@@ -345,5 +347,82 @@ class PuzzleEngineTest {
 
             assertTrue("Easy Daily Level $easyIdx must clear all arrows completely", currentArrows.all { it.state == ArrowState.CLEARED })
         }
+    }
+
+    @Test
+    fun testAdManagerBackoffSequence() {
+        assertEquals(30, AdManager.getBackoffDelaySec(0))
+        assertEquals(60, AdManager.getBackoffDelaySec(1))
+        assertEquals(120, AdManager.getBackoffDelaySec(2))
+        assertEquals(240, AdManager.getBackoffDelaySec(3))
+        assertEquals(600, AdManager.getBackoffDelaySec(4))
+        assertEquals(600, AdManager.getBackoffDelaySec(5))
+        assertEquals(600, AdManager.getBackoffDelaySec(99))
+    }
+
+    @Test
+    fun testInAppReviewEligibilityFirstDailyCompleteAndSafetyRules() {
+        // First daily completed triggers review prompt
+        val firstDailyResult = InAppReviewManager.checkReviewEligibility(
+            currentLevel = 5,
+            starsEarned = 3,
+            scoreEarned = 100,
+            currentStreakDays = 1,
+            lastPromptTimestamp = 0L,
+            isDailyMode = true,
+            completedDailiesCount = 1
+        )
+        assertTrue("First daily completed must trigger review", firstDailyResult.shouldPrompt)
+        assertEquals("first_daily_complete", firstDailyResult.triggerReason)
+
+        // Second daily without streak does not trigger
+        val secondDailyResult = InAppReviewManager.checkReviewEligibility(
+            currentLevel = 5,
+            starsEarned = 2,
+            scoreEarned = 80,
+            currentStreakDays = 2,
+            lastPromptTimestamp = 0L,
+            isDailyMode = true,
+            completedDailiesCount = 2
+        )
+        assertFalse("Second daily without 3-day streak should not trigger review", secondDailyResult.shouldPrompt)
+
+        // 3-day streak on daily triggers review
+        val streak3Result = InAppReviewManager.checkReviewEligibility(
+            currentLevel = 5,
+            starsEarned = 3,
+            scoreEarned = 100,
+            currentStreakDays = 3,
+            lastPromptTimestamp = 0L,
+            isDailyMode = true,
+            completedDailiesCount = 3
+        )
+        assertTrue("3-day daily streak must trigger review", streak3Result.shouldPrompt)
+        assertEquals("daily_streak_3", streak3Result.triggerReason)
+
+        // Safety Rule: Cooldown active (within 30 days) prevents prompt
+        val recentPromptTime = System.currentTimeMillis() - (5 * 24 * 3600 * 1000L) // 5 days ago
+        val cooldownResult = InAppReviewManager.checkReviewEligibility(
+            currentLevel = 5,
+            starsEarned = 3,
+            scoreEarned = 100,
+            currentStreakDays = 1,
+            lastPromptTimestamp = recentPromptTime,
+            isDailyMode = true,
+            completedDailiesCount = 1
+        )
+        assertFalse("Review prompt must be blocked during 30-day cooldown", cooldownResult.shouldPrompt)
+
+        // Safety Rule: Never prompt on campaign levels < 5
+        val earlyLevelResult = InAppReviewManager.checkReviewEligibility(
+            currentLevel = 4,
+            starsEarned = 3,
+            scoreEarned = 100,
+            currentStreakDays = 0,
+            lastPromptTimestamp = 0L,
+            minEligibleLevel = 5,
+            isDailyMode = false
+        )
+        assertFalse("Never prompt before Level 5 in campaign mode", earlyLevelResult.shouldPrompt)
     }
 }

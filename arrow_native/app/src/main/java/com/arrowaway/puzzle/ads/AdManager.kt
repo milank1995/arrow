@@ -6,6 +6,9 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.Toast
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import com.arrowaway.puzzle.BuildConfig
 import com.arrowaway.puzzle.analytics.AnalyticsManager
 import com.arrowaway.puzzle.analytics.CrashLogger
@@ -52,7 +55,74 @@ object AdManager {
     private const val KEY_PENDING_INTERSTITIAL_TIME = "pending_interstitial_time_ms"
     const val PENDING_INTERSTITIAL_TTL_MS = 5 * 60 * 1000L // 5 minutes TTL
 
-    private val mainHandler = Handler(Looper.getMainLooper())
+    private val mainHandler by lazy { Handler(Looper.getMainLooper()) }
+
+    const val AD_EXPIRY_MS = 55 * 60 * 1000L // 55 minutes (AdMob ads expire after 60 min)
+    val BACKOFF_DELAYS_SEC = intArrayOf(30, 60, 120, 240, 600)
+
+    fun getBackoffDelaySec(attempt: Int): Int {
+        val index = attempt.coerceIn(0, BACKOFF_DELAYS_SEC.size - 1)
+        return BACKOFF_DELAYS_SEC[index]
+    }
+
+    var isAppInForeground: Boolean = true
+        private set
+
+    private var rewardedRetryRunnable: Runnable? = null
+    private var interstitialRetryRunnable: Runnable? = null
+    private var rewardedRetryAttempt: Int = 0
+    private var interstitialRetryAttempt: Int = 0
+
+    private var rewardedAdLoadedTimeMs: Long = 0L
+    private var interstitialAdLoadedTimeMs: Long = 0L
+
+    private val _rewardedReady = MutableStateFlow(false)
+    val rewardedReady: StateFlow<Boolean> = _rewardedReady.asStateFlow()
+
+    fun isRewardedAdExpired(): Boolean {
+        if (cachedRewardedAd == null) return false
+        val elapsed = System.currentTimeMillis() - rewardedAdLoadedTimeMs
+        return elapsed >= AD_EXPIRY_MS
+    }
+
+    fun isInterstitialAdExpired(): Boolean {
+        if (cachedInterstitialAd == null) return false
+        val elapsed = System.currentTimeMillis() - interstitialAdLoadedTimeMs
+        return elapsed >= AD_EXPIRY_MS
+    }
+
+    fun onAppForegrounded(context: Context) {
+        isAppInForeground = true
+        Log.d(TAG, "App foregrounded. Checking ad cache freshness and preloading if needed.")
+        val appContext = context.applicationContext
+        if (!isInitialized) return
+
+        if (isRewardedAdExpired()) {
+            Log.d(TAG, "Cached rewarded ad expired (>55m). Discarding.")
+            cachedRewardedAd = null
+            _rewardedReady.value = false
+        }
+        if (cachedRewardedAd == null && !isRewardedLoading) {
+            preloadRewardedAd(appContext)
+        }
+
+        if (isInterstitialAdExpired()) {
+            Log.d(TAG, "Cached interstitial ad expired (>55m). Discarding.")
+            cachedInterstitialAd = null
+        }
+        if (cachedInterstitialAd == null && !isInterstitialLoading) {
+            preloadInterstitialAd(appContext)
+        }
+    }
+
+    fun onAppBackgrounded() {
+        isAppInForeground = false
+        Log.d(TAG, "App backgrounded. Cancelling pending ad retry timers.")
+        rewardedRetryRunnable?.let { mainHandler.removeCallbacks(it) }
+        rewardedRetryRunnable = null
+        interstitialRetryRunnable?.let { mainHandler.removeCallbacks(it) }
+        interstitialRetryRunnable = null
+    }
 
     fun getLastInterstitialTime(context: Context): Long {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -151,32 +221,65 @@ object AdManager {
     // =========================================================================
 
     fun preloadRewardedAd(context: Context) {
+        val appContext = context.applicationContext
         if (!isInitialized) return // No ad requests until consent allows the SDK to start
         if (!RemoteConfigManager.isAdsEnabled || !RemoteConfigManager.isRewardedAdsEnabled) return
+        if (!isAppInForeground) {
+            Log.d(TAG, "Skipping rewarded preload: app is in background.")
+            return
+        }
+
+        if (isRewardedAdExpired()) {
+            Log.d(TAG, "Cached rewarded ad expired (>55m). Discarding.")
+            cachedRewardedAd = null
+            _rewardedReady.value = false
+        }
         if (cachedRewardedAd != null || isRewardedLoading) return
+
+        rewardedRetryRunnable?.let { mainHandler.removeCallbacks(it) }
+        rewardedRetryRunnable = null
 
         isRewardedLoading = true
         val adRequest = AdRequest.Builder().build()
         val unitId = getRewardedAdUnitId()
 
-        RewardedAd.load(context, unitId, adRequest, object : RewardedAdLoadCallback() {
+        RewardedAd.load(appContext, unitId, adRequest, object : RewardedAdLoadCallback() {
             override fun onAdLoaded(ad: RewardedAd) {
                 cachedRewardedAd = ad
+                rewardedAdLoadedTimeMs = System.currentTimeMillis()
                 isRewardedLoading = false
+                rewardedRetryAttempt = 0
+                _rewardedReady.value = true
                 Log.d(TAG, "Rewarded ad successfully preloaded (Unit: $unitId).")
             }
 
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                 cachedRewardedAd = null
                 isRewardedLoading = false
+                _rewardedReady.value = false
                 Log.w(TAG, "Rewarded ad failed to preload: ${loadAdError.message} (code: ${loadAdError.code})")
-                AnalyticsManager.getInstance(context).logAdLoadFailed(
+
+                val delaySec = getBackoffDelaySec(rewardedRetryAttempt)
+                val attempt = rewardedRetryAttempt
+                rewardedRetryAttempt++
+
+                AnalyticsManager.getInstance(appContext).logAdLoadFailed(
                     adType = "rewarded",
                     errorCode = loadAdError.code,
-                    errorMessage = loadAdError.message
+                    errorMessage = loadAdError.message,
+                    retryAttempt = attempt,
+                    nextRetrySec = delaySec,
+                    inForeground = isAppInForeground
                 )
-                // Retry after 20 seconds with exponential backoff buffer
-                mainHandler.postDelayed({ preloadRewardedAd(context) }, 20000L)
+
+                if (isAppInForeground) {
+                    val runnable = Runnable {
+                        rewardedRetryRunnable = null
+                        preloadRewardedAd(appContext)
+                    }
+                    rewardedRetryRunnable = runnable
+                    mainHandler.postDelayed(runnable, delaySec * 1000L)
+                }
             }
         })
     }
@@ -195,14 +298,18 @@ object AdManager {
         analytics.logAdRewardPromptAccepted(placement)
 
         if (!RemoteConfigManager.isAdsEnabled || !RemoteConfigManager.isRewardedAdsEnabled) {
-            Toast.makeText(activity, "Ad request failed. Please try again later.", Toast.LENGTH_SHORT).show()
             onAdClosed(false)
             return
         }
 
+        if (isRewardedAdExpired()) {
+            Log.d(TAG, "Cached rewarded ad expired (>55m) at show time. Discarding.")
+            cachedRewardedAd = null
+            _rewardedReady.value = false
+        }
+
         val ad = cachedRewardedAd
         if (ad == null) {
-            Toast.makeText(activity, "Ad request failed. Please try again later.", Toast.LENGTH_SHORT).show()
             analytics.logAdDisplayFailed(
                 adType = "rewarded",
                 errorCode = -1,
@@ -221,11 +328,13 @@ object AdManager {
                 Log.d(TAG, "Rewarded ad showed full screen.")
                 analytics.logAdImpression(adType = "rewarded", adPlacement = placement)
                 cachedRewardedAd = null
+                _rewardedReady.value = false
             }
 
             override fun onAdDismissedFullScreenContent() {
                 Log.d(TAG, "Rewarded ad dismissed. Reward granted: $rewardGranted")
                 analytics.logAdDismissed(adType = "rewarded", adPlacement = placement, rewardEarned = rewardGranted)
+                _rewardedReady.value = false
                 preloadRewardedAd(activity.applicationContext)
                 onAdClosed(rewardGranted)
             }
@@ -238,8 +347,8 @@ object AdManager {
                     errorMessage = adError.message,
                     placement = placement
                 )
-                Toast.makeText(activity, "Ad request failed. Please try again later.", Toast.LENGTH_SHORT).show()
                 cachedRewardedAd = null
+                _rewardedReady.value = false
                 preloadRewardedAd(activity.applicationContext)
                 onAdClosed(false)
             }
@@ -262,18 +371,33 @@ object AdManager {
     // =========================================================================
 
     fun preloadInterstitialAd(context: Context) {
+        val appContext = context.applicationContext
         if (!isInitialized) return // No ad requests until consent allows the SDK to start
         if (!RemoteConfigManager.isAdsEnabled || !RemoteConfigManager.isInterstitialAdsEnabled) return
+        if (!isAppInForeground) {
+            Log.d(TAG, "Skipping interstitial preload: app is in background.")
+            return
+        }
+
+        if (isInterstitialAdExpired()) {
+            Log.d(TAG, "Cached interstitial ad expired (>55m). Discarding.")
+            cachedInterstitialAd = null
+        }
         if (cachedInterstitialAd != null || isInterstitialLoading) return
+
+        interstitialRetryRunnable?.let { mainHandler.removeCallbacks(it) }
+        interstitialRetryRunnable = null
 
         isInterstitialLoading = true
         val adRequest = AdRequest.Builder().build()
         val unitId = getInterstitialAdUnitId()
 
-        InterstitialAd.load(context, unitId, adRequest, object : InterstitialAdLoadCallback() {
+        InterstitialAd.load(appContext, unitId, adRequest, object : InterstitialAdLoadCallback() {
             override fun onAdLoaded(ad: InterstitialAd) {
                 cachedInterstitialAd = ad
+                interstitialAdLoadedTimeMs = System.currentTimeMillis()
                 isInterstitialLoading = false
+                interstitialRetryAttempt = 0
                 Log.d(TAG, "Interstitial ad successfully preloaded (Unit: $unitId).")
             }
 
@@ -281,12 +405,28 @@ object AdManager {
                 cachedInterstitialAd = null
                 isInterstitialLoading = false
                 Log.w(TAG, "Interstitial ad failed to preload: ${loadAdError.message}")
-                AnalyticsManager.getInstance(context).logAdLoadFailed(
+
+                val delaySec = getBackoffDelaySec(interstitialRetryAttempt)
+                val attempt = interstitialRetryAttempt
+                interstitialRetryAttempt++
+
+                AnalyticsManager.getInstance(appContext).logAdLoadFailed(
                     adType = "interstitial",
                     errorCode = loadAdError.code,
-                    errorMessage = loadAdError.message
+                    errorMessage = loadAdError.message,
+                    retryAttempt = attempt,
+                    nextRetrySec = delaySec,
+                    inForeground = isAppInForeground
                 )
-                mainHandler.postDelayed({ preloadInterstitialAd(context) }, 25000L)
+
+                if (isAppInForeground) {
+                    val runnable = Runnable {
+                        interstitialRetryRunnable = null
+                        preloadInterstitialAd(appContext)
+                    }
+                    interstitialRetryRunnable = runnable
+                    mainHandler.postDelayed(runnable, delaySec * 1000L)
+                }
             }
         })
     }
@@ -328,6 +468,16 @@ object AdManager {
                 onDismissed()
                 return
             }
+        }
+
+        if (isInterstitialAdExpired()) {
+            Log.d(TAG, "Cached interstitial ad expired (>55m) at show time. Discarding.")
+            cachedInterstitialAd = null
+        }
+
+        if (isInterstitialAdExpired()) {
+            Log.d(TAG, "Cached interstitial ad expired (>55m) at show time. Discarding.")
+            cachedInterstitialAd = null
         }
 
         val analytics = AnalyticsManager.getInstance(activity)

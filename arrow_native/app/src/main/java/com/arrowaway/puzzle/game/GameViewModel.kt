@@ -451,6 +451,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         levelStartWallTimeMs = System.currentTimeMillis()
         hasInteractedWithArrowThisLevel = false
 
+        com.arrowaway.puzzle.ads.AdManager.preloadRewardedAd(app)
         val level = LevelLoader.loadLevel(app, levelNumber)
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)
@@ -518,6 +519,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         } else {
             LevelLoader.loadDailyLevel(app, dailyIndex)
         }
+        com.arrowaway.puzzle.ads.AdManager.preloadRewardedAd(app)
         val dailyPool = if (useEasyPool) "easy" else "standard"
         occupancyMap = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)
@@ -1199,6 +1201,14 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         val lastPrompt = repository.getLastReviewPromptTimestampSynchronous()
         val cooldown = RemoteConfigManager.reviewPromptCooldownDays
         val minLevel = RemoteConfigManager.reviewPromptMinLevel
+        val totalDailies = if (_uiState.value.isDailyChallengeMode) {
+            val dateStr = _uiState.value.activeDailyDate ?: LocalDate.now().toString()
+            val set = _uiState.value.completedDailyDates.toMutableSet().apply { add(dateStr) }
+            set.size
+        } else {
+            _uiState.value.completedDailyDates.size
+        }
+
         val reviewEligibility = InAppReviewManager.checkReviewEligibility(
             currentLevel = completedLvl,
             starsEarned = stars,
@@ -1207,7 +1217,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             lastPromptTimestamp = lastPrompt,
             cooldownDays = cooldown,
             minEligibleLevel = minLevel,
-            isDailyMode = _uiState.value.isDailyChallengeMode
+            isDailyMode = _uiState.value.isDailyChallengeMode,
+            completedDailiesCount = totalDailies
         )
 
         if (reviewEligibility.shouldPrompt) {

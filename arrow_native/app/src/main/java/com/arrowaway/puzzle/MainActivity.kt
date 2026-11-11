@@ -143,6 +143,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val uiState by gameViewModel.uiState.collectAsState()
+            val isRewardedAdReady by AdManager.rewardedReady.collectAsState()
             val initialScreen = remember {
                 if (intent.getStringExtra("EXTRA_NAVIGATE_TO") == "daily_challenge") {
                     intent.removeExtra("EXTRA_NAVIGATE_TO")
@@ -192,8 +193,21 @@ class MainActivity : ComponentActivity() {
                 gameViewModel.analytics.logScreenView(currentScreen.name)
                 if (currentScreen == AppScreen.GAMEPLAY) {
                     gameViewModel.onNavigateToGameplay()
+                    AdManager.preloadRewardedAd(this@MainActivity)
                 } else {
                     gameViewModel.onNavigateAwayFromGameplay()
+                }
+            }
+
+            // Track ad reward prompt impressions
+            LaunchedEffect(uiState.isGameOver) {
+                if (uiState.isGameOver && (uiState.currentLevelNumber > 10 || uiState.isDailyChallengeMode)) {
+                    gameViewModel.analytics.logAdRewardPromptShown("lives_expiry", isRewardedAdReady)
+                }
+            }
+            LaunchedEffect(uiState.showHintAdPrompt) {
+                if (uiState.showHintAdPrompt) {
+                    gameViewModel.analytics.logAdRewardPromptShown("hint_refill", isRewardedAdReady)
                 }
             }
 
@@ -401,6 +415,9 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.claimDoubleCoins(amount)
                                     },
                                     onRestartClick = {
+                                        if (uiState.isGameOver && (uiState.currentLevelNumber > 10 || uiState.isDailyChallengeMode) && !isRewardedAdReady) {
+                                            gameViewModel.analytics.logAdRewardUnavailable("lives_expiry")
+                                        }
                                         gameViewModel.playClick()
                                         gameViewModel.restartLevel()
                                     },
@@ -459,6 +476,9 @@ class MainActivity : ComponentActivity() {
                                         )
                                     },
                                     onDismissHintAdPrompt = {
+                                        if (!isRewardedAdReady) {
+                                            gameViewModel.analytics.logAdRewardUnavailable("hint_refill")
+                                        }
                                         gameViewModel.dismissHintAdPrompt()
                                     },
                                     onToggleSound = {
@@ -507,6 +527,10 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onPauseStateChanged = { isPaused ->
                                         gameViewModel.setGamePaused(isPaused)
+                                    },
+                                    isRewardedAdReady = isRewardedAdReady,
+                                    onTriggerAdPreload = {
+                                        AdManager.preloadRewardedAd(this@MainActivity)
                                     }
                                 )
                             }

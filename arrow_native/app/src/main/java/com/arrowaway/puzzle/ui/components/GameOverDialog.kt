@@ -28,6 +28,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +52,8 @@ fun GameOverDialog(
     theme: ThemePreset,
     isStartingLevels: Boolean = false,
     hasGlobalLives: Boolean = false,
+    isRewardedAdReady: Boolean = false,
+    onTriggerAdPreload: () -> Unit = {},
     onClaimLives: () -> Unit,
     onRestartClick: () -> Unit
 ) {
@@ -115,12 +123,37 @@ fun GameOverDialog(
 
                 Spacer(modifier = Modifier.height(22.dp))
 
+                // Track 8s timeout for ad readiness
+                var isTimedOut by remember { mutableStateOf(false) }
+
+                LaunchedEffect(isRewardedAdReady) {
+                    if (!isStartingLevels && !isRewardedAdReady) {
+                        onTriggerAdPreload()
+                        delay(8000L)
+                        if (!isRewardedAdReady) {
+                            isTimedOut = true
+                        }
+                    }
+                }
+
+                val (buttonText, isButtonEnabled) = when {
+                    isStartingLevels -> Pair("Claim 3 Lives", true)
+                    isRewardedAdReady -> Pair("Watch Ad (+3 Lives)", true)
+                    !isTimedOut -> Pair("Loading ad…", false)
+                    else -> Pair("No ad available right now", false)
+                }
+
                 // Primary Action
                 AppPrimaryButton(
-                    text = if (isStartingLevels) "Claim 3 Lives" else "Watch Ad (+3 Lives)",
+                    text = buttonText,
                     onClick = onClaimLives,
+                    enabled = isButtonEnabled,
                     theme = theme,
-                    containerColor = if (isStartingLevels) Color(0xFF10B981) else Color(0xFFEF4444),
+                    containerColor = when {
+                        isStartingLevels -> Color(0xFF10B981)
+                        isRewardedAdReady -> Color(0xFFEF4444)
+                        else -> Color(0xFFEF4444).copy(alpha = 0.5f)
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
 

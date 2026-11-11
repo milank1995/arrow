@@ -134,6 +134,8 @@ class AnalyticsManager private constructor(context: Context) {
     ) {
         val bundle = Bundle().apply {
             putInt("level_number", levelNumber)
+            putLong(FirebaseAnalytics.Param.LEVEL, levelNumber.toLong())
+            putString("level_number_str", levelNumber.toString())
             putString("game_mode", gameMode)
             putInt("total_arrows", totalArrows)
             putString("grid_dimensions", gridDimensions)
@@ -146,6 +148,8 @@ class AnalyticsManager private constructor(context: Context) {
     fun logLevelFirstInteraction(levelNumber: Int, inspectionTimeSec: Long) {
         val bundle = Bundle().apply {
             putInt("level_number", levelNumber)
+            putLong(FirebaseAnalytics.Param.LEVEL, levelNumber.toLong())
+            putString("level_number_str", levelNumber.toString())
             putLong("inspection_time_sec", inspectionTimeSec)
         }
         logEvent("level_first_interaction", bundle)
@@ -163,6 +167,8 @@ class AnalyticsManager private constructor(context: Context) {
     ) {
         val bundle = Bundle().apply {
             putInt("level_number", levelNumber)
+            putLong(FirebaseAnalytics.Param.LEVEL, levelNumber.toLong())
+            putString("level_number_str", levelNumber.toString())
             putString("game_mode", gameMode)
             putLong("active_play_time_sec", activePlayTimeSec)
             putInt("score", score)
@@ -185,6 +191,8 @@ class AnalyticsManager private constructor(context: Context) {
     ) {
         val bundle = Bundle().apply {
             putInt("level_number", levelNumber)
+            putLong(FirebaseAnalytics.Param.LEVEL, levelNumber.toLong())
+            putString("level_number_str", levelNumber.toString())
             putLong("active_play_time_sec", activePlayTimeSec)
             putInt("arrows_remaining", arrowsRemaining)
             putInt("hints_used", hintsUsed)
@@ -200,6 +208,8 @@ class AnalyticsManager private constructor(context: Context) {
     ) {
         val bundle = Bundle().apply {
             putInt("level_number", levelNumber)
+            putLong(FirebaseAnalytics.Param.LEVEL, levelNumber.toLong())
+            putString("level_number_str", levelNumber.toString())
             putLong("active_play_time_sec", activePlayTimeSec)
             putInt("arrows_remaining", arrowsRemaining)
             putString("exit_point", exitPoint)
@@ -210,6 +220,8 @@ class AnalyticsManager private constructor(context: Context) {
     fun logLevelRestart(levelNumber: Int, restartSource: String) {
         val bundle = Bundle().apply {
             putInt("level_number", levelNumber)
+            putLong(FirebaseAnalytics.Param.LEVEL, levelNumber.toLong())
+            putString("level_number_str", levelNumber.toString())
             putString("restart_source", restartSource)
         }
         logEvent("level_restart", bundle)
@@ -218,6 +230,8 @@ class AnalyticsManager private constructor(context: Context) {
     fun logPuzzlePaused(levelNumber: Int, arrowsRemaining: Int, activeTimeAtPauseSec: Long) {
         val bundle = Bundle().apply {
             putInt("level_number", levelNumber)
+            putLong(FirebaseAnalytics.Param.LEVEL, levelNumber.toLong())
+            putString("level_number_str", levelNumber.toString())
             putInt("arrows_remaining", arrowsRemaining)
             putLong("active_time_at_pause_sec", activeTimeAtPauseSec)
         }
@@ -391,11 +405,19 @@ class AnalyticsManager private constructor(context: Context) {
     // Domain 6: Economy & Monetization (Ad Readiness)
     // =========================================================================
 
-    fun logAdRewardPromptShown(adPlacement: String) {
+    fun logAdRewardPromptShown(adPlacement: String, adReady: Boolean = true) {
+        val bundle = Bundle().apply {
+            putString("ad_placement", adPlacement)
+            putBoolean("ad_ready", adReady)
+        }
+        logEvent("ad_reward_prompt_shown", bundle)
+    }
+
+    fun logAdRewardUnavailable(adPlacement: String) {
         val bundle = Bundle().apply {
             putString("ad_placement", adPlacement)
         }
-        logEvent("ad_reward_prompt_shown", bundle)
+        logEvent("ad_reward_unavailable", bundle)
     }
 
     fun logAdRewardPromptAccepted(adPlacement: String) {
@@ -432,11 +454,21 @@ class AnalyticsManager private constructor(context: Context) {
         logEvent("ad_dismissed", bundle)
     }
 
-    fun logAdLoadFailed(adType: String, errorCode: Int, errorMessage: String) {
+    fun logAdLoadFailed(
+        adType: String,
+        errorCode: Int,
+        errorMessage: String,
+        retryAttempt: Int = 0,
+        nextRetrySec: Int = 0,
+        inForeground: Boolean = true
+    ) {
         val bundle = Bundle().apply {
             putString("ad_type", adType)
             putInt("error_code", errorCode)
             putString("error_message", errorMessage)
+            putInt("retry_attempt", retryAttempt)
+            putInt("next_retry_sec", nextRetrySec)
+            putBoolean("in_foreground", inForeground)
         }
         logEvent("ad_load_failed", bundle)
     }
