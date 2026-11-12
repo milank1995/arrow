@@ -419,6 +419,17 @@ class MainActivity : ComponentActivity() {
                                     onClaimDoubleCoins = { amount ->
                                         gameViewModel.claimDoubleCoins(amount)
                                     },
+                                    onClaimRewardedMilestoneHint = { onSuccess ->
+                                        AdManager.showRewardedAd(
+                                            activity = this@MainActivity,
+                                            placement = "victory_milestone_hint",
+                                            onRewardEarned = {
+                                                gameViewModel.addHints(1)
+                                                onSuccess()
+                                            },
+                                            onAdClosed = { _ -> }
+                                        )
+                                    },
                                     onRestartClick = {
                                         if (uiState.isGameOver && (uiState.currentLevelNumber > 10 || uiState.isDailyChallengeMode) && !isRewardedAdReady) {
                                             gameViewModel.analytics.logAdRewardUnavailable("lives_expiry", rewardedUnavailableReason)

@@ -24,4 +24,11 @@ object LevelDifficultyRules {
 
     fun isMilestoneRewardLevel(levelNumber: Int, isDailyChallenge: Boolean): Boolean =
         !isDailyChallenge && levelNumber == MILESTONE_REWARD_LEVEL
+
+    /**
+     * Rewarded hint milestone offer on the victory screen:
+     * Appears every 5 levels starting from Level 5 (5, 10, 15, 20, 25...).
+     */
+    fun isRewardedHintMilestone(levelNumber: Int, isDailyChallenge: Boolean): Boolean =
+        !isDailyChallenge && levelNumber >= 5 && levelNumber % 5 == 0
 }

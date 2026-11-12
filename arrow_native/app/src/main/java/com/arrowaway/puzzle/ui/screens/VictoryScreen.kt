@@ -162,6 +162,8 @@ fun VictoryScreen(
     starsEarned: Int = 3,
     isDailyUnlockMilestone: Boolean = false,
     milestoneRewardHints: Int = 0,
+    isRewardedHintMilestone: Boolean = false,
+    onClaimRewardedMilestoneHint: ((onSuccess: () -> Unit) -> Unit) = {},
     onStartDailyChallengeClick: () -> Unit = {},
     onRequestNotificationPermission: () -> Unit = {},
     onClaimDoubleCoins: (Int) -> Unit = {},
@@ -266,6 +268,25 @@ fun VictoryScreen(
         ),
         label = "sunburstRotation"
     )
+    val bonusGlowAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.45f,
+        targetValue = 0.95f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "bonusGlowAlpha"
+    )
+    val bonusPulseScale by infiniteTransition.animateFloat(
+        initialValue = 1.0f,
+        targetValue = 1.08f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(900, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "bonusPulseScale"
+    )
+    var isRewardedHintClaimed by remember(levelNumber) { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         launch {
@@ -598,6 +619,115 @@ fun VictoryScreen(
                                             fontWeight = FontWeight.Bold,
                                             color = theme.textPrimary
                                         )
+                                    }
+                                }
+                            }
+
+                            // Rewarded hint offer after every 5 levels starting from Level 5 (5, 10, 15, 20...)
+                            if (isRewardedHintMilestone) {
+                                Spacer(modifier = Modifier.height(if (isVeryCompact) 7.dp else 10.dp))
+                                Surface(
+                                    shape = RoundedCornerShape(14.dp),
+                                    color = Color(0xFFF59E0B).copy(alpha = if (theme.isDark) 0.16f else 0.09f),
+                                    border = BorderStroke(
+                                        width = 1.2.dp,
+                                        brush = Brush.horizontalGradient(
+                                            colors = listOf(
+                                                Color(0xFFF59E0B).copy(alpha = bonusGlowAlpha),
+                                                Color(0xFFFBBF24).copy(alpha = bonusGlowAlpha),
+                                                Color(0xFFF59E0B).copy(alpha = bonusGlowAlpha)
+                                            )
+                                        )
+                                    ),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 12.dp, vertical = if (isVeryCompact) 7.dp else 9.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(30.dp)
+                                                    .scale(if (!isRewardedHintClaimed) bonusPulseScale else 1f)
+                                                    .background(
+                                                        brush = Brush.radialGradient(
+                                                            listOf(Color(0xFFFEF08A), Color(0xFFF59E0B))
+                                                        ),
+                                                        shape = CircleShape
+                                                    ),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(text = "💡", fontSize = 15.sp)
+                                            }
+                                            Spacer(modifier = Modifier.width(9.dp))
+                                            Column {
+                                                Text(
+                                                    text = "Milestone Bonus Hint",
+                                                    fontSize = 12.5.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = theme.textPrimary
+                                                )
+                                                Text(
+                                                    text = if (isRewardedHintClaimed) "Hint banked for later ✓" else "Watch video to bank +1 hint",
+                                                    fontSize = 11.sp,
+                                                    color = if (isRewardedHintClaimed) Color(0xFF10B981) else theme.textSecondary
+                                                )
+                                            }
+                                        }
+
+                                        if (!isRewardedHintClaimed) {
+                                            Surface(
+                                                shape = RoundedCornerShape(10.dp),
+                                                color = Color(0xFFF59E0B),
+                                                shadowElevation = 2.dp,
+                                                modifier = Modifier
+                                                    .clip(RoundedCornerShape(10.dp))
+                                                    .clickable(
+                                                        interactionSource = remember { MutableInteractionSource() },
+                                                        indication = null
+                                                    ) {
+                                                        onPlayClickSound()
+                                                        onClaimRewardedMilestoneHint {
+                                                            isRewardedHintClaimed = true
+                                                        }
+                                                    }
+                                            ) {
+                                                Row(
+                                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                                ) {
+                                                    Text(text = "🎬", fontSize = 11.sp)
+                                                    Text(
+                                                        text = "+1 Hint",
+                                                        fontSize = 11.5.sp,
+                                                        fontWeight = FontWeight.Black,
+                                                        color = Color.White
+                                                    )
+                                                }
+                                            }
+                                        } else {
+                                            Surface(
+                                                shape = RoundedCornerShape(10.dp),
+                                                color = Color(0xFF10B981).copy(alpha = 0.15f),
+                                                border = BorderStroke(1.dp, Color(0xFF10B981).copy(alpha = 0.55f))
+                                            ) {
+                                                Text(
+                                                    text = "Claimed ✓",
+                                                    fontSize = 11.5.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = Color(0xFF10B981),
+                                                    modifier = Modifier.padding(horizontal = 9.dp, vertical = 5.dp)
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }

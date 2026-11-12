@@ -921,6 +921,13 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         _uiState.update { it.copy(showHintAdPrompt = false) }
     }
 
+    fun addHints(amount: Int = 1) {
+        viewModelScope.launch {
+            repository.addHints(amount)
+            audioHapticManager.playBoosterUse("hint")
+        }
+    }
+
     fun claimAdHints(amount: Int = 1) {
         viewModelScope.launch {
             _uiState.update { it.copy(showHintAdPrompt = false) }

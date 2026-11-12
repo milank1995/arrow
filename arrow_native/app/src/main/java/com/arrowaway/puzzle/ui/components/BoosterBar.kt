@@ -234,39 +234,14 @@ fun BoosterBar(
                     shadowElevation = 0.dp,
                     modifier = boxModifier.padding(horizontal = 4.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(
-                            start = 14.dp,
-                            end = if (isHardLevel && !isDailyChallenge) 6.dp else 14.dp,
-                            top = 6.dp,
-                            bottom = 6.dp
-                        )
-                    ) {
-                        Text(
-                            text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = theme.textPrimary.copy(alpha = 0.80f),
-                            letterSpacing = 0.4.sp
-                        )
-                        if (isHardLevel && !isDailyChallenge) {
-                            Spacer(modifier = Modifier.width(7.dp))
-                            Surface(
-                                shape = RoundedCornerShape(percent = 50),
-                                color = HardTagColor
-                            ) {
-                                Text(
-                                    text = "HARD",
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Black,
-                                    color = Color.White,
-                                    letterSpacing = 0.8.sp,
-                                    modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp)
-                                )
-                            }
-                        }
-                    }
+                    Text(
+                        text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = theme.textPrimary.copy(alpha = 0.80f),
+                        letterSpacing = 0.4.sp,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                    )
                 }
             } else if (heartsRemaining != null) {
                 Box(modifier = boxModifier) {
