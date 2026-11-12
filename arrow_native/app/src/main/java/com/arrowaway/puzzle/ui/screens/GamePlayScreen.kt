@@ -1,5 +1,6 @@
 package com.arrowaway.puzzle.ui.screens
 
+import com.arrowaway.puzzle.core.LevelDifficultyRules
 import com.arrowaway.puzzle.BuildConfig
 import com.arrowaway.puzzle.config.RemoteConfigManager
 import com.arrowaway.puzzle.ui.components.AutoSolveButton
@@ -123,6 +124,16 @@ fun GamePlayScreen(
 
     var lastInteractionTime by remember { mutableLongStateOf(System.currentTimeMillis()) }
     var isIdlePromptActive by remember { mutableStateOf(false) }
+    val isHardLevel = LevelDifficultyRules.isHardLevel(uiState.currentLevelNumber, uiState.isDailyChallengeMode)
+    var showHardIntro by remember(uiState.currentLevelNumber, uiState.restartTrigger, uiState.isDailyChallengeMode) {
+        mutableStateOf(isHardLevel)
+    }
+    LaunchedEffect(uiState.currentLevelNumber, uiState.restartTrigger, uiState.isDailyChallengeMode) {
+        if (showHardIntro) {
+            delay(2800)
+            showHardIntro = false
+        }
+    }
     var hasPlayedIdleSoundForPeriod by remember { mutableStateOf(false) }
     var prevHeartsRemaining by remember { mutableIntStateOf(uiState.heartsRemaining) }
 
@@ -198,6 +209,7 @@ fun GamePlayScreen(
             hintsUsed = uiState.levelHintsUsedCount,
             starsEarned = uiState.levelStarsEarned,
             isDailyUnlockMilestone = isDailyUnlockMilestone,
+            milestoneRewardHints = uiState.milestoneRewardHints,
             onStartDailyChallengeClick = onStartDailyChallengeClick,
             onRequestNotificationPermission = onRequestNotificationPermission,
             onClaimDoubleCoins = onClaimDoubleCoins,
@@ -283,6 +295,7 @@ fun GamePlayScreen(
                                 onArrowClick = { arrow ->
                                     lastInteractionTime = System.currentTimeMillis()
                                     isIdlePromptActive = false
+                                    showHardIntro = false
                                     onArrowClick(arrow)
                                 },
                                 onArrowLongPress = { arrow, isPressed ->
@@ -293,6 +306,32 @@ fun GamePlayScreen(
                                 onDismissPreviewRays = onDismissPreviewRays,
                                 onSkipCelebration = onSkipCelebration
                             )
+                        }
+
+                        // Hard level intro: short, dismissible note at the start of Hard levels
+                        // (fully qualified: inside this Box the ColumnScope overload would otherwise be picked)
+                        androidx.compose.animation.AnimatedVisibility(
+                            visible = showHardIntro && !uiState.isLevelComplete,
+                            enter = fadeIn() + slideInVertically { -it / 2 },
+                            exit = fadeOut(),
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(top = 10.dp)
+                        ) {
+                            Surface(
+                                shape = RoundedCornerShape(percent = 50),
+                                color = theme.surface,
+                                border = BorderStroke(1.2.dp, Color(0xFFDC2626).copy(alpha = 0.55f)),
+                                shadowElevation = 3.dp
+                            ) {
+                                Text(
+                                    text = "Hard level · take your time",
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = theme.textPrimary,
+                                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 9.dp)
+                                )
+                            }
                         }
 
                         // Milestone notification banner positioned directly below milestone indicator
@@ -342,6 +381,7 @@ fun GamePlayScreen(
                                 isIdlePromptActive = isIdlePromptActive,
                                 levelNumber = uiState.currentLevelNumber,
                                 isDailyChallenge = uiState.isDailyChallengeMode,
+                                isHardLevel = isHardLevel,
                                 theme = theme,
                                 isHintVisible = uiState.isHintButtonVisible,
                                 isGridVisible = uiState.isGridButtonVisible,

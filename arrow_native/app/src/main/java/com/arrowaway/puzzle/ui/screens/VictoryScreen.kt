@@ -1,5 +1,6 @@
 package com.arrowaway.puzzle.ui.screens
 
+import com.arrowaway.puzzle.core.LevelDifficultyRules
 import com.arrowaway.puzzle.ui.components.BannerAdView
 
 import androidx.compose.animation.core.Animatable
@@ -160,6 +161,7 @@ fun VictoryScreen(
     hintsUsed: Int = 0,
     starsEarned: Int = 3,
     isDailyUnlockMilestone: Boolean = false,
+    milestoneRewardHints: Int = 0,
     onStartDailyChallengeClick: () -> Unit = {},
     onRequestNotificationPermission: () -> Unit = {},
     onClaimDoubleCoins: (Int) -> Unit = {},
@@ -308,12 +310,7 @@ fun VictoryScreen(
     }
 
     // Dynamic stats derived from authentic gameplay results
-    val difficultyText = when {
-        isDailyChallenge -> "Hard"
-        levelNumber % 5 == 0 -> "Hard"
-        levelNumber > 10 -> "Medium"
-        else -> "Normal"
-    }
+    val difficultyText = LevelDifficultyRules.difficultyLabel(levelNumber, isDailyChallenge)
     val timeFormatted = String.format(Locale.US, "%02d:%02d", completionTimeSeconds / 60, completionTimeSeconds % 60)
     val scoreFormatted = "$score Pts"
 
@@ -572,6 +569,34 @@ fun VictoryScreen(
                                             fontSize = 13.5.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = if (hintsUsed > 0) Color(0xFFF59E0B) else theme.textPrimary
+                                        )
+                                    }
+                                }
+                            }
+
+                            // One-time milestone reward (e.g. clearing level 10)
+                            if (milestoneRewardHints > 0) {
+                                Spacer(modifier = Modifier.height(if (isVeryCompact) 8.dp else 11.dp))
+                                Surface(
+                                    shape = RoundedCornerShape(14.dp),
+                                    color = Color(0xFFF59E0B).copy(alpha = if (theme.isDark) 0.20f else 0.14f),
+                                    border = BorderStroke(1.dp, Color(0xFFF59E0B).copy(alpha = 0.55f)),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 12.dp, vertical = if (isVeryCompact) 7.dp else 9.dp),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(text = "🎁", fontSize = 14.sp)
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = "Milestone reward: +$milestoneRewardHints hints",
+                                            fontSize = 13.5.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = theme.textPrimary
                                         )
                                     }
                                 }

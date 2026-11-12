@@ -321,7 +321,7 @@ object LevelGenerator {
             generatedArrows.add(arrow)
         }
 
-        val maxHearts = if (difficulty == LevelDifficulty.HARD) 5 else 3
+        val maxHearts = 3 // lives are limited to 3 on every level
         val diffScore = (generatedArrows.size * 10) + (generatedArrows.sumOf { it.bendCount } * 15)
 
         return LevelData(

@@ -120,7 +120,7 @@ fun PuzzleBoardCanvas(
     activeBoosterAnimation: BoosterEffectAnimation? = null,
     currentLevelNumber: Int = 0,
     isDailyChallengeMode: Boolean = false,
-    showTutorialHand: Boolean = (currentLevelNumber == 1 && !isDailyChallengeMode),
+    showTutorialHand: Boolean = (currentLevelNumber in 1..2 && !isDailyChallengeMode),
     onArrowClick: (Arrow) -> Unit,
     onArrowLongPress: (Arrow, isPressed: Boolean) -> Unit,
     onDismissPreviewRays: () -> Unit = {},
@@ -206,10 +206,10 @@ fun PuzzleBoardCanvas(
         val availableWidth = viewportWidth * 0.94f
         val availableHeight = viewportHeight * 0.90f
         // Cell cap grows with the screen's short side so small boards (e.g. the 5x5 intro levels)
-        // fill tablets and large screens instead of staying phone-sized: about 50dp on phones, up to 88dp.
+        // fill tablets and large screens instead of staying phone-sized: 50dp on phones (as in 1.0.5), up to 88dp.
         val minCellCapPx = with(LocalDensity.current) { 50.dp.toPx() }
         val maxCellCapPx = with(LocalDensity.current) { 88.dp.toPx() }
-        val maxCellPx = (minOf(viewportWidth, viewportHeight) / 6.5f).coerceIn(minCellCapPx, maxCellCapPx)
+        val maxCellPx = (minOf(viewportWidth, viewportHeight) / 9f).coerceIn(minCellCapPx, maxCellCapPx)
         val cellSize = minOf(availableWidth / xSize, availableHeight / ySize).coerceAtMost(maxCellPx)
         val boardWidth = cellSize * xSize
         val boardHeight = cellSize * ySize
@@ -406,9 +406,9 @@ fun PuzzleBoardCanvas(
 
         val hasUnclearedArrows = arrows.any { it.state != ArrowState.CLEARED }
 
-        // Tutorial hand indicator: active strictly during Level 1 until all arrows are cleared
+        // Tutorial hand indicator: active on Levels 1-2 until all arrows are cleared; it always points at a free arrow
         val tutorialTargetArrow = remember(arrows, currentLevelNumber, isDailyChallengeMode, showTutorialHand, occupancyMap) {
-            if (showTutorialHand && currentLevelNumber == 1 && !isDailyChallengeMode) {
+            if (showTutorialHand && currentLevelNumber in 1..2 && !isDailyChallengeMode) {
                 arrows.firstOrNull { it.state == ArrowState.IDLE && PuzzleSolver.canMoveOut(it, occupancyMap) }
                     ?: arrows.firstOrNull { it.state == ArrowState.IDLE }
             } else null
@@ -1055,7 +1055,7 @@ fun PuzzleBoardCanvas(
         }
 
         // Prominent "Tap to move" banner positioned directly above the puzzle grid with a dynamic responsive gap
-        if (showTutorialHand && currentLevelNumber == 1 && !isDailyChallengeMode && hasUnclearedArrows && introProgress.value >= 1f) {
+        if (showTutorialHand && currentLevelNumber in 1..2 && !isDailyChallengeMode && hasUnclearedArrows && introProgress.value >= 1f) {
             val density = LocalDensity.current
             val dynamicGapPx = with(density) {
                 (boardHeight * 0.20f).coerceIn(28.dp.toPx(), 46.dp.toPx())
@@ -1077,7 +1077,8 @@ fun PuzzleBoardCanvas(
                     shadowElevation = 3.dp
                 ) {
                     Text(
-                        text = "Tap to move",
+                        // Level 1 teaches tapping; level 2 (first blocked arrows) teaches order.
+                        text = if (currentLevelNumber == 1) "Tap to move" else "Clear the way first",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = theme.textPrimary,

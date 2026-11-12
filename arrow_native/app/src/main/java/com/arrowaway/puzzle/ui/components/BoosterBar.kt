@@ -17,6 +17,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -79,6 +81,7 @@ fun BoosterBar(
     isIdlePromptActive: Boolean = false,
     levelNumber: Int? = null,
     isDailyChallenge: Boolean = false,
+    isHardLevel: Boolean = false,
     heartsRemaining: Int? = null,
     maxHearts: Int = 3,
     theme: ThemePreset,
@@ -231,14 +234,39 @@ fun BoosterBar(
                     shadowElevation = 0.dp,
                     modifier = boxModifier.padding(horizontal = 4.dp)
                 ) {
-                    Text(
-                        text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = theme.textPrimary.copy(alpha = 0.80f),
-                        letterSpacing = 0.4.sp,
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(
+                            start = 14.dp,
+                            end = if (isHardLevel && !isDailyChallenge) 6.dp else 14.dp,
+                            top = 6.dp,
+                            bottom = 6.dp
+                        )
+                    ) {
+                        Text(
+                            text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = theme.textPrimary.copy(alpha = 0.80f),
+                            letterSpacing = 0.4.sp
+                        )
+                        if (isHardLevel && !isDailyChallenge) {
+                            Spacer(modifier = Modifier.width(7.dp))
+                            Surface(
+                                shape = RoundedCornerShape(percent = 50),
+                                color = HardTagColor
+                            ) {
+                                Text(
+                                    text = "HARD",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = Color.White,
+                                    letterSpacing = 0.8.sp,
+                                    modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp)
+                                )
+                            }
+                        }
+                    }
                 }
             } else if (heartsRemaining != null) {
                 Box(modifier = boxModifier) {
@@ -600,3 +628,5 @@ private fun ModernLightbulbArt(
     }
 }
 
+/** Red used for the "HARD" tag; matches the heart / mistake red used elsewhere in the game. */
+internal val HardTagColor = Color(0xFFDC2626)

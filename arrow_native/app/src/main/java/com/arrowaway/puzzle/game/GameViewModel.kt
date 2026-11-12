@@ -8,6 +8,7 @@ import com.arrowaway.puzzle.analytics.CrashLogger
 import com.arrowaway.puzzle.audio.AudioHapticManager
 import com.arrowaway.puzzle.config.RemoteConfigManager
 import com.arrowaway.puzzle.core.DailyChallengeRules
+import com.arrowaway.puzzle.core.LevelDifficultyRules
 import com.arrowaway.puzzle.review.InAppReviewManager
 import com.arrowaway.puzzle.core.engine.GridOccupancyMap
 import com.arrowaway.puzzle.core.engine.LevelGenerator
@@ -81,6 +82,8 @@ data class GameUiState(
     val levelMistakesCount: Int = 0,
     val levelHintsUsedCount: Int = 0,
     val levelStarsEarned: Int = 3,
+    /** Hints granted by a one-time milestone reward on the level just completed (0 = none). */
+    val milestoneRewardHints: Int = 0,
     val hasSeenDailyUnlockCelebration: Boolean = false,
     val dailyRemindersEnabled: Boolean = true,
     val hasRequestedNotificationPermission: Boolean = false,
@@ -475,6 +478,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 maxHearts = level.maxHearts,
                 currentLevelNumber = levelNumber,
                 isLevelComplete = false,
+                milestoneRewardHints = 0,
                 isStreakEarnedThisLevel = false,
                 isGameOver = false,
                 comboCount = 0,
@@ -548,6 +552,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 heartsRemaining = level.maxHearts,
                 maxHearts = level.maxHearts,
                 isLevelComplete = false,
+                milestoneRewardHints = 0,
                 isStreakEarnedThisLevel = false,
                 isGameOver = false,
                 comboCount = 0,
@@ -1338,6 +1343,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     globalLivesAvailable = 6,
                     hasSeenDailyUnlockCelebration = false,
                     isLevelComplete = false,
+                    milestoneRewardHints = 0,
                     isGameOver = false,
                     comboCount = 0
                 )
@@ -1379,6 +1385,12 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 repository.recordLevelCompletion(completedLevel, stars)
                 val baseCoins = 50 + (_uiState.value.comboCount * 5)
                 repository.addCoins(baseCoins)
+                if (LevelDifficultyRules.isMilestoneRewardLevel(completedLevel, isDailyChallenge = false)) {
+                    val rewardHints = LevelDifficultyRules.MILESTONE_REWARD_HINTS
+                    if (repository.claimLevel10MilestoneReward(rewardHints)) {
+                        _uiState.update { it.copy(milestoneRewardHints = rewardHints) }
+                    }
+                }
             }
         }
     }

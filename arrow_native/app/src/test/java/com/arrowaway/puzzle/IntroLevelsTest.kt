@@ -21,7 +21,6 @@ class IntroLevelsTest {
         .map { File(it) }.first { it.isDirectory }
 
     private val expectedArrows = mapOf(1 to 3, 2 to 4, 3 to 6, 4 to 9, 5 to 23, 6 to 15, 7 to 18, 8 to 25, 9 to 36, 10 to 51)
-    private val hardLevels = setOf(5, 10)
 
     private fun load(n: Int): LevelData {
         val json = File(levelsDir, "Level_$n.json").readText()
@@ -56,7 +55,7 @@ class IntroLevelsTest {
                     it.x in 0 until level.xSize && it.y in 0 until level.ySize)
             }
             assertTrue("Level $n must be solvable", clearRounds(level) > 0)
-            assertEquals("Level $n hearts", if (n in hardLevels) 4 else 3, level.maxHearts)
+            assertEquals("Level $n hearts (lives are limited to 3)", 3, level.maxHearts)
         }
     }
 

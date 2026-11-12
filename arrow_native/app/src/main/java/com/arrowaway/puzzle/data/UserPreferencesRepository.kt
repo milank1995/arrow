@@ -51,6 +51,7 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_LEVEL = intPreferencesKey("current_level")
     private val KEY_COINS = intPreferencesKey("coins_balance")
     private val KEY_HINTS = intPreferencesKey("hints_count")
+    private val KEY_MILESTONE_10_REWARDED = booleanPreferencesKey("milestone_level10_reward_claimed")
     private val KEY_HAMMERS = intPreferencesKey("hammers_count")
     private val KEY_WANDS = intPreferencesKey("wands_count")
     private val KEY_STREAK = intPreferencesKey("streak_days")
@@ -292,6 +293,22 @@ class UserPreferencesRepository(private val context: Context) {
         }
     }
 
+    /**
+     * Grants the one-time level-10 milestone reward. The check and the grant happen in a single
+     * DataStore transaction, so the reward can never be given twice. Returns true if granted now.
+     */
+    suspend fun claimLevel10MilestoneReward(hints: Int): Boolean {
+        var granted = false
+        context.dataStore.edit { prefs ->
+            if (prefs[KEY_MILESTONE_10_REWARDED] != true) {
+                prefs[KEY_MILESTONE_10_REWARDED] = true
+                prefs[KEY_HINTS] = (prefs[KEY_HINTS] ?: 0) + hints
+                granted = true
+            }
+        }
+        return granted
+    }
+
     suspend fun setTheme(index: Int) {
         context.dataStore.edit { it[KEY_THEME] = index }
     }
@@ -471,6 +488,7 @@ class UserPreferencesRepository(private val context: Context) {
             prefs[KEY_GLOBAL_LIVES] = 6
             prefs[KEY_DAILY_UNLOCK_SEEN] = false
             prefs[KEY_HAS_PLAYED_BEFORE] = false
+            prefs[KEY_MILESTONE_10_REWARDED] = false
         }
     }
 

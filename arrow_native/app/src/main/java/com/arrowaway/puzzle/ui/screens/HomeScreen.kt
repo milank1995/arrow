@@ -290,7 +290,7 @@ fun HomeScreen(
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "TAP LOGIC PUZZLE",
+                            text = "ARROW MAZE PUZZLE",
                             fontSize = 9.5.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 3.sp,
