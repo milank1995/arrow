@@ -49,6 +49,7 @@ import com.arrowaway.puzzle.ui.screens.DevTestScreen
 import com.arrowaway.puzzle.ui.screens.GamePlayScreen
 import com.arrowaway.puzzle.ui.screens.HomeScreen
 import com.arrowaway.puzzle.ui.screens.SettingsScreen
+import com.arrowaway.puzzle.ui.screens.UniqueShapesScreen
 import java.time.LocalDate
 
 enum class AppScreen {
@@ -56,7 +57,8 @@ enum class AppScreen {
     GAMEPLAY,
     DAILY_CHALLENGE,
     DEV_TEST,
-    SETTINGS
+    SETTINGS,
+    UNIQUE_SHAPES
 }
 
 class MainActivity : ComponentActivity() {
@@ -324,9 +326,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onUniqueShapesClick = {
                                         gameViewModel.playClick()
-                                        devTestInitialDailyMode = false
-                                        devTestInitialShapesMode = true
-                                        currentScreen = AppScreen.DEV_TEST
+                                        currentScreen = AppScreen.UNIQUE_SHAPES
                                     },
                                     onReviewDailyLevelsClick = {
                                         gameViewModel.playClick()
@@ -687,6 +687,22 @@ class MainActivity : ComponentActivity() {
                                     onBackClick = {
                                         gameViewModel.playClick()
                                         currentScreen = AppScreen.HOME
+                                    }
+                                )
+                            }
+                            AppScreen.UNIQUE_SHAPES -> {
+                                UniqueShapesScreen(
+                                    theme = uiState.activeTheme,
+                                    onBackClick = {
+                                        gameViewModel.playClick()
+                                        currentScreen = AppScreen.HOME
+                                    },
+                                    onLevelSelected = { levelNumber ->
+                                        gameViewModel.playClick()
+                                        gameViewModel.loadLevel(levelNumber)
+                                        launchGameplayWithPendingAdCheck {
+                                            currentScreen = AppScreen.GAMEPLAY
+                                        }
                                     }
                                 )
                             }

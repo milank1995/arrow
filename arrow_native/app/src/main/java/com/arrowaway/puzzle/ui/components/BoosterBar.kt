@@ -78,6 +78,8 @@ fun BoosterBar(
     isFreeHintLevel: Boolean = false,
     isIdlePromptActive: Boolean = false,
     levelNumber: Int? = null,
+    shapeName: String? = null,
+    remainingArrowsCount: Int? = null,
     isDailyChallenge: Boolean = false,
     heartsRemaining: Int? = null,
     maxHearts: Int = 3,
@@ -223,7 +225,7 @@ fun BoosterBar(
 
     val centerBadge = @Composable { boxModifier: Modifier ->
         // 2. CENTER: CLEAN LEVEL INDICATOR BADGE (Or Hearts if explicitly configured)
-            if (levelNumber != null) {
+            if (levelNumber != null || shapeName != null) {
                 Surface(
                     shape = RoundedCornerShape(percent = 50),
                     color = theme.textPrimary.copy(alpha = 0.05f),
@@ -232,7 +234,12 @@ fun BoosterBar(
                     modifier = boxModifier.padding(horizontal = 4.dp)
                 ) {
                     Text(
-                        text = if (isDailyChallenge) "Daily Challenge" else "Level $levelNumber",
+                        text = when {
+                            isDailyChallenge -> "Daily Challenge"
+                            shapeName != null && remainingArrowsCount != null -> "$shapeName - $remainingArrowsCount"
+                            shapeName != null -> shapeName
+                            else -> "Level $levelNumber"
+                        },
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
                         color = theme.textPrimary.copy(alpha = 0.80f),
@@ -386,7 +393,7 @@ fun BoosterBar(
         color = Color.Transparent,
         modifier = modifier.fillMaxWidth()
     ) {
-        val hasCenterItem = (levelNumber != null || heartsRemaining != null)
+        val hasCenterItem = (levelNumber != null || shapeName != null || heartsRemaining != null)
         if (hasCenterItem && onRestartClick == null) {
             // Box ensures the level/hearts badge is ALWAYS 100% mathematically centered,
             // regardless of whether Hint and Grid buttons are visible or hidden!

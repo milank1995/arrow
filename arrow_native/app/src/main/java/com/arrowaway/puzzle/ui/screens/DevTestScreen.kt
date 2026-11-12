@@ -540,6 +540,8 @@ fun DevTestScreen(
                 BoosterBar(
                     hintsCount = 999, // Unlimited hints in test mode
                     isGridLinesActive = isGridLinesActive,
+                    shapeName = levelData?.shapeName,
+                    remainingArrowsCount = arrows.count { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT },
                     theme = theme,
                     onHintClick = {
                         val hintTarget = PuzzleSolver.getBestHint(arrows, occupancyMap)

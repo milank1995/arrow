@@ -116,6 +116,7 @@ fun GamePlayScreen(
     }
 
     val level = uiState.levelData
+    val resolvedShapeName = level?.shapeName
     val theme = uiState.activeTheme
     val remainingArrowsCount = uiState.arrows.count { 
         it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT 
@@ -209,7 +210,7 @@ fun GamePlayScreen(
             modifier = modifier
         )
     } else {
-        val isInitialLevel1 = uiState.currentLevelNumber == 1 && !uiState.isDailyChallengeMode
+        val isInitialLevel1 = uiState.currentLevelNumber == 1 && !uiState.isDailyChallengeMode && level?.shapeName == null
 
         Surface(
             color = theme.background,
@@ -338,9 +339,11 @@ fun GamePlayScreen(
                             BoosterBar(
                                 hintsCount = effectiveHints,
                                 isGridLinesActive = uiState.isGridLinesActive,
-                                isFreeHintLevel = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode),
+                                isFreeHintLevel = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode && level?.shapeName == null),
                                 isIdlePromptActive = isIdlePromptActive,
                                 levelNumber = uiState.currentLevelNumber,
+                                shapeName = resolvedShapeName,
+                                remainingArrowsCount = remainingArrowsCount,
                                 isDailyChallenge = uiState.isDailyChallengeMode,
                                 theme = theme,
                                 isHintVisible = uiState.isHintButtonVisible,
