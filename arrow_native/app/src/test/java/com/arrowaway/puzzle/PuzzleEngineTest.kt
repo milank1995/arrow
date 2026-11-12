@@ -222,7 +222,7 @@ class PuzzleEngineTest {
         val json = file.readText()
         val level = com.arrowaway.puzzle.core.engine.LevelLoader.parseLevelJson(1, json)
         assertNotNull("Level 1 should parse successfully", level)
-        assertEquals("Level 1 must have 4 arrows", 4, level!!.arrows.size)
+        assertEquals("Level 1 must have 3 arrows", 3, level!!.arrows.size)
 
         val occupancy = GridOccupancyMap(level.xSize, level.ySize).apply {
             rebuild(level.arrows)
@@ -246,7 +246,7 @@ class PuzzleEngineTest {
         }
 
         assertTrue("All arrows must be solved without deadlock", currentArrows.all { it.state == ArrowState.CLEARED })
-        assertEquals("Level 1 should be cleared in exactly 4 steps", 4, steps)
+        assertEquals("Level 1 should be cleared in exactly 3 steps", 3, steps)
     }
 
     @Test

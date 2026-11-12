@@ -205,7 +205,11 @@ fun PuzzleBoardCanvas(
         // Fit board into viewport with comfortable margin (94% width, 90% height for maximum board visibility)
         val availableWidth = viewportWidth * 0.94f
         val availableHeight = viewportHeight * 0.90f
-        val maxCellPx = with(LocalDensity.current) { 50.dp.toPx() }
+        // Cell cap grows with the screen's short side so small boards (e.g. the 5x5 intro levels)
+        // fill tablets and large screens instead of staying phone-sized: about 50dp on phones, up to 88dp.
+        val minCellCapPx = with(LocalDensity.current) { 50.dp.toPx() }
+        val maxCellCapPx = with(LocalDensity.current) { 88.dp.toPx() }
+        val maxCellPx = (minOf(viewportWidth, viewportHeight) / 6.5f).coerceIn(minCellCapPx, maxCellCapPx)
         val cellSize = minOf(availableWidth / xSize, availableHeight / ySize).coerceAtMost(maxCellPx)
         val boardWidth = cellSize * xSize
         val boardHeight = cellSize * ySize
@@ -240,7 +244,8 @@ fun PuzzleBoardCanvas(
         val minTouchTargetPx = with(LocalDensity.current) { 15.dp.toPx() }
         val currentMinTouchTargetPx by rememberUpdatedState(minTouchTargetPx)
         val minStrokePx = with(LocalDensity.current) { 1.2.dp.toPx() }
-        val maxStrokePx = with(LocalDensity.current) { 4.8.dp.toPx() }
+        // Keep arrow thickness in proportion when the cell cap grows (4.8dp at a 50dp cap).
+        val maxStrokePx = with(LocalDensity.current) { 4.8.dp.toPx() } * (maxCellPx / minCellCapPx)
         val baseStrokeWidth = (cellSize * 0.20f).coerceIn(minStrokePx, maxStrokePx)
         val baseHeadWidth = (cellSize * 0.52f).coerceIn(baseStrokeWidth * 2.2f, baseStrokeWidth * 3.2f)
         val currentHeadSize by rememberUpdatedState(baseHeadWidth)

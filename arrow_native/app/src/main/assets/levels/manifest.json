@@ -1,83 +1,83 @@
 [
   {
     "LevelNumber": 1,
+    "ArrowCount": 3,
+    "Difficulty": "Easy",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Original Onboarding",
+    "XSize": 3,
+    "YSize": 6
+  },
+  {
+    "LevelNumber": 2,
     "ArrowCount": 4,
     "Difficulty": "Easy",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Arrow Away Handcrafted Curated",
+    "SourceCategory": "Arrow Away Original Onboarding",
     "XSize": 4,
-    "YSize": 5
-  },
-  {
-    "LevelNumber": 2,
-    "ArrowCount": 8,
-    "Difficulty": "Easy",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "Arrow Away Handcrafted Curated",
-    "XSize": 8,
-    "YSize": 10
+    "YSize": 4
   },
   {
     "LevelNumber": 3,
-    "ArrowCount": 14,
-    "Difficulty": "Medium",
+    "ArrowCount": 6,
+    "Difficulty": "Easy",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Arrow Away Handcrafted Curated",
-    "XSize": 10,
-    "YSize": 10
+    "SourceCategory": "Arrow Away Original Onboarding",
+    "XSize": 5,
+    "YSize": 5
   },
   {
     "LevelNumber": 4,
+    "ArrowCount": 9,
+    "Difficulty": "Easy",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Original Onboarding",
+    "XSize": 6,
+    "YSize": 7
+  },
+  {
+    "LevelNumber": 5,
+    "ArrowCount": 23,
+    "Difficulty": "Hard",
+    "ShapeName": "Heart",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Original Onboarding",
+    "XSize": 17,
+    "YSize": 14
+  },
+  {
+    "LevelNumber": 6,
+    "ArrowCount": 15,
+    "Difficulty": "Medium",
+    "ShapeName": null,
+    "IsShape": false,
+    "SourceCategory": "Arrow Away Original Onboarding",
+    "XSize": 7,
+    "YSize": 8
+  },
+  {
+    "LevelNumber": 7,
     "ArrowCount": 18,
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Arrow Away Handcrafted Curated",
-    "XSize": 11,
-    "YSize": 10
-  },
-  {
-    "LevelNumber": 5,
-    "ArrowCount": 55,
-    "Difficulty": "Hard",
-    "ShapeName": "Heart",
-    "IsShape": true,
-    "SourceCategory": "Arrow Away Handcrafted Curated",
-    "XSize": 28,
-    "YSize": 24
-  },
-  {
-    "LevelNumber": 6,
-    "ArrowCount": 28,
-    "Difficulty": "Medium",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "Arrow Away Handcrafted Curated",
-    "XSize": 15,
-    "YSize": 15
-  },
-  {
-    "LevelNumber": 7,
-    "ArrowCount": 54,
-    "Difficulty": "Medium",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "Arrow Away Handcrafted Curated",
-    "XSize": 18,
-    "YSize": 25
+    "SourceCategory": "Arrow Away Original Onboarding",
+    "XSize": 9,
+    "YSize": 11
   },
   {
     "LevelNumber": 8,
-    "ArrowCount": 78,
-    "Difficulty": "Hard",
-    "ShapeName": null,
-    "IsShape": false,
-    "SourceCategory": "Arrow Away Handcrafted Curated",
-    "XSize": 29,
-    "YSize": 39
+    "ArrowCount": 25,
+    "Difficulty": "Medium",
+    "ShapeName": "Cup",
+    "IsShape": true,
+    "SourceCategory": "Arrow Away Original Onboarding",
+    "XSize": 13,
+    "YSize": 15
   },
   {
     "LevelNumber": 9,
@@ -85,19 +85,19 @@
     "Difficulty": "Medium",
     "ShapeName": null,
     "IsShape": false,
-    "SourceCategory": "Arrow Away Handcrafted Curated",
-    "XSize": 14,
-    "YSize": 18
+    "SourceCategory": "Arrow Away Original Onboarding",
+    "XSize": 10,
+    "YSize": 12
   },
   {
     "LevelNumber": 10,
-    "ArrowCount": 70,
-    "Difficulty": "Medium",
-    "ShapeName": "Lock",
+    "ArrowCount": 51,
+    "Difficulty": "Hard",
+    "ShapeName": "Butterfly",
     "IsShape": true,
-    "SourceCategory": "Arrow Away Handcrafted Curated",
-    "XSize": 26,
-    "YSize": 36
+    "SourceCategory": "Arrow Away Original Onboarding",
+    "XSize": 19,
+    "YSize": 15
   },
   {
     "LevelNumber": 11,
