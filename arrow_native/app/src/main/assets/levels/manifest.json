@@ -9,7 +9,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 47,
-    "YSize": 52
+    "YSize": 52,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 2,
@@ -21,7 +22,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 34,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 3,
@@ -33,7 +35,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 63,
-    "YSize": 73
+    "YSize": 73,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 4,
@@ -45,7 +48,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 29,
-    "YSize": 42
+    "YSize": 42,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 5,
@@ -57,7 +61,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 46,
-    "YSize": 56
+    "YSize": 56,
+    "UnitySource": "Old Unity (Level 38)"
   },
   {
     "LevelNumber": 6,
@@ -69,7 +74,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 35,
-    "YSize": 45
+    "YSize": 45,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 7,
@@ -81,7 +87,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 37,
-    "YSize": 47
+    "YSize": 47,
+    "UnitySource": "Old Unity (Level 160)"
   },
   {
     "LevelNumber": 8,
@@ -93,7 +100,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 35,
-    "YSize": 35
+    "YSize": 35,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 9,
@@ -105,7 +113,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 66,
-    "YSize": 56
+    "YSize": 56,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 10,
@@ -117,7 +126,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 68,
-    "YSize": 58
+    "YSize": 58,
+    "UnitySource": "Old Unity (Level 165)"
   },
   {
     "LevelNumber": 11,
@@ -129,7 +139,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 56,
-    "YSize": 94
+    "YSize": 94,
+    "UnitySource": "Old Unity (Level 53)"
   },
   {
     "LevelNumber": 12,
@@ -141,7 +152,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 28,
-    "YSize": 39
+    "YSize": 39,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 13,
@@ -153,7 +165,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 32,
-    "YSize": 40
+    "YSize": 40,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 14,
@@ -165,7 +178,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 55,
-    "YSize": 52
+    "YSize": 52,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 15,
@@ -177,7 +191,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 38,
-    "YSize": 35
+    "YSize": 35,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 16,
@@ -189,7 +204,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 48,
-    "YSize": 43
+    "YSize": 43,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 17,
@@ -201,7 +217,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 67,
-    "YSize": 49
+    "YSize": 49,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 18,
@@ -213,7 +230,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 19,
@@ -225,7 +243,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 35,
-    "YSize": 40
+    "YSize": 40,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 20,
@@ -237,7 +256,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 61,
-    "YSize": 100
+    "YSize": 100,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 21,
@@ -249,7 +269,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 63,
-    "YSize": 102
+    "YSize": 102,
+    "UnitySource": "Old Unity (Level 175)"
   },
   {
     "LevelNumber": 22,
@@ -261,7 +282,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 40,
-    "YSize": 61
+    "YSize": 61,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 23,
@@ -273,7 +295,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 28,
-    "YSize": 24
+    "YSize": 24,
+    "UnitySource": "Old Unity (Level 5)"
   },
   {
     "LevelNumber": 24,
@@ -285,7 +308,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 52,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 25,
@@ -297,7 +321,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 74
+    "YSize": 74,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 26,
@@ -309,7 +334,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 29,
-    "YSize": 29
+    "YSize": 29,
+    "UnitySource": "Old Unity (Level 133)"
   },
   {
     "LevelNumber": 27,
@@ -321,7 +347,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 37,
-    "YSize": 52
+    "YSize": 52,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 28,
@@ -333,7 +360,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 62
+    "YSize": 62,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 29,
@@ -345,7 +373,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 40,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 30,
@@ -357,7 +386,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 35,
-    "YSize": 49
+    "YSize": 49,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 31,
@@ -369,7 +399,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 37,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "Old Unity (Level 180)"
   },
   {
     "LevelNumber": 32,
@@ -381,7 +412,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 75
+    "YSize": 75,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 33,
@@ -393,7 +425,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 45,
-    "YSize": 50
+    "YSize": 50,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 34,
@@ -405,7 +438,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 42,
-    "YSize": 55
+    "YSize": 55,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 35,
@@ -417,7 +451,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 42
+    "YSize": 42,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 36,
@@ -429,7 +464,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 61,
-    "YSize": 81
+    "YSize": 81,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 37,
@@ -441,7 +477,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 70,
-    "YSize": 99
+    "YSize": 99,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 38,
@@ -453,7 +490,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 46,
-    "YSize": 70
+    "YSize": 70,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 39,
@@ -465,7 +503,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 68,
-    "YSize": 91
+    "YSize": 91,
+    "UnitySource": "Old Unity (Level 123)"
   },
   {
     "LevelNumber": 40,
@@ -477,7 +516,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 68,
-    "YSize": 91
+    "YSize": 91,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 41,
@@ -489,7 +529,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 73,
-    "YSize": 72
+    "YSize": 72,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 42,
@@ -501,7 +542,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 43,
-    "YSize": 50
+    "YSize": 50,
+    "UnitySource": "Old Unity (Level 45)"
   },
   {
     "LevelNumber": 43,
@@ -513,7 +555,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 43,
-    "YSize": 57
+    "YSize": 57,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 44,
@@ -525,7 +568,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 51,
-    "YSize": 57
+    "YSize": 57,
+    "UnitySource": "Old Unity (Level 33)"
   },
   {
     "LevelNumber": 45,
@@ -537,7 +581,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 48,
-    "YSize": 100
+    "YSize": 100,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 46,
@@ -549,7 +594,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 35,
-    "YSize": 50
+    "YSize": 50,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 47,
@@ -561,7 +607,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 49
+    "YSize": 49,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 48,
@@ -573,7 +620,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 61,
-    "YSize": 50
+    "YSize": 50,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 49,
@@ -585,7 +633,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 45,
-    "YSize": 50
+    "YSize": 50,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 50,
@@ -597,7 +646,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 62,
-    "YSize": 58
+    "YSize": 58,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 51,
@@ -609,7 +659,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 49,
-    "YSize": 52
+    "YSize": 52,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 52,
@@ -621,7 +672,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 51,
-    "YSize": 52
+    "YSize": 52,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 53,
@@ -633,7 +685,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 54,
@@ -645,7 +698,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 46,
-    "YSize": 46
+    "YSize": 46,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 55,
@@ -657,7 +711,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 46,
-    "YSize": 66
+    "YSize": 66,
+    "UnitySource": "Old Unity (Level 128)"
   },
   {
     "LevelNumber": 56,
@@ -669,7 +724,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 44,
-    "YSize": 85
+    "YSize": 85,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 57,
@@ -681,7 +737,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 42
+    "YSize": 42,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 58,
@@ -693,7 +750,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 55,
-    "YSize": 66
+    "YSize": 66,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 59,
@@ -705,7 +763,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 41
+    "YSize": 41,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 60,
@@ -717,7 +776,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 48,
-    "YSize": 48
+    "YSize": 48,
+    "UnitySource": "Old Unity (Level 63)"
   },
   {
     "LevelNumber": 61,
@@ -729,7 +789,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 39,
-    "YSize": 62
+    "YSize": 62,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 62,
@@ -741,7 +802,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 26,
-    "YSize": 36
+    "YSize": 36,
+    "UnitySource": "Old Unity (Level 10)"
   },
   {
     "LevelNumber": 63,
@@ -753,7 +815,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 37,
-    "YSize": 46
+    "YSize": 46,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 64,
@@ -765,7 +828,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 55,
-    "YSize": 70
+    "YSize": 70,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 65,
@@ -777,7 +841,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 68,
-    "YSize": 76
+    "YSize": 76,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 66,
@@ -789,7 +854,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 89,
-    "YSize": 85
+    "YSize": 85,
+    "UnitySource": "Old Unity (Level 73)"
   },
   {
     "LevelNumber": 67,
@@ -801,7 +867,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 81,
-    "YSize": 124
+    "YSize": 124,
+    "UnitySource": "Old Unity (Level 25)"
   },
   {
     "LevelNumber": 68,
@@ -813,7 +880,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 29,
-    "YSize": 29
+    "YSize": 29,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 69,
@@ -825,7 +893,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 46,
-    "YSize": 24
+    "YSize": 24,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 70,
@@ -837,7 +906,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 51,
-    "YSize": 52
+    "YSize": 52,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 71,
@@ -849,7 +919,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 53,
-    "YSize": 76
+    "YSize": 76,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 72,
@@ -861,7 +932,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 40,
-    "YSize": 65
+    "YSize": 65,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 73,
@@ -873,7 +945,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 84,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 74,
@@ -885,7 +958,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 45,
-    "YSize": 55
+    "YSize": 55,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 75,
@@ -897,7 +971,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 61,
-    "YSize": 84
+    "YSize": 84,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 76,
@@ -909,7 +984,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 63,
-    "YSize": 86
+    "YSize": 86,
+    "UnitySource": "Old Unity (Level 190)"
   },
   {
     "LevelNumber": 77,
@@ -921,7 +997,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 70,
-    "YSize": 102
+    "YSize": 102,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 78,
@@ -933,7 +1010,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 41,
-    "YSize": 41
+    "YSize": 41,
+    "UnitySource": "Old Unity (Level 15)"
   },
   {
     "LevelNumber": 79,
@@ -945,7 +1023,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 38,
-    "YSize": 43
+    "YSize": 43,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 80,
@@ -957,7 +1036,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 40,
-    "YSize": 66
+    "YSize": 66,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 81,
@@ -969,7 +1049,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 43,
-    "YSize": 64
+    "YSize": 64,
+    "UnitySource": "Old Unity (Level 68)"
   },
   {
     "LevelNumber": 82,
@@ -981,7 +1062,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 38,
-    "YSize": 42
+    "YSize": 42,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 83,
@@ -993,7 +1075,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 40,
-    "YSize": 53
+    "YSize": 53,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 84,
@@ -1005,7 +1088,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 48,
-    "YSize": 50
+    "YSize": 50,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 85,
@@ -1017,7 +1101,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 56,
-    "YSize": 65
+    "YSize": 65,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 86,
@@ -1029,7 +1114,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 55,
-    "YSize": 78
+    "YSize": 78,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 87,
@@ -1041,7 +1127,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 68,
-    "YSize": 79
+    "YSize": 79,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 88,
@@ -1053,7 +1140,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 35,
-    "YSize": 53
+    "YSize": 53,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 89,
@@ -1065,7 +1153,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 40,
-    "YSize": 52
+    "YSize": 52,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 90,
@@ -1077,7 +1166,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 51
+    "YSize": 51,
+    "UnitySource": "Old Unity (Level 93)"
   },
   {
     "LevelNumber": 91,
@@ -1089,7 +1179,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 51
+    "YSize": 51,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 92,
@@ -1101,7 +1192,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 70,
-    "YSize": 63
+    "YSize": 63,
+    "UnitySource": "Old Unity (Level 83)"
   },
   {
     "LevelNumber": 93,
@@ -1113,7 +1205,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 80,
-    "YSize": 74
+    "YSize": 74,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 94,
@@ -1125,7 +1218,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 45,
-    "YSize": 54
+    "YSize": 54,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 95,
@@ -1137,7 +1231,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 58
+    "YSize": 58,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 96,
@@ -1149,7 +1244,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 47,
-    "YSize": 50
+    "YSize": 50,
+    "UnitySource": "Old Unity (Level 118)"
   },
   {
     "LevelNumber": 97,
@@ -1161,7 +1257,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 41,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 98,
@@ -1173,7 +1270,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 56,
-    "YSize": 59
+    "YSize": 59,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 99,
@@ -1185,7 +1283,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 71,
-    "YSize": 92
+    "YSize": 92,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 100,
@@ -1197,7 +1296,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 56,
-    "YSize": 76
+    "YSize": 76,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 101,
@@ -1209,7 +1309,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 38,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 102,
@@ -1221,7 +1322,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 58,
-    "YSize": 56
+    "YSize": 56,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 103,
@@ -1233,7 +1335,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 100
+    "YSize": 100,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 104,
@@ -1245,7 +1348,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 38,
-    "YSize": 47
+    "YSize": 47,
+    "UnitySource": "Old Unity (Level 88)"
   },
   {
     "LevelNumber": 105,
@@ -1257,7 +1361,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 42,
-    "YSize": 46
+    "YSize": 46,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 106,
@@ -1269,7 +1374,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 44,
-    "YSize": 48
+    "YSize": 48,
+    "UnitySource": "Old Unity (Level 205)"
   },
   {
     "LevelNumber": 107,
@@ -1281,7 +1387,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 80,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 108,
@@ -1293,7 +1400,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 43,
-    "YSize": 58
+    "YSize": 58,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 109,
@@ -1305,7 +1413,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 31,
-    "YSize": 48
+    "YSize": 48,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 110,
@@ -1317,7 +1426,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 39,
-    "YSize": 71
+    "YSize": 71,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 111,
@@ -1329,7 +1439,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 55,
-    "YSize": 51
+    "YSize": 51,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 112,
@@ -1341,7 +1452,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 45,
-    "YSize": 63
+    "YSize": 63,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 113,
@@ -1353,7 +1465,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 58,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 114,
@@ -1365,7 +1478,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 42,
-    "YSize": 35
+    "YSize": 35,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 115,
@@ -1377,7 +1491,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 32,
-    "YSize": 52
+    "YSize": 52,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 116,
@@ -1389,7 +1504,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 42,
-    "YSize": 86
+    "YSize": 86,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 117,
@@ -1401,7 +1517,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 58
+    "YSize": 58,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 118,
@@ -1413,7 +1530,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 83,
-    "YSize": 84
+    "YSize": 84,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 119,
@@ -1425,7 +1543,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 90,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 120,
@@ -1437,7 +1556,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 65,
-    "YSize": 50
+    "YSize": 50,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 121,
@@ -1449,7 +1569,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 53,
-    "YSize": 63
+    "YSize": 63,
+    "UnitySource": "Old Unity (Level 97)"
   },
   {
     "LevelNumber": 122,
@@ -1461,7 +1582,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 53,
-    "YSize": 63
+    "YSize": 63,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 123,
@@ -1473,7 +1595,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 124,
@@ -1485,7 +1608,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 40,
-    "YSize": 45
+    "YSize": 45,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 125,
@@ -1497,7 +1621,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 48,
-    "YSize": 46
+    "YSize": 46,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 126,
@@ -1509,7 +1634,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 40,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 127,
@@ -1521,7 +1647,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 48,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 128,
@@ -1533,7 +1660,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 70,
-    "YSize": 77
+    "YSize": 77,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 129,
@@ -1545,7 +1673,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 43,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 130,
@@ -1557,7 +1686,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 45,
-    "YSize": 66
+    "YSize": 66,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 131,
@@ -1569,7 +1699,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 38,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 132,
@@ -1581,7 +1712,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 46
+    "YSize": 46,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 133,
@@ -1593,7 +1725,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 61
+    "YSize": 61,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 134,
@@ -1605,7 +1738,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 59,
-    "YSize": 53
+    "YSize": 53,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 135,
@@ -1617,7 +1751,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 45,
-    "YSize": 79
+    "YSize": 79,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 136,
@@ -1629,7 +1764,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 56,
-    "YSize": 52
+    "YSize": 52,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 137,
@@ -1641,7 +1777,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 64,
-    "YSize": 54
+    "YSize": 54,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 138,
@@ -1653,7 +1790,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 54,
-    "YSize": 79
+    "YSize": 79,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 139,
@@ -1665,7 +1803,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 56,
-    "YSize": 88
+    "YSize": 88,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 140,
@@ -1677,7 +1816,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 42,
-    "YSize": 63
+    "YSize": 63,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 141,
@@ -1689,7 +1829,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 45,
-    "YSize": 63
+    "YSize": 63,
+    "UnitySource": "Old Unity (Level 20)"
   },
   {
     "LevelNumber": 142,
@@ -1701,7 +1842,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 39,
-    "YSize": 73
+    "YSize": 73,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 143,
@@ -1713,7 +1855,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 144,
@@ -1725,7 +1868,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 42,
-    "YSize": 72
+    "YSize": 72,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 145,
@@ -1737,7 +1881,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 46,
-    "YSize": 66
+    "YSize": 66,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 146,
@@ -1749,7 +1894,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 44,
-    "YSize": 74
+    "YSize": 74,
+    "UnitySource": "Old Unity (Level 215)"
   },
   {
     "LevelNumber": 147,
@@ -1761,7 +1907,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 68,
-    "YSize": 52
+    "YSize": 52,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 148,
@@ -1773,7 +1920,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 149,
@@ -1785,7 +1933,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 89
+    "YSize": 89,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 150,
@@ -1797,7 +1946,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 57,
-    "YSize": 97
+    "YSize": 97,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 151,
@@ -1809,7 +1959,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 50
+    "YSize": 50,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 152,
@@ -1821,7 +1972,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 49,
-    "YSize": 55
+    "YSize": 55,
+    "UnitySource": "Old Unity (Level 104)"
   },
   {
     "LevelNumber": 153,
@@ -1833,7 +1985,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 154,
@@ -1845,7 +1998,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 155,
@@ -1857,7 +2011,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 40,
-    "YSize": 65
+    "YSize": 65,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 156,
@@ -1869,7 +2024,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 157,
@@ -1881,7 +2037,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 69,
-    "YSize": 79
+    "YSize": 79,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 158,
@@ -1893,7 +2050,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 88,
-    "YSize": 75
+    "YSize": 75,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 159,
@@ -1905,7 +2063,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 58,
-    "YSize": 79
+    "YSize": 79,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 160,
@@ -1917,7 +2076,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 46,
-    "YSize": 46
+    "YSize": 46,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 161,
@@ -1929,7 +2089,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 56,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 162,
@@ -1941,7 +2102,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 68
+    "YSize": 68,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 163,
@@ -1953,7 +2115,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 164,
@@ -1965,7 +2128,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 62,
-    "YSize": 92
+    "YSize": 92,
+    "UnitySource": "Old Unity (Level 225)"
   },
   {
     "LevelNumber": 165,
@@ -1977,7 +2141,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 57,
-    "YSize": 55
+    "YSize": 55,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 166,
@@ -1989,7 +2154,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 74,
-    "YSize": 49
+    "YSize": 49,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 167,
@@ -2001,7 +2167,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 72,
-    "YSize": 99
+    "YSize": 99,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 168,
@@ -2013,7 +2180,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 45,
-    "YSize": 53
+    "YSize": 53,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 169,
@@ -2025,7 +2193,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 61,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 170,
@@ -2037,7 +2206,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 55,
-    "YSize": 59
+    "YSize": 59,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 171,
@@ -2049,7 +2219,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 62,
-    "YSize": 63
+    "YSize": 63,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 172,
@@ -2061,7 +2232,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 173,
@@ -2073,7 +2245,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 49,
-    "YSize": 79
+    "YSize": 79,
+    "UnitySource": "Old Unity (Level 109)"
   },
   {
     "LevelNumber": 174,
@@ -2085,7 +2258,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 49,
-    "YSize": 79
+    "YSize": 79,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 175,
@@ -2097,7 +2271,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 49,
-    "YSize": 48
+    "YSize": 48,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 176,
@@ -2109,7 +2284,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 177,
@@ -2121,7 +2297,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 67,
-    "YSize": 73
+    "YSize": 73,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 178,
@@ -2133,7 +2310,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 37,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 179,
@@ -2145,7 +2323,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 72,
-    "YSize": 98
+    "YSize": 98,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 180,
@@ -2157,7 +2336,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 80,
-    "YSize": 71
+    "YSize": 71,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 181,
@@ -2169,7 +2349,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 51,
-    "YSize": 62
+    "YSize": 62,
+    "UnitySource": "Old Unity (Level 113)"
   },
   {
     "LevelNumber": 182,
@@ -2181,7 +2362,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 51,
-    "YSize": 62
+    "YSize": 62,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 183,
@@ -2193,7 +2375,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 64,
-    "YSize": 58
+    "YSize": 58,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 184,
@@ -2205,7 +2388,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 66,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "Old Unity (Level 230)"
   },
   {
     "LevelNumber": 185,
@@ -2217,7 +2401,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 57,
-    "YSize": 88
+    "YSize": 88,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 186,
@@ -2229,7 +2414,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 56,
-    "YSize": 56
+    "YSize": 56,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 187,
@@ -2241,7 +2427,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 70,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 188,
@@ -2253,7 +2440,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 45,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 189,
@@ -2265,7 +2453,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 45,
-    "YSize": 63
+    "YSize": 63,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 190,
@@ -2277,7 +2466,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 62,
-    "YSize": 49
+    "YSize": 49,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 191,
@@ -2289,7 +2479,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 48,
-    "YSize": 50
+    "YSize": 50,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 192,
@@ -2301,7 +2492,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 49,
-    "YSize": 50
+    "YSize": 50,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 193,
@@ -2313,7 +2505,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 54,
-    "YSize": 63
+    "YSize": 63,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 194,
@@ -2325,7 +2518,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 53,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 195,
@@ -2337,7 +2531,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 64,
-    "YSize": 72
+    "YSize": 72,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 196,
@@ -2349,7 +2544,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 57,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 197,
@@ -2361,7 +2557,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 198,
@@ -2373,7 +2570,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 45,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 199,
@@ -2385,7 +2583,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 200,
@@ -2397,7 +2596,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 201,
@@ -2409,7 +2609,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 202,
@@ -2421,7 +2622,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 90,
-    "YSize": 81
+    "YSize": 81,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 203,
@@ -2433,7 +2635,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 42,
-    "YSize": 59
+    "YSize": 59,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 204,
@@ -2445,7 +2648,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 62,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 205,
@@ -2457,7 +2661,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 53,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 206,
@@ -2469,7 +2674,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 207,
@@ -2481,7 +2687,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 42,
-    "YSize": 63
+    "YSize": 63,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 208,
@@ -2493,7 +2700,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 53,
-    "YSize": 73
+    "YSize": 73,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 209,
@@ -2505,7 +2713,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 86
+    "YSize": 86,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 210,
@@ -2517,7 +2726,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 59,
-    "YSize": 97
+    "YSize": 97,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 211,
@@ -2529,7 +2739,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 101,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 212,
@@ -2541,7 +2752,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 55
+    "YSize": 55,
+    "UnitySource": "Old Unity (Level 143)"
   },
   {
     "LevelNumber": 213,
@@ -2553,7 +2765,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 69
+    "YSize": 69,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 214,
@@ -2565,7 +2778,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 70,
-    "YSize": 87
+    "YSize": 87,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 215,
@@ -2577,7 +2791,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 42,
-    "YSize": 63
+    "YSize": 63,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 216,
@@ -2589,7 +2804,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 52,
-    "YSize": 68
+    "YSize": 68,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 217,
@@ -2601,7 +2817,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 57,
-    "YSize": 74
+    "YSize": 74,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 218,
@@ -2613,7 +2830,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 219,
@@ -2625,7 +2843,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 58,
-    "YSize": 51
+    "YSize": 51,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 220,
@@ -2637,7 +2856,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 44,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 221,
@@ -2649,7 +2869,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 52,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 222,
@@ -2661,7 +2882,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 223,
@@ -2673,7 +2895,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 37,
-    "YSize": 49
+    "YSize": 49,
+    "UnitySource": "Old Unity (Level 50)"
   },
   {
     "LevelNumber": 224,
@@ -2685,7 +2908,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 51,
-    "YSize": 61
+    "YSize": 61,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 225,
@@ -2697,7 +2921,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 64,
-    "YSize": 108
+    "YSize": 108,
+    "UnitySource": "Old Unity (Level 79)"
   },
   {
     "LevelNumber": 226,
@@ -2709,7 +2934,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 70,
-    "YSize": 48
+    "YSize": 48,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 227,
@@ -2721,7 +2947,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 62,
-    "YSize": 92
+    "YSize": 92,
+    "UnitySource": "Old Unity (Level 235)"
   },
   {
     "LevelNumber": 228,
@@ -2733,7 +2960,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 61
+    "YSize": 61,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 229,
@@ -2745,7 +2973,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 61,
-    "YSize": 69
+    "YSize": 69,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 230,
@@ -2757,7 +2986,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 55,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 231,
@@ -2769,7 +2999,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 66,
-    "YSize": 75
+    "YSize": 75,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 232,
@@ -2781,7 +3012,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 62,
-    "YSize": 92
+    "YSize": 92,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 233,
@@ -2793,7 +3025,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 52,
-    "YSize": 65
+    "YSize": 65,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 234,
@@ -2805,7 +3038,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 40,
-    "YSize": 50
+    "YSize": 50,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 235,
@@ -2817,7 +3051,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 49,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 236,
@@ -2829,7 +3064,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 55,
-    "YSize": 98
+    "YSize": 98,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 237,
@@ -2841,7 +3077,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 77,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 238,
@@ -2853,7 +3090,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 89
+    "YSize": 89,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 239,
@@ -2865,7 +3103,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "Old Unity (Level 138)"
   },
   {
     "LevelNumber": 240,
@@ -2877,7 +3116,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 58,
-    "YSize": 82
+    "YSize": 82,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 241,
@@ -2889,7 +3129,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 51,
-    "YSize": 71
+    "YSize": 71,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 242,
@@ -2901,7 +3142,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 75,
-    "YSize": 57
+    "YSize": 57,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 243,
@@ -2913,7 +3155,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 244,
@@ -2925,7 +3168,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 245,
@@ -2937,7 +3181,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 58,
-    "YSize": 57
+    "YSize": 57,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 246,
@@ -2949,7 +3194,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 57,
-    "YSize": 71
+    "YSize": 71,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 247,
@@ -2961,7 +3207,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 77
+    "YSize": 77,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 248,
@@ -2973,7 +3220,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 80,
-    "YSize": 72
+    "YSize": 72,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 249,
@@ -2985,7 +3233,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 250,
@@ -2997,7 +3246,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 69,
-    "YSize": 61
+    "YSize": 61,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 251,
@@ -3009,7 +3259,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 56,
-    "YSize": 88
+    "YSize": 88,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 252,
@@ -3021,7 +3272,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 56,
-    "YSize": 58
+    "YSize": 58,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 253,
@@ -3033,7 +3285,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 72
+    "YSize": 72,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 254,
@@ -3045,7 +3298,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "Old Unity (Level 147)"
   },
   {
     "LevelNumber": 255,
@@ -3057,7 +3311,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 85,
-    "YSize": 128
+    "YSize": 128,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 256,
@@ -3069,7 +3324,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 47,
-    "YSize": 67
+    "YSize": 67,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 257,
@@ -3081,7 +3337,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 65,
-    "YSize": 62
+    "YSize": 62,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 258,
@@ -3093,7 +3350,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 57,
-    "YSize": 97
+    "YSize": 97,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 259,
@@ -3105,7 +3363,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 71
+    "YSize": 71,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 260,
@@ -3117,7 +3376,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 52,
-    "YSize": 72
+    "YSize": 72,
+    "UnitySource": "Old Unity (Level 245)"
   },
   {
     "LevelNumber": 261,
@@ -3129,7 +3389,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 64,
-    "YSize": 55
+    "YSize": 55,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 262,
@@ -3141,7 +3402,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 65,
-    "YSize": 72
+    "YSize": 72,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 263,
@@ -3153,7 +3415,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 73,
-    "YSize": 86
+    "YSize": 86,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 264,
@@ -3165,7 +3428,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 75,
-    "YSize": 88
+    "YSize": 88,
+    "UnitySource": "Old Unity (Level 240)"
   },
   {
     "LevelNumber": 265,
@@ -3177,7 +3441,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 42,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 266,
@@ -3189,7 +3454,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 37,
-    "YSize": 84
+    "YSize": 84,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 267,
@@ -3201,7 +3467,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 74
+    "YSize": 74,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 268,
@@ -3213,7 +3480,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 67,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 269,
@@ -3225,7 +3493,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 69,
-    "YSize": 56
+    "YSize": 56,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 270,
@@ -3237,7 +3506,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 84,
-    "YSize": 70
+    "YSize": 70,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 271,
@@ -3249,7 +3519,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 272,
@@ -3261,7 +3532,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 80,
-    "YSize": 79
+    "YSize": 79,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 273,
@@ -3273,7 +3545,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 58,
-    "YSize": 53
+    "YSize": 53,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 274,
@@ -3285,7 +3558,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 70,
-    "YSize": 70
+    "YSize": 70,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 275,
@@ -3297,7 +3571,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 56,
-    "YSize": 88
+    "YSize": 88,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 276,
@@ -3309,7 +3584,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 64,
-    "YSize": 98
+    "YSize": 98,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 277,
@@ -3321,7 +3597,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 70,
-    "YSize": 65
+    "YSize": 65,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 278,
@@ -3333,7 +3610,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 58,
-    "YSize": 78
+    "YSize": 78,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 279,
@@ -3345,7 +3623,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 66,
-    "YSize": 79
+    "YSize": 79,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 280,
@@ -3357,7 +3636,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 42,
-    "YSize": 63
+    "YSize": 63,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 281,
@@ -3369,7 +3649,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 40,
-    "YSize": 76
+    "YSize": 76,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 282,
@@ -3381,7 +3662,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 51,
-    "YSize": 94
+    "YSize": 94,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 283,
@@ -3393,7 +3675,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 95,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 284,
@@ -3405,7 +3688,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 87
+    "YSize": 87,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 285,
@@ -3417,7 +3701,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 73
+    "YSize": 73,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 286,
@@ -3429,7 +3714,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 62,
-    "YSize": 75
+    "YSize": 75,
+    "UnitySource": "Old Unity (Level 250)"
   },
   {
     "LevelNumber": 287,
@@ -3441,7 +3727,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 57,
-    "YSize": 95
+    "YSize": 95,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 288,
@@ -3453,7 +3740,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 80,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 289,
@@ -3465,7 +3753,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 72,
-    "YSize": 53
+    "YSize": 53,
+    "UnitySource": "Old Unity (Level 255)"
   },
   {
     "LevelNumber": 290,
@@ -3477,7 +3766,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 57,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 291,
@@ -3489,7 +3779,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 82,
-    "YSize": 46
+    "YSize": 46,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 292,
@@ -3501,7 +3792,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 75,
-    "YSize": 100
+    "YSize": 100,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 293,
@@ -3513,7 +3805,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 78
+    "YSize": 78,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 294,
@@ -3525,7 +3818,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 92
+    "YSize": 92,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 295,
@@ -3537,7 +3831,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 92
+    "YSize": 92,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 296,
@@ -3549,7 +3844,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 55,
-    "YSize": 83
+    "YSize": 83,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 297,
@@ -3561,7 +3857,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 75,
-    "YSize": 100
+    "YSize": 100,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 298,
@@ -3573,7 +3870,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 46,
-    "YSize": 74
+    "YSize": 74,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 299,
@@ -3585,7 +3883,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 57,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 300,
@@ -3597,7 +3896,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 58,
-    "YSize": 69
+    "YSize": 69,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 301,
@@ -3609,7 +3909,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 57,
-    "YSize": 58
+    "YSize": 58,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 302,
@@ -3621,7 +3922,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 66
+    "YSize": 66,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 303,
@@ -3633,7 +3935,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 43,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 304,
@@ -3645,7 +3948,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 57,
-    "YSize": 54
+    "YSize": 54,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 305,
@@ -3657,7 +3961,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 41,
-    "YSize": 112
+    "YSize": 112,
+    "UnitySource": "Old Unity (Level 265)"
   },
   {
     "LevelNumber": 306,
@@ -3669,7 +3974,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 72,
-    "YSize": 72
+    "YSize": 72,
+    "UnitySource": "Old Unity (Level 270)"
   },
   {
     "LevelNumber": 307,
@@ -3681,7 +3987,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 67,
-    "YSize": 100
+    "YSize": 100,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 308,
@@ -3693,7 +4000,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 40,
-    "YSize": 71
+    "YSize": 71,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 309,
@@ -3705,7 +4013,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 65,
-    "YSize": 70
+    "YSize": 70,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 310,
@@ -3717,7 +4026,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 311,
@@ -3729,7 +4039,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 53,
-    "YSize": 78
+    "YSize": 78,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 312,
@@ -3741,7 +4052,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 55,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "Old Unity (Level 275)"
   },
   {
     "LevelNumber": 313,
@@ -3753,7 +4065,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 70,
-    "YSize": 64
+    "YSize": 64,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 314,
@@ -3765,7 +4078,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 48,
-    "YSize": 74
+    "YSize": 74,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 315,
@@ -3777,7 +4091,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 76
+    "YSize": 76,
+    "UnitySource": "Old Unity (Level 280)"
   },
   {
     "LevelNumber": 316,
@@ -3789,7 +4104,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 64,
-    "YSize": 75
+    "YSize": 75,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 317,
@@ -3801,7 +4117,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 92
+    "YSize": 92,
+    "UnitySource": "Old Unity (Level 150)"
   },
   {
     "LevelNumber": 318,
@@ -3813,7 +4130,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 319,
@@ -3825,7 +4143,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 75,
-    "YSize": 75
+    "YSize": 75,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 320,
@@ -3837,7 +4156,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 80,
-    "YSize": 81
+    "YSize": 81,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 321,
@@ -3849,7 +4169,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 80,
-    "YSize": 76
+    "YSize": 76,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 322,
@@ -3861,7 +4182,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 62,
-    "YSize": 110
+    "YSize": 110,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 323,
@@ -3873,7 +4195,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 64,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 324,
@@ -3885,7 +4208,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 66,
-    "YSize": 82
+    "YSize": 82,
+    "UnitySource": "Old Unity (Level 285)"
   },
   {
     "LevelNumber": 325,
@@ -3897,7 +4221,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 54,
-    "YSize": 69
+    "YSize": 69,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 326,
@@ -3909,7 +4234,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 66,
-    "YSize": 100
+    "YSize": 100,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 327,
@@ -3921,7 +4247,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 328,
@@ -3933,7 +4260,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 75,
-    "YSize": 75
+    "YSize": 75,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 329,
@@ -3945,7 +4273,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 60,
-    "YSize": 91
+    "YSize": 91,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 330,
@@ -3957,7 +4286,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 90,
-    "YSize": 45
+    "YSize": 45,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 331,
@@ -3969,7 +4299,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 61,
-    "YSize": 72
+    "YSize": 72,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 332,
@@ -3981,7 +4312,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 64,
-    "YSize": 69
+    "YSize": 69,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 333,
@@ -3993,7 +4325,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 52,
-    "YSize": 92
+    "YSize": 92,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 334,
@@ -4005,7 +4338,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 70,
-    "YSize": 106
+    "YSize": 106,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 335,
@@ -4017,7 +4351,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 58,
-    "YSize": 57
+    "YSize": 57,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 336,
@@ -4029,7 +4364,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 62,
-    "YSize": 77
+    "YSize": 77,
+    "UnitySource": "Old Unity (Level 295)"
   },
   {
     "LevelNumber": 337,
@@ -4041,7 +4377,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 84,
-    "YSize": 60
+    "YSize": 60,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 338,
@@ -4053,7 +4390,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 86,
-    "YSize": 62
+    "YSize": 62,
+    "UnitySource": "Old Unity (Level 300)"
   },
   {
     "LevelNumber": 339,
@@ -4065,7 +4403,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 80,
-    "YSize": 77
+    "YSize": 77,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 340,
@@ -4077,7 +4416,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 50,
-    "YSize": 82
+    "YSize": 82,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 341,
@@ -4089,7 +4429,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 56,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 342,
@@ -4101,7 +4442,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 90,
-    "YSize": 93
+    "YSize": 93,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 343,
@@ -4113,7 +4455,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 73,
-    "YSize": 80
+    "YSize": 80,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 344,
@@ -4125,7 +4468,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 75,
-    "YSize": 75
+    "YSize": 75,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 345,
@@ -4137,7 +4481,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 98,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 346,
@@ -4149,7 +4494,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 131,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 347,
@@ -4161,7 +4507,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 94,
-    "YSize": 86
+    "YSize": 86,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 348,
@@ -4173,7 +4520,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 68,
-    "YSize": 120
+    "YSize": 120,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 349,
@@ -4185,7 +4533,8 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 83,
-    "YSize": 90
+    "YSize": 90,
+    "UnitySource": "New Unity"
   },
   {
     "LevelNumber": 350,
@@ -4197,6 +4546,7 @@
     "IsShape": true,
     "SourceCategory": "Unique Shapes",
     "XSize": 100,
-    "YSize": 100
+    "YSize": 100,
+    "UnitySource": "New Unity"
   }
 ]

@@ -88,6 +88,8 @@ fun GamePlayScreen(
     onAutoSolveClick: () -> Unit = {},
     onGameplayStarted: () -> Unit = {},
     onPauseStateChanged: (Boolean) -> Unit = {},
+    onPrevShapeClick: () -> Unit = {},
+    onNextShapeClick: () -> Unit = {},
     onSkipCelebration: () -> Unit = {},
     rewardedStatus: com.arrowaway.puzzle.ads.AdManager.RewardedStatus = com.arrowaway.puzzle.ads.AdManager.RewardedStatus.LOADING,
     onTriggerAdPreload: () -> Unit = {},
@@ -244,8 +246,17 @@ fun GamePlayScreen(
                                 theme = theme,
                                 isDailyChallenge = uiState.isDailyChallengeMode,
                                 dailyDateString = uiState.activeDailyDate,
-                                shapeName = null,
+                                shapeName = resolvedShapeName,
                                 isTestMode = false,
+                                showShapeNavigation = !uiState.isDailyChallengeMode,
+                                onPrevShapeClick = {
+                                    onPlayClickSound()
+                                    onPrevShapeClick()
+                                },
+                                onNextShapeClick = {
+                                    onPlayClickSound()
+                                    onNextShapeClick()
+                                },
                                 showArrowCount = false,
                                 showHearts = true,
                                 onPauseClick = {
@@ -281,6 +292,7 @@ fun GamePlayScreen(
                                 activeBoosterAnimation = uiState.activeBoosterAnimation,
                                 currentLevelNumber = uiState.currentLevelNumber,
                                 isDailyChallengeMode = uiState.isDailyChallengeMode,
+                                showTutorialHand = false,
                                 onArrowClick = { arrow ->
                                     lastInteractionTime = System.currentTimeMillis()
                                     isIdlePromptActive = false

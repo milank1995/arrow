@@ -540,6 +540,16 @@ class MainActivity : ComponentActivity() {
                                     onPauseStateChanged = { isPaused ->
                                         gameViewModel.setGamePaused(isPaused)
                                     },
+                                    onPrevShapeClick = {
+                                        gameViewModel.playClick()
+                                        val prevLevel = if (uiState.currentLevelNumber <= 1) com.arrowaway.puzzle.core.engine.LevelLoader.TOTAL_CAMPAIGN_LEVELS else uiState.currentLevelNumber - 1
+                                        gameViewModel.loadLevel(prevLevel)
+                                    },
+                                    onNextShapeClick = {
+                                        gameViewModel.playClick()
+                                        val nextLevel = if (uiState.currentLevelNumber >= com.arrowaway.puzzle.core.engine.LevelLoader.TOTAL_CAMPAIGN_LEVELS) 1 else uiState.currentLevelNumber + 1
+                                        gameViewModel.loadLevel(nextLevel)
+                                    },
                                     rewardedStatus = rewardedStatus,
                                     onTriggerAdPreload = {
                                         AdManager.requestRewardedNow(this@MainActivity)

@@ -120,7 +120,7 @@ fun PuzzleBoardCanvas(
     activeBoosterAnimation: BoosterEffectAnimation? = null,
     currentLevelNumber: Int = 0,
     isDailyChallengeMode: Boolean = false,
-    showTutorialHand: Boolean = (currentLevelNumber == 1 && !isDailyChallengeMode),
+    showTutorialHand: Boolean = false,
     onArrowClick: (Arrow) -> Unit,
     onArrowLongPress: (Arrow, isPressed: Boolean) -> Unit,
     onDismissPreviewRays: () -> Unit = {},
