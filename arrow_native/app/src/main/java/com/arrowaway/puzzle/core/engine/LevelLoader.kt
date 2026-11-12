@@ -16,7 +16,7 @@ object LevelLoader {
      * For any levelNumber > 1001, it wraps cleanly into the authentic level pool,
      * ensuring every level displays the true intended handcrafted puzzle layout.
      */
-    const val TOTAL_CAMPAIGN_LEVELS = 350
+    const val TOTAL_CAMPAIGN_LEVELS = 335
 
     fun loadLevel(context: Context, levelNumber: Int): LevelData {
         val totalHandcraftedLevels = TOTAL_CAMPAIGN_LEVELS
@@ -112,7 +112,8 @@ object LevelLoader {
         val xSize: Int,
         val ySize: Int,
         val emoji: String? = null,
-        val category: String? = null
+        val category: String? = null,
+        val unitySource: String = "New"
     )
 
     private var cachedManifest: List<ManifestLevelItem>? = null
@@ -129,6 +130,7 @@ object LevelLoader {
                 val sName = obj.optString("ShapeName").takeIf { it.isNotBlank() && it != "null" }
                 val emoji = obj.optString("Emoji").takeIf { it.isNotBlank() && it != "null" }
                 val category = obj.optString("Category").takeIf { it.isNotBlank() && it != "null" }
+                val unitySource = obj.optString("UnitySource", "New")
                 items.add(
                     ManifestLevelItem(
                         levelNumber = obj.getInt("LevelNumber"),
@@ -140,7 +142,8 @@ object LevelLoader {
                         xSize = obj.optInt("XSize", 0),
                         ySize = obj.optInt("YSize", 0),
                         emoji = emoji,
-                        category = category
+                        category = category,
+                        unitySource = unitySource
                     )
                 )
             }
@@ -233,6 +236,7 @@ object LevelLoader {
             }
 
             val shapeName = root.optString("ShapeName").takeIf { it.isNotBlank() && it != "null" }
+            val unitySource = root.optString("UnitySource").takeIf { it.isNotBlank() && it != "null" }
             val rawDiff = root.optString("Difficulty")
             val difficulty = when {
                 rawDiff.equals("Hard", ignoreCase = true) || rawDiff.equals("Super Hard", ignoreCase = true) -> LevelDifficulty.HARD
@@ -251,7 +255,8 @@ object LevelLoader {
                 difficulty = difficulty,
                 diffScore = arrowList.size * 10,
                 diffDna = "CURATED_LVL_${levelNumber}_${xSize}x${ySize}_${arrowList.size}",
-                shapeName = shapeName
+                shapeName = shapeName,
+                unitySource = unitySource
             )
         } catch (e: Exception) {
             return null

@@ -541,6 +541,7 @@ fun DevTestScreen(
                     hintsCount = 999, // Unlimited hints in test mode
                     isGridLinesActive = isGridLinesActive,
                     shapeName = levelData?.shapeName,
+                    unitySource = levelData?.unitySource,
                     remainingArrowsCount = arrows.count { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT },
                     theme = theme,
                     onHintClick = {

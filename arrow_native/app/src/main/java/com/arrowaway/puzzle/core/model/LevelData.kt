@@ -15,7 +15,8 @@ data class LevelData(
     val difficulty: LevelDifficulty = LevelDifficulty.EASY,
     val diffScore: Int = 100,
     val diffDna: String = "",
-    val shapeName: String? = null
+    val shapeName: String? = null,
+    val unitySource: String? = null
 ) {
     val totalArrows: Int get() = arrows.size
 }

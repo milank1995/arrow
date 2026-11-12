@@ -355,6 +355,7 @@ fun GamePlayScreen(
                                 isIdlePromptActive = isIdlePromptActive,
                                 levelNumber = uiState.currentLevelNumber,
                                 shapeName = resolvedShapeName,
+                                unitySource = level?.unitySource,
                                 remainingArrowsCount = remainingArrowsCount,
                                 isDailyChallenge = uiState.isDailyChallengeMode,
                                 theme = theme,

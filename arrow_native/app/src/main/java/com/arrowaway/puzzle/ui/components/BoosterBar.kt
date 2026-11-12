@@ -79,6 +79,7 @@ fun BoosterBar(
     isIdlePromptActive: Boolean = false,
     levelNumber: Int? = null,
     shapeName: String? = null,
+    unitySource: String? = null,
     remainingArrowsCount: Int? = null,
     isDailyChallenge: Boolean = false,
     heartsRemaining: Int? = null,
@@ -233,19 +234,40 @@ fun BoosterBar(
                     shadowElevation = 0.dp,
                     modifier = boxModifier.padding(horizontal = 4.dp)
                 ) {
-                    Text(
-                        text = when {
-                            isDailyChallenge -> "Daily Challenge"
-                            shapeName != null && remainingArrowsCount != null -> "$shapeName - $remainingArrowsCount"
-                            shapeName != null -> shapeName
-                            else -> "Level $levelNumber"
-                        },
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = theme.textPrimary.copy(alpha = 0.80f),
-                        letterSpacing = 0.4.sp,
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        if (unitySource != null) {
+                            val isNew = unitySource.equals("New", ignoreCase = true)
+                            Surface(
+                                shape = RoundedCornerShape(5.dp),
+                                color = if (isNew) Color(0xFF6366F1).copy(alpha = 0.15f) else Color(0xFFD97706).copy(alpha = 0.15f),
+                                border = BorderStroke(0.8.dp, if (isNew) Color(0xFF6366F1).copy(alpha = 0.5f) else Color(0xFFD97706).copy(alpha = 0.5f))
+                            ) {
+                                Text(
+                                    text = if (isNew) "New" else "Old",
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isNew) Color(0xFF6366F1) else Color(0xFFD97706),
+                                    modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.5.dp)
+                                )
+                            }
+                        }
+                        Text(
+                            text = when {
+                                isDailyChallenge -> "Daily Challenge"
+                                shapeName != null && remainingArrowsCount != null -> "$shapeName - $remainingArrowsCount"
+                                shapeName != null -> shapeName
+                                else -> "Level $levelNumber"
+                            },
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = theme.textPrimary.copy(alpha = 0.80f),
+                            letterSpacing = 0.4.sp
+                        )
+                    }
                 }
             } else if (heartsRemaining != null) {
                 Box(modifier = boxModifier) {

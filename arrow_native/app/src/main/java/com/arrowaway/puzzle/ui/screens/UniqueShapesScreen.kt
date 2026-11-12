@@ -45,7 +45,7 @@ import com.arrowaway.puzzle.ui.theme.ThemePreset
 
 /**
  * Dedicated screen for Unique Shapes, matching the exact list UI
- * from the custom-shapes branch (NewOwnShapeScreen layout).
+ * from the custom-shapes branch (NewOwnShapeScreen layout) with "New" / "Old" source labels.
  */
 @Composable
 fun UniqueShapesScreen(
@@ -214,12 +214,34 @@ private fun CustomShapeCard(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
-                Text(
-                    text = item.shapeName ?: "Level ${item.levelNumber}",
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = theme.textPrimary
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    // Source label badge: "New" or "Old"
+                    val isNew = item.unitySource.equals("New", ignoreCase = true)
+                    Surface(
+                        shape = RoundedCornerShape(6.dp),
+                        color = if (isNew) Color(0xFF6366F1).copy(alpha = 0.15f) else Color(0xFFD97706).copy(alpha = 0.15f),
+                        border = BorderStroke(0.8.dp, if (isNew) Color(0xFF6366F1).copy(alpha = 0.5f) else Color(0xFFD97706).copy(alpha = 0.5f))
+                    ) {
+                        Text(
+                            text = if (isNew) "New" else "Old",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isNew) Color(0xFF6366F1) else Color(0xFFD97706),
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+
+                    Text(
+                        text = item.shapeName ?: "Level ${item.levelNumber}",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = theme.textPrimary
+                    )
+                }
+
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
