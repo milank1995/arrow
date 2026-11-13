@@ -92,6 +92,16 @@ object AdManager {
         _rewardedReady.value = status == RewardedStatus.READY
     }
 
+    /** When the last rewarded load failed (0 = never). Lets a tap answer instantly instead of re-waiting. */
+    @Volatile private var lastRewardedFailureMs = 0L
+
+    /** True when the last rewarded load failed (ERROR / NO_FILL) within [windowMs] and nothing has loaded since. */
+    fun rewardedFailedRecently(windowMs: Long): Boolean {
+        val status = _rewardedStatus.value
+        if (status != RewardedStatus.ERROR && status != RewardedStatus.NO_FILL) return false
+        return lastRewardedFailureMs > 0L && System.currentTimeMillis() - lastRewardedFailureMs < windowMs
+    }
+
     /** Maps an AdMob load error code to a player-facing category (raw message still goes to analytics). */
     fun statusForLoadError(errorCode: Int): RewardedStatus = when (errorCode) {
         AdRequest.ERROR_CODE_NETWORK_ERROR -> RewardedStatus.NO_INTERNET
@@ -304,6 +314,7 @@ object AdManager {
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                 cachedRewardedAd = null
                 isRewardedLoading = false
+                lastRewardedFailureMs = System.currentTimeMillis()
                 // A "network error" while the device is online usually means ads are blocked
                 // (private DNS / ad blocker), so don't tell the player their internet is off.
                 val mapped = statusForLoadError(loadAdError.code)

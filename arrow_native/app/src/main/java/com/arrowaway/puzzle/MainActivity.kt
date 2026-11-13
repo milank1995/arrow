@@ -33,8 +33,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
+import com.arrowaway.puzzle.ui.components.effectiveRewardedStatus
+import com.arrowaway.puzzle.ui.components.rewardedStatusMessage
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import android.view.WindowManager
@@ -109,6 +113,9 @@ class MainActivity : ComponentActivity() {
 
     /** Set when we send the player to Android notification settings; consumed on the next onResume. */
     private var awaitingNotificationSettingsReturn = false
+
+    /** The pending "load an ad for a hint" wait, so a new tap or a screen change can't stack them. */
+    private var hintAdJob: Job? = null
 
     override fun onSaveInstanceState(outState: android.os.Bundle) {
         super.onSaveInstanceState(outState)
@@ -472,60 +479,71 @@ class MainActivity : ComponentActivity() {
                                         }
                                     },
                                     onRequestAdHint = {
-                                        if (uiState.isHintAdLoading) return@GamePlayScreen
-                                        gameViewModel.clearHintErrorMessage()
-                                        gameViewModel.setHintAdLoading(true)
+                                        val tapState = gameViewModel.uiState.value
+                                        if (!tapState.isHintAdLoading) {
+                                            gameViewModel.clearHintErrorMessage()
+                                            val ctx = this@MainActivity
+                                            val isReady = AdManager.rewardedReady.value && !AdManager.isRewardedAdExpired()
+                                            gameViewModel.analytics.logAdRewardPromptShown("hint_refill", isReady)
 
-                                        val requestFailedMsg = getString(R.string.ad_request_failed)
-                                        if (!AdManager.isOnline(this@MainActivity)) {
-                                            gameViewModel.showHintError(requestFailedMsg)
-                                            return@GamePlayScreen
-                                        }
+                                            val playHintAd = {
+                                                AdManager.showRewardedAd(
+                                                    activity = ctx,
+                                                    placement = "hint_refill",
+                                                    onRewardEarned = { gameViewModel.claimAdHints(1) },
+                                                    onAdClosed = { _ -> gameViewModel.setHintAdLoading(false) }
+                                                )
+                                            }
+                                            // Same player-facing messages as the reward dialogs (offline, ads blocked, no fill)
+                                            val showUnavailable = { status: AdManager.RewardedStatus ->
+                                                gameViewModel.analytics.logAdRewardUnavailable(
+                                                    "hint_refill",
+                                                    if (status == AdManager.RewardedStatus.LOADING) "still_loading" else status.name.lowercase()
+                                                )
+                                                gameViewModel.showHintError(
+                                                    rewardedStatusMessage(effectiveRewardedStatus(status, timedOut = true))
+                                                        ?: rewardedStatusMessage(AdManager.RewardedStatus.NO_FILL).orEmpty()
+                                                )
+                                            }
+                                            val recentFailure = AdManager.rewardedStatus.value
 
-                                        if (AdManager.rewardedReady.value && !AdManager.isRewardedAdExpired()) {
-                                            gameViewModel.setHintAdLoading(false)
-                                            AdManager.showRewardedAd(
-                                                activity = this@MainActivity,
-                                                placement = "hint_refill",
-                                                onRewardEarned = {
-                                                    gameViewModel.claimAdHints(1)
-                                                },
-                                                onAdClosed = { _ ->
-                                                    gameViewModel.setHintAdLoading(false)
+                                            when {
+                                                // 1. Offline: answer instantly
+                                                !AdManager.isOnline(ctx) -> {
+                                                    AdManager.requestRewardedNow(ctx)
+                                                    showUnavailable(AdManager.RewardedStatus.NO_INTERNET)
                                                 }
-                                            )
-                                        } else {
-                                            AdManager.requestRewardedNow(this@MainActivity)
-                                            coroutineScope.launch {
-                                                val startTime = System.currentTimeMillis()
-                                                var showed = false
-                                                while (System.currentTimeMillis() - startTime < 4500L) {
-                                                    delay(200)
-                                                    if (AdManager.rewardedReady.value && !AdManager.isRewardedAdExpired()) {
-                                                        showed = true
+                                                // 2. Ad already loaded: play it straight away
+                                                isReady -> playHintAd()
+                                                // 3. The last load just failed (ads blocked by DNS, no fill): show why
+                                                //    instantly and retry quietly, so the next tap can succeed
+                                                AdManager.rewardedFailedRecently(HINT_AD_RECENT_FAILURE_MS) -> {
+                                                    AdManager.requestRewardedNow(ctx)
+                                                    showUnavailable(recentFailure)
+                                                }
+                                                // 4. Otherwise load now and wait briefly
+                                                else -> {
+                                                    gameViewModel.setHintAdLoading(true)
+                                                    AdManager.requestRewardedNow(ctx)
+                                                    hintAdJob?.cancel()
+                                                    hintAdJob = coroutineScope.launch {
+                                                        val result = withTimeoutOrNull(HINT_AD_MAX_WAIT_MS) {
+                                                            AdManager.rewardedStatus.first { it != AdManager.RewardedStatus.LOADING }
+                                                        } ?: AdManager.RewardedStatus.LOADING
                                                         gameViewModel.setHintAdLoading(false)
-                                                        AdManager.showRewardedAd(
-                                                            activity = this@MainActivity,
-                                                            placement = "hint_refill",
-                                                            onRewardEarned = {
-                                                                gameViewModel.claimAdHints(1)
-                                                            },
-                                                            onAdClosed = { _ ->
-                                                                gameViewModel.setHintAdLoading(false)
-                                                            }
-                                                        )
-                                                        break
+                                                        // Never pop an ad after the player has left this board
+                                                        val now = gameViewModel.uiState.value
+                                                        val stillOnBoard = currentScreen == AppScreen.GAMEPLAY &&
+                                                            now.currentLevelNumber == tapState.currentLevelNumber &&
+                                                            now.isDailyChallengeMode == tapState.isDailyChallengeMode &&
+                                                            !now.isLevelComplete && !now.isGameOver
+                                                        if (!stillOnBoard) return@launch
+                                                        if (result == AdManager.RewardedStatus.READY && !AdManager.isRewardedAdExpired()) {
+                                                            playHintAd()
+                                                        } else {
+                                                            showUnavailable(result)
+                                                        }
                                                     }
-                                                    val status = AdManager.rewardedStatus.value
-                                                    if (status == AdManager.RewardedStatus.NO_INTERNET ||
-                                                        status == AdManager.RewardedStatus.NO_FILL ||
-                                                        status == AdManager.RewardedStatus.ERROR) {
-                                                        break
-                                                    }
-                                                }
-                                                if (!showed) {
-                                                    gameViewModel.setHintAdLoading(false)
-                                                    gameViewModel.showHintError(requestFailedMsg)
                                                 }
                                             }
                                         }
@@ -867,3 +885,9 @@ class MainActivity : ComponentActivity() {
         private const val KEY_AWAITING_NOTIFICATION_SETTINGS = "key_awaiting_notification_settings"
     }
 }
+
+/** Hint button: a failure this recent is shown at once instead of waiting on another load. */
+private const val HINT_AD_RECENT_FAILURE_MS = 20_000L
+
+/** Hint button: longest the spinner shows before we say no ad is available. */
+private const val HINT_AD_MAX_WAIT_MS = 2_500L

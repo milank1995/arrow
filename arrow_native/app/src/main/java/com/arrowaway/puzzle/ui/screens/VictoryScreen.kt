@@ -1,6 +1,7 @@
 package com.arrowaway.puzzle.ui.screens
 
 import com.arrowaway.puzzle.core.LevelDifficultyRules
+import com.arrowaway.puzzle.ui.components.MilestoneBonusCard
 import com.arrowaway.puzzle.ui.components.BannerAdView
 
 import androidx.compose.animation.core.Animatable
@@ -270,36 +271,6 @@ fun VictoryScreen(
         ),
         label = "sunburstRotation"
     )
-    val bonusCardScale = remember { Animatable(0f) }
-    val bonusCardAlpha = remember { Animatable(0f) }
-
-    val bonusGlowAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.40f,
-        targetValue = 1.0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1100, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "bonusGlowAlpha"
-    )
-    val bonusPulseScale by infiniteTransition.animateFloat(
-        initialValue = 1.0f,
-        targetValue = 1.10f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(850, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "bonusPulseScale"
-    )
-    val sparkleRotate by infiniteTransition.animateFloat(
-        initialValue = -7f,
-        targetValue = 7f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1200, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "sparkleRotate"
-    )
 
 
     LaunchedEffect(Unit) {
@@ -333,16 +304,6 @@ fun VictoryScreen(
             onPlayStarSound(3)
             star3Scale.animateTo(1.25f, tween(130, easing = FastOutSlowInEasing))
             star3Scale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
-        }
-
-        // Bouncy celebration entrance for milestone bonus hint card
-        delay(300)
-        launch {
-            bonusCardAlpha.animateTo(1f, tween(200))
-        }
-        launch {
-            bonusCardScale.animateTo(1.12f, tween(180, easing = FastOutSlowInEasing))
-            bonusCardScale.animateTo(1.0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
         }
     }
 
@@ -619,110 +580,16 @@ fun VictoryScreen(
                                 }
                             }
 
-                            // Milestone Bonus Hint Card (Levels 5, 10, 15, 20...)
+                            // Milestone bonus hint card (levels 5, 10, 15, 20...)
                             val isMilestone = LevelDifficultyRules.isMilestoneRewardLevel(levelNumber, isDailyChallenge) || milestoneRewardHints > 0
                             if (isMilestone) {
                                 val rewardCount = if (milestoneRewardHints > 0) milestoneRewardHints else LevelDifficultyRules.MILESTONE_REWARD_HINTS
                                 Spacer(modifier = Modifier.height(if (isVeryCompact) 8.dp else 11.dp))
-                                Surface(
-                                    shape = RoundedCornerShape(16.dp),
-                                    color = Color(0xFFF59E0B).copy(alpha = if (theme.isDark) 0.18f else 0.12f),
-                                    border = BorderStroke(
-                                        width = 1.5.dp,
-                                        brush = Brush.horizontalGradient(
-                                            listOf(
-                                                Color(0xFFF59E0B).copy(alpha = bonusGlowAlpha),
-                                                Color(0xFFFDE68A).copy(alpha = bonusGlowAlpha),
-                                                Color(0xFFF59E0B).copy(alpha = bonusGlowAlpha)
-                                            )
-                                        )
-                                    ),
-                                    shadowElevation = (3 * bonusGlowAlpha).dp,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .graphicsLayer {
-                                            scaleX = bonusCardScale.value
-                                            scaleY = bonusCardScale.value
-                                            alpha = bonusCardAlpha.value
-                                        }
-                                ) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 14.dp, vertical = if (isVeryCompact) 8.dp else 11.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            modifier = Modifier.weight(1f)
-                                        ) {
-                                            // Radiant Pulsing Badge with Glowing Halo
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(34.dp)
-                                                    .scale(bonusPulseScale)
-                                                    .background(
-                                                        brush = Brush.radialGradient(
-                                                            listOf(Color(0xFFFEF08A), Color(0xFFF59E0B))
-                                                        ),
-                                                        shape = CircleShape
-                                                    ),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(
-                                                    text = "🎁",
-                                                    fontSize = 17.sp,
-                                                    modifier = Modifier.rotate(sparkleRotate)
-                                                )
-                                            }
-                                            Spacer(modifier = Modifier.width(10.dp))
-                                            Column {
-                                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                                    Text(
-                                                        text = "Milestone Reward!",
-                                                        fontSize = 13.5.sp,
-                                                        fontWeight = FontWeight.ExtraBold,
-                                                        color = theme.textPrimary
-                                                    )
-                                                    Spacer(modifier = Modifier.width(4.dp))
-                                                    Text(
-                                                        text = "✨",
-                                                        fontSize = 12.sp,
-                                                        modifier = Modifier.scale(bonusPulseScale)
-                                                    )
-                                                }
-                                                Text(
-                                                    text = "Free hint added to your inventory",
-                                                    fontSize = 11.sp,
-                                                    color = theme.textSecondary
-                                                )
-                                            }
-                                        }
-
-                                        // Glowing celebration pill tag
-                                        Surface(
-                                            shape = RoundedCornerShape(10.dp),
-                                            color = Color(0xFFF59E0B),
-                                            shadowElevation = 2.dp,
-                                            modifier = Modifier.scale(bonusPulseScale)
-                                        ) {
-                                            Row(
-                                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                            ) {
-                                                Text(text = "💡", fontSize = 11.sp)
-                                                Text(
-                                                    text = "+$rewardCount Hint",
-                                                    fontSize = 12.sp,
-                                                    fontWeight = FontWeight.Black,
-                                                    color = Color.White
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
+                                MilestoneBonusCard(
+                                    hints = rewardCount,
+                                    theme = theme,
+                                    compact = isVeryCompact
+                                )
                             }
 
 
