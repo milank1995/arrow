@@ -86,6 +86,8 @@ data class GameUiState(
     val hasSeenDailyUnlockCelebration: Boolean = false,
     /** The one-time "watch an ad for a hint" explanation has been shown. */
     val hasSeenHintAdIntro: Boolean = false,
+    /** The one-time Daily Challenge hint explanation has been shown. */
+    val hasSeenDailyHintAdIntro: Boolean = false,
     val showHintAdIntro: Boolean = false,
     val dailyRemindersEnabled: Boolean = true,
     val hasRequestedNotificationPermission: Boolean = false,
@@ -185,6 +187,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         activeTheme = theme,
                         hasSeenDailyUnlockCelebration = data.hasSeenDailyUnlockCelebration,
                         hasSeenHintAdIntro = data.hasSeenHintAdIntro,
+                        hasSeenDailyHintAdIntro = data.hasSeenDailyHintAdIntro,
                         dailyRemindersEnabled = data.dailyRemindersEnabled,
                         hasRequestedNotificationPermission = data.hasRequestedNotificationPermission,
                         notificationPermissionAskCount = data.notificationPermissionAskCount,
@@ -281,9 +284,17 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     /** Closes the one-time hint-ad explanation and remembers that the player has seen it. */
     fun closeHintAdIntro() {
-        _uiState.update { it.copy(showHintAdIntro = false, hasSeenHintAdIntro = true) }
-        viewModelScope.launch { repository.markHintAdIntroSeen() }
+        val isDaily = _uiState.value.isDailyChallengeMode
+        _uiState.update {
+            if (isDaily) it.copy(showHintAdIntro = false, hasSeenDailyHintAdIntro = true)
+            else it.copy(showHintAdIntro = false, hasSeenHintAdIntro = true)
+        }
+        viewModelScope.launch { repository.markHintAdIntroSeen(isDaily) }
     }
+
+    /** Whether the one-time hint-ad explanation for the current mode has been shown. */
+    val hasSeenHintAdIntroForCurrentMode: Boolean
+        get() = _uiState.value.let { if (it.isDailyChallengeMode) it.hasSeenDailyHintAdIntro else it.hasSeenHintAdIntro }
 
     fun getStreakDaysSynchronous(): Int = repository.getStreakDaysSynchronous()
 
@@ -895,6 +906,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun useHint() {
+        // Daily Challenge: saved hints can't be used; hints there come only from rewarded ads
+        if (_uiState.value.isDailyChallengeMode) return
         viewModelScope.launch(Dispatchers.Default) {
             val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap) ?: return@launch
             levelHintsUsedCount++
@@ -918,7 +931,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     state.copy(arrows = updated)
                 }
             } else {
-                // Level 11+ or Daily Challenge: deduct 1 hint from persistent inventory
+                // Level 11+: deduct 1 hint from the saved inventory
                 if (_uiState.value.hintsAvailable > 0) {
                     val used = repository.useBooster("hint")
                     if (used) {
@@ -1358,6 +1371,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     globalLivesAvailable = 6,
                     hasSeenDailyUnlockCelebration = false,
                     hasSeenHintAdIntro = false,
+                    hasSeenDailyHintAdIntro = false,
                     showHintAdIntro = false,
                     isLevelComplete = false,
                     milestoneRewardHints = 0,

@@ -348,10 +348,12 @@ fun GamePlayScreen(
                                 .padding(horizontal = 4.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            val effectiveHints = if (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode) {
-                                999
-                            } else {
-                                uiState.hintsAvailable
+                            // Levels 1-10: unlimited. Daily: saved hints are not usable, so the button
+                            // always offers a rewarded ad. Level 11+: the saved inventory.
+                            val effectiveHints = when {
+                                uiState.isDailyChallengeMode -> 0
+                                uiState.currentLevelNumber <= 10 -> 999
+                                else -> uiState.hintsAvailable
                             }
                             BoosterBar(
                                 hintsCount = effectiveHints,
@@ -464,6 +466,7 @@ fun GamePlayScreen(
                 if (uiState.showHintAdIntro && !uiState.isGameOver && !uiState.isLevelComplete) {
                     HintAdIntroDialog(
                         theme = theme,
+                        isDailyChallenge = uiState.isDailyChallengeMode,
                         onWatchAd = onHintAdIntroWatch,
                         onDismiss = onHintAdIntroDismiss
                     )

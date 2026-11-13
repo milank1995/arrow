@@ -40,6 +40,7 @@ import com.arrowaway.puzzle.ui.theme.ThemePreset
 @Composable
 fun HintAdIntroDialog(
     theme: ThemePreset,
+    isDailyChallenge: Boolean = false,
     onWatchAd: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -85,7 +86,7 @@ fun HintAdIntroDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "OUT OF HINTS",
+                    text = if (isDailyChallenge) "DAILY CHALLENGE HINT" else "OUT OF HINTS",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Black,
                     color = theme.textPrimary
@@ -94,7 +95,11 @@ fun HintAdIntroDialog(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = "Watch a short ad to get 1 free hint.\nNext time, just tap the Hint button.",
+                    text = if (isDailyChallenge) {
+                        "Watch a short ad to get 1 hint.\nYour saved hints stay safe for normal levels."
+                    } else {
+                        "Watch a short ad to get 1 free hint.\nNext time, just tap the Hint button."
+                    },
                     fontSize = 13.sp,
                     color = theme.textSecondary,
                     textAlign = TextAlign.Center,

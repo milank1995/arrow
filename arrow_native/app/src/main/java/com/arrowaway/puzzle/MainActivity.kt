@@ -535,7 +535,7 @@ class MainActivity : ComponentActivity() {
                                         }
                                     },
                                     onRequestAdHint = {
-                                        if (!gameViewModel.uiState.value.hasSeenHintAdIntro) {
+                                        if (!gameViewModel.hasSeenHintAdIntroForCurrentMode) {
                                             // First time out of hints: explain the rewarded ad before playing one
                                             gameViewModel.showHintAdIntro()
                                         } else {
