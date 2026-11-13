@@ -68,6 +68,7 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_GLOBAL_LIVES = intPreferencesKey("global_lives_bank")
     private val KEY_DAILY_UNLOCK_SEEN = booleanPreferencesKey("daily_unlock_celebration_seen")
     private val KEY_HINT_AD_INTRO_SEEN = booleanPreferencesKey("hint_ad_intro_seen")
+    private val KEY_NO_FILL_FREE_HINT_DATE = stringPreferencesKey("no_fill_free_hint_date")
     private val KEY_DAILY_HINT_AD_INTRO_SEEN = booleanPreferencesKey("daily_hint_ad_intro_seen")
     private val KEY_DAILY_REMINDERS_ENABLED = booleanPreferencesKey("daily_reminders_enabled")
     private val KEY_NOTIFICATION_PERMISSION_REQUESTED = booleanPreferencesKey("has_requested_notification_permission")
@@ -392,6 +393,21 @@ class UserPreferencesRepository(private val context: Context) {
         context.dataStore.edit { prefs ->
             prefs[KEY_DAILY_UNLOCK_SEEN] = true
         }
+    }
+
+    /**
+     * The "no ad available" free hint: at most once per calendar day. Check and claim happen in
+     * one DataStore transaction, so it can never be granted twice on the same day.
+     */
+    suspend fun claimNoFillFreeHint(today: String): Boolean {
+        var granted = false
+        context.dataStore.edit { prefs ->
+            if (prefs[KEY_NO_FILL_FREE_HINT_DATE] != today) {
+                prefs[KEY_NO_FILL_FREE_HINT_DATE] = today
+                granted = true
+            }
+        }
+        return granted
     }
 
     suspend fun markHintAdIntroSeen(isDailyChallenge: Boolean) {

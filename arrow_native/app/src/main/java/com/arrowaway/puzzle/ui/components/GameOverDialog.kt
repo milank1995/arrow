@@ -127,7 +127,8 @@ fun GameOverDialog(
                         containerColor = Color(0xFFEF4444),
                         theme = theme,
                         onWatchAd = onClaimLives,
-                        onRequestAd = onTriggerAdPreload
+                        onRequestAd = onTriggerAdPreload,
+                        reward = RewardKind.LIFE
                     )
                 }
 

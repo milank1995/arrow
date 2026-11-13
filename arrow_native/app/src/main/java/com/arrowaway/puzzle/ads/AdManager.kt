@@ -82,7 +82,11 @@ object AdManager {
     val rewardedReady: StateFlow<Boolean> = _rewardedReady.asStateFlow()
 
     /** What the "Watch Ad" buttons should show. LOADING is also the state before the first request. */
-    enum class RewardedStatus { LOADING, READY, NO_INTERNET, NO_FILL, ERROR }
+    /**
+     * LOADING is also the state before the first request. BLOCKED = the request failed with a
+     * network error while the device is online and ads look blocked (Private DNS / ad blocker).
+     */
+    enum class RewardedStatus { LOADING, READY, NO_INTERNET, NO_FILL, BLOCKED, ERROR }
 
     private val _rewardedStatus = MutableStateFlow(RewardedStatus.LOADING)
     val rewardedStatus: StateFlow<RewardedStatus> = _rewardedStatus.asStateFlow()
@@ -92,14 +96,65 @@ object AdManager {
         _rewardedReady.value = status == RewardedStatus.READY
     }
 
-    /** When the last rewarded load failed (0 = never). Lets a tap answer instantly instead of re-waiting. */
-    @Volatile private var lastRewardedFailureMs = 0L
+    /**
+     * Why the last rewarded load failed (NO_FILL / BLOCKED / ERROR / NO_INTERNET), kept until an ad
+     * loads successfully. A tap can then answer instantly instead of waiting on another request
+     * that will most likely fail the same way.
+     */
+    @Volatile private var lastRewardedFailure: RewardedStatus? = null
+    @Volatile private var lastFailureWasNetworkError = false
 
-    /** True when the last rewarded load failed (ERROR / NO_FILL) within [windowMs] and nothing has loaded since. */
-    fun rewardedFailedRecently(windowMs: Long): Boolean {
-        val status = _rewardedStatus.value
-        if (status != RewardedStatus.ERROR && status != RewardedStatus.NO_FILL) return false
-        return lastRewardedFailureMs > 0L && System.currentTimeMillis() - lastRewardedFailureMs < windowMs
+    /** The known reason no rewarded ad is available, or null if none is known (or an ad is cached). */
+    fun knownRewardedFailure(): RewardedStatus? =
+        if (cachedRewardedAd != null && !isRewardedAdExpired()) null else lastRewardedFailure
+
+    // ---- Ad-block detection (Private DNS / DNS ad blockers) ----
+    private const val AD_PROBE_HOST = "googleads.g.doubleclick.net"
+    @Volatile private var adDomainBlocked = false
+    @Volatile private var adBlockProbeRunning = false
+
+    /** True when ads look blocked on this connection (ad domain sinkholed, or Private DNS on). */
+    fun isAdBlockSuspected(context: Context): Boolean = adDomainBlocked || isPrivateDnsActive(context)
+
+    private fun isPrivateDnsActive(context: Context): Boolean {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.P) return false
+        return try {
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return false
+            cm.getLinkProperties(cm.activeNetwork)?.isPrivateDnsActive == true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    /**
+     * Background check (never on a tap): does the ad server's name resolve to a real address?
+     * DNS ad blockers answer 0.0.0.0 / 127.0.0.1 / :: or nothing at all.
+     */
+    fun refreshAdBlockSignal(context: Context) {
+        if (adBlockProbeRunning) return
+        adBlockProbeRunning = true
+        val appContext = context.applicationContext
+        Thread {
+            val blocked = try {
+                val addrs = java.net.InetAddress.getAllByName(AD_PROBE_HOST)
+                addrs.isEmpty() || addrs.all { it.isAnyLocalAddress || it.isLoopbackAddress }
+            } catch (e: java.net.UnknownHostException) {
+                isOnline(appContext) // online but the ad server name doesn't resolve
+            } catch (e: Exception) {
+                false
+            }
+            mainHandler.post {
+                adDomainBlocked = blocked
+                adBlockProbeRunning = false
+                // Re-label a network-error failure once we know ads are blocked
+                if (lastFailureWasNetworkError && lastRewardedFailure == RewardedStatus.ERROR &&
+                    isAdBlockSuspected(appContext)
+                ) {
+                    lastRewardedFailure = RewardedStatus.BLOCKED
+                    if (_rewardedStatus.value == RewardedStatus.ERROR) setRewardedStatus(RewardedStatus.BLOCKED)
+                }
+            }
+        }.apply { isDaemon = true; name = "ad-block-probe" }.start()
     }
 
     /** Maps an AdMob load error code to a player-facing category (raw message still goes to analytics). */
@@ -246,6 +301,7 @@ object AdManager {
                 .build()
             MobileAds.setRequestConfiguration(requestConfig)
 
+            refreshAdBlockSignal(context)
             MobileAds.initialize(context) { initializationStatus ->
                 Log.i(TAG, "Google Mobile Ads initialized successfully (TestAds=$isTestAdsActive): $initializationStatus")
                 preloadRewardedAd(context)
@@ -307,6 +363,8 @@ object AdManager {
                 rewardedAdLoadedTimeMs = System.currentTimeMillis()
                 isRewardedLoading = false
                 rewardedRetryAttempt = 0
+                lastRewardedFailure = null
+                lastFailureWasNetworkError = false
                 setRewardedStatus(RewardedStatus.READY)
                 Log.d(TAG, "Rewarded ad successfully preloaded (Unit: $unitId).")
             }
@@ -314,13 +372,19 @@ object AdManager {
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                 cachedRewardedAd = null
                 isRewardedLoading = false
-                lastRewardedFailureMs = System.currentTimeMillis()
                 // A "network error" while the device is online usually means ads are blocked
                 // (private DNS / ad blocker), so don't tell the player their internet is off.
                 val mapped = statusForLoadError(loadAdError.code)
-                setRewardedStatus(
-                    if (mapped == RewardedStatus.NO_INTERNET && isOnline(appContext)) RewardedStatus.ERROR else mapped
-                )
+                val isNetworkErrorOnline = mapped == RewardedStatus.NO_INTERNET && isOnline(appContext)
+                val finalStatus = when {
+                    isNetworkErrorOnline && isAdBlockSuspected(appContext) -> RewardedStatus.BLOCKED
+                    isNetworkErrorOnline -> RewardedStatus.ERROR
+                    else -> mapped
+                }
+                lastFailureWasNetworkError = isNetworkErrorOnline
+                lastRewardedFailure = finalStatus
+                setRewardedStatus(finalStatus)
+                if (isNetworkErrorOnline) refreshAdBlockSignal(appContext)
                 Log.w(TAG, "Rewarded ad failed to preload: ${loadAdError.message} (code: ${loadAdError.code})")
 
                 val delaySec = getBackoffDelaySec(rewardedRetryAttempt)

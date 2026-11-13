@@ -930,6 +930,37 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         _uiState.update { it.copy(isHintAdLoading = loading) }
     }
 
+    /** Neutral status in the hint bubble (e.g. "Loading ad…"); doesn't touch the loading flag. */
+    fun showHintInfo(message: String) {
+        _uiState.update { it.copy(hintErrorMessage = message) }
+    }
+
+    /**
+     * "No ad available" gift: applies 1 hint on the board, at most once per day. Only call this when
+     * AdMob reported NO FILL; never for offline, blocked, loading or other errors.
+     * [onResult] gets true if the hint was given (runs on the main thread).
+     */
+    fun grantNoFillFreeHint(onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap)
+            if (hintTarget == null || _uiState.value.isLevelComplete || _uiState.value.isGameOver) {
+                onResult(false)
+                return@launch
+            }
+            val granted = repository.claimNoFillFreeHint(LocalDate.now().toString())
+            if (granted) {
+                audioHapticManager.playBoosterUse("hint")
+                _uiState.update { state ->
+                    state.copy(arrows = state.arrows.map {
+                        if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
+                    })
+                }
+                analytics.logNoFillFreeHint(_uiState.value.currentLevelNumber, _uiState.value.isDailyChallengeMode)
+            }
+            onResult(granted)
+        }
+    }
+
     fun showHintError(message: String) {
         _uiState.update { it.copy(isHintAdLoading = false, hintErrorMessage = message) }
     }

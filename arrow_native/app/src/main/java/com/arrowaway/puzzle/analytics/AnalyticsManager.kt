@@ -352,6 +352,14 @@ class AnalyticsManager private constructor(context: Context) {
         logEvent("daily_notification_clicked", bundle)
     }
 
+    fun logNoFillFreeHint(levelNumber: Int, isDaily: Boolean) {
+        val bundle = Bundle().apply {
+            putLong("level_number", levelNumber.toLong())
+            putString("mode", if (isDaily) "daily" else "campaign")
+        }
+        logEvent("free_hint_no_fill", bundle)
+    }
+
     fun logDailyReminderShown(streakDays: Int) {
         val bundle = Bundle().apply {
             putLong("streak_days", streakDays.toLong())

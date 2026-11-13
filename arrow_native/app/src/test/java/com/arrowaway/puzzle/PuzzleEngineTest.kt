@@ -444,7 +444,37 @@ class PuzzleEngineTest {
         assertEquals(AdManager.RewardedStatus.READY, com.arrowaway.puzzle.ui.components.effectiveRewardedStatus(AdManager.RewardedStatus.READY, timedOut = true))
         assertNull(com.arrowaway.puzzle.ui.components.rewardedStatusMessage(AdManager.RewardedStatus.READY))
         assertNull(com.arrowaway.puzzle.ui.components.rewardedStatusMessage(AdManager.RewardedStatus.LOADING))
-        assertEquals("No internet connection. Connect to watch an ad.",
+        assertEquals("You're offline. Connect to the internet to get a free hint.",
             com.arrowaway.puzzle.ui.components.rewardedStatusMessage(AdManager.RewardedStatus.NO_INTERNET))
+        assertEquals("You're offline. Connect to the internet to get a free life.",
+            com.arrowaway.puzzle.ui.components.rewardedStatusMessage(
+                AdManager.RewardedStatus.NO_INTERNET, com.arrowaway.puzzle.ui.components.RewardKind.LIFE))
+        assertEquals("Hint ads can't load on this connection right now.",
+            com.arrowaway.puzzle.ui.components.rewardedStatusMessage(AdManager.RewardedStatus.BLOCKED))
+        // No message may blame the player ("your internet", "your ad blocker")
+        for (st in AdManager.RewardedStatus.values()) {
+            for (kind in com.arrowaway.puzzle.ui.components.RewardKind.values()) {
+                val msg = com.arrowaway.puzzle.ui.components.rewardedStatusMessage(st, kind) ?: continue
+                org.junit.Assert.assertFalse(msg, msg.lowercase().contains("your "))
+            }
+        }
+    }
+
+    @Test
+    fun testNoFillFreeHintOnlyWhenNoAdAvailable() {
+        val eligible = { st: AdManager.RewardedStatus, loading: Boolean, blocked: Boolean ->
+            com.arrowaway.puzzle.ui.components.isNoFillFreeHintEligible(st, loading, blocked)
+        }
+        assertTrue(eligible(AdManager.RewardedStatus.NO_FILL, false, false))
+        // Never while still loading, never when ads look blocked
+        assertFalse(eligible(AdManager.RewardedStatus.NO_FILL, true, false))
+        assertFalse(eligible(AdManager.RewardedStatus.NO_FILL, false, true))
+        // Never for any other reason
+        for (st in AdManager.RewardedStatus.values()) {
+            if (st == AdManager.RewardedStatus.NO_FILL) continue
+            for (loading in listOf(false, true)) for (blocked in listOf(false, true)) {
+                assertFalse("$st loading=$loading blocked=$blocked", eligible(st, loading, blocked))
+            }
+        }
     }
 }

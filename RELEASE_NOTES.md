@@ -44,6 +44,8 @@ This document maintains a high-level changelog of all official production releas
 * **Rating prompt timing:** Google's review card now comes after level 8 (was level 5), so it no longer appears on the same screen as the level-5 notification request.
 * **Tap assist on crowded boards:** a tap on the outer quarter of a blocked arrow's cell, right next to an arrow that can move, selects the movable arrow; a tap in the middle of an arrow always selects it. In empty space, blocked arrows must be 1.35x closer to win. Finger-sized search radius (24dp phone / 30dp tablet) measured on screen. Off in Hammer mode. Remote Config kill switch: tap_assist_enabled.
 * **Wrong-tap guard:** for 400 ms after a wrong move, taps on other blocked arrows are ignored (no second heart lost to a shaky double tap); taps on movable arrows still work instantly. Remote Config: wrong_tap_guard_ms (0 = off).
+* **Ad feedback for hints and lives:** a failed ad is remembered until an ad loads, so later taps answer instantly (background retry); while an ad is genuinely loading the bubble shows "Loading ad…" and waits at most 1.5 s. Ad blocking is detected separately (Private DNS on, or the ad server name resolving to 0.0.0.0 / not at all) in the background. Friendly, blame-free messages for offline, blocked, no ad and slow load.
+* **No-ad free hint:** when AdMob has no ad to show (no fill), the player gets 1 free hint, at most once per day; never for offline, blocked ads, load errors or a slow load.
 * **Lives ad:** a rewarded ad on level 11+ / Daily now restores 1 life (was 3). Levels 1–10 still refill 3 lives for free.
 * **Victory screen:** redesigned milestone bonus card with a one-time entrance animation.
 * **Cleanup:** removed the old hint refill popup and unused reward code.
