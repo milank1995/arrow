@@ -54,6 +54,7 @@ import com.arrowaway.puzzle.core.model.Arrow
 import com.arrowaway.puzzle.core.model.ArrowState
 import com.arrowaway.puzzle.game.GameUiState
 import com.arrowaway.puzzle.ui.components.BoosterBar
+import com.arrowaway.puzzle.ui.components.SpeechBubbleTooltip
 import com.arrowaway.puzzle.ui.components.CheerOverlay
 import com.arrowaway.puzzle.ui.components.GameHeader
 import com.arrowaway.puzzle.ui.components.GameOverDialog
@@ -383,51 +384,15 @@ fun GamePlayScreen(
                     }
                 }
 
-                // 3.5 DEDICATED HINT AD ERROR BANNER (Clear, prominent, dismissible)
-                AnimatedVisibility(
+                // 3.5 DEDICATED SPEECH BUBBLE TOOLTIP (Anchored right above the Hint button)
+                SpeechBubbleTooltip(
+                    message = uiState.hintErrorMessage ?: "",
                     visible = uiState.hintErrorMessage != null,
-                    enter = fadeIn(tween(200)) + slideInVertically(tween(200)) { -it },
-                    exit = fadeOut(tween(250)) + slideOutVertically(tween(250)) { -it },
+                    onDismiss = onDismissHintError,
                     modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = 16.dp, start = 20.dp, end = 20.dp)
-                ) {
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color(0xFFDC2626),
-                        border = BorderStroke(1.dp, Color(0xFFB91C1C)),
-                        shadowElevation = 8.dp
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .clickable { onDismissHintError() }
-                                .padding(horizontal = 14.dp, vertical = 10.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Info,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = uiState.hintErrorMessage ?: "",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = Color.White,
-                                modifier = Modifier.weight(1f, fill = false)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Dismiss",
-                                tint = Color.White.copy(alpha = 0.8f),
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-                    }
-                }
+                        .align(Alignment.BottomStart)
+                        .padding(start = 14.dp, bottom = 82.dp)
+                )
 
                 // 4. SUBTLE HUD FLOATING TOAST (Shown on quick Sound toggle without modal interruption)
                 AnimatedVisibility(

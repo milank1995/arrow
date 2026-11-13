@@ -476,8 +476,9 @@ class MainActivity : ComponentActivity() {
                                         gameViewModel.clearHintErrorMessage()
                                         gameViewModel.setHintAdLoading(true)
 
+                                        val requestFailedMsg = getString(R.string.ad_request_failed)
                                         if (!AdManager.isOnline(this@MainActivity)) {
-                                            gameViewModel.showHintError("No internet connection. Please check your connection and try again.")
+                                            gameViewModel.showHintError(requestFailedMsg)
                                             return@GamePlayScreen
                                         }
 
@@ -524,16 +525,7 @@ class MainActivity : ComponentActivity() {
                                                 }
                                                 if (!showed) {
                                                     gameViewModel.setHintAdLoading(false)
-                                                    val status = AdManager.rewardedStatus.value
-                                                    val message = when (status) {
-                                                        AdManager.RewardedStatus.NO_INTERNET ->
-                                                            "No internet connection. Please check your connection and try again."
-                                                        AdManager.RewardedStatus.NO_FILL ->
-                                                            "No video available right now. Please try again in a moment."
-                                                        else ->
-                                                            "Failed to load video ad. Please try again."
-                                                    }
-                                                    gameViewModel.showHintError(message)
+                                                    gameViewModel.showHintError(requestFailedMsg)
                                                 }
                                             }
                                         }

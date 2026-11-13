@@ -1408,9 +1408,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 repository.addCoins(baseCoins)
                 if (LevelDifficultyRules.isMilestoneRewardLevel(completedLevel, isDailyChallenge = false)) {
                     val rewardHints = LevelDifficultyRules.MILESTONE_REWARD_HINTS
-                    if (repository.claimMilestoneReward(completedLevel, rewardHints)) {
-                        _uiState.update { it.copy(milestoneRewardHints = rewardHints) }
-                    }
+                    repository.claimMilestoneReward(completedLevel, rewardHints)
+                    _uiState.update { it.copy(milestoneRewardHints = rewardHints) }
                 }
             }
         }
