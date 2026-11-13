@@ -83,8 +83,6 @@ fun GamePlayScreen(
     onRequestAdHint: () -> Unit = {},
     onDismissHintError: () -> Unit = {},
     onClaimFreeLives: () -> Unit = {},
-    onClaimAdHints: () -> Unit = {},
-    onDismissHintAdPrompt: () -> Unit = {},
     onToggleSound: () -> Unit = {},
     onToggleVibration: () -> Unit = {},
     onToggleHintButton: () -> Unit = {},
@@ -92,7 +90,6 @@ fun GamePlayScreen(
     onHintTimerChange: (Int) -> Unit = {},
     onSettingsClick: (() -> Unit)? = null,
     onClaimDoubleCoins: (Int) -> Unit = {},
-    onClaimRewardedMilestoneHint: ((onSuccess: () -> Unit) -> Unit) = {},
     onIdlePromptSound: () -> Unit = {},
     onPlayStarSound: (Int) -> Unit = {},
     onPlayCoinSound: () -> Unit = {},
@@ -128,7 +125,6 @@ fun GamePlayScreen(
         when {
             showSettingsDialog -> showSettingsDialog = false
             showPauseDialog -> showPauseDialog = false
-            uiState.showHintAdPrompt -> onDismissHintAdPrompt()
             uiState.isGameOver -> onRestartClick()
             else -> showPauseDialog = true
         }

@@ -63,8 +63,6 @@ data class GameUiState(
     val hintsAvailable: Int = 0,
     val isHintAdLoading: Boolean = false,
     val hintErrorMessage: String? = null,
-    val dailyComplimentaryHintsRemaining: Int = 1,
-    val levelFreeHintsRemaining: Int = 1,
     val hammersAvailable: Int = 2,
     val wandsAvailable: Int = 2,
     val isDailyChallengeMode: Boolean = false,
@@ -75,7 +73,6 @@ data class GameUiState(
     val levelStars: Map<Int, Int> = emptyMap(),
     val hasPlayedBefore: Boolean = false,
     val globalLivesAvailable: Int = 6,
-    val showHintAdPrompt: Boolean = false,
     val activeBoosterAnimation: BoosterEffectAnimation? = null,
     val levelCompletionTimeSeconds: Int = 0,
     val levelMovesCount: Int = 0,
@@ -491,9 +488,6 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 isDailyChallengeMode = false,
                 activeDailyDate = null,
                 activeDailyIndex = 1,
-                dailyComplimentaryHintsRemaining = if (levelNumber <= 10) 999 else 0,
-                levelFreeHintsRemaining = if (levelNumber <= 10) 999 else 0,
-                showHintAdPrompt = false,
                 isHintAdLoading = false,
                 hintErrorMessage = null,
                 isGamePaused = false,
@@ -568,9 +562,6 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 activeDailyDate = date.toString(),
                 activeDailyIndex = dailyIndex,
                 activeDailyPool = dailyPool,
-                dailyComplimentaryHintsRemaining = 0,
-                levelFreeHintsRemaining = 0,
-                showHintAdPrompt = false,
                 isHintAdLoading = false,
                 hintErrorMessage = null,
                 isGamePaused = false,
@@ -930,20 +921,9 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun dismissHintAdPrompt() {
-        _uiState.update { it.copy(showHintAdPrompt = false) }
-    }
-
-    fun addHints(amount: Int = 1) {
-        viewModelScope.launch {
-            repository.addHints(amount)
-            audioHapticManager.playBoosterUse("hint")
-        }
-    }
-
     fun claimAdHints(amount: Int = 1) {
         viewModelScope.launch {
-            _uiState.update { it.copy(showHintAdPrompt = false, isHintAdLoading = false) }
+            _uiState.update { it.copy(isHintAdLoading = false) }
             // Auto-execute 1 hint on the board for instant relief
             val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap)
             if (hintTarget != null) {

@@ -51,7 +51,6 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_LEVEL = intPreferencesKey("current_level")
     private val KEY_COINS = intPreferencesKey("coins_balance")
     private val KEY_HINTS = intPreferencesKey("hints_count")
-    private val KEY_MILESTONE_10_REWARDED = booleanPreferencesKey("milestone_level10_reward_claimed")
     private val KEY_CLAIMED_MILESTONES = stringSetPreferencesKey("claimed_milestone_levels")
     private val KEY_HAMMERS = intPreferencesKey("hammers_count")
     private val KEY_WANDS = intPreferencesKey("wands_count")
@@ -295,10 +294,6 @@ class UserPreferencesRepository(private val context: Context) {
     }
 
     /**
-     * Grants the one-time level-10 milestone reward. The check and the grant happen in a single
-     * DataStore transaction, so the reward can never be given twice. Returns true if granted now.
-     */
-    /**
      * Grants the recurring milestone reward for level milestones (5, 10, 15...).
      * The check and grant happen atomically in DataStore so rewards cannot be double-claimed.
      */
@@ -315,8 +310,6 @@ class UserPreferencesRepository(private val context: Context) {
         }
         return granted
     }
-
-    suspend fun claimLevel10MilestoneReward(hints: Int): Boolean = claimMilestoneReward(10, hints)
 
     suspend fun setTheme(index: Int) {
         context.dataStore.edit { it[KEY_THEME] = index }
@@ -497,7 +490,6 @@ class UserPreferencesRepository(private val context: Context) {
             prefs[KEY_GLOBAL_LIVES] = 6
             prefs[KEY_DAILY_UNLOCK_SEEN] = false
             prefs[KEY_HAS_PLAYED_BEFORE] = false
-            prefs[KEY_MILESTONE_10_REWARDED] = false
             prefs[KEY_CLAIMED_MILESTONES] = emptySet()
         }
     }

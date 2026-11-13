@@ -221,11 +221,6 @@ class MainActivity : ComponentActivity() {
                     gameViewModel.analytics.logAdRewardPromptShown("lives_expiry", isRewardedAdReady)
                 }
             }
-            LaunchedEffect(uiState.showHintAdPrompt) {
-                if (uiState.showHintAdPrompt) {
-                    gameViewModel.analytics.logAdRewardPromptShown("hint_refill", isRewardedAdReady)
-                }
-            }
 
             var showNotificationPrePrompt by remember { mutableStateOf(false) }
             var prePromptType by remember { mutableStateOf("unlock") }
@@ -430,17 +425,6 @@ class MainActivity : ComponentActivity() {
                                     onClaimDoubleCoins = { amount ->
                                         gameViewModel.claimDoubleCoins(amount)
                                     },
-                                    onClaimRewardedMilestoneHint = { onSuccess ->
-                                        AdManager.showRewardedAd(
-                                            activity = this@MainActivity,
-                                            placement = "victory_milestone_hint",
-                                            onRewardEarned = {
-                                                gameViewModel.addHints(1)
-                                                onSuccess()
-                                            },
-                                            onAdClosed = { _ -> }
-                                        )
-                                    },
                                     onRestartClick = {
                                         if (uiState.isGameOver && (uiState.currentLevelNumber > 10 || uiState.isDailyChallengeMode) && !isRewardedAdReady) {
                                             gameViewModel.analytics.logAdRewardUnavailable("lives_expiry", rewardedUnavailableReason)
@@ -564,22 +548,6 @@ class MainActivity : ComponentActivity() {
                                                 onAdClosed = { _ -> }
                                             )
                                         }
-                                    },
-                                    onClaimAdHints = {
-                                        AdManager.showRewardedAd(
-                                            activity = this@MainActivity,
-                                            placement = "hint_refill",
-                                            onRewardEarned = {
-                                                gameViewModel.claimAdHints(1)
-                                            },
-                                            onAdClosed = { _ -> }
-                                        )
-                                    },
-                                    onDismissHintAdPrompt = {
-                                        if (!isRewardedAdReady) {
-                                            gameViewModel.analytics.logAdRewardUnavailable("hint_refill", rewardedUnavailableReason)
-                                        }
-                                        gameViewModel.dismissHintAdPrompt()
                                     },
                                     onToggleSound = {
                                         gameViewModel.toggleSound()

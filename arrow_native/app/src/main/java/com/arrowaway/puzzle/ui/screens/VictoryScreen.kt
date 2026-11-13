@@ -165,8 +165,6 @@ fun VictoryScreen(
     starsEarned: Int = 3,
     isDailyUnlockMilestone: Boolean = false,
     milestoneRewardHints: Int = 0,
-    isRewardedHintMilestone: Boolean = false,
-    onClaimRewardedMilestoneHint: ((onSuccess: () -> Unit) -> Unit) = {},
     onStartDailyChallengeClick: () -> Unit = {},
     onRequestNotificationPermission: () -> Unit = {},
     onClaimDoubleCoins: (Int) -> Unit = {},
