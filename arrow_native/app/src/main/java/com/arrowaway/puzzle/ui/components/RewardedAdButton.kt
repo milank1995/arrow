@@ -18,12 +18,36 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.arrowaway.puzzle.ads.AdManager
 import com.arrowaway.puzzle.ads.AdManager.RewardedStatus
 import com.arrowaway.puzzle.ui.theme.ThemePreset
 import kotlinx.coroutines.delay
 
-/** How long "Loading ad…" may spin before we tell the player no ad is available. */
-private const val LOADING_TIMEOUT_MS = 8000L
+/** How long "Loading ad…" may spin in a reward dialog before we say the ad is slow. */
+private const val LOADING_TIMEOUT_MS = 3000L
+
+/** What a reward dialog's ad button shows: the effective status and whether it is "slow". */
+data class RewardedButtonDisplay(val status: RewardedStatus, val slow: Boolean)
+
+/**
+ * - READY always wins (an ad that loads in the background turns the button into "Watch Ad").
+ * - While a new request is LOADING but the last failure reason is still known, show that reason
+ *   at once (no spinner): the quiet retry will flip the button to READY if it succeeds.
+ * - LOADING with no known reason: spinner, then "slow" after the timeout.
+ */
+fun rewardedButtonDisplay(
+    status: RewardedStatus,
+    timedOut: Boolean,
+    knownFailure: RewardedStatus?
+): RewardedButtonDisplay = when {
+    status == RewardedStatus.READY -> RewardedButtonDisplay(RewardedStatus.READY, false)
+    status != RewardedStatus.LOADING -> RewardedButtonDisplay(status, false)
+    knownFailure != null && knownFailure != RewardedStatus.NO_INTERNET &&
+        knownFailure != RewardedStatus.LOADING && knownFailure != RewardedStatus.READY ->
+        RewardedButtonDisplay(knownFailure, false)
+    timedOut -> RewardedButtonDisplay(RewardedStatus.NO_FILL, true)
+    else -> RewardedButtonDisplay(RewardedStatus.LOADING, false)
+}
 
 /** A load still running after the timeout is shown to the player as "no ad available". */
 fun effectiveRewardedStatus(status: RewardedStatus, timedOut: Boolean): RewardedStatus =
@@ -64,8 +88,10 @@ const val REWARDED_LOADING_MESSAGE = "Loading ad…"
 /**
  * "Watch Ad" button for reward dialogs.
  * - READY: shows [readyText] and plays the ad.
- * - LOADING: spinner + "Loading ad…" (disabled) for up to 8 s.
- * - NO_INTERNET / NO_FILL / ERROR: a plain-language reason above a "Retry" button.
+ * - Known failure (blocked / no ad / error from an earlier attempt): the reason at once, with
+ *   "Retry", while a quiet retry runs; becomes "Watch Ad" by itself if an ad loads.
+ * - LOADING with nothing known: spinner + "Loading ad…" for up to 3 s, then "taking a while".
+ * - NO_INTERNET / NO_FILL / BLOCKED / ERROR: a friendly reason above a "Retry" button.
  *
  * [onRequestAd] is called when the dialog opens and on every Retry.
  */
@@ -78,21 +104,24 @@ fun RewardedAdButton(
     onWatchAd: () -> Unit,
     onRequestAd: () -> Unit,
     modifier: Modifier = Modifier,
-    reward: RewardKind = RewardKind.LIFE
+    reward: RewardKind = RewardKind.LIFE,
+    knownFailure: () -> RewardedStatus? = { AdManager.knownRewardedFailure() }
 ) {
     var attempt by remember { mutableIntStateOf(0) }
     var timedOut by remember { mutableStateOf(false) }
+    var failureAtRequest by remember { mutableStateOf<RewardedStatus?>(null) }
 
     LaunchedEffect(attempt) {
         timedOut = false
+        failureAtRequest = knownFailure() // read before the new request resets the status
         onRequestAd()
         delay(LOADING_TIMEOUT_MS)
         timedOut = true
     }
 
-    val shown = effectiveRewardedStatus(status, timedOut)
-    val message = if (status == RewardedStatus.LOADING && timedOut) REWARDED_SLOW_MESSAGE
-        else rewardedStatusMessage(shown, reward)
+    val display = rewardedButtonDisplay(status, timedOut, failureAtRequest)
+    val shown = display.status
+    val message = if (display.slow) REWARDED_SLOW_MESSAGE else rewardedStatusMessage(shown, reward)
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier.fillMaxWidth()) {
         if (message != null) {

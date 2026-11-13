@@ -477,4 +477,50 @@ class PuzzleEngineTest {
             }
         }
     }
+
+    @Test
+    fun testLivesAdButtonAnswersInstantlyWhenReasonKnown() {
+        val d = { st: AdManager.RewardedStatus, timedOut: Boolean, known: AdManager.RewardedStatus? ->
+            com.arrowaway.puzzle.ui.components.rewardedButtonDisplay(st, timedOut, known)
+        }
+        val L = AdManager.RewardedStatus.LOADING
+        // Known blocked / no fill / error: shown at once while the quiet retry loads
+        assertEquals(AdManager.RewardedStatus.BLOCKED, d(L, false, AdManager.RewardedStatus.BLOCKED).status)
+        assertEquals(AdManager.RewardedStatus.NO_FILL, d(L, false, AdManager.RewardedStatus.NO_FILL).status)
+        assertEquals(AdManager.RewardedStatus.ERROR, d(L, false, AdManager.RewardedStatus.ERROR).status)
+        assertFalse(d(L, false, AdManager.RewardedStatus.BLOCKED).slow)
+        // An old "offline" reason is ignored (the request itself reports offline instantly)
+        assertEquals(L, d(L, false, AdManager.RewardedStatus.NO_INTERNET).status)
+        // Nothing known: spinner, then slow after the timeout
+        assertEquals(L, d(L, false, null).status)
+        assertTrue(d(L, true, null).slow)
+        // An ad that loads always wins, and a fresh result replaces the remembered one
+        assertEquals(AdManager.RewardedStatus.READY, d(AdManager.RewardedStatus.READY, false, AdManager.RewardedStatus.BLOCKED).status)
+        assertEquals(AdManager.RewardedStatus.NO_INTERNET, d(AdManager.RewardedStatus.NO_INTERNET, false, AdManager.RewardedStatus.BLOCKED).status)
+    }
+
+    @Test
+    fun testAdBlockedByDnsIsClassifiedAsBlocked() {
+        val c = { code: Int, msg: String?, online: Boolean, sinkholed: Boolean, privateDns: Boolean ->
+            AdManager.classifyRewardedFailure(code, msg, online, sinkholed, privateDns)
+        }
+        val B = AdManager.RewardedStatus.BLOCKED
+        // DNS blocker, network-error code
+        assertEquals(B, c(2, "Network error.", true, false, false))
+        // DNS blocker reported as an internal error with a resolve-host message
+        assertEquals(B, c(0, "Error while connecting to ad server: Unable to resolve host \"googleads.g.doubleclick.net\"", true, false, false))
+        // Ad server name sinkholed: blocked whatever the code (even "no fill")
+        assertEquals(B, c(3, "No fill.", true, true, false))
+        assertEquals(B, c(0, "Internal error.", true, true, false))
+        // Private DNS on + unexplained internal error
+        assertEquals(B, c(0, "Internal error.", true, false, true))
+        // Offline always wins
+        assertEquals(AdManager.RewardedStatus.NO_INTERNET, c(2, "Network error.", false, true, true))
+        // Real no fill (nothing blocked) stays NO_FILL: the only free-hint case
+        assertEquals(AdManager.RewardedStatus.NO_FILL, c(3, "No fill.", true, false, false))
+        assertEquals(AdManager.RewardedStatus.NO_FILL, c(9, "Mediation no fill.", true, false, true))
+        // Other errors stay generic
+        assertEquals(AdManager.RewardedStatus.ERROR, c(0, "Internal error.", true, false, false))
+        assertEquals(AdManager.RewardedStatus.ERROR, c(1, "Invalid request.", true, false, false))
+    }
 }

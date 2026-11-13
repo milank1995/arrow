@@ -108,6 +108,46 @@ object AdManager {
     fun knownRewardedFailure(): RewardedStatus? =
         if (cachedRewardedAd != null && !isRewardedAdExpired()) null else lastRewardedFailure
 
+    /**
+     * Player-facing reason for a rewarded load failure.
+     * - Offline -> NO_INTERNET.
+     * - Online but the request couldn't reach the ad server (network error code, or an "unable to
+     *   resolve host" / connection message, which DNS blockers produce) -> BLOCKED, shown as
+     *   "Ads can't load on this connection right now" (true for blocking and flaky networks alike).
+     * - Ad server name sinkholed (0.0.0.0 / no answer) -> BLOCKED whatever the code.
+     * - Private DNS on and an unexplained internal error -> BLOCKED.
+     * - No fill -> NO_FILL (the only case that can earn the daily free hint).
+     * - Anything else -> ERROR.
+     */
+    fun classifyRewardedFailure(
+        errorCode: Int,
+        errorMessage: String?,
+        online: Boolean,
+        adDomainBlocked: Boolean,
+        privateDnsActive: Boolean
+    ): RewardedStatus {
+        if (!online) return RewardedStatus.NO_INTERNET
+        if (adDomainBlocked) return RewardedStatus.BLOCKED
+        if (isConnectionFailure(errorCode, errorMessage)) return RewardedStatus.BLOCKED
+        return when (errorCode) {
+            AdRequest.ERROR_CODE_NO_FILL, AdRequest.ERROR_CODE_MEDIATION_NO_FILL -> RewardedStatus.NO_FILL
+            AdRequest.ERROR_CODE_INTERNAL_ERROR -> if (privateDnsActive) RewardedStatus.BLOCKED else RewardedStatus.ERROR
+            else -> RewardedStatus.ERROR
+        }
+    }
+
+    /** True when the request never reached the ad server (network error or DNS / connect failure text). */
+    fun isConnectionFailure(errorCode: Int, errorMessage: String?): Boolean {
+        if (errorCode == AdRequest.ERROR_CODE_NETWORK_ERROR) return true
+        val m = errorMessage?.lowercase() ?: return false
+        return CONNECTION_FAILURE_HINTS.any { m.contains(it) }
+    }
+
+    private val CONNECTION_FAILURE_HINTS = listOf(
+        "unable to resolve host", "unknownhost", "no address associated",
+        "failed to connect", "connection refused", "error while connecting", "network error"
+    )
+
     // ---- Ad-block detection (Private DNS / DNS ad blockers) ----
     private const val AD_PROBE_HOST = "googleads.g.doubleclick.net"
     @Volatile private var adDomainBlocked = false
@@ -130,9 +170,13 @@ object AdManager {
      * Background check (never on a tap): does the ad server's name resolve to a real address?
      * DNS ad blockers answer 0.0.0.0 / 127.0.0.1 / :: or nothing at all.
      */
+    @Volatile private var lastAdBlockProbeMs = 0L
+
     fun refreshAdBlockSignal(context: Context) {
-        if (adBlockProbeRunning) return
+        val now = System.currentTimeMillis()
+        if (adBlockProbeRunning || now - lastAdBlockProbeMs < 15_000L) return
         adBlockProbeRunning = true
+        lastAdBlockProbeMs = now
         val appContext = context.applicationContext
         Thread {
             val blocked = try {
@@ -146,9 +190,9 @@ object AdManager {
             mainHandler.post {
                 adDomainBlocked = blocked
                 adBlockProbeRunning = false
-                // Re-label a network-error failure once we know ads are blocked
-                if (lastFailureWasNetworkError && lastRewardedFailure == RewardedStatus.ERROR &&
-                    isAdBlockSuspected(appContext)
+                // Re-label an unexplained failure once we know ads are blocked
+                if (lastRewardedFailure == RewardedStatus.ERROR &&
+                    (blocked || (lastFailureWasNetworkError && isAdBlockSuspected(appContext)))
                 ) {
                     lastRewardedFailure = RewardedStatus.BLOCKED
                     if (_rewardedStatus.value == RewardedStatus.ERROR) setRewardedStatus(RewardedStatus.BLOCKED)
@@ -374,17 +418,19 @@ object AdManager {
                 isRewardedLoading = false
                 // A "network error" while the device is online usually means ads are blocked
                 // (private DNS / ad blocker), so don't tell the player their internet is off.
-                val mapped = statusForLoadError(loadAdError.code)
-                val isNetworkErrorOnline = mapped == RewardedStatus.NO_INTERNET && isOnline(appContext)
-                val finalStatus = when {
-                    isNetworkErrorOnline && isAdBlockSuspected(appContext) -> RewardedStatus.BLOCKED
-                    isNetworkErrorOnline -> RewardedStatus.ERROR
-                    else -> mapped
-                }
-                lastFailureWasNetworkError = isNetworkErrorOnline
+                val online = isOnline(appContext)
+                val finalStatus = classifyRewardedFailure(
+                    errorCode = loadAdError.code,
+                    errorMessage = loadAdError.message,
+                    online = online,
+                    adDomainBlocked = adDomainBlocked,
+                    privateDnsActive = isPrivateDnsActive(appContext)
+                )
+                lastFailureWasNetworkError = online && isConnectionFailure(loadAdError.code, loadAdError.message)
                 lastRewardedFailure = finalStatus
                 setRewardedStatus(finalStatus)
-                if (isNetworkErrorOnline) refreshAdBlockSignal(appContext)
+                // Refresh the ad-block signal after any failure (cheap, throttled, off the main thread)
+                refreshAdBlockSignal(appContext)
                 Log.w(TAG, "Rewarded ad failed to preload: ${loadAdError.message} (code: ${loadAdError.code})")
 
                 val delaySec = getBackoffDelaySec(rewardedRetryAttempt)
