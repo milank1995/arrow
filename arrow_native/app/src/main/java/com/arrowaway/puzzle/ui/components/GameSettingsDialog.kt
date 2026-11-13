@@ -27,7 +27,10 @@ import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
@@ -79,12 +82,16 @@ fun GameSettingsDialog(
     isGridButtonVisible: Boolean,
     hintTimerSeconds: Int,
     activeTheme: ThemePreset,
+    isAutoSolving: Boolean = false,
+    isHandGestureEnabled: Boolean = true,
     onToggleSound: () -> Unit,
     onToggleVibration: () -> Unit,
     onToggleHintButton: () -> Unit,
     onToggleGridButton: () -> Unit,
     onHintTimerChange: (Int) -> Unit,
     onThemeSelect: (ThemePreset) -> Unit,
+    onToggleAutoSolve: () -> Unit = {},
+    onToggleHandGesture: () -> Unit = {},
     onDismiss: () -> Unit
 ) {
     val configuration = LocalConfiguration.current
@@ -455,6 +462,49 @@ fun GameSettingsDialog(
                             )
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // =========================================================
+                    // SECTION 4: AUTO PLAY & AD RECORDING
+                    // =========================================================
+                    Text(
+                        text = "AUTO PLAY & AD RECORDING",
+                        fontSize = 10.5.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = 1.2.sp,
+                        color = activeTheme.textSecondary,
+                        modifier = Modifier.padding(start = 2.dp, bottom = 4.dp)
+                    )
+
+                    // Auto Play option moved to Settings menu
+                    GameSettingToggleRow(
+                        title = if (isAutoSolving) "Auto Play (Active)" else "Auto Play",
+                        icon = if (isAutoSolving) Icons.Default.Stop else Icons.Default.PlayArrow,
+                        iconBg = if (isAutoSolving) Color(0xFFFEE2E2) else itemBg,
+                        iconTint = if (isAutoSolving) Color(0xFFDC2626) else activeTheme.arrowDefault,
+                        isChecked = isAutoSolving,
+                        onCheckedChange = {
+                            onToggleAutoSolve()
+                            if (!isAutoSolving) {
+                                onDismiss() // Smoothly dismiss settings to watch gameplay immediately
+                            }
+                        },
+                        activeTheme = activeTheme
+                    )
+
+                    HorizontalDivider(color = dividerColor, thickness = 0.8.dp)
+
+                    // Hand Gesture Animation ON/OFF Toggle
+                    GameSettingToggleRow(
+                        title = "Hand Gesture Animation",
+                        icon = Icons.Default.TouchApp,
+                        iconBg = if (isHandGestureEnabled) activeTheme.arrowDefault.copy(alpha = 0.15f) else itemBg,
+                        iconTint = if (isHandGestureEnabled) activeTheme.arrowDefault else activeTheme.textSecondary,
+                        isChecked = isHandGestureEnabled,
+                        onCheckedChange = { onToggleHandGesture() },
+                        activeTheme = activeTheme
+                    )
 
                     Spacer(modifier = Modifier.height(18.dp))
 

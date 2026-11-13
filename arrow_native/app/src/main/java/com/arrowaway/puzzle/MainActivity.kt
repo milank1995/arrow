@@ -647,6 +647,9 @@ class MainActivity : ComponentActivity() {
                                     onAutoSolveClick = {
                                         gameViewModel.toggleAutoSolve()
                                     },
+                                    onToggleHandGesture = {
+                                        gameViewModel.toggleHandGesture()
+                                    },
                                     onGameplayStarted = {
                                         gameViewModel.onGameplayStarted()
                                     },
@@ -692,6 +695,11 @@ class MainActivity : ComponentActivity() {
                                     isGridButtonVisible = uiState.isGridButtonVisible,
                                     hintTimerSeconds = uiState.hintTimerSeconds,
                                     isAnalyticsEnabled = uiState.isAnalyticsEnabled,
+                                    isHandGestureEnabled = uiState.isHandGestureEnabled,
+                                    onToggleHandGesture = {
+                                        gameViewModel.playClick()
+                                        gameViewModel.toggleHandGesture()
+                                    },
                                     onToggleAnalytics = {
                                         gameViewModel.playClick()
                                         val isNowEnabled = gameViewModel.toggleAnalytics()

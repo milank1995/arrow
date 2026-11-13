@@ -3,7 +3,6 @@ package com.arrowaway.puzzle.ui.screens
 import com.arrowaway.puzzle.core.LevelDifficultyRules
 import com.arrowaway.puzzle.BuildConfig
 import com.arrowaway.puzzle.config.RemoteConfigManager
-import com.arrowaway.puzzle.ui.components.AutoSolveButton
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -99,6 +98,7 @@ fun GamePlayScreen(
     onPlayClickSound: () -> Unit = {},
     onDismissPreviewRays: () -> Unit = {},
     onAutoSolveClick: () -> Unit = {},
+    onToggleHandGesture: () -> Unit = {},
     onGameplayStarted: () -> Unit = {},
     onPauseStateChanged: (Boolean) -> Unit = {},
     onSkipCelebration: () -> Unit = {},
@@ -300,6 +300,9 @@ fun GamePlayScreen(
                                 activeBoosterAnimation = uiState.activeBoosterAnimation,
                                 currentLevelNumber = uiState.currentLevelNumber,
                                 isDailyChallengeMode = uiState.isDailyChallengeMode,
+                                isAutoSolving = uiState.isAutoSolving,
+                                isHandGestureEnabled = uiState.isHandGestureEnabled,
+                                onStopAutoSolve = onAutoSolveClick,
                                 onArrowClick = { arrow ->
                                     lastInteractionTime = System.currentTimeMillis()
                                     isIdlePromptActive = false
@@ -326,20 +329,6 @@ fun GamePlayScreen(
                                 .align(Alignment.TopCenter)
                                 .padding(top = 4.dp)
                         )
-
-                        // Developer Auto-Solve Testing Tool (Dev Mode only)
-                        if (uiState.isDevMode) {
-                            AutoSolveButton(
-                                isAutoSolving = uiState.isAutoSolving,
-                                onClick = {
-                                    onPlayClickSound()
-                                    onAutoSolveClick()
-                                },
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .padding(top = 10.dp, end = 12.dp)
-                            )
-                        }
                     }
 
                     // 3. BOTTOM BOOSTER CONTROLS (Hidden on initial Level 1 to keep gameplay focused & clean)
@@ -451,12 +440,16 @@ fun GamePlayScreen(
                         isGridButtonVisible = uiState.isGridButtonVisible,
                         hintTimerSeconds = uiState.hintTimerSeconds,
                         activeTheme = theme,
+                        isAutoSolving = uiState.isAutoSolving,
+                        isHandGestureEnabled = uiState.isHandGestureEnabled,
                         onToggleSound = onToggleSound,
                         onToggleVibration = onToggleVibration,
                         onToggleHintButton = onToggleHintButton,
                         onToggleGridButton = onToggleGridButton,
                         onHintTimerChange = onHintTimerChange,
                         onThemeSelect = onThemeSelect,
+                        onToggleAutoSolve = onAutoSolveClick,
+                        onToggleHandGesture = onToggleHandGesture,
                         onDismiss = {
                             showSettingsDialog = false
                             lastInteractionTime = System.currentTimeMillis()

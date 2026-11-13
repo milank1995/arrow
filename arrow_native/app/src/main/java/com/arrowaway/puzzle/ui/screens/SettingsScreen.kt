@@ -54,6 +54,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.automirrored.filled.VolumeMute
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.GridOn
@@ -118,7 +119,9 @@ fun SettingsScreen(
     isGridButtonVisible: Boolean = true,
     hintTimerSeconds: Int = 10,
     isAnalyticsEnabled: Boolean = true,
+    isHandGestureEnabled: Boolean = true,
     onToggleAnalytics: () -> Unit = {},
+    onToggleHandGesture: () -> Unit = {},
     onToggleSound: () -> Unit,
     onToggleVibration: () -> Unit,
     onToggleDailyReminders: () -> Unit = {},
@@ -724,6 +727,22 @@ fun SettingsScreen(
                                     iconTint = if (isAnalyticsEnabled) Color(0xFF3B82F6) else activeTheme.textSecondary.copy(alpha = 0.4f),
                                     isChecked = isAnalyticsEnabled,
                                     onCheckedChange = { onToggleAnalytics() },
+                                    activeTheme = activeTheme
+                                )
+
+                                HorizontalDivider(
+                                    color = Color(0xFFDC2626).copy(alpha = 0.25f),
+                                    thickness = 1.dp,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+
+                                SettingsToggleRow(
+                                    title = "Hand Gesture Animation",
+                                    icon = Icons.Default.TouchApp,
+                                    iconBg = itemBg,
+                                    iconTint = if (isHandGestureEnabled) activeTheme.arrowDefault else activeTheme.textSecondary.copy(alpha = 0.4f),
+                                    isChecked = isHandGestureEnabled,
+                                    onCheckedChange = { onToggleHandGesture() },
                                     activeTheme = activeTheme
                                 )
                             }
