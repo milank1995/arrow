@@ -103,7 +103,7 @@ fun GameOverDialog(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = if (isStartingLevels) "Get 3 free lives to continue." else "Watch an ad to get 3 lives.",
+                    text = if (isStartingLevels) "Get 3 free lives to continue." else "Watch an ad to get 1 life.",
                     fontSize = 13.sp,
                     color = theme.textSecondary,
                     textAlign = TextAlign.Center
@@ -123,7 +123,7 @@ fun GameOverDialog(
                 } else {
                     RewardedAdButton(
                         status = rewardedStatus,
-                        readyText = "Watch Ad (+3 Lives)",
+                        readyText = "Watch Ad (+1 Life)",
                         containerColor = Color(0xFFEF4444),
                         theme = theme,
                         onWatchAd = onClaimLives,

@@ -84,6 +84,9 @@ data class GameUiState(
     /** Hints granted by a one-time milestone reward on the level just completed (0 = none). */
     val milestoneRewardHints: Int = 0,
     val hasSeenDailyUnlockCelebration: Boolean = false,
+    /** The one-time "watch an ad for a hint" explanation has been shown. */
+    val hasSeenHintAdIntro: Boolean = false,
+    val showHintAdIntro: Boolean = false,
     val dailyRemindersEnabled: Boolean = true,
     val hasRequestedNotificationPermission: Boolean = false,
     val notificationPermissionAskCount: Int = 0,
@@ -181,6 +184,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                         isVibrationEnabled = data.vibrationEnabled,
                         activeTheme = theme,
                         hasSeenDailyUnlockCelebration = data.hasSeenDailyUnlockCelebration,
+                        hasSeenHintAdIntro = data.hasSeenHintAdIntro,
                         dailyRemindersEnabled = data.dailyRemindersEnabled,
                         hasRequestedNotificationPermission = data.hasRequestedNotificationPermission,
                         notificationPermissionAskCount = data.notificationPermissionAskCount,
@@ -269,6 +273,16 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
             repository.markDailyUnlockCelebrationSeen()
             _uiState.update { it.copy(hasSeenDailyUnlockCelebration = true) }
         }
+    }
+
+    fun showHintAdIntro() {
+        _uiState.update { it.copy(showHintAdIntro = true) }
+    }
+
+    /** Closes the one-time hint-ad explanation and remembers that the player has seen it. */
+    fun closeHintAdIntro() {
+        _uiState.update { it.copy(showHintAdIntro = false, hasSeenHintAdIntro = true) }
+        viewModelScope.launch { repository.markHintAdIntroSeen() }
     }
 
     fun getStreakDaysSynchronous(): Int = repository.getStreakDaysSynchronous()
@@ -1343,6 +1357,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     hasPlayedBefore = false,
                     globalLivesAvailable = 6,
                     hasSeenDailyUnlockCelebration = false,
+                    hasSeenHintAdIntro = false,
+                    showHintAdIntro = false,
                     isLevelComplete = false,
                     milestoneRewardHints = 0,
                     isGameOver = false,

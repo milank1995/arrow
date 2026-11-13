@@ -35,6 +35,7 @@ data class UserGameData(
     val themeIndex: Int = 0,
     val globalLives: Int = 6,
     val hasSeenDailyUnlockCelebration: Boolean = false,
+    val hasSeenHintAdIntro: Boolean = false,
     val dailyRemindersEnabled: Boolean = true,
     val hasRequestedNotificationPermission: Boolean = false,
     val notificationPermissionAskCount: Int = 0,
@@ -65,6 +66,7 @@ class UserPreferencesRepository(private val context: Context) {
     private val KEY_THEME = intPreferencesKey("selected_theme_index")
     private val KEY_GLOBAL_LIVES = intPreferencesKey("global_lives_bank")
     private val KEY_DAILY_UNLOCK_SEEN = booleanPreferencesKey("daily_unlock_celebration_seen")
+    private val KEY_HINT_AD_INTRO_SEEN = booleanPreferencesKey("hint_ad_intro_seen")
     private val KEY_DAILY_REMINDERS_ENABLED = booleanPreferencesKey("daily_reminders_enabled")
     private val KEY_NOTIFICATION_PERMISSION_REQUESTED = booleanPreferencesKey("has_requested_notification_permission")
     private val KEY_NOTIFICATION_ASK_COUNT = intPreferencesKey("notification_permission_ask_count")
@@ -192,6 +194,7 @@ class UserPreferencesRepository(private val context: Context) {
             themeIndex = prefs[KEY_THEME] ?: 0,
             globalLives = prefs[KEY_GLOBAL_LIVES] ?: 6,
             hasSeenDailyUnlockCelebration = prefs[KEY_DAILY_UNLOCK_SEEN] ?: false,
+            hasSeenHintAdIntro = prefs[KEY_HINT_AD_INTRO_SEEN] ?: false,
             dailyRemindersEnabled = prefs[KEY_DAILY_REMINDERS_ENABLED] ?: true,
             hasRequestedNotificationPermission = prefs[KEY_NOTIFICATION_PERMISSION_REQUESTED] ?: false,
             notificationPermissionAskCount = prefs[KEY_NOTIFICATION_ASK_COUNT] ?: 0,
@@ -388,6 +391,12 @@ class UserPreferencesRepository(private val context: Context) {
         }
     }
 
+    suspend fun markHintAdIntroSeen() {
+        context.dataStore.edit { prefs ->
+            prefs[KEY_HINT_AD_INTRO_SEEN] = true
+        }
+    }
+
     suspend fun markNotificationPermissionRequested() {
         context.dataStore.edit { prefs ->
             prefs[KEY_NOTIFICATION_PERMISSION_REQUESTED] = true
@@ -489,6 +498,7 @@ class UserPreferencesRepository(private val context: Context) {
             prefs[KEY_LEVEL_STARS_MAP] = ""
             prefs[KEY_GLOBAL_LIVES] = 6
             prefs[KEY_DAILY_UNLOCK_SEEN] = false
+            prefs[KEY_HINT_AD_INTRO_SEEN] = false
             prefs[KEY_HAS_PLAYED_BEFORE] = false
             prefs[KEY_CLAIMED_MILESTONES] = emptySet()
         }

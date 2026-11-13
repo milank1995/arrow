@@ -58,6 +58,7 @@ import com.arrowaway.puzzle.ui.components.SpeechBubbleTooltip
 import com.arrowaway.puzzle.ui.components.CheerOverlay
 import com.arrowaway.puzzle.ui.components.GameHeader
 import com.arrowaway.puzzle.ui.components.GameOverDialog
+import com.arrowaway.puzzle.ui.components.HintAdIntroDialog
 import com.arrowaway.puzzle.ui.components.PauseDialog
 import com.arrowaway.puzzle.ui.components.PuzzleBoardCanvas
 import com.arrowaway.puzzle.ui.components.GameSettingsDialog
@@ -82,6 +83,8 @@ fun GamePlayScreen(
     onBackToHomeClick: () -> Unit,
     onRequestAdHint: () -> Unit = {},
     onDismissHintError: () -> Unit = {},
+    onHintAdIntroWatch: () -> Unit = {},
+    onHintAdIntroDismiss: () -> Unit = {},
     onClaimFreeLives: () -> Unit = {},
     onToggleSound: () -> Unit = {},
     onToggleVibration: () -> Unit = {},
@@ -125,6 +128,7 @@ fun GamePlayScreen(
         when {
             showSettingsDialog -> showSettingsDialog = false
             showPauseDialog -> showPauseDialog = false
+            uiState.showHintAdIntro -> onHintAdIntroDismiss()
             uiState.isGameOver -> onRestartClick()
             else -> showPauseDialog = true
         }
@@ -453,6 +457,15 @@ fun GamePlayScreen(
                             showSettingsDialog = false
                             lastInteractionTime = System.currentTimeMillis()
                         }
+                    )
+                }
+
+                // 5.5 ONE-TIME HINT AD EXPLANATION (first time a player is out of hints)
+                if (uiState.showHintAdIntro && !uiState.isGameOver && !uiState.isLevelComplete) {
+                    HintAdIntroDialog(
+                        theme = theme,
+                        onWatchAd = onHintAdIntroWatch,
+                        onDismiss = onHintAdIntroDismiss
                     )
                 }
 
