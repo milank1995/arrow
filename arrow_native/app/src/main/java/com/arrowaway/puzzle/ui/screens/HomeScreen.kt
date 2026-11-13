@@ -48,7 +48,10 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.unit.Constraints
 import com.arrowaway.puzzle.ui.components.DailyReminderBubble
 import kotlin.math.roundToInt
 import androidx.compose.ui.Alignment
@@ -736,24 +739,61 @@ fun HomeScreen(
             }
         }
 
-        // 4. DAILY REMINDER BUBBLE: hangs just below the Daily Challenge button (never over Play)
+        // 4. DAILY REMINDER BUBBLE: hangs below the Daily Challenge button. On screens too short
+        //    for that it flips above the button instead, so it is never cut off.
         val anchor = dailyButtonBounds
         if (isReminderVisible && anchor != null) {
             val density = LocalDensity.current
-            val bubbleWidthPx = anchor.width * 0.96f
-            val bubbleWidth = with(density) { bubbleWidthPx.toDp() }
-            DailyReminderBubble(
-                streakDays = uiState.streakDays,
-                width = bubbleWidth,
-                onPlay = onDailyReminderPlay,
-                onDismiss = onDailyReminderDismiss,
-                modifier = Modifier.offset {
-                    IntOffset(
-                        x = (anchor.center.x - bubbleWidthPx / 2f - rootOrigin.x).roundToInt(),
-                        y = (anchor.bottom + 4.dp.toPx() - rootOrigin.y).roundToInt()
+            val bottomInsetPx = WindowInsets.navigationBars.getBottom(density)
+            SubcomposeLayout(modifier = Modifier.matchParentSize()) { constraints ->
+                val edgePx = 10.dp.toPx()
+                val gapPx = 2.dp.toPx()
+                val anchorLeft = anchor.left - rootOrigin.x
+                val anchorTop = anchor.top - rootOrigin.y
+                val anchorBottom = anchor.bottom - rootOrigin.y
+                val bubbleWidthPx = minOf(anchor.width * 0.96f, constraints.maxWidth - 2 * edgePx)
+                    .coerceAtLeast(0f).roundToInt()
+                val bubbleWidth = bubbleWidthPx.toDp()
+                val bubbleConstraints = Constraints(maxWidth = bubbleWidthPx, maxHeight = constraints.maxHeight)
+
+                // Static copies to learn the heights (the same whichever way the pointer faces)
+                fun probe(key: String, dense: Boolean) = subcompose(key) {
+                    DailyReminderBubble(
+                        streakDays = uiState.streakDays,
+                        width = bubbleWidth,
+                        pointerAtBottom = false,
+                        onPlay = {},
+                        onDismiss = {},
+                        dense = dense,
+                        animated = false
                     )
+                }.first().measure(bubbleConstraints).height
+
+                val spaceBelow = constraints.maxHeight - bottomInsetPx - edgePx - (anchorBottom + gapPx)
+                // Prefer below the button (never over the main Play button); go one-row when tight;
+                // only if even that can't fit, sit above the Daily button.
+                val dense = probe("probeFull", dense = false) > spaceBelow
+                val placeAbove = dense && probe("probeDense", dense = true) > spaceBelow
+
+                val bubble = subcompose("bubble") {
+                    DailyReminderBubble(
+                        streakDays = uiState.streakDays,
+                        width = bubbleWidth,
+                        pointerAtBottom = placeAbove,
+                        onPlay = onDailyReminderPlay,
+                        onDismiss = onDailyReminderDismiss,
+                        dense = dense
+                    )
+                }.first().measure(bubbleConstraints)
+
+                layout(constraints.maxWidth, constraints.maxHeight) {
+                    val maxX = (constraints.maxWidth - bubble.width - edgePx).coerceAtLeast(edgePx)
+                    val x = (anchorLeft + anchor.width / 2f - bubble.width / 2f).coerceIn(edgePx, maxX)
+                    val rawY = if (placeAbove) anchorTop - gapPx - bubble.height else anchorBottom + gapPx
+                    val maxY = (constraints.maxHeight - bottomInsetPx - edgePx - bubble.height).coerceAtLeast(0f)
+                    bubble.place(x.roundToInt(), rawY.coerceIn(0f, maxY).roundToInt())
                 }
-            )
+            }
         }
     }
 }
