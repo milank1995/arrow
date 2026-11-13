@@ -34,7 +34,7 @@ class InAppReviewManager(private val activity: Activity) {
     companion object {
         private const val TAG = "ArrowAwayReview"
         const val DEFAULT_COOLDOWN_DAYS = 30
-        const val MIN_ELIGIBLE_LEVEL = 5
+        const val MIN_ELIGIBLE_LEVEL = 8
 
         /**
          * Checks whether the player is in an optimal "Emotional High" state for a rating prompt,

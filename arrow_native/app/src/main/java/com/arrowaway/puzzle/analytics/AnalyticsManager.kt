@@ -352,6 +352,22 @@ class AnalyticsManager private constructor(context: Context) {
         logEvent("daily_notification_clicked", bundle)
     }
 
+    fun logDailyReminderShown(streakDays: Int) {
+        val bundle = Bundle().apply {
+            putLong("streak_days", streakDays.toLong())
+        }
+        logEvent("daily_reminder_shown", bundle)
+    }
+
+    /** action: "play" or "dismiss" */
+    fun logDailyReminderAction(action: String, streakDays: Int) {
+        val bundle = Bundle().apply {
+            putString("action", action)
+            putLong("streak_days", streakDays.toLong())
+        }
+        logEvent("daily_reminder_action", bundle)
+    }
+
     fun logNotificationPrePromptShown(promptType: String) {
         val bundle = Bundle().apply {
             putString("prompt_type", promptType)

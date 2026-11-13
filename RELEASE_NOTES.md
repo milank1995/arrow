@@ -26,6 +26,7 @@ This document maintains a high-level changelog of all official production releas
 • Hand guide on the first levels to show you how to play
 • Free bonus hint every 5 levels
 • Hints save up between levels
+• New Daily Challenge reminder on the home screen
 • Out of hints? One tap on Hint plays a short ad for a free hint
 • Smoother, faster ad loading with clear messages
 • New look for the win screen bonus
@@ -39,6 +40,8 @@ This document maintains a high-level changelog of all official production releas
 * **One-tap hint ad:** with 0 hints the Hint button shows an AD badge and plays a rewarded ad for 1 hint. The first time, a short "Out of hints" explanation is shown so players knowingly opt in.
 * **Faster ad feedback:** instant message when offline or when ads were just blocked (DNS / no fill); otherwise at most 2.5 s of loading. Reuses the standard ad messages. An ad never appears after the player has left the board.
 * **Daily Challenge hints:** saved hints are only for normal levels. In the Daily Challenge the Hint button always offers a rewarded ad (+1 hint), with a one-time explanation the first time.
+* **Daily Challenge reminder bubble:** the launch popup is replaced by a speech bubble under the Daily Challenge button on the home screen (streak-aware text + Play button that starts today's challenge). Shown while the Daily is unlocked and today's puzzle is unsolved; closing it hides it until the app is reopened; it disappears once today's challenge is completed.
+* **Rating prompt timing:** Google's review card now comes after level 8 (was level 5), so it no longer appears on the same screen as the level-5 notification request.
 * **Lives ad:** a rewarded ad on level 11+ / Daily now restores 1 life (was 3). Levels 1–10 still refill 3 lives for free.
 * **Victory screen:** redesigned milestone bonus card with a one-time entrance animation.
 * **Cleanup:** removed the old hint refill popup and unused reward code.

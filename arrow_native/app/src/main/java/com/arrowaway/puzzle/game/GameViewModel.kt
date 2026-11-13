@@ -236,6 +236,22 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         _uiState.update { it.copy(showDailyLaunchPrompt = false) }
     }
 
+    /**
+     * Daily reminder bubble: a close only lasts until the app is opened again. Re-evaluates
+     * "unlocked and today's challenge not done" with today's date (handles a new day too).
+     */
+    private fun refreshDailyReminderOnReopen() {
+        hasDismissedDailyLaunchPromptThisSession = false
+        val state = _uiState.value
+        val isUnlocked = DailyChallengeRules.isDailyUnlocked(
+            currentLevel = state.currentLevelNumber,
+            lastCompletedLevel = state.lastCompletedLevelNumber,
+            hasSeenCelebration = state.hasSeenDailyUnlockCelebration
+        )
+        val isDoneToday = state.completedDailyDates.contains(LocalDate.now().toString())
+        _uiState.update { it.copy(showDailyLaunchPrompt = isUnlocked && !isDoneToday) }
+    }
+
     fun toggleDevMode(): Boolean {
         if (!com.arrowaway.puzzle.BuildConfig.DEBUG) return false
         val newMode = !_uiState.value.isDevMode
@@ -378,6 +394,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun onAppForegrounded(isGameplayScreen: Boolean) {
         isAppInBackground = false
+        refreshDailyReminderOnReopen()
         isGameplayScreenActive = isGameplayScreen
         _uiState.update { it.copy(isAppInBackground = false) }
         if (lastBackgroundTimeMs > 0L) {

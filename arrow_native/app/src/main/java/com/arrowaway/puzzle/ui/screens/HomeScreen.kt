@@ -40,6 +40,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
+import com.arrowaway.puzzle.ui.components.DailyReminderBubble
+import kotlin.math.roundToInt
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -90,6 +101,10 @@ fun HomeScreen(
     onReviewDailyLevelsClick: () -> Unit = {},
     onLevelChange: (Int) -> Unit = {},
     onTestNotificationClick: () -> Unit = {},
+    showDailyReminder: Boolean = false,
+    onDailyReminderShown: () -> Unit = {},
+    onDailyReminderPlay: () -> Unit = {},
+    onDailyReminderDismiss: () -> Unit = {},
     isDevMode: Boolean = BuildConfig.DEBUG,
     modifier: Modifier = Modifier
 ) {
@@ -122,13 +137,22 @@ fun HomeScreen(
         hasSeenCelebration = uiState.hasSeenDailyUnlockCelebration,
         unlockLevel = unlockLevel
     )
-    val todayStr = remember { LocalDate.now().toString() }
+    val todayStr = LocalDate.now().toString()
     val isDailyCompletedToday = uiState.completedDailyDates.contains(todayStr)
+
+    // Daily reminder bubble: only while the Daily is unlocked and today's puzzle isn't solved
+    val isReminderVisible = showDailyReminder && isDailyUnlocked && !isDailyCompletedToday
+    var rootOrigin by remember { mutableStateOf(Offset.Zero) }
+    var dailyButtonBounds by remember { mutableStateOf<Rect?>(null) }
+    LaunchedEffect(isReminderVisible) {
+        if (isReminderVisible) onDailyReminderShown()
+    }
 
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(theme.background)
+            .onGloballyPositioned { rootOrigin = it.positionInRoot() }
     ) {
         // 1. ATMOSPHERIC BACKGROUND: Soft Blooming Radial Aura + Faint Watermark Silhouettes
         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -486,6 +510,7 @@ fun HomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(62.dp)
+                            .onGloballyPositioned { dailyButtonBounds = it.boundsInRoot() }
                             .clip(RoundedCornerShape(18.dp))
                             .clickable(onClick = onDailyChallengeClick)
                     ) {
@@ -709,6 +734,26 @@ fun HomeScreen(
                     }
                 }
             }
+        }
+
+        // 4. DAILY REMINDER BUBBLE: hangs just below the Daily Challenge button (never over Play)
+        val anchor = dailyButtonBounds
+        if (isReminderVisible && anchor != null) {
+            val density = LocalDensity.current
+            val bubbleWidthPx = anchor.width * 0.96f
+            val bubbleWidth = with(density) { bubbleWidthPx.toDp() }
+            DailyReminderBubble(
+                streakDays = uiState.streakDays,
+                width = bubbleWidth,
+                onPlay = onDailyReminderPlay,
+                onDismiss = onDailyReminderDismiss,
+                modifier = Modifier.offset {
+                    IntOffset(
+                        x = (anchor.center.x - bubbleWidthPx / 2f - rootOrigin.x).roundToInt(),
+                        y = (anchor.bottom + 4.dp.toPx() - rootOrigin.y).roundToInt()
+                    )
+                }
+            )
         }
     }
 }

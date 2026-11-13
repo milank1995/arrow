@@ -47,7 +47,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.arrowaway.puzzle.game.GameViewModel
 import com.arrowaway.puzzle.notification.NotificationHelper
-import com.arrowaway.puzzle.ui.components.DailyStartPromptDialog
 import com.arrowaway.puzzle.ui.components.NotificationPrePromptDialog
 import com.arrowaway.puzzle.ui.components.NotificationSettingsDialog
 import com.arrowaway.puzzle.ui.components.SoundSettingsDialog
@@ -382,6 +381,26 @@ class MainActivity : ComponentActivity() {
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
+                                    },
+                                    showDailyReminder = uiState.showDailyLaunchPrompt &&
+                                        com.arrowaway.puzzle.config.RemoteConfigManager.isDailyChallengeEnabled,
+                                    onDailyReminderShown = {
+                                        gameViewModel.analytics.logDailyReminderShown(uiState.streakDays)
+                                    },
+                                    onDailyReminderPlay = {
+                                        gameViewModel.playClick()
+                                        gameViewModel.analytics.logDailyReminderAction("play", uiState.streakDays)
+                                        gameViewModel.dismissDailyLaunchPrompt()
+                                        val today = LocalDate.now().toString()
+                                        gameViewModel.startDailyChallenge(today)
+                                        launchGameplayWithPendingAdCheck {
+                                            currentScreen = AppScreen.GAMEPLAY
+                                        }
+                                    },
+                                    onDailyReminderDismiss = {
+                                        gameViewModel.playClick()
+                                        gameViewModel.analytics.logDailyReminderAction("dismiss", uiState.streakDays)
+                                        gameViewModel.dismissDailyLaunchPrompt()
                                     },
                                     onThemeClick = {
                                         gameViewModel.playClick()
@@ -764,27 +783,6 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         }
-                    }
-
-                    // Game Start Daily Challenge Prompt Modal on Home screen
-                    if (uiState.showDailyLaunchPrompt && currentScreen == AppScreen.HOME) {
-                        DailyStartPromptDialog(
-                            streakDays = uiState.streakDays,
-                            theme = uiState.activeTheme,
-                            onPlayTodayClick = {
-                                gameViewModel.playClick()
-                                gameViewModel.dismissDailyLaunchPrompt()
-                                val today = LocalDate.now().toString()
-                                gameViewModel.startDailyChallenge(today)
-                                launchGameplayWithPendingAdCheck {
-                                    currentScreen = AppScreen.GAMEPLAY
-                                }
-                            },
-                            onDismiss = {
-                                gameViewModel.playClick()
-                                gameViewModel.dismissDailyLaunchPrompt()
-                            }
-                        )
                     }
 
                     // Notification Pre-Prompt Soft Ask Dialog

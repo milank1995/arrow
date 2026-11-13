@@ -30,7 +30,7 @@ object RemoteConfigManager {
           "daily_completion_coins": 100,
           "easy_daily_until_level": 20,
           "is_daily_challenge_enabled": true,
-          "review_prompt_min_level": 5,
+          "review_prompt_min_level": 8,
           "review_prompt_cooldown_days": 30
         }
     """.trimIndent()
@@ -59,7 +59,7 @@ object RemoteConfigManager {
         KEY_ADS_CONFIG to DEFAULT_ADS_CONFIG_JSON,
         "daily_challenge_unlock_level" to 5L,
         "easy_daily_until_level" to 20L,
-        "review_prompt_min_level" to 5L
+        "review_prompt_min_level" to 8L
     )
 
     private var remoteConfig: FirebaseRemoteConfig? = null
@@ -201,7 +201,7 @@ object RemoteConfigManager {
             if (!direct.isNullOrBlank()) {
                 direct.toIntOrNull()?.let { return it }
             }
-            return configJson.optInt("review_prompt_min_level", 5)
+            return configJson.optInt("review_prompt_min_level", 8)
         }
 
     val reviewPromptCooldownDays: Int
