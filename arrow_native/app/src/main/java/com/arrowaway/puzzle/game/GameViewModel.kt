@@ -1,5 +1,7 @@
 package com.arrowaway.puzzle.game
 
+import android.os.SystemClock
+
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -612,6 +614,14 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /** When the last wrong move happened (uptime ms); drives the wrong-tap guard. */
+    private var lastWrongMoveAtMs = 0L
+
+    private fun isWithinWrongTapGuard(): Boolean {
+        val guardMs = RemoteConfigManager.wrongTapGuardMs
+        return guardMs > 0L && lastWrongMoveAtMs > 0L && SystemClock.uptimeMillis() - lastWrongMoveAtMs < guardMs
+    }
+
     fun onArrowClicked(clickedArrow: Arrow) {
         if (_uiState.value.isLevelComplete || _uiState.value.isGameOver) return
 
@@ -625,6 +635,11 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         // Multi-tap prevention: Ignore clicks on arrows that are actively flying out or already cleared.
         // WRONG_FLASH arrows CAN be re-tapped immediately (user tapping blocked arrow again is valid input).
         if (currentArrow.state == ArrowState.FLYING_OUT || currentArrow.state == ArrowState.CLEARED) return
+        // Wrong-tap guard: right after a wrong move, a tap on another BLOCKED arrow is ignored
+        // (no heart lost from a shaky double tap). Taps on arrows that can move still work at once.
+        if (isWithinWrongTapGuard() && !_uiState.value.isHammerModeActive &&
+            !PuzzleSolver.canMoveOut(currentArrow, occupancyMap)
+        ) return
         // If arrow is still in WRONG_FLASH, snap it back to IDLE first, then process the tap immediately
         if (currentArrow.state == ArrowState.WRONG_FLASH) {
             _uiState.update { state ->
@@ -670,6 +685,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
         } else {
             // WRONG MOVE: Collision
             levelMistakesCount++
+            lastWrongMoveAtMs = SystemClock.uptimeMillis()
             audioHapticManager.playWrongMove()
 
             val isAlreadyMarkedIncorrect = freshArrow.isHighlighted

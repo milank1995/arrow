@@ -31,7 +31,9 @@ object RemoteConfigManager {
           "easy_daily_until_level": 20,
           "is_daily_challenge_enabled": true,
           "review_prompt_min_level": 8,
-          "review_prompt_cooldown_days": 30
+          "review_prompt_cooldown_days": 30,
+          "tap_assist_enabled": true,
+          "wrong_tap_guard_ms": 400
         }
     """.trimIndent()
 
@@ -59,7 +61,9 @@ object RemoteConfigManager {
         KEY_ADS_CONFIG to DEFAULT_ADS_CONFIG_JSON,
         "daily_challenge_unlock_level" to 5L,
         "easy_daily_until_level" to 20L,
-        "review_prompt_min_level" to 8L
+        "review_prompt_min_level" to 8L,
+        "tap_assist_enabled" to true,
+        "wrong_tap_guard_ms" to 400L
     )
 
     private var remoteConfig: FirebaseRemoteConfig? = null
@@ -194,6 +198,23 @@ object RemoteConfigManager {
 
     val isDailyChallengeEnabled: Boolean
         get() = configJson.optBoolean("is_daily_challenge_enabled", true)
+
+    /** Borderline taps prefer arrows that can move (kill switch for the tap assist). */
+    val isTapAssistEnabled: Boolean
+        get() {
+            val direct = remoteConfig?.getString("tap_assist_enabled")?.trim()?.lowercase()
+            if (direct == "true") return true
+            if (direct == "false") return false
+            return configJson.optBoolean("tap_assist_enabled", true)
+        }
+
+    /** After a wrong move, taps on other BLOCKED arrows are ignored for this long (0 = off). */
+    val wrongTapGuardMs: Long
+        get() {
+            val direct = remoteConfig?.getString("wrong_tap_guard_ms")?.trim()
+            if (!direct.isNullOrBlank()) direct.toLongOrNull()?.let { return it.coerceIn(0L, 1500L) }
+            return configJson.optLong("wrong_tap_guard_ms", 400L).coerceIn(0L, 1500L)
+        }
 
     val reviewPromptMinLevel: Int
         get() {

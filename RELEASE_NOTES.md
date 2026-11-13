@@ -42,6 +42,8 @@ This document maintains a high-level changelog of all official production releas
 * **Daily Challenge hints:** saved hints are only for normal levels. In the Daily Challenge the Hint button always offers a rewarded ad (+1 hint), with a one-time explanation the first time.
 * **Daily Challenge reminder bubble:** the launch popup is replaced by a speech bubble under the Daily Challenge button on the home screen (streak-aware text + Play button that starts today's challenge). Shown while the Daily is unlocked and today's puzzle is unsolved; closing it hides it until the app is reopened; it disappears once today's challenge is completed.
 * **Rating prompt timing:** Google's review card now comes after level 8 (was level 5), so it no longer appears on the same screen as the level-5 notification request.
+* **Tap assist on crowded boards:** a tap on the outer quarter of a blocked arrow's cell, right next to an arrow that can move, selects the movable arrow; a tap in the middle of an arrow always selects it. In empty space, blocked arrows must be 1.35x closer to win. Finger-sized search radius (24dp phone / 30dp tablet) measured on screen. Off in Hammer mode. Remote Config kill switch: tap_assist_enabled.
+* **Wrong-tap guard:** for 400 ms after a wrong move, taps on other blocked arrows are ignored (no second heart lost to a shaky double tap); taps on movable arrows still work instantly. Remote Config: wrong_tap_guard_ms (0 = off).
 * **Lives ad:** a rewarded ad on level 11+ / Daily now restores 1 life (was 3). Levels 1–10 still refill 3 lives for free.
 * **Victory screen:** redesigned milestone bonus card with a one-time entrance animation.
 * **Cleanup:** removed the old hint refill popup and unused reward code.

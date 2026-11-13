@@ -123,6 +123,8 @@ fun PuzzleBoardCanvas(
     showTutorialHand: Boolean = (currentLevelNumber in 1..2 && !isDailyChallengeMode),
     onArrowClick: (Arrow) -> Unit,
     onArrowLongPress: (Arrow, isPressed: Boolean) -> Unit,
+    /** Tap assist: borderline taps go to an arrow that can move. Off for exact picks (Hammer). */
+    preferMovableArrows: Boolean = true,
     onDismissPreviewRays: () -> Unit = {},
     onSkipCelebration: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -241,7 +243,11 @@ fun PuzzleBoardCanvas(
         val currentOnArrowClick by rememberUpdatedState(onArrowClick)
         val currentOnArrowLongPress by rememberUpdatedState(onArrowLongPress)
         val currentOnDismissPreviewRays by rememberUpdatedState(onDismissPreviewRays)
-        val minTouchTargetPx = with(LocalDensity.current) { 15.dp.toPx() }
+        // Finger-sized search radius measured on SCREEN (bigger on tablets); converted to board
+        // space at touch time so it stays finger-sized whatever the zoom.
+        val isTabletScreen = androidx.compose.ui.platform.LocalConfiguration.current.smallestScreenWidthDp >= 600
+        val minTouchTargetPx = with(LocalDensity.current) { (if (isTabletScreen) 30.dp else 24.dp).toPx() }
+        val currentPreferMovable by rememberUpdatedState(preferMovableArrows)
         val currentMinTouchTargetPx by rememberUpdatedState(minTouchTargetPx)
         val minStrokePx = with(LocalDensity.current) { 1.2.dp.toPx() }
         // Keep arrow thickness in proportion when the cell cap grows (4.8dp at a 50dp cap).
@@ -479,7 +485,8 @@ fun PuzzleBoardCanvas(
                             arrows = currentArrows,
                             cellSize = currentCellSize,
                             headSize = currentHeadSize,
-                            minTouchTargetPx = currentMinTouchTargetPx,
+                            minTouchTargetPx = currentMinTouchTargetPx / (scale * currentIntroZoom).coerceAtLeast(0.01f),
+                            preferMovable = currentPreferMovable,
                             occupancy = currentOccupancyMap,
                             clearedCells = currentClearedCells,
                             xSize = currentXSize,
@@ -516,7 +523,8 @@ fun PuzzleBoardCanvas(
                                             arrows = currentArrows,
                                             cellSize = currentCellSize,
                                             headSize = currentHeadSize,
-                                            minTouchTargetPx = currentMinTouchTargetPx,
+                                            minTouchTargetPx = currentMinTouchTargetPx / (scale * currentIntroZoom).coerceAtLeast(0.01f),
+                            preferMovable = currentPreferMovable,
                                             occupancy = currentOccupancyMap,
                                             clearedCells = currentClearedCells,
                                             xSize = currentXSize,
@@ -655,7 +663,8 @@ fun PuzzleBoardCanvas(
                                                 arrows = currentArrows,
                                                 cellSize = currentCellSize,
                                                 headSize = currentHeadSize,
-                                                minTouchTargetPx = currentMinTouchTargetPx,
+                                                minTouchTargetPx = currentMinTouchTargetPx / (scale * currentIntroZoom).coerceAtLeast(0.01f),
+                            preferMovable = currentPreferMovable,
                                                 occupancy = currentOccupancyMap,
                                                 clearedCells = currentClearedCells,
                                                 xSize = currentXSize,
@@ -677,7 +686,8 @@ fun PuzzleBoardCanvas(
                                                     arrows = currentArrows,
                                                     cellSize = currentCellSize,
                                                     headSize = currentHeadSize,
-                                                    minTouchTargetPx = currentMinTouchTargetPx,
+                                                    minTouchTargetPx = currentMinTouchTargetPx / (scale * currentIntroZoom).coerceAtLeast(0.01f),
+                            preferMovable = currentPreferMovable,
                                                     occupancy = currentOccupancyMap,
                                                     clearedCells = currentClearedCells,
                                                     xSize = currentXSize,
@@ -1091,27 +1101,9 @@ fun PuzzleBoardCanvas(
     }
 }
 
-private fun isPointInTriangle(p: Offset, a: Offset, b: Offset, c: Offset): Boolean {
-    val cp1 = (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x)
-    val cp2 = (c.x - b.x) * (p.y - b.y) - (c.y - b.y) * (p.x - b.x)
-    val cp3 = (a.x - c.x) * (p.y - c.y) - (a.y - c.y) * (p.x - c.x)
-    val hasNeg = (cp1 < -0.001f) || (cp2 < -0.001f) || (cp3 < -0.001f)
-    val hasPos = (cp1 > 0.001f) || (cp2 > 0.001f) || (cp3 > 0.001f)
-    return !(hasNeg && hasPos)
-}
-
 /**
- * Deterministic Hit Detection matching Unity's Raycast2D / Cell-Based Architecture.
- *
- * Guarantees:
- * 1. Cell Authority (Primary): In a grid puzzle, each arrow's body and head occupy discrete cells.
- *    If the touch lands inside cell (cellX, cellY) occupied by an active arrow, THAT EXACT ARROW
- *    is returned immediately. Neighboring arrows can NEVER steal a tap inside an occupied cell.
- * 2. Arrowhead Direct Hit: If the touch lands within an active arrowhead triangle, select that arrow.
- * 3. Bounded Proximity Search: For taps in outer margins, cell borders, or adjacent empty gaps.
- *    Evaluates pure Euclidean minimum distance to exact visual geometry (arrowhead + stem segments).
- *    Strictly NO "isMovable" tie-breaker or priority swapping.
- *    If the user taps a blocked arrow, that blocked arrow is selected and triggers its collision recoil.
+ * Thin wrapper around [ArrowHitTest.findTarget] (kept so the gesture code reads the same).
+ * [minTouchTargetPx] is already in board-local pixels.
  */
 private fun findClosestArrow(
     touchPoint: Offset,
@@ -1121,134 +1113,20 @@ private fun findClosestArrow(
     headSize: Float,
     minTouchTargetPx: Float,
     occupancy: GridOccupancyMap? = null,
-    clearedCells: Set<GridCoordinate> = emptySet(),
-    xSize: Int = 0,
-    ySize: Int = 0
-): Arrow? {
-    val activeArrows = arrows.filter { it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT }
-    if (activeArrows.isEmpty()) return null
-
-    val relX = touchPoint.x - origin.x
-    val relY = touchPoint.y - origin.y
-    val cellX = kotlin.math.floor(relX / cellSize).toInt()
-    val cellY = kotlin.math.floor(relY / cellSize).toInt()
-    val touchedCoord = GridCoordinate(cellX, cellY)
-
-    // 1. DISCRETE CELL OCCUPANCY AUTHORITY (100% Infallible Hit Testing)
-    val cellOccupant = occupancy?.get(touchedCoord)?.takeIf {
-        it.state != ArrowState.CLEARED && it.state != ArrowState.FLYING_OUT
-    } ?: activeArrows.firstOrNull { it.isPointInside(touchedCoord) }
-
-    if (cellOccupant != null) {
-        return cellOccupant
-    }
-
-    val strokeWidth = (cellSize * 0.20f).coerceIn(1.0f, minOf(cellSize * 0.35f, headSize / 2.2f))
-    val headWidth = headSize.coerceIn(strokeWidth * 2.2f, strokeWidth * 3.2f)
-    val headLength = headWidth * 0.88f
-    val tipForward = cellSize * 0.35f
-    val tailOffset = (cellSize * 0.32f).coerceAtLeast(strokeWidth * 0.45f)
-    val stemOverlap = minOf(headLength * 0.20f, strokeWidth * 0.40f)
-    val stemHeadOffset = (tipForward - headLength + stemOverlap).coerceAtLeast(0f)
-
-    // 2. Direct Arrowhead Triangle Hit Test (for forward spearhead reaching into empty space)
-    for (arrow in activeArrows) {
-        val headCenter = Offset(
-            origin.x + (arrow.head.x + 0.5f) * cellSize,
-            origin.y + (arrow.head.y + 0.5f) * cellSize
-        )
-        val dirX = arrow.direction.dx.toFloat()
-        val dirY = arrow.direction.dy.toFloat()
-        val perpX = -dirY
-        val perpY = dirX
-
-        val headTip = Offset(headCenter.x + dirX * tipForward, headCenter.y + dirY * tipForward)
-        val wingRight = Offset(
-            headTip.x - dirX * headLength + perpX * (headWidth * 0.50f),
-            headTip.y - dirY * headLength + perpY * (headWidth * 0.50f)
-        )
-        val wingLeft = Offset(
-            headTip.x - dirX * headLength - perpX * (headWidth * 0.50f),
-            headTip.y - dirY * headLength - perpY * (headWidth * 0.50f)
-        )
-
-        if (isPointInTriangle(touchPoint, headTip, wingRight, wingLeft)) {
-            return arrow
-        }
-    }
-
-    // 3. Bounded Proximity Search (for taps in outer margins, cell borders, or adjacent empty gaps)
-    // Comfortable search radius ensures single-tap responsiveness across all grid sizes and screen densities
-    val maxSearchRadius = maxOf(cellSize * 0.75f, minTouchTargetPx)
-    var bestArrow: Arrow? = null
-    var minDistance = Float.MAX_VALUE
-
-    for (arrow in activeArrows) {
-        val headCenter = Offset(
-            origin.x + (arrow.head.x + 0.5f) * cellSize,
-            origin.y + (arrow.head.y + 0.5f) * cellSize
-        )
-        val dirX = arrow.direction.dx.toFloat()
-        val dirY = arrow.direction.dy.toFloat()
-        val perpX = -dirY
-        val perpY = dirX
-
-        val headTip = Offset(headCenter.x + dirX * tipForward, headCenter.y + dirY * tipForward)
-        val wingRight = Offset(
-            headTip.x - dirX * headLength + perpX * (headWidth * 0.50f),
-            headTip.y - dirY * headLength + perpY * (headWidth * 0.50f)
-        )
-        val wingLeft = Offset(
-            headTip.x - dirX * headLength - perpX * (headWidth * 0.50f),
-            headTip.y - dirY * headLength - perpY * (headWidth * 0.50f)
-        )
-
-        val headDist = minOf(
-            distanceToSegment(touchPoint, headCenter, headTip),
-            distanceToSegment(touchPoint, headTip, wingLeft),
-            distanceToSegment(touchPoint, headTip, wingRight),
-            distanceToSegment(touchPoint, wingLeft, wingRight)
-        )
-
-        val body = arrow.body
-        val stemDist = if (body.size <= 1) {
-            val centerPt = Offset(origin.x + (arrow.head.x + 0.5f) * cellSize, origin.y + (arrow.head.y + 0.5f) * cellSize)
-            val firstPt = centerPt + Offset(-dirX, -dirY) * tailOffset
-            val lastPt = centerPt + Offset(dirX, dirY) * stemHeadOffset
-            distanceToSegment(touchPoint, firstPt, lastPt)
-        } else {
-            var minSeg = Float.MAX_VALUE
-            for (i in 0 until body.size - 1) {
-                val a = Offset(origin.x + (body[i].x + 0.5f) * cellSize, origin.y + (body[i].y + 0.5f) * cellSize)
-                val b = Offset(origin.x + (body[i + 1].x + 0.5f) * cellSize, origin.y + (body[i + 1].y + 0.5f) * cellSize)
-                val d = distanceToSegment(touchPoint, a, b)
-                if (d < minSeg) minSeg = d
-            }
-            minSeg
-        }
-
-        val dist = minOf(headDist, stemDist)
-        if (dist < minDistance && dist <= maxSearchRadius) {
-            minDistance = dist
-            bestArrow = arrow
-        }
-    }
-
-    return bestArrow
-}
-
-private fun distanceToSegment(p: Offset, a: Offset, b: Offset): Float {
-    val vx = b.x - a.x
-    val vy = b.y - a.y
-    val segLenSq = vx * vx + vy * vy
-    if (segLenSq == 0f) {
-        return (p - a).getDistance()
-    }
-    val t = (((p.x - a.x) * vx + (p.y - a.y) * vy) / segLenSq).coerceIn(0f, 1f)
-    val projX = a.x + t * vx
-    val projY = a.y + t * vy
-    return hypot(p.x - projX, p.y - projY)
-}
+    @Suppress("UNUSED_PARAMETER") clearedCells: Set<GridCoordinate> = emptySet(),
+    @Suppress("UNUSED_PARAMETER") xSize: Int = 0,
+    @Suppress("UNUSED_PARAMETER") ySize: Int = 0,
+    preferMovable: Boolean = false
+): Arrow? = ArrowHitTest.findTarget(
+    touchPoint = touchPoint,
+    origin = origin,
+    arrows = arrows,
+    cellSize = cellSize,
+    headSize = headSize,
+    minTouchRadius = minTouchTargetPx,
+    occupancy = occupancy,
+    preferMovable = preferMovable
+)
 
 private fun getStepsToBlocker(arrow: Arrow, arrows: List<Arrow>, xSize: Int, ySize: Int): Float {
     val occupiedCoords = mutableSetOf<GridCoordinate>()

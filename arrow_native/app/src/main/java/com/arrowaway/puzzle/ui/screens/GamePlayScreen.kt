@@ -311,7 +311,9 @@ fun GamePlayScreen(
                                     onArrowLongPress(arrow, isPressed)
                                 },
                                 onDismissPreviewRays = onDismissPreviewRays,
-                                onSkipCelebration = onSkipCelebration
+                                onSkipCelebration = onSkipCelebration,
+                                preferMovableArrows = !uiState.isHammerModeActive &&
+                                    com.arrowaway.puzzle.config.RemoteConfigManager.isTapAssistEnabled
                             )
                         }
 
