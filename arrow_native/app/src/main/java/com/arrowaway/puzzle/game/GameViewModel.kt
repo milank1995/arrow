@@ -60,7 +60,9 @@ data class GameUiState(
     val coins: Int = 100,
     val streakDays: Int = 0,
     val isStreakEarnedThisLevel: Boolean = false,
-    val hintsAvailable: Int = 3,
+    val hintsAvailable: Int = 0,
+    val isHintAdLoading: Boolean = false,
+    val hintErrorMessage: String? = null,
     val dailyComplimentaryHintsRemaining: Int = 1,
     val levelFreeHintsRemaining: Int = 1,
     val hammersAvailable: Int = 2,
@@ -492,6 +494,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 dailyComplimentaryHintsRemaining = if (levelNumber <= 10) 999 else 0,
                 levelFreeHintsRemaining = if (levelNumber <= 10) 999 else 0,
                 showHintAdPrompt = false,
+                isHintAdLoading = false,
+                hintErrorMessage = null,
                 isGamePaused = false,
                 restartTrigger = System.currentTimeMillis()
             )
@@ -567,6 +571,8 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 dailyComplimentaryHintsRemaining = 0,
                 levelFreeHintsRemaining = 0,
                 showHintAdPrompt = false,
+                isHintAdLoading = false,
+                hintErrorMessage = null,
                 isGamePaused = false,
                 restartTrigger = System.currentTimeMillis()
             )
@@ -871,11 +877,23 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     val isFreeHintLevel: Boolean get() = (_uiState.value.currentLevelNumber <= 10 && !_uiState.value.isDailyChallengeMode)
 
+    fun setHintAdLoading(loading: Boolean) {
+        _uiState.update { it.copy(isHintAdLoading = loading) }
+    }
+
+    fun showHintError(message: String) {
+        _uiState.update { it.copy(isHintAdLoading = false, hintErrorMessage = message) }
+    }
+
+    fun clearHintErrorMessage() {
+        _uiState.update { it.copy(hintErrorMessage = null) }
+    }
+
     fun useHint() {
         viewModelScope.launch(Dispatchers.Default) {
             val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap) ?: return@launch
             levelHintsUsedCount++
-            val isFree = isFreeHintLevel || _uiState.value.levelFreeHintsRemaining > 0
+            val isFree = isFreeHintLevel
             analytics.logHintButtonClicked(
                 levelNumber = _uiState.value.currentLevelNumber,
                 hintsBalance = _uiState.value.hintsAvailable,
@@ -895,23 +913,18 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     state.copy(arrows = updated)
                 }
             } else {
-                // Level 11+ (1 free hint per level) or Daily Challenge (0 free hints)
-                if (_uiState.value.levelFreeHintsRemaining > 0) {
-                    audioHapticManager.playBoosterUse("hint")
-                    _uiState.update { state ->
-                        val updated = state.arrows.map {
-                            if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
+                // Level 11+ or Daily Challenge: deduct 1 hint from persistent inventory
+                if (_uiState.value.hintsAvailable > 0) {
+                    val used = repository.useBooster("hint")
+                    if (used) {
+                        audioHapticManager.playBoosterUse("hint")
+                        _uiState.update { state ->
+                            val updated = state.arrows.map {
+                                if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
+                            }
+                            state.copy(arrows = updated)
                         }
-                        state.copy(
-                            arrows = updated,
-                            levelFreeHintsRemaining = 0,
-                            dailyComplimentaryHintsRemaining = 0
-                        )
                     }
-                } else {
-                    // Out of free hints for this level / Daily Challenge -> prompt rewarded ad dialog
-                    // ad_reward_prompt_shown (with ad_ready) is logged in MainActivity when the dialog opens
-                    _uiState.update { it.copy(showHintAdPrompt = true) }
                 }
             }
         }
@@ -930,7 +943,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun claimAdHints(amount: Int = 1) {
         viewModelScope.launch {
-            _uiState.update { it.copy(showHintAdPrompt = false) }
+            _uiState.update { it.copy(showHintAdPrompt = false, isHintAdLoading = false) }
             // Auto-execute 1 hint on the board for instant relief
             val hintTarget = PuzzleSolver.getBestHint(_uiState.value.arrows, occupancyMap)
             if (hintTarget != null) {
@@ -939,12 +952,13 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     val updated = state.arrows.map {
                         if (it.id == hintTarget.id) it.copyWithState(ArrowState.HINTED) else it
                     }
-                    state.copy(
-                        arrows = updated,
-                        levelFreeHintsRemaining = 0,
-                        dailyComplimentaryHintsRemaining = 0
-                    )
+                    state.copy(arrows = updated)
                 }
+                if (amount > 1) {
+                    repository.addHints(amount - 1)
+                }
+            } else {
+                repository.addHints(amount)
             }
         }
     }
@@ -1341,7 +1355,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                     coins = 100,
                     streakDays = 0,
                     isStreakEarnedThisLevel = false,
-                    hintsAvailable = 3,
+                    hintsAvailable = 0,
                     hammersAvailable = 2,
                     wandsAvailable = 2,
                     completedDailyDates = emptySet(),
@@ -1394,7 +1408,7 @@ class GameViewModel(private val app: Application) : AndroidViewModel(app) {
                 repository.addCoins(baseCoins)
                 if (LevelDifficultyRules.isMilestoneRewardLevel(completedLevel, isDailyChallenge = false)) {
                     val rewardHints = LevelDifficultyRules.MILESTONE_REWARD_HINTS
-                    if (repository.claimLevel10MilestoneReward(rewardHints)) {
+                    if (repository.claimMilestoneReward(completedLevel, rewardHints)) {
                         _uiState.update { it.copy(milestoneRewardHints = rewardHints) }
                     }
                 }

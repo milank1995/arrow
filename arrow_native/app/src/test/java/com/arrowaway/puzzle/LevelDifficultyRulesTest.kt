@@ -37,28 +37,20 @@ class LevelDifficultyRulesTest {
     }
 
     @Test
-    fun milestoneRewardOnlyForCampaignLevel10() {
+    fun milestoneRewardEveryFiveLevelsStartingAtFive() {
+        assertTrue(LevelDifficultyRules.isMilestoneRewardLevel(5, false))
         assertTrue(LevelDifficultyRules.isMilestoneRewardLevel(10, false))
-        assertFalse(LevelDifficultyRules.isMilestoneRewardLevel(10, true))
-        assertFalse(LevelDifficultyRules.isMilestoneRewardLevel(5, false))
-        assertFalse(LevelDifficultyRules.isMilestoneRewardLevel(20, false))
-        assertEquals(2, LevelDifficultyRules.MILESTONE_REWARD_HINTS)
-    }
-
-    @Test
-    fun rewardedHintMilestoneEveryFiveLevelsStartingAtFive() {
-        assertTrue(LevelDifficultyRules.isRewardedHintMilestone(5, false))
-        assertTrue(LevelDifficultyRules.isRewardedHintMilestone(10, false))
-        assertTrue(LevelDifficultyRules.isRewardedHintMilestone(15, false))
-        assertTrue(LevelDifficultyRules.isRewardedHintMilestone(20, false))
-        assertTrue(LevelDifficultyRules.isRewardedHintMilestone(25, false))
-        assertFalse(LevelDifficultyRules.isRewardedHintMilestone(1, false))
-        assertFalse(LevelDifficultyRules.isRewardedHintMilestone(2, false))
-        assertFalse(LevelDifficultyRules.isRewardedHintMilestone(3, false))
-        assertFalse(LevelDifficultyRules.isRewardedHintMilestone(4, false))
-        assertFalse(LevelDifficultyRules.isRewardedHintMilestone(6, false))
-        assertFalse(LevelDifficultyRules.isRewardedHintMilestone(9, false))
-        assertFalse("no campaign milestone in daily mode", LevelDifficultyRules.isRewardedHintMilestone(5, true))
-        assertFalse("no campaign milestone in daily mode", LevelDifficultyRules.isRewardedHintMilestone(10, true))
+        assertTrue(LevelDifficultyRules.isMilestoneRewardLevel(15, false))
+        assertTrue(LevelDifficultyRules.isMilestoneRewardLevel(20, false))
+        assertTrue(LevelDifficultyRules.isMilestoneRewardLevel(25, false))
+        assertFalse(LevelDifficultyRules.isMilestoneRewardLevel(1, false))
+        assertFalse(LevelDifficultyRules.isMilestoneRewardLevel(2, false))
+        assertFalse(LevelDifficultyRules.isMilestoneRewardLevel(3, false))
+        assertFalse(LevelDifficultyRules.isMilestoneRewardLevel(4, false))
+        assertFalse(LevelDifficultyRules.isMilestoneRewardLevel(6, false))
+        assertFalse(LevelDifficultyRules.isMilestoneRewardLevel(9, false))
+        assertFalse("no campaign milestone in daily mode", LevelDifficultyRules.isMilestoneRewardLevel(5, true))
+        assertFalse("no campaign milestone in daily mode", LevelDifficultyRules.isMilestoneRewardLevel(10, true))
+        assertEquals(1, LevelDifficultyRules.MILESTONE_REWARD_HINTS)
     }
 }

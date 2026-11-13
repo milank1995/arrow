@@ -13,17 +13,26 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,7 +57,6 @@ import com.arrowaway.puzzle.ui.components.BoosterBar
 import com.arrowaway.puzzle.ui.components.CheerOverlay
 import com.arrowaway.puzzle.ui.components.GameHeader
 import com.arrowaway.puzzle.ui.components.GameOverDialog
-import com.arrowaway.puzzle.ui.components.HintRefillDialog
 import com.arrowaway.puzzle.ui.components.PauseDialog
 import com.arrowaway.puzzle.ui.components.PuzzleBoardCanvas
 import com.arrowaway.puzzle.ui.components.GameSettingsDialog
@@ -71,6 +79,8 @@ fun GamePlayScreen(
     onRequestNotificationPermission: () -> Unit = {},
     onRestartClick: () -> Unit,
     onBackToHomeClick: () -> Unit,
+    onRequestAdHint: () -> Unit = {},
+    onDismissHintError: () -> Unit = {},
     onClaimFreeLives: () -> Unit = {},
     onClaimAdHints: () -> Unit = {},
     onDismissHintAdPrompt: () -> Unit = {},
@@ -102,6 +112,12 @@ fun GamePlayScreen(
     var showSettingsDialog by remember { mutableStateOf(false) }
     LaunchedEffect(showPauseDialog, showSettingsDialog) {
         onPauseStateChanged(showPauseDialog || showSettingsDialog)
+    }
+    LaunchedEffect(uiState.hintErrorMessage) {
+        if (uiState.hintErrorMessage != null) {
+            delay(4000L)
+            onDismissHintError()
+        }
     }
     var hudToastMessage by remember { mutableStateOf<String?>(null) }
     var hudToastTimer by remember { mutableLongStateOf(0L) }
@@ -201,8 +217,6 @@ fun GamePlayScreen(
             starsEarned = uiState.levelStarsEarned,
             isDailyUnlockMilestone = isDailyUnlockMilestone,
             milestoneRewardHints = uiState.milestoneRewardHints,
-            isRewardedHintMilestone = LevelDifficultyRules.isRewardedHintMilestone(uiState.currentLevelNumber, uiState.isDailyChallengeMode),
-            onClaimRewardedMilestoneHint = onClaimRewardedMilestoneHint,
             onStartDailyChallengeClick = onStartDailyChallengeClick,
             onRequestNotificationPermission = onRequestNotificationPermission,
             onClaimDoubleCoins = onClaimDoubleCoins,
@@ -333,18 +347,17 @@ fun GamePlayScreen(
                                 .padding(horizontal = 4.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            val effectiveHints = if (uiState.isDailyChallengeMode) {
-                                uiState.levelFreeHintsRemaining
-                            } else if (uiState.currentLevelNumber <= 10) {
+                            val effectiveHints = if (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode) {
                                 999
                             } else {
-                                uiState.levelFreeHintsRemaining
+                                uiState.hintsAvailable
                             }
                             BoosterBar(
                                 hintsCount = effectiveHints,
                                 isGridLinesActive = uiState.isGridLinesActive,
                                 isFreeHintLevel = (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode),
                                 isIdlePromptActive = isIdlePromptActive,
+                                isHintLoading = uiState.isHintAdLoading,
                                 levelNumber = uiState.currentLevelNumber,
                                 isDailyChallenge = uiState.isDailyChallengeMode,
                                 theme = theme,
@@ -353,7 +366,11 @@ fun GamePlayScreen(
                                 onHintClick = {
                                     lastInteractionTime = System.currentTimeMillis()
                                     isIdlePromptActive = false
-                                    onHintClick()
+                                    if (effectiveHints > 0) {
+                                        onHintClick()
+                                    } else {
+                                        onRequestAdHint()
+                                    }
                                 },
                                 onGridClick = {
                                     lastInteractionTime = System.currentTimeMillis()
@@ -361,6 +378,52 @@ fun GamePlayScreen(
                                     onGridClick()
                                 },
                                 modifier = Modifier.widthIn(max = 440.dp)
+                            )
+                        }
+                    }
+                }
+
+                // 3.5 DEDICATED HINT AD ERROR BANNER (Clear, prominent, dismissible)
+                AnimatedVisibility(
+                    visible = uiState.hintErrorMessage != null,
+                    enter = fadeIn(tween(200)) + slideInVertically(tween(200)) { -it },
+                    exit = fadeOut(tween(250)) + slideOutVertically(tween(250)) { -it },
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 16.dp, start = 20.dp, end = 20.dp)
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color(0xFFDC2626),
+                        border = BorderStroke(1.dp, Color(0xFFB91C1C)),
+                        shadowElevation = 8.dp
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .clickable { onDismissHintError() }
+                                .padding(horizontal = 14.dp, vertical = 10.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = uiState.hintErrorMessage ?: "",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.White,
+                                modifier = Modifier.weight(1f, fill = false)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Dismiss",
+                                tint = Color.White.copy(alpha = 0.8f),
+                                modifier = Modifier.size(16.dp)
                             )
                         }
                     }
@@ -446,16 +509,7 @@ fun GamePlayScreen(
                     )
                 }
 
-                // 7. HINT REFILL REWARDED AD DIALOG (Level 11+)
-                if (uiState.showHintAdPrompt) {
-                    HintRefillDialog(
-                        theme = theme,
-                        rewardedStatus = rewardedStatus,
-                        onTriggerAdPreload = onTriggerAdPreload,
-                        onWatchAdClick = onClaimAdHints,
-                        onDismiss = onDismissHintAdPrompt
-                    )
-                }
+
             }
         }
     }

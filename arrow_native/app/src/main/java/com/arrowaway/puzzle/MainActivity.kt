@@ -31,7 +31,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import android.view.WindowManager
@@ -142,6 +145,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
+            val coroutineScope = rememberCoroutineScope()
             val uiState by gameViewModel.uiState.collectAsState()
             val isRewardedAdReady by AdManager.rewardedReady.collectAsState()
             val rewardedStatus by AdManager.rewardedStatus.collectAsState()
@@ -466,6 +470,76 @@ class MainActivity : ComponentActivity() {
                                         } else {
                                             exitToHome()
                                         }
+                                    },
+                                    onRequestAdHint = {
+                                        if (uiState.isHintAdLoading) return@GamePlayScreen
+                                        gameViewModel.clearHintErrorMessage()
+                                        gameViewModel.setHintAdLoading(true)
+
+                                        if (!AdManager.isOnline(this@MainActivity)) {
+                                            gameViewModel.showHintError("No internet connection. Please check your connection and try again.")
+                                            return@GamePlayScreen
+                                        }
+
+                                        if (AdManager.rewardedReady.value && !AdManager.isRewardedAdExpired()) {
+                                            gameViewModel.setHintAdLoading(false)
+                                            AdManager.showRewardedAd(
+                                                activity = this@MainActivity,
+                                                placement = "hint_refill",
+                                                onRewardEarned = {
+                                                    gameViewModel.claimAdHints(1)
+                                                },
+                                                onAdClosed = { _ ->
+                                                    gameViewModel.setHintAdLoading(false)
+                                                }
+                                            )
+                                        } else {
+                                            AdManager.requestRewardedNow(this@MainActivity)
+                                            coroutineScope.launch {
+                                                val startTime = System.currentTimeMillis()
+                                                var showed = false
+                                                while (System.currentTimeMillis() - startTime < 4500L) {
+                                                    delay(200)
+                                                    if (AdManager.rewardedReady.value && !AdManager.isRewardedAdExpired()) {
+                                                        showed = true
+                                                        gameViewModel.setHintAdLoading(false)
+                                                        AdManager.showRewardedAd(
+                                                            activity = this@MainActivity,
+                                                            placement = "hint_refill",
+                                                            onRewardEarned = {
+                                                                gameViewModel.claimAdHints(1)
+                                                            },
+                                                            onAdClosed = { _ ->
+                                                                gameViewModel.setHintAdLoading(false)
+                                                            }
+                                                        )
+                                                        break
+                                                    }
+                                                    val status = AdManager.rewardedStatus.value
+                                                    if (status == AdManager.RewardedStatus.NO_INTERNET ||
+                                                        status == AdManager.RewardedStatus.NO_FILL ||
+                                                        status == AdManager.RewardedStatus.ERROR) {
+                                                        break
+                                                    }
+                                                }
+                                                if (!showed) {
+                                                    gameViewModel.setHintAdLoading(false)
+                                                    val status = AdManager.rewardedStatus.value
+                                                    val message = when (status) {
+                                                        AdManager.RewardedStatus.NO_INTERNET ->
+                                                            "No internet connection. Please check your connection and try again."
+                                                        AdManager.RewardedStatus.NO_FILL ->
+                                                            "No video available right now. Please try again in a moment."
+                                                        else ->
+                                                            "Failed to load video ad. Please try again."
+                                                    }
+                                                    gameViewModel.showHintError(message)
+                                                }
+                                            }
+                                        }
+                                    },
+                                    onDismissHintError = {
+                                        gameViewModel.clearHintErrorMessage()
                                     },
                                     onClaimFreeLives = {
                                         if (uiState.currentLevelNumber <= 10 && !uiState.isDailyChallengeMode) {

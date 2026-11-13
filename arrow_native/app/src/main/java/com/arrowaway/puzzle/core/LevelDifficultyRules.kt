@@ -2,7 +2,7 @@ package com.arrowaway.puzzle.core
 
 /**
  * Single source of truth for how a level's difficulty is presented to the player,
- * so the in-game "Hard" tag and the victory screen always agree.
+ * so the in-game difficulty label and milestone rewards always agree.
  */
 object LevelDifficultyRules {
 
@@ -18,17 +18,12 @@ object LevelDifficultyRules {
         else -> "Normal"
     }
 
-    /** One-time reward for clearing the end of the onboarding run. */
-    const val MILESTONE_REWARD_LEVEL = 10
-    const val MILESTONE_REWARD_HINTS = 2
+    /**
+     * Recurring milestone reward: every 5 levels (5, 10, 15, 20, 25...),
+     * the player receives exactly 1 free bonus hint.
+     */
+    const val MILESTONE_REWARD_HINTS = 1
 
     fun isMilestoneRewardLevel(levelNumber: Int, isDailyChallenge: Boolean): Boolean =
-        !isDailyChallenge && levelNumber == MILESTONE_REWARD_LEVEL
-
-    /**
-     * Rewarded hint milestone offer on the victory screen:
-     * Appears every 5 levels starting from Level 5 (5, 10, 15, 20, 25...).
-     */
-    fun isRewardedHintMilestone(levelNumber: Int, isDailyChallenge: Boolean): Boolean =
         !isDailyChallenge && levelNumber >= 5 && levelNumber % 5 == 0
 }

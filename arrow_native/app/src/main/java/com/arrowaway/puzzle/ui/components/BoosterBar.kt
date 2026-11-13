@@ -31,9 +31,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -79,6 +81,7 @@ fun BoosterBar(
     isGridLinesActive: Boolean,
     isFreeHintLevel: Boolean = false,
     isIdlePromptActive: Boolean = false,
+    isHintLoading: Boolean = false,
     levelNumber: Int? = null,
     isDailyChallenge: Boolean = false,
     isHardLevel: Boolean = false,
@@ -138,7 +141,8 @@ fun BoosterBar(
                     .scale(combinedHintScale)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null
+                        indication = null,
+                        enabled = !isHintLoading
                     ) {
                         coroutineScope.launch {
                             hintPressScale.animateTo(0.85f, tween(60))
@@ -156,12 +160,28 @@ fun BoosterBar(
                     modifier = Modifier
                         .size(width = 46.dp, height = 52.dp)
                         .align(Alignment.Center)
+                        .graphicsLayer {
+                            if (isHintLoading) {
+                                alpha = 0.30f
+                            }
+                        }
                 )
+
+                // Dedicated loading animation when ad is being fetched
+                if (isHintLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(22.dp)
+                            .align(Alignment.Center),
+                        color = Color(0xFFD97706),
+                        strokeWidth = 2.5.dp
+                    )
+                }
 
                 // Layer 2: Top-Right Circle Badge (Symmetrically matches the Grid button's Eye badge geometry)
                 // - Hidden on Levels 1-10 (unlimited hints, clean original design)
                 // - Both "AD" and number use an identical 18dp circle with optical cap-height centering
-                if (!isFreeHintLevel) {
+                if (!isFreeHintLevel && !isHintLoading) {
                     val isAdState = (hintsCount <= 0)
                     val badgeBgColor = if (isAdState) Color(0xFFD97706) else theme.surface
                     val badgeBorderColor = if (isAdState) Color(0xFFFDE68A).copy(alpha = 0.85f) else theme.gridLine
